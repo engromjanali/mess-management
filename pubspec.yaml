@@ -36,7 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   font_awesome_flutter: ^10.8.0
   animate_do: ^4.2.0
-  dropdown_search: ^5.0.6 # for dropdpwn search opetion
+  dropdown_search: ^6.0.2 # for dropdpwn search opetion
   intl: ^0.20.2 # date format
   provider: ^6.1.5 # for state management
 
@@ -117,7 +117,7 @@ flutter:
 
 
 
-  # if i enable swift all project will be run in swift. for remove will remove from all projects.
+  # if i enable swift. all project will be run in swift. for remove will remove from all projects.
   # if it's "disable-swift-package-manager: true (default : false)" project run with cocoapods otherwise run with swift (only this projects). 
   
   # initially it was under of cocoapods after running this command "flutter config --enable-swift-package-manager" is now controlled by swift.
@@ -136,7 +136,7 @@ flutter:
 
   # for more details visit "app_settings" documentation.
   config:
-    enable-swift-package-manager: false 
+    enable-swift-package-manager: true 
 
 
 

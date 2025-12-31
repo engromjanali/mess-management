@@ -103,6 +103,7 @@ class _NoticeAndAnnouncementScreenState extends State<NoticeAndAnnouncementScree
                               title: Text(noticeModel.title.toString()),
                               subtitle: Text(DateFormat("hh:mm a dd-MM-yyyy").format(noticeModel.CreatedAt!.toDate().toLocal())),
                               trailing: PopupMenuButton(
+                                offset: Offset.fromDirection(1),
                                 icon: Icon(Icons.more_vert),
                                 itemBuilder: (context) =>[
                                   PopupMenuItem(

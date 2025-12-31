@@ -1,80 +1,80 @@
-// import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
-// void main() => runApp(MaterialApp(home: MyVideoPage()));
+void main() => runApp(MaterialApp(home: MyVideoPage()));
 
-// class MyVideoPage extends StatefulWidget {
-//   @override
-//   State<MyVideoPage> createState() => _MyVideoPageState();
-// }
+class MyVideoPage extends StatefulWidget {
+  @override
+  State<MyVideoPage> createState() => _MyVideoPageState();
+}
 
-// class _MyVideoPageState extends State<MyVideoPage> with SingleTickerProviderStateMixin {
-//   // late TabController _tabController;
+class _MyVideoPageState extends State<MyVideoPage> with SingleTickerProviderStateMixin {
+  // late TabController _tabController;
 
-//   final List<String> tabs = ['All', 'Camera', 'Download', 'WhatsApp Video'];
+  final List<String> tabs = ['All', 'Camera', 'Download', 'WhatsApp Video'];
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     // _tabController = TabController(length: tabs.length, vsync: this);
-//   }
-//   @override
-//   void dispose() {
-//     // _tabController?.dispose();
-//     // TODO: implement dispose
-//     super.dispose();
-//   }
+  @override
+  void initState() {
+    super.initState();
+    // _tabController = TabController(length: tabs.length, vsync: this);
+  }
+  @override
+  void dispose() {
+    // _tabController?.dispose();
+    // TODO: implement dispose
+    super.dispose();
+  }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return DefaultTabController(
-//       length: tabs.length,
-//       child: Scaffold(
-//         body: NestedScrollView(
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: tabs.length,
+      child: Scaffold(
+        body: NestedScrollView(
           
-//           headerSliverBuilder: (context, innerBoxIsScrolled) => [
-//             SliverAppBar(
-//               backgroundColor: Colors.amber,
-//               title: Text("Videos"),
-//               floating: true,
-//               pinned: true,
-//               snap: true,
-//               actions: [
-//                 IconButton(icon: Icon(Icons.search), onPressed: () {}),
-//                 IconButton(icon: Icon(Icons.grid_view), onPressed: () {}),
-//               ],
-//               bottom: TabBar(
-//                 // controller: _tabController,
-//                 isScrollable: true,
-//                 tabAlignment: TabAlignment.start,
-//                 indicatorColor: Colors.orange,
-//                 indicatorWeight: 3,
-//                 labelStyle: TextStyle(fontWeight: FontWeight.bold),
-//                 tabs: tabs.map((t) => Tab(text: t)).toList(),
-//               ),
-//             ),
-//           ],
-//           body: TabBarView(
-//             // controller: _tabController,
-//             children: tabs.map((tab) {
-//               return ListView.builder(
-//                 padding: EdgeInsets.all(10),
-//                 itemCount: 20,
-//                 itemBuilder: (context, index) {
-//                   return ListTile(
-//                     leading: Icon(Icons.play_circle_outline),
-//                     title: Text("$tab Video ${index + 1}"),
-//                     subtitle: Text("Date: 24 June · Size: ${(20 + index) % 100} MB"),
-//                     trailing: Icon(Icons.more_vert),
-//                   );
-//                 },
-//               );
-//             }).toList(),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
+          headerSliverBuilder: (context, innerBoxIsScrolled) => [
+            SliverAppBar(
+              backgroundColor: Colors.amber,
+              title: Text("Videos"),
+              floating: true,
+              pinned: true,
+              snap: true,
+              actions: [
+                IconButton(icon: Icon(Icons.search), onPressed: () {}),
+                IconButton(icon: Icon(Icons.grid_view), onPressed: () {}),
+              ],
+              bottom: TabBar(
+                // controller: _tabController,
+                isScrollable: true,
+                tabAlignment: TabAlignment.start,
+                indicatorColor: Colors.orange,
+                indicatorWeight: 3,
+                labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                tabs: tabs.map((t) => Tab(text: t)).toList(),
+              ),
+            ),
+          ],
+          body: TabBarView(
+            // controller: _tabController,
+            children: tabs.map((tab) {
+              return ListView.builder(
+                padding: EdgeInsets.all(10),
+                itemCount: 20,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    leading: Icon(Icons.play_circle_outline),
+                    title: Text("$tab Video ${index + 1}"),
+                    subtitle: Text("Date: 24 June · Size: ${(20 + index) % 100} MB"),
+                    trailing: Icon(Icons.more_vert),
+                  );
+                },
+              );
+            }).toList(),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 
 

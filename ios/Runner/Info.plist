@@ -26,12 +26,14 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<!-- reference of image picker -->
 	<key>NSCameraUsageDescription</key>
 	<string>This Permission is Required to access your Camera</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This Permission is Required to access your Microphone</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This Permission is Required to access your PhotoLibrary</string>
+	
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>

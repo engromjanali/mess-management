@@ -149,10 +149,10 @@ class _AddDepositState extends State<AddDeposit> {
                 child: DropdownSearch<String>(
                   enabled: (!isUpdate),
                   key: dropdownKey, // Needed for reset
-                  asyncItems: (String filter) => _getAllMemberData(),
-                  selectedItem : selectedItem ,
-                  dropdownDecoratorProps: const DropDownDecoratorProps(
-                    dropdownSearchDecoration: InputDecoration(
+                  items: (String filter,_) => _getAllMemberData(),
+                  selectedItem : selectedItem,
+                  decoratorProps: const DropDownDecoratorProps(
+                    decoration: InputDecoration(
                       labelText: Constants.selectedMember,
                       border: OutlineInputBorder(),
                     ),
@@ -161,16 +161,15 @@ class _AddDepositState extends State<AddDeposit> {
                     showSearchBox: true,
                         
                     // Disable specific item visually and functionally
-                    itemBuilder: (context, item, isSelected) {
-                      bool isDisabled = disabledItems.contains(item);
-                      return IgnorePointer(
-                        ignoring: isDisabled,
-                        child: ListTile(
-                          title: Text(
-                            item,
-                            style: TextStyle(
-                              color: isDisabled ? Colors.grey : Colors.black,
-                            ),
+                    disabledItemFn: (item) => disabledItems.contains(item),
+                      showSelectedItems: true,
+                      itemBuilder: (context, item, isDisabled, isSelected) {//to check isSelected required "showSelectedItems == true"
+                      return ListTile(
+                        title: Text(
+                          item,
+                          style: TextStyle(
+                            color: isDisabled ? Colors.grey : Colors.black,
+                            fontWeight: isSelected ? FontWeight.bold: FontWeight.normal
                           ),
                         ),
                       );
@@ -179,15 +178,8 @@ class _AddDepositState extends State<AddDeposit> {
                   // always use this function it's tested
                   // otherwise we get error because there are few bug here
                   onChanged: (value) {
-                    if (value != null && disabledItems.contains(value)) {
-                    // Reset visually and logically
-                      dropdownKey.currentState?.clear(); // clears the selection
-                      debugPrint("Selected disable: $selectedItem ");                    
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("This Member is disabled.")),
-                      );
-                    } 
-                    else {
+                  
+                     {
                       if(value!=null){
                         // here we receive only enabled value.
                         setState(() {

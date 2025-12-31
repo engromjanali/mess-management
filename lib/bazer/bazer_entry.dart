@@ -98,13 +98,14 @@ class _BazerEntryScreenState extends State<BazerEntryScreen> {
                   margin: EdgeInsets.all(10),
                   child: DropdownSearch<Map<String, dynamic>>(
                     key: dropdownKey, // Needed for reset
-                    asyncItems: (String filter)async => messProvider.getMessMemberList(onFail: (_){}, messId: authProvider.getUserModel!.currentMessId),
+                    items: (String filter,_)async => messProvider.getMessMemberList(onFail: (_){}, messId: authProvider.getUserModel!.currentMessId),
                     itemAsString: (item) =>item[Constants.fname]+"\n"+item[Constants.uId], // we can see it as selected value{name, id}. but we receive the currect data {Map}.
                     // asyncItems: (String filter) => _getAllMemberData(),
                     selectedItem : selectedItem,
-                    
-                    dropdownDecoratorProps: const DropDownDecoratorProps(
-                      dropdownSearchDecoration: InputDecoration(
+                    // if we dose not use "compareFn" we get an error because we are using here custom data type mean map.
+                    compareFn: (item1, item2) => item1[Constants.uId] == item2[Constants.uId],
+                    decoratorProps: const DropDownDecoratorProps(
+                      decoration: InputDecoration(
                         labelText: Constants.selectedMember,
                         border: OutlineInputBorder(),
                         
@@ -118,10 +119,12 @@ class _BazerEntryScreenState extends State<BazerEntryScreen> {
                       }
                       return null;
                     },
+
+                    
                     
                     // dropdownBuilder 
                     dropdownBuilder: (context, selectedItem) {
-                      if (selectedItem == null) return Text("No member selected");
+                      if (selectedItem == null) return Text("");
                       return Column(
                         children: [
                           ListTile(
@@ -143,14 +146,15 @@ class _BazerEntryScreenState extends State<BazerEntryScreen> {
                         return item[Constants.status]==Constants.disable;
                       },
                       
-                      itemBuilder: (context, item, isSelected) {
-                        if(isSelected) print("get silected");
-                        bool isDisabled = item[Constants.status] == Constants.disable;
+                      showSelectedItems: true,
+                      itemBuilder: (context, item, isDisabled, isSelected) {//to check isSelected required "showSelectedItems == true"
+
                         return ListTile(
                           title: Text(
                             item[Constants.fname],
                             style : getTextStyleForTitleM().copyWith(
                               color: isDisabled ? Colors.grey : Colors.black,
+                              fontWeight: isSelected? FontWeight.bold: FontWeight.normal
                             )
                           ),
                           subtitle: Text(

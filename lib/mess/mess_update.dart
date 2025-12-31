@@ -245,11 +245,12 @@ class _MessUpdateState extends State<MessUpdate> {
               //   builder: builder,
               // ),
               child: DropdownSearch<String>(
+                
                 key: dropdownKey, // Needed for reset
-                asyncItems: (String filter) => _getAllMemberData(),
+                items: (String filter,_) => _getAllMemberData(),
                 selectedItem : selectedItem ,
-                dropdownDecoratorProps: const DropDownDecoratorProps(
-                  dropdownSearchDecoration: InputDecoration(
+                decoratorProps: const DropDownDecoratorProps(
+                  decoration: InputDecoration(
                     labelText: Constants.selectedMember,
                     border: OutlineInputBorder(),
                   ),
@@ -258,8 +259,10 @@ class _MessUpdateState extends State<MessUpdate> {
                   showSearchBox: true,
                       
                   // Disable specific item visually and functionally
-                  itemBuilder: (context, item, isSelected) {
-                    bool isDisabled = disabledItems.contains(item);
+                  disabledItemFn: (item) => disabledItems.contains(item),
+                      showSelectedItems: true,
+                      itemBuilder: (context, item, isDisabled, isSelected) {//to check isSelected required "showSelectedItems == true"
+
                     return IgnorePointer(
                       ignoring: isDisabled,
                       child: ListTile(
@@ -267,6 +270,7 @@ class _MessUpdateState extends State<MessUpdate> {
                           item,
                           style : getTextStyleForTitleM().copyWith(
                             color: isDisabled ? Colors.grey : Colors.black,
+                            fontWeight: isSelected ? FontWeight.bold: FontWeight.normal
                           ),
                         ),
                       ),
@@ -276,15 +280,7 @@ class _MessUpdateState extends State<MessUpdate> {
                 // always use this function it's tested
                 // otherwise we get error because there are few bug here
                 onChanged: (value) {
-                  if (value != null && disabledItems.contains(value)) {
-                  // Reset visually and logically
-                    dropdownKey.currentState?.clear(); // clears the selection
-                    debugPrint("Selected disable: $selectedItem ");                    
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("This Member is disabled.")),
-                    );
-                  } 
-                  else {
+                {
                     if(value!=null){
                       // here we receive only enabled value.
                       setState(() {

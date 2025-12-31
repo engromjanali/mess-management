@@ -23,22 +23,18 @@ import 'package:provider/provider.dart';
 // void main() {
 //   runApp(const MyApp());
 // }
-  
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-void main()async{
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );  
-
- FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHendler);
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHendler);
 
   runApp(
     MultiProvider(
-
       providers: [
         // add all provider here
         ChangeNotifierProvider(create: (_) => NoticeProvider()),
@@ -52,27 +48,46 @@ void main()async{
         ChangeNotifierProvider(create: (_) => MessProvider()),
       ],
       child: const MyApp(),
-    )
+    ),
   );
 }
 
+/// system tray এ notification দেখাবে। যদি data payload থাকে,
+/// তাহলে _firebaseMessagingBackgroundHandler trigger হবে।
+/// we can show it in local notification,
+/// we can done some opration from here also.
+
 @pragma("vm:entry-point")
-Future<void> _firebaseMessagingBackgroundHendler(RemoteMessage message)async{
-
+Future<void> _firebaseMessagingBackgroundHendler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  debugPrint(message.notification!.title.toString());
+  print("Message Received ---");
+
+  // if app is "terminated, backgrounded" this function will triggered for (notification receive).
+  // for local notification (receive and open/close) behave normal mean won't trigger .
+  if (message.notification == null) {
+    debugPrint("silent message received we can synce data, or so some special opration.");
+    debugPrint("silent message dosen't show in status tray by OS by default");
+
+    NotificationServices.getInstance.showNotification(
+      RemoteMessage(
+        notification: RemoteNotification(
+          title: "without notification field",
+          body: "",
+        ),
+      ),
+    );
+  }
+
+  // in here we can perform light weight opration like store/update few data locally.
+  // for 20-30 second.
 }
-
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-  
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -82,12 +97,13 @@ class MyApp extends StatelessWidget {
       // home:  TestScreen(),
       initialRoute: Constants.LandingScreen,
       // home: MyVideoUI(),
-      routes: {  
-        Constants.LandingScreen:(context)=> const LandingScreen(),
-        Constants.HomeScreen : (context) => const HomeScreen(),
-        Constants.logInScreen:(context)=> const SignInScreen(),
-        Constants.SignUpScreen:(context)=> const SignUpScreen(),
-        Constants.noticeScreen:(context)=> const NoticeAndAnnouncementScreen(),
+      routes: {
+        Constants.LandingScreen: (context) => const LandingScreen(),
+        Constants.HomeScreen: (context) => const HomeScreen(),
+        Constants.logInScreen: (context) => const SignInScreen(),
+        Constants.SignUpScreen: (context) => const SignUpScreen(),
+        Constants.noticeScreen:
+            (context) => const NoticeAndAnnouncementScreen(),
       },
     );
   }

@@ -103,13 +103,18 @@ class _MemberMealListState extends State<MemberMealList> {
                   margin: EdgeInsets.all(10),
                   child: DropdownSearch<Map<String, dynamic>>(
                     key: dropdownKey, // Needed for reset
-                    asyncItems: (String filter)async => messProvider.getMessMemberList(onFail: (_){}, messId: authProvider.getUserModel!.currentMessId),
+                    // items: ,
+                    items: (String filter, _)async => messProvider.getMessMemberList(onFail: (_){}, messId: authProvider.getUserModel!.currentMessId),
                     itemAsString: (item) =>item[Constants.fname]+"\n"+item[Constants.uId], // we can see it as selected value{name, id}. but we receive the currect data {Map}.
                     // asyncItems: (String filter) => _getAllMemberData(),
                     // selectedItem : messProvider.getMessModel!.messMemberList[0] ,
                     
-                    dropdownDecoratorProps: const DropDownDecoratorProps(
-                      dropdownSearchDecoration: InputDecoration(
+
+                    // if we dose not use "compareFn" we get an error because we are using here custom data type mean map.
+                    compareFn: (item1, item2) => item1[Constants.uId] == item2[Constants.uId],
+
+                    decoratorProps: const DropDownDecoratorProps(
+                      decoration: InputDecoration(
                         labelText: Constants.selectedMember,
                         border: OutlineInputBorder(),
                         
@@ -126,7 +131,7 @@ class _MemberMealListState extends State<MemberMealList> {
                     
                     // dropdownBuilder 
                     dropdownBuilder: (context, selectedItem) {
-                      if (selectedItem == null) return Text("No member selected");
+                      if (selectedItem == null) return Text("");
                       return Column(
                         children: [
                           ListTile(
@@ -149,22 +154,22 @@ class _MemberMealListState extends State<MemberMealList> {
                         // because for check member meal details if we desable it we can't check there details.
                         return item[Constants.status]==Constants.disable;
                       },
-                      
-                      itemBuilder: (context, item, isSelected) {
-                        if(isSelected) print("get silected");
-                        // bool isDisabled = item[Constants.status] == Constants.disable;
-                        bool isDisabled = false;
+                      showSelectedItems: true,
+                      itemBuilder: (context, item, isDisabled, isSelected) {//to check isSelected required "showSelectedItems == true"
+
                         return ListTile(
                           title: Text(
                             item[Constants.fname],
                             style : getTextStyleForTitleM().copyWith(
                               color: isDisabled ? Colors.grey : Colors.black,
+                              fontWeight: isSelected? FontWeight.bold : FontWeight.normal
                             )
                           ),
                           subtitle: Text(
                             item[Constants.uId],
                             style : getTextStyleForTitleM().copyWith(
                               color: isDisabled ? Colors.grey : Colors.black,
+                              fontWeight: isSelected ? FontWeight.bold: FontWeight.normal
                             )
                           ),
                         );
@@ -174,10 +179,6 @@ class _MemberMealListState extends State<MemberMealList> {
                     onChanged: (value) {
                       print(value.toString());
                       selectedItem = value;
-      
-                      // if(messProvider.getMessModel!.messMemberList[0] == value){
-                      //   dropdownKey.currentState?.clear();
-                      // }
                     },
                   ),
                 ),
