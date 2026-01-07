@@ -1,26 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-
-import 'package:animate_do/animate_do.dart';
 import 'package:app_settings/app_settings.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:mess_management/authantication/Sign_up.dart';
-import 'package:mess_management/authantication/landing_screen.dart';
 import 'package:mess_management/constants.dart';
-import 'package:mess_management/helper/ui_helper.dart';
+import 'package:mess_management/core/function/f_is_null.dart';
 import 'package:mess_management/main.dart';
 import 'package:mess_management/model/user_model.dart';
-import 'package:mess_management/notice_and_announcement.dart';
 import 'package:http/http.dart' as http;
 import 'package:mess_management/providers/authantication_provider.dart';
-import 'package:mess_management/services/fmc_server_key.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationServices {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -45,16 +36,16 @@ class NotificationServices {
     initLocalNotifications();
     setupInterectMessage();
     firebaseMessageInit();
-    forgroundMessaging();
+    setForgroundMessagingOptions();
   }
 
   void initLocalNotifications() async {
-    var androidInitializationSettings = const AndroidInitializationSettings(
+    const androidInitializationSettings = const AndroidInitializationSettings(
       '@mipmap/ic_launcher',
     );
-    var iosInitializationSettings = const DarwinInitializationSettings();
+    const iosInitializationSettings = const DarwinInitializationSettings();
 
-    var initializationSettings = InitializationSettings(
+    const initializationSettings = InitializationSettings(
       android: androidInitializationSettings,
       iOS: iosInitializationSettings,
     );
@@ -115,7 +106,6 @@ class NotificationServices {
 
   Future<void> firebaseMessageInit() async {
     // when foreground, for background see setupInterectMessage Function
-
     FirebaseMessaging.onMessage.listen((message) {
       debugPrint(message.notification?.title.toString());
       debugPrint(message.notification?.body.toString());
@@ -133,7 +123,7 @@ class NotificationServices {
         }
         if (Platform.isIOS) {
           // iOS shows system notification automatically; handle data-only payloads
-          forgroundMessaging();
+          setForgroundMessagingOptions();
           if (message.notification == null && message.data.isNotEmpty) {
             showNotification(message);
           }
@@ -178,11 +168,11 @@ class NotificationServices {
 
     Future.delayed(Duration.zero, () {
       _flutterLocalNotificationsPlugin.show(
-        0,
+        message.notification.hashCode,
         message.notification?.title ?? "Notification",
         message.notification?.body ?? "You have a new message",
         notificationDetails,
-        payload: "",
+        payload: json.encode(message.data),
       );
     });
   }
@@ -196,7 +186,6 @@ class NotificationServices {
         asAnotherTask: true,
       );
     }
-
     // reopen to check has permision or not.
   }
 
@@ -213,12 +202,12 @@ class NotificationServices {
     );
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      debugPrint("user authorized: Android");
+      debugPrint('✅ User granted permission');
     } else if (settings.authorizationStatus ==
         AuthorizationStatus.provisional) {
-      debugPrint("user Provisional: IOS");
+      debugPrint('⚠️ User granted provisional permission');
     } else {
-      debugPrint("user denaided");
+      debugPrint("❌ User declined permission");
       openAppSettings();
     }
   }
@@ -265,11 +254,44 @@ class NotificationServices {
     navigatorKey.currentState?.pushNamed(Constants.noticeScreen);
   }
 
-  Future forgroundMessaging() async {
+  Future setForgroundMessagingOptions() async {
     await messaging.setForegroundNotificationPresentationOptions(
       alert: true,
       badge: true,
       sound: false,
     );
   }
+}
+
+/// system tray এ notification দেখাবে। যদি data payload থাকে,
+/// তাহলে _firebaseMessagingBackgroundHandler trigger হবে।
+/// we can show it in local notification,
+/// we can done some opration from here also.
+
+@pragma("vm:entry-point")
+Future<void> firebaseMessagingBackgroundHendler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print("Message Received ---");
+
+  // if app is "terminated, backgrounded" this function will triggered for (notification receive).
+  // if the app is in backgrounded i receive a notification and remove/clear the notification this function will be triger again. with a null map-data demo given below
+  // {senderId: null, category: null, collapseKey: null, contentAvailable: false, data: {}, from: null, messageId: null, messageType: null, mutableContent: false, notification: null, sentTime: 0, threadId: null, ttl: 0}
+  // for local notification (receive and open/close) behave normal mean won't trigger .
+  if (isNull(message.notification) && isNotNull(message.senderId)) {
+    debugPrint(
+      "silent message received we can synce data, or so some special opration.",
+    );
+    debugPrint("silent message dosen't show in status tray by OS by default");
+
+    NotificationServices.getInstance.showNotification(
+      RemoteMessage(
+        notification: RemoteNotification(
+          title: "without notification field",
+          body: "",
+        ),
+      ),
+    );
+  }
+  // in here we can perform light weight opration like store/update few data locally.
+  // for 20-30 second.
 }

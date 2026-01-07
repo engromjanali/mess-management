@@ -31,7 +31,7 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHendler);
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHendler);
 
   runApp(
     MultiProvider(
@@ -50,36 +50,6 @@ void main() async {
       child: const MyApp(),
     ),
   );
-}
-
-/// system tray এ notification দেখাবে। যদি data payload থাকে,
-/// তাহলে _firebaseMessagingBackgroundHandler trigger হবে।
-/// we can show it in local notification,
-/// we can done some opration from here also.
-
-@pragma("vm:entry-point")
-Future<void> _firebaseMessagingBackgroundHendler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  print("Message Received ---");
-
-  // if app is "terminated, backgrounded" this function will triggered for (notification receive).
-  // for local notification (receive and open/close) behave normal mean won't trigger .
-  if (message.notification == null) {
-    debugPrint("silent message received we can synce data, or so some special opration.");
-    debugPrint("silent message dosen't show in status tray by OS by default");
-
-    NotificationServices.getInstance.showNotification(
-      RemoteMessage(
-        notification: RemoteNotification(
-          title: "without notification field",
-          body: "",
-        ),
-      ),
-    );
-  }
-
-  // in here we can perform light weight opration like store/update few data locally.
-  // for 20-30 second.
 }
 
 class MyApp extends StatelessWidget {
