@@ -1,0 +1,5 @@
+brack bank : 6am tech
+Bank Account Number: 1077319320001
+Account Opening Date: 06-01-2026
+Account Type: GENERAL_BANKING
+Branch Name: MIRPUR BRANCH
