@@ -2,7 +2,6 @@ import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_event.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
 import 'package:clean_boilerplate/features/auth/presentation/widgets/login_form_widget.dart';
 import 'package:flutter/material.dart';
@@ -30,14 +29,10 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _handleLogin() {
-    if (_formKey.currentState!.validate()) {
-      context.read<AuthBloc>().add(
-            AuthEvent.loginRequested(
-              email: _emailController.text,
-              password: _passwordController.text,
-            ),
-          );
-    }
+    // Per redesign spec: tapping login goes straight to the home dashboard,
+    // no authentication required yet. Wire the AuthBloc flow back in here when
+    // real login is implemented.
+    context.go(AppRoutes.home);
   }
 
   @override

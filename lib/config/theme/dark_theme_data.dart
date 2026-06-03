@@ -11,9 +11,9 @@ ThemeData darkThemeData = ThemeData(
   
   // Color scheme
   colorScheme: ColorScheme.fromSeed(
-    seedColor: const Color(0xFF2196F3),
+    seedColor: const Color(0xFF35C57F),
     brightness: Brightness.dark,
-    primary: const Color(0xFF2196F3),
+    primary: const Color(0xFF35C57F),
     secondary: const Color(0xFF4CAF50),
     error: const Color(0xFFEF5350),
     surface: const Color(0xFF1E1E1E),
@@ -47,7 +47,7 @@ ThemeData darkThemeData = ThemeData(
   // Elevated Button
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: const Color(0xFF2196F3),
+      backgroundColor: const Color(0xFF35C57F),
       foregroundColor: Colors.white,
       padding: const EdgeInsets.symmetric(
         horizontal: 32,
@@ -63,7 +63,7 @@ ThemeData darkThemeData = ThemeData(
   // Text Button
   textButtonTheme: TextButtonThemeData(
     style: TextButton.styleFrom(
-      foregroundColor: const Color(0xFF2196F3),
+      foregroundColor: const Color(0xFF35C57F),
       padding: const EdgeInsets.symmetric(
         horizontal: 16,
         vertical: 12,
@@ -74,8 +74,8 @@ ThemeData darkThemeData = ThemeData(
   // Outlined Button
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
-      foregroundColor: const Color(0xFF2196F3),
-      side: const BorderSide(color: Color(0xFF2196F3)),
+      foregroundColor: const Color(0xFF35C57F),
+      side: const BorderSide(color: Color(0xFF35C57F)),
       padding: const EdgeInsets.symmetric(
         horizontal: 32,
         vertical: 16,
@@ -100,7 +100,7 @@ ThemeData darkThemeData = ThemeData(
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
-      borderSide: const BorderSide(color: Color(0xFF2196F3), width: 2),
+      borderSide: const BorderSide(color: Color(0xFF35C57F), width: 2),
     ),
     errorBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),

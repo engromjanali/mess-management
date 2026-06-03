@@ -2,6 +2,7 @@ import 'package:clean_boilerplate/features/splash/presentation/screens/splash_sc
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 
 /// App route constants
@@ -15,7 +16,7 @@ class AppRoutes {
   static const String _register = '/register';
   
   // Main routes
-  static const String _init = '/';
+  static const String home = '/';
   static const String _profile = '/profile';
   static const String settings = '/settings';
   
@@ -47,13 +48,9 @@ final router = GoRouter(
     
     // Home route
     GoRoute(
-      path: AppRoutes._init,
+      path: AppRoutes.home,
       name: 'home',
-      builder: (context, state) => const Scaffold(
-        body: Center(
-          child: Text('Home Screen'),
-        ),
-      ),
+      builder: (context, state) => const HomeScreen(),
     ),
     
     // Settings route

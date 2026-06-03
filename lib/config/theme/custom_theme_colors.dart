@@ -51,10 +51,10 @@ class CustomThemeColors extends ThemeExtension<CustomThemeColors> {
 
   /// Light theme colors
   factory CustomThemeColors.light() => const CustomThemeColors(
-    primaryColor: Color(0xFF2196F3),
-    primaryLightColor: Color(0xFF64B5F6),
-    primaryDarkColor: Color(0xFF1976D2),
-    secondaryColor: Color(0xFF4CAF50),
+    primaryColor: Color(0xFF1FA463),
+    primaryLightColor: Color(0xFF5FD79A),
+    primaryDarkColor: Color(0xFF0E6E3F),
+    secondaryColor: Color(0xFFFFB300),
     backgroundColor: Color(0xFFF5F5F5),
     surfaceColor: Color(0xFFFFFFFF),
     cardBackgroundColor: Color(0xFFFFFFFF),
@@ -72,10 +72,10 @@ class CustomThemeColors extends ThemeExtension<CustomThemeColors> {
 
   /// Dark theme colors
   factory CustomThemeColors.dark() => const CustomThemeColors(
-    primaryColor: Color(0xFF2196F3),
-    primaryLightColor: Color(0xFF64B5F6),
-    primaryDarkColor: Color(0xFF0D47A1),
-    secondaryColor: Color(0xFF4CAF50),
+    primaryColor: Color(0xFF35C57F),
+    primaryLightColor: Color(0xFF6FE3A8),
+    primaryDarkColor: Color(0xFF0E6E3F),
+    secondaryColor: Color(0xFFFFC233),
     backgroundColor: Color(0xFF121212),
     surfaceColor: Color(0xFF1E1E1E),
     cardBackgroundColor: Color(0xFF2C2C2C),

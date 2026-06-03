@@ -10,8 +10,8 @@ ThemeData lightThemeData = ThemeData(
   
   // Color scheme
   colorScheme: ColorScheme.fromSeed(
-    seedColor: const Color(0xFF2196F3),
-    primary: const Color(0xFF2196F3),
+    seedColor: const Color(0xFF1FA463),
+    primary: const Color(0xFF1FA463),
     secondary: const Color(0xFF4CAF50),
     error: const Color(0xFFE53935),
     surface: const Color(0xFFFFFFFF),
@@ -28,7 +28,7 @@ ThemeData lightThemeData = ThemeData(
   appBarTheme: const AppBarTheme(
     centerTitle: true,
     elevation: 0,
-    backgroundColor: Color(0xFF2196F3),
+    backgroundColor: Color(0xFF1FA463),
     foregroundColor: Colors.white,
     iconTheme: IconThemeData(color: Colors.white),
   ),
@@ -45,7 +45,7 @@ ThemeData lightThemeData = ThemeData(
   // Elevated Button
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: const Color(0xFF2196F3),
+      backgroundColor: const Color(0xFF1FA463),
       foregroundColor: Colors.white,
       padding: const EdgeInsets.symmetric(
         horizontal: 32,
@@ -61,7 +61,7 @@ ThemeData lightThemeData = ThemeData(
   // Text Button
   textButtonTheme: TextButtonThemeData(
     style: TextButton.styleFrom(
-      foregroundColor: const Color(0xFF2196F3),
+      foregroundColor: const Color(0xFF1FA463),
       padding: const EdgeInsets.symmetric(
         horizontal: 16,
         vertical: 12,
@@ -72,8 +72,8 @@ ThemeData lightThemeData = ThemeData(
   // Outlined Button
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
-      foregroundColor: const Color(0xFF2196F3),
-      side: const BorderSide(color: Color(0xFF2196F3)),
+      foregroundColor: const Color(0xFF1FA463),
+      side: const BorderSide(color: Color(0xFF1FA463)),
       padding: const EdgeInsets.symmetric(
         horizontal: 32,
         vertical: 16,
@@ -98,7 +98,7 @@ ThemeData lightThemeData = ThemeData(
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
-      borderSide: const BorderSide(color: Color(0xFF2196F3), width: 2),
+      borderSide: const BorderSide(color: Color(0xFF1FA463), width: 2),
     ),
     errorBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
