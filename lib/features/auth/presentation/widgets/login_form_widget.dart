@@ -21,49 +21,54 @@ class LoginFormWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
-      child: Form(
-        key: formKey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Email field
-            CommonLabeledInputItemWidget(
-              label: context.local.email,
-              hintText: context.local.email,
-              controller: emailController,
-              keyboardType: TextInputType.emailAddress,
-              isRequired: true,
-            ),
-            const SizedBox(height: Dimensions.spaceDefault),
-            
-            // Password field
-            CommonLabeledInputItemWidget(
-              label: context.local.password,
-              hintText: context.local.password,
-              controller: passwordController,
-              keyboardType: TextInputType.visiblePassword,
-              isRequired: true,
-              passwordLength: 6,
-            ),
-            const SizedBox(height: Dimensions.spaceLarge),
-            
-            // Login button
-            SizedBox(
-              width: double.infinity,
-              height: Dimensions.buttonHeightDefault,
-              child: ElevatedButton(
-                onPressed: onLogin,
-                child: Text(
-                  context.local.login,
-                  style: AppTextStyles.sfProRoundedMedium.copyWith(
-                    fontSize: Dimensions.fontSizeLarge,
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
+        child: Padding(
+          padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Email field
+                CommonLabeledInputItemWidget(
+                  label: context.local.email,
+                  hintText: context.local.email,
+                  controller: emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  isRequired: true,
+                ),
+                const SizedBox(height: Dimensions.spaceDefault),
+
+                // Password field
+                CommonLabeledInputItemWidget(
+                  label: context.local.password,
+                  hintText: context.local.password,
+                  controller: passwordController,
+                  keyboardType: TextInputType.visiblePassword,
+                  isRequired: true,
+                  passwordLength: 6,
+                ),
+                const SizedBox(height: Dimensions.spaceLarge),
+
+                // Login button
+                SizedBox(
+                  width: double.infinity,
+                  height: Dimensions.buttonHeightDefault,
+                  child: ElevatedButton(
+                    onPressed: onLogin,
+                    child: Text(
+                      context.local.login,
+                      style: AppTextStyles.sfProRoundedMedium.copyWith(
+                        fontSize: Dimensions.fontSizeLarge,
+                      ),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

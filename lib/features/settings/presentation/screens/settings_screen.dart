@@ -18,92 +18,102 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.local.settings),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Language Section
-            Text(
-              context.local.language,
-              style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-                fontSize: Dimensions.fontSizeExtraLarge,
-              ),
-            ),
-            const SizedBox(height: Dimensions.spaceDefault),
-            BlocBuilder<LocalizationBloc, LocalizationState>(
-              builder: (context, state) {
-                final currentLocale = state.locale;
-                final languageName = AppLocale.getLanguageName(currentLocale);
+      appBar: AppBar(title: Text(context.local.settings)),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
+          child: Padding(
+            padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Language Section
+                Text(
+                  context.local.language,
+                  style: AppTextStyles.sfProRoundedSemiBold.copyWith(
+                    fontSize: Dimensions.fontSizeExtraLarge,
+                  ),
+                ),
+                const SizedBox(height: Dimensions.spaceDefault),
+                BlocBuilder<LocalizationBloc, LocalizationState>(
+                  builder: (context, state) {
+                    final currentLocale = state.locale;
+                    final languageName = AppLocale.getLanguageName(
+                      currentLocale,
+                    );
 
-                return ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(
-                    context.local.selectLanguage,
-                    style: AppTextStyles.sfProRoundedMedium.copyWith(
-                      fontSize: Dimensions.fontSizeDefault,
-                    ),
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(
+                        context.local.selectLanguage,
+                        style: AppTextStyles.sfProRoundedMedium.copyWith(
+                          fontSize: Dimensions.fontSizeDefault,
+                        ),
+                      ),
+                      subtitle: Text(
+                        languageName,
+                        style: AppTextStyles.sfProRoundedRegular.copyWith(
+                          fontSize: Dimensions.fontSizeSmall,
+                        ),
+                      ),
+                      trailing: const Icon(Icons.language),
+                      onTap: () => context.showCustomBottomSheet(
+                        child: LanguageBottomSheet(
+                          currentLocale: currentLocale,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: Dimensions.spaceLarge),
+                const Divider(),
+                const SizedBox(height: Dimensions.spaceLarge),
+                // Theme Section
+                Text(
+                  context.local.theme,
+                  style: AppTextStyles.sfProRoundedSemiBold.copyWith(
+                    fontSize: Dimensions.fontSizeExtraLarge,
                   ),
-                  subtitle: Text(
-                    languageName,
-                    style: AppTextStyles.sfProRoundedRegular.copyWith(
-                      fontSize: Dimensions.fontSizeSmall,
-                    ),
-                  ),
-                  trailing: const Icon(Icons.language),
-                  onTap: () => context.showCustomBottomSheet(
-                    child: LanguageBottomSheet(currentLocale: currentLocale),
-                  ),
-                );
-              },
-            ),
-            const SizedBox(height: Dimensions.spaceLarge),
-            const Divider(),
-            const SizedBox(height: Dimensions.spaceLarge),
-            // Theme Section
-            Text(
-              context.local.theme,
-              style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-                fontSize: Dimensions.fontSizeExtraLarge,
-              ),
-            ),
-            const SizedBox(height: Dimensions.spaceDefault),
-            BlocBuilder<ThemeBloc, ThemeState>(
-              builder: (context, state) {
-                final isLight = state.value;
+                ),
+                const SizedBox(height: Dimensions.spaceDefault),
+                BlocBuilder<ThemeBloc, ThemeState>(
+                  builder: (context, state) {
+                    final isLight = state.value;
 
-                return SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(
-                    context.local.darkMode,
-                    style: AppTextStyles.sfProRoundedMedium.copyWith(
-                      fontSize: Dimensions.fontSizeDefault,
-                    ),
-                  ),
-                  subtitle: Text(
-                    isLight ? context.local.disabled : context.local.enabled,
-                    style: AppTextStyles.sfProRoundedRegular.copyWith(
-                      fontSize: Dimensions.fontSizeSmall,
-                    ),
-                  ),
-                  value: !isLight, // Invert because value represents light
-                  onChanged: (isDark) {
-                    // Toggle theme by passing the new mode
-                    final newMode = isDark ? AppThemeMode.dark : AppThemeMode.light;
-                    context.read<ThemeBloc>().add(
+                    return SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(
+                        context.local.darkMode,
+                        style: AppTextStyles.sfProRoundedMedium.copyWith(
+                          fontSize: Dimensions.fontSizeDefault,
+                        ),
+                      ),
+                      subtitle: Text(
+                        isLight
+                            ? context.local.disabled
+                            : context.local.enabled,
+                        style: AppTextStyles.sfProRoundedRegular.copyWith(
+                          fontSize: Dimensions.fontSizeSmall,
+                        ),
+                      ),
+                      value: !isLight, // Invert because value represents light
+                      onChanged: (isDark) {
+                        // Toggle theme by passing the new mode
+                        final newMode = isDark
+                            ? AppThemeMode.dark
+                            : AppThemeMode.light;
+                        context.read<ThemeBloc>().add(
                           ThemeEvent.changeThemeMode(newMode),
                         );
+                      },
+                    );
                   },
-                );
-              },
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
-
 }
