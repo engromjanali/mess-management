@@ -2,26 +2,33 @@ import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/widgets/common_labeled_input_item_widget.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 
-/// Sign-in form: email + password, with a "forgot password" affordance and a
-/// full-width primary action. Carried over from the legacy sign-in screen.
-class LoginFormWidget extends StatelessWidget {
-  const LoginFormWidget({
+/// Sign-up form carrying over the legacy fields: full name, email, phone
+/// (with country code) and password.
+class RegisterFormWidget extends StatelessWidget {
+  const RegisterFormWidget({
     required this.formKey,
+    required this.nameController,
     required this.emailController,
+    required this.phoneController,
     required this.passwordController,
-    required this.onLogin,
-    this.onForgotPassword,
+    required this.onRegister,
+    this.countryDialCode = '+880',
+    this.onCountryChanged,
     this.isLoading = false,
     super.key,
   });
 
   final GlobalKey<FormState> formKey;
+  final TextEditingController nameController;
   final TextEditingController emailController;
+  final TextEditingController phoneController;
   final TextEditingController passwordController;
-  final VoidCallback onLogin;
-  final VoidCallback? onForgotPassword;
+  final VoidCallback onRegister;
+  final String countryDialCode;
+  final ValueChanged<CountryCode>? onCountryChanged;
   final bool isLoading;
 
   /// Brand green kept identical in light and dark mode so the field prefix
@@ -35,6 +42,19 @@ class LoginFormWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Full name
+          CommonLabeledInputItemWidget(
+            label: 'Full Name',
+            hintText: 'Enter your full name',
+            controller: nameController,
+            keyboardType: TextInputType.name,
+            prefixIcon: const Icon(Icons.person_outline_rounded),
+            prefixIconColor: _prefixIconColor,
+            borderRadius: Dimensions.radiusLarge,
+            isRequired: true,
+          ),
+          const SizedBox(height: Dimensions.spaceDefault),
+
           // Email
           CommonLabeledInputItemWidget(
             label: context.local.email,
@@ -43,6 +63,19 @@ class LoginFormWidget extends StatelessWidget {
             keyboardType: TextInputType.emailAddress,
             prefixIcon: const Icon(Icons.alternate_email_rounded),
             prefixIconColor: _prefixIconColor,
+            borderRadius: Dimensions.radiusLarge,
+            isRequired: true,
+          ),
+          const SizedBox(height: Dimensions.spaceDefault),
+
+          // Phone with country code
+          CommonLabeledInputItemWidget(
+            label: 'Phone',
+            hintText: 'Phone number',
+            controller: phoneController,
+            keyboardType: TextInputType.phone,
+            countryDialCode: countryDialCode,
+            onCountryChanged: onCountryChanged,
             borderRadius: Dimensions.radiusLarge,
             isRequired: true,
           ),
@@ -60,28 +93,13 @@ class LoginFormWidget extends StatelessWidget {
             isRequired: true,
             passwordLength: 6,
           ),
-
-          // Forgot password
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              onPressed: onForgotPassword,
-              child: Text(
-                'Forgot password?',
-                style: AppTextStyles.sfProRoundedMedium.copyWith(
-                  color: context.primaryColor,
-                  fontSize: Dimensions.fontSizeDefault,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: Dimensions.paddingSizeSmall),
+          const SizedBox(height: Dimensions.spaceLarge),
 
           // Primary action
           SizedBox(
             height: Dimensions.buttonHeightLarge,
             child: ElevatedButton(
-              onPressed: isLoading ? null : onLogin,
+              onPressed: isLoading ? null : onRegister,
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
@@ -97,7 +115,7 @@ class LoginFormWidget extends StatelessWidget {
                       ),
                     )
                   : Text(
-                      context.local.login,
+                      'Create account',
                       style: AppTextStyles.sfProRoundedSemiBold.copyWith(
                         fontSize: Dimensions.fontSizeLarge,
                       ),

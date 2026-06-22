@@ -2,6 +2,7 @@ import 'package:clean_boilerplate/features/splash/presentation/screens/splash_sc
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 
@@ -13,7 +14,7 @@ class AppRoutes {
   // Authentication routes
   static const String _splash = '/splash';
   static const String _login = '/login';
-  static const String _register = '/register';
+  static const String register = '/register';
   
   // Main routes
   static const String home = '/';
@@ -45,7 +46,13 @@ final router = GoRouter(
       name: 'login',
       builder: (context, state) => const LoginScreen(),
     ),
-    
+
+    GoRoute(
+      path: AppRoutes.register,
+      name: 'register',
+      builder: (context, state) => const RegisterScreen(),
+    ),
+
     // Home route
     GoRoute(
       path: AppRoutes.home,
