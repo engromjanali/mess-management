@@ -100,12 +100,10 @@ class _HomeView extends StatelessWidget {
             loading: _loading,
             error: (message) => _ErrorView(message: message),
             loaded: (dashboard) {
-              if (ResponsiveHelper.isDesktop(context)) {
+              if (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)) {
                 return _DesktopDashboard(dashboard: dashboard);
               }
-              if (ResponsiveHelper.isTab(context)) {
-                return _TabletDashboard(dashboard: dashboard);
-              }
+              // Phone + small tablet → animated bottom nav bar (capped width).
               return _PhoneDashboard(dashboard: dashboard);
             },
           );
@@ -338,7 +336,6 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
                     ),
                   ),
                 ),
-                SliverToBoxAdapter(child: SizedBox(height: bottomInset)),
               ],
             ),
           ),
@@ -388,94 +385,7 @@ class _StatSliverGrid extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────
-// Tablet — compact top bar + gradient banner + two-column body.
-// ─────────────────────────────────────────────────────────────────────────
-
-class _TabletDashboard extends StatelessWidget {
-  const _TabletDashboard({required this.dashboard});
-  final DashboardEntity dashboard;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        DashboardTopBar(
-          userName: dashboard.userName,
-          onRefresh: () => _refresh(context),
-          dense: true,
-        ),
-        Expanded(
-          child: RefreshIndicator(
-            onRefresh: () => _refresh(context),
-            child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(
-                Dimensions.paddingSizeLarge,
-                Dimensions.paddingSizeLarge,
-                Dimensions.paddingSizeLarge,
-                Dimensions.paddingSizeExtraLarge32,
-              ),
-              children: [
-                AnimatedEntrance(child: _heroBanner(dashboard)),
-                const SectionTitle(
-                    title: 'Mess Section', icon: Icons.groups_rounded),
-                _StatBoxGrid(
-                    stats: _messStats(context, dashboard), maxCrossAxisExtent: 210),
-                // My section + pinned notice side-by-side.
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const SectionTitle(
-                              title: 'My Section', icon: Icons.person_rounded),
-                          _StatBoxGrid(
-                            stats: _myStats(context, dashboard),
-                            maxCrossAxisExtent: 210,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: Dimensions.paddingSizeLarge),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const SectionTitle(
-                              title: 'Pinned Notice',
-                              icon: Icons.push_pin_rounded),
-                          AnimatedEntrance(
-                            child: PinnedNoticeCard(
-                                notice: dashboard.pinnedNotice),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                if (dashboard.isManager) ...[
-                  const SectionTitle(
-                      title: 'Members', icon: Icons.bar_chart_rounded),
-                  AnimatedEntrance(
-                    child: MemberStatsTable(
-                      members: dashboard.members,
-                      mealRate: dashboard.mealRate,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────
-// Desktop — full top navigation bar + gradient banner + multi-column.
+// Big tablet + desktop — full top navigation bar + gradient banner + columns.
 // ─────────────────────────────────────────────────────────────────────────
 
 class _DesktopDashboard extends StatefulWidget {

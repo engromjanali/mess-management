@@ -24,24 +24,17 @@ class DashboardNavItem {
   final bool active;
 }
 
-/// Professional fixed top navigation bar for the tablet & desktop dashboards.
-///
-/// Left: brand mark. Center: optional in-page nav links (desktop). Right:
-/// refresh / theme / settings actions and a user profile chip. On [dense]
-/// (tablet) the nav links and profile text collapse to keep things tidy.
 class DashboardTopBar extends StatelessWidget {
   const DashboardTopBar({
     required this.userName,
     required this.onRefresh,
     this.navItems = const [],
-    this.dense = false,
     super.key,
   });
 
   final String userName;
   final VoidCallback onRefresh;
   final List<DashboardNavItem> navItems;
-  final bool dense;
 
   static const double height = 72;
 
@@ -63,46 +56,63 @@ class DashboardTopBar extends StatelessWidget {
               padding: const EdgeInsets.symmetric(
                 horizontal: Dimensions.paddingSizeExtraLarge24,
               ),
-              child: Row(
-                children: [
-                  _Brand(dense: dense),
-                  if (navItems.isNotEmpty) ...[
-                    const SizedBox(width: Dimensions.paddingSizeExtraLarge32),
-                    for (final item in navItems)
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          right: Dimensions.paddingSizeExtraSmall,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final width = constraints.maxWidth;
+                  // Progressive disclosure as the bar widens.
+                  final showNavLabels = width >= 1000;
+                  final showBrandText = width >= 720;
+                  final showProfileText = width >= 880;
+
+                  return Row(
+                    children: [
+                      _Brand(showText: showBrandText),
+                      if (navItems.isNotEmpty) ...[
+                        SizedBox(
+                          width: showNavLabels
+                              ? Dimensions.paddingSizeExtraLarge32
+                              : Dimensions.paddingSizeLarge,
                         ),
-                        child: _NavButton(item: item),
-                      ),
-                  ],
-                  const Spacer(),
-                  _ActionIcon(
-                    icon: Icons.refresh_rounded,
-                    tooltip: 'Refresh',
-                    onPressed: onRefresh,
-                  ),
-                  _ActionIcon(
-                    icon: context.isDarkMode
-                        ? Icons.light_mode_rounded
-                        : Icons.dark_mode_rounded,
-                    tooltip: 'Toggle theme',
-                    onPressed: () => context.read<ThemeBloc>().add(
-                          ThemeEvent.changeThemeMode(
-                            context.isDarkMode
-                                ? AppThemeMode.light
-                                : AppThemeMode.dark,
+                        for (final item in navItems)
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              right: Dimensions.paddingSizeExtraSmall,
+                            ),
+                            child: _NavButton(item: item, showLabel: showNavLabels),
                           ),
-                        ),
-                  ),
-                  _ActionIcon(
-                    icon: Icons.settings_outlined,
-                    tooltip: context.local.settings,
-                    onPressed: () => context.push(AppRoutes.settings),
-                  ),
-                  const SizedBox(width: Dimensions.paddingSizeDefault),
-                  _ProfileChip(userName: userName, dense: dense),
-                ],
+                      ],
+                      const Spacer(),
+                      _ActionIcon(
+                        icon: Icons.refresh_rounded,
+                        tooltip: 'Refresh',
+                        onPressed: onRefresh,
+                      ),
+                      _ActionIcon(
+                        icon: context.isDarkMode
+                            ? Icons.light_mode_rounded
+                            : Icons.dark_mode_rounded,
+                        tooltip: 'Toggle theme',
+                        onPressed: () => context.read<ThemeBloc>().add(
+                              ThemeEvent.changeThemeMode(
+                                context.isDarkMode
+                                    ? AppThemeMode.light
+                                    : AppThemeMode.dark,
+                              ),
+                            ),
+                      ),
+                      _ActionIcon(
+                        icon: Icons.settings_outlined,
+                        tooltip: context.local.settings,
+                        onPressed: () => context.push(AppRoutes.settings),
+                      ),
+                      const SizedBox(width: Dimensions.paddingSizeDefault),
+                      _ProfileChip(
+                        userName: userName,
+                        showText: showProfileText,
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           ),
@@ -113,8 +123,8 @@ class DashboardTopBar extends StatelessWidget {
 }
 
 class _Brand extends StatelessWidget {
-  const _Brand({required this.dense});
-  final bool dense;
+  const _Brand({required this.showText});
+  final bool showText;
 
   @override
   Widget build(BuildContext context) {
@@ -135,7 +145,7 @@ class _Brand extends StatelessWidget {
             size: Dimensions.iconSizeDefault,
           ),
         ),
-        if (!dense) ...[
+        if (showText) ...[
           const SizedBox(width: Dimensions.paddingSizeDefault),
           Column(
             mainAxisSize: MainAxisSize.min,
@@ -164,13 +174,36 @@ class _Brand extends StatelessWidget {
 }
 
 class _NavButton extends StatelessWidget {
-  const _NavButton({required this.item});
+  const _NavButton({required this.item, required this.showLabel});
   final DashboardNavItem item;
+  final bool showLabel;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
     final color = item.active ? colors.primaryColor : colors.textSecondaryColor;
+    final background = item.active
+        ? colors.primaryColor.withValues(alpha: 0.12)
+        : Colors.transparent;
+
+    // Icon-only when space is tight — keep the label in a tooltip.
+    if (!showLabel) {
+      return Tooltip(
+        message: item.label,
+        child: Material(
+          color: background,
+          borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+          child: InkWell(
+            onTap: item.onTap,
+            borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+            child: Padding(
+              padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+              child: Icon(item.icon, size: Dimensions.iconSizeDefault, color: color),
+            ),
+          ),
+        ),
+      );
+    }
 
     return TextButton.icon(
       onPressed: item.onTap,
@@ -183,9 +216,7 @@ class _NavButton extends StatelessWidget {
         ),
       ),
       style: TextButton.styleFrom(
-        backgroundColor: item.active
-            ? colors.primaryColor.withValues(alpha: 0.12)
-            : Colors.transparent,
+        backgroundColor: background,
         padding: const EdgeInsets.symmetric(
           horizontal: Dimensions.paddingSizeDefault,
           vertical: Dimensions.paddingSizeDefault,
@@ -220,9 +251,9 @@ class _ActionIcon extends StatelessWidget {
 }
 
 class _ProfileChip extends StatelessWidget {
-  const _ProfileChip({required this.userName, required this.dense});
+  const _ProfileChip({required this.userName, required this.showText});
   final String userName;
-  final bool dense;
+  final bool showText;
 
   String get _initials {
     final parts = userName.trim().split(RegExp(r'\s+'));
@@ -248,7 +279,7 @@ class _ProfileChip extends StatelessWidget {
       ),
     );
 
-    if (dense) return avatar;
+    if (!showText) return avatar;
 
     return Container(
       padding: const EdgeInsets.fromLTRB(
