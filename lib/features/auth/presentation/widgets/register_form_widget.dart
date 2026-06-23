@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 
 /// Sign-up form carrying over the legacy fields: full name, email, phone
 /// (with country code) and password.
-class RegisterFormWidget extends StatelessWidget {
+class RegisterFormWidget extends StatefulWidget {
   const RegisterFormWidget({
     required this.formKey,
     required this.nameController,
@@ -31,14 +31,37 @@ class RegisterFormWidget extends StatelessWidget {
   final ValueChanged<CountryCode>? onCountryChanged;
   final bool isLoading;
 
+  @override
+  State<RegisterFormWidget> createState() => _RegisterFormWidgetState();
+}
+
+class _RegisterFormWidgetState extends State<RegisterFormWidget> {
   /// Brand green kept identical in light and dark mode so the field prefix
   /// icons stay visible against both backgrounds.
   static const Color _prefixIconColor = Color(0xFF1FA463);
 
+  final _nameFocus = FocusNode();
+  final _emailFocus = FocusNode();
+  final _phoneFocus = FocusNode();
+  final _passwordFocus = FocusNode();
+
+  @override
+  void dispose() {
+    _nameFocus.dispose();
+    _emailFocus.dispose();
+    _phoneFocus.dispose();
+    _passwordFocus.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (!widget.isLoading) widget.onRegister();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: formKey,
+      key: widget.formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -46,8 +69,11 @@ class RegisterFormWidget extends StatelessWidget {
           CommonLabeledInputItemWidget(
             label: 'Full Name',
             hintText: 'Enter your full name',
-            controller: nameController,
+            controller: widget.nameController,
             keyboardType: TextInputType.name,
+            focusNode: _nameFocus,
+            textInputAction: TextInputAction.next,
+            onFieldSubmitted: (_) => _emailFocus.requestFocus(),
             prefixIcon: const Icon(Icons.person_outline_rounded),
             prefixIconColor: _prefixIconColor,
             borderRadius: Dimensions.radiusLarge,
@@ -59,8 +85,11 @@ class RegisterFormWidget extends StatelessWidget {
           CommonLabeledInputItemWidget(
             label: context.local.email,
             hintText: context.local.email,
-            controller: emailController,
+            controller: widget.emailController,
             keyboardType: TextInputType.emailAddress,
+            focusNode: _emailFocus,
+            textInputAction: TextInputAction.next,
+            onFieldSubmitted: (_) => _phoneFocus.requestFocus(),
             prefixIcon: const Icon(Icons.alternate_email_rounded),
             prefixIconColor: _prefixIconColor,
             borderRadius: Dimensions.radiusLarge,
@@ -72,10 +101,13 @@ class RegisterFormWidget extends StatelessWidget {
           CommonLabeledInputItemWidget(
             label: 'Phone',
             hintText: 'Phone number',
-            controller: phoneController,
+            controller: widget.phoneController,
             keyboardType: TextInputType.phone,
-            countryDialCode: countryDialCode,
-            onCountryChanged: onCountryChanged,
+            focusNode: _phoneFocus,
+            textInputAction: TextInputAction.next,
+            onFieldSubmitted: (_) => _passwordFocus.requestFocus(),
+            countryDialCode: widget.countryDialCode,
+            onCountryChanged: widget.onCountryChanged,
             borderRadius: Dimensions.radiusLarge,
             isRequired: true,
           ),
@@ -85,8 +117,11 @@ class RegisterFormWidget extends StatelessWidget {
           CommonLabeledInputItemWidget(
             label: context.local.password,
             hintText: context.local.password,
-            controller: passwordController,
+            controller: widget.passwordController,
             keyboardType: TextInputType.visiblePassword,
+            focusNode: _passwordFocus,
+            textInputAction: TextInputAction.done,
+            onFieldSubmitted: (_) => _submit(),
             prefixIcon: const Icon(Icons.lock_outline_rounded),
             prefixIconColor: _prefixIconColor,
             borderRadius: Dimensions.radiusLarge,
@@ -99,13 +134,13 @@ class RegisterFormWidget extends StatelessWidget {
           SizedBox(
             height: Dimensions.buttonHeightLarge,
             child: ElevatedButton(
-              onPressed: isLoading ? null : onRegister,
+              onPressed: widget.isLoading ? null : widget.onRegister,
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
                 ),
               ),
-              child: isLoading
+              child: widget.isLoading
                   ? const SizedBox(
                       height: Dimensions.iconSizeDefault,
                       width: Dimensions.iconSizeDefault,

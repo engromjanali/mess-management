@@ -47,6 +47,23 @@ class DashboardEntity extends Equatable {
     this.pinnedNotice,
   });
 
+  DashboardEntity copyWith({bool? isManager}) => DashboardEntity(
+        totalBalance: totalBalance,
+        mealBalance: mealBalance,
+        fundBalance: fundBalance,
+        totalDeposit: totalDeposit,
+        bazerCost: bazerCost,
+        totalMeal: totalMeal,
+        mealRate: mealRate,
+        myTotalMeal: myTotalMeal,
+        myDeposit: myDeposit,
+        myRemaining: myRemaining,
+        members: members,
+        userName: userName,
+        isManager: isManager ?? this.isManager,
+        pinnedNotice: pinnedNotice,
+      );
+
   @override
   List<Object?> get props => [
         totalBalance,

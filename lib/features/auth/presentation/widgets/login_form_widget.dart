@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 /// Sign-in form: email + password, with a "forgot password" affordance and a
 /// full-width primary action. Carried over from the legacy sign-in screen.
-class LoginFormWidget extends StatelessWidget {
+class LoginFormWidget extends StatefulWidget {
   const LoginFormWidget({
     required this.formKey,
     required this.emailController,
@@ -24,14 +24,33 @@ class LoginFormWidget extends StatelessWidget {
   final VoidCallback? onForgotPassword;
   final bool isLoading;
 
+  @override
+  State<LoginFormWidget> createState() => _LoginFormWidgetState();
+}
+
+class _LoginFormWidgetState extends State<LoginFormWidget> {
   /// Brand green kept identical in light and dark mode so the field prefix
   /// icons stay visible against both backgrounds.
   static const Color _prefixIconColor = Color(0xFF1FA463);
 
+  final _emailFocus = FocusNode();
+  final _passwordFocus = FocusNode();
+
+  @override
+  void dispose() {
+    _emailFocus.dispose();
+    _passwordFocus.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (!widget.isLoading) widget.onLogin();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: formKey,
+      key: widget.formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -39,8 +58,11 @@ class LoginFormWidget extends StatelessWidget {
           CommonLabeledInputItemWidget(
             label: context.local.email,
             hintText: context.local.email,
-            controller: emailController,
+            controller: widget.emailController,
             keyboardType: TextInputType.emailAddress,
+            focusNode: _emailFocus,
+            textInputAction: TextInputAction.next,
+            onFieldSubmitted: (_) => _passwordFocus.requestFocus(),
             prefixIcon: const Icon(Icons.alternate_email_rounded),
             prefixIconColor: _prefixIconColor,
             borderRadius: Dimensions.radiusLarge,
@@ -52,8 +74,11 @@ class LoginFormWidget extends StatelessWidget {
           CommonLabeledInputItemWidget(
             label: context.local.password,
             hintText: context.local.password,
-            controller: passwordController,
+            controller: widget.passwordController,
             keyboardType: TextInputType.visiblePassword,
+            focusNode: _passwordFocus,
+            textInputAction: TextInputAction.done,
+            onFieldSubmitted: (_) => _submit(),
             prefixIcon: const Icon(Icons.lock_outline_rounded),
             prefixIconColor: _prefixIconColor,
             borderRadius: Dimensions.radiusLarge,
@@ -65,7 +90,7 @@ class LoginFormWidget extends StatelessWidget {
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
-              onPressed: onForgotPassword,
+              onPressed: widget.onForgotPassword,
               child: Text(
                 'Forgot password?',
                 style: AppTextStyles.sfProRoundedMedium.copyWith(
@@ -81,13 +106,13 @@ class LoginFormWidget extends StatelessWidget {
           SizedBox(
             height: Dimensions.buttonHeightLarge,
             child: ElevatedButton(
-              onPressed: isLoading ? null : onLogin,
+              onPressed: widget.isLoading ? null : widget.onLogin,
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
                 ),
               ),
-              child: isLoading
+              child: widget.isLoading
                   ? const SizedBox(
                       height: Dimensions.iconSizeDefault,
                       width: Dimensions.iconSizeDefault,

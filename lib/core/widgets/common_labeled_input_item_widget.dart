@@ -37,6 +37,8 @@ class CommonLabeledInputItemWidget extends StatefulWidget {
   final Color? suffixIconColor;
   final double? suffixIconSize;
   final Color? fillColor;
+  final TextInputAction? textInputAction;
+  final ValueChanged<String>? onFieldSubmitted;
 
   const CommonLabeledInputItemWidget({
     required this.hintText, required this.controller, super.key,
@@ -67,6 +69,8 @@ class CommonLabeledInputItemWidget extends StatefulWidget {
     this.suffixIconColor,
     this.suffixIconSize,
     this.fillColor,
+    this.textInputAction,
+    this.onFieldSubmitted,
   });
 
   @override
@@ -207,6 +211,8 @@ class _CommonLabeledInputItemWidgetState extends State<CommonLabeledInputItemWid
           onChanged: _onTextChanged,
           controller: widget.controller,
           focusNode: _focusNode,
+          textInputAction: widget.textInputAction,
+          onFieldSubmitted: widget.onFieldSubmitted,
           keyboardType: widget.keyboardType,
           obscureText: _isPasswordField ? _obscurePassword : false,
           enabled: widget.enabled,

@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'config/route/app_router.dart';
 import 'config/theme/app_theme.dart';
 import 'core/di/injection.dart';
+import 'core/role/role_cubit.dart';
+import 'core/role/role_switcher_fab.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/settings/presentation/bloc/localization/localization_bloc.dart';
 import 'features/settings/presentation/bloc/theme/theme_bloc.dart';
@@ -42,6 +44,9 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => getIt<AuthBloc>(),
         ),
+        BlocProvider(
+          create: (context) => RoleCubit(),
+        ),
       ],
       child: BlocBuilder<LocalizationBloc, LocalizationState>(
         builder: (context, localeState) {
@@ -61,6 +66,9 @@ class MyApp extends StatelessWidget {
                 themeMode: themeMode,
                 locale: localeState.locale,
                 routerConfig: router,
+                builder: (context, child) => RoleSwitcherOverlay(
+                  child: child ?? const SizedBox.shrink(),
+                ),
                 localizationsDelegates: AppLocalizations.localizationsDelegates,
                 supportedLocales: AppLocalizations.supportedLocales,
               );

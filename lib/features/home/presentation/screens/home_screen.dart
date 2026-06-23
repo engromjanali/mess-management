@@ -7,8 +7,8 @@ import '../../../../config/util/dimensions.dart';
 import '../../../../config/util/styles.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/extensions/context_extensions.dart';
-import '../../../../core/extensions/screen_matres_extensions.dart';
 import '../../../../core/helpers/responsive_helper.dart';
+import '../../../../core/role/role_cubit.dart';
 import '../../domain/entities/dashboard_entity.dart';
 import '../bloc/home_bloc.dart';
 import '../bloc/home_event.dart';
@@ -100,11 +100,16 @@ class _HomeView extends StatelessWidget {
             loading: _loading,
             error: (message) => _ErrorView(message: message),
             loaded: (dashboard) {
+              // Drive the admin-only sections from the previewed role so the
+              // global role switcher changes what each user type sees.
+              final isAdmin = context.watch<RoleCubit>().state.isAdmin;
+              final scoped = dashboard.copyWith(isManager: isAdmin);
+
               if (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)) {
-                return _DesktopDashboard(dashboard: dashboard);
+                return _DesktopDashboard(dashboard: scoped);
               }
               // Phone + small tablet → animated bottom nav bar (capped width).
-              return _PhoneDashboard(dashboard: dashboard);
+              return _PhoneDashboard(dashboard: scoped);
             },
           );
         },
@@ -229,8 +234,6 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
   @override
   Widget build(BuildContext context) {
     final dashboard = widget.dashboard;
-    // Leave room so the floating nav never covers the last content.
-    final bottomInset = context.bottomPadding + 96;
 
     final navItems = <BottomNavItem>[
       BottomNavItem(
@@ -240,10 +243,10 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
         onTap: () => _onNavTap(0, _scrollToTop),
       ),
       BottomNavItem(
-        icon: Icons.insights_outlined,
-        activeIcon: Icons.insights_rounded,
-        label: 'Stats',
-        onTap: () => _onNavTap(1, () => _scrollToAnchor(_statsAnchor)),
+        icon: Icons.restaurant_outlined,
+        activeIcon: Icons.restaurant_rounded,
+        label: 'Meals',
+        onTap: () => _onNavTap(1, () => context.push(AppRoutes.meals)),
       ),
       BottomNavItem(
         icon: Icons.notifications_outlined,
@@ -438,6 +441,11 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
         label: 'Mess',
         icon: Icons.groups_rounded,
         onTap: () => _scrollTo(_messKey),
+      ),
+      DashboardNavItem(
+        label: 'Meals',
+        icon: Icons.restaurant_rounded,
+        onTap: () => context.push(AppRoutes.meals),
       ),
       if (dashboard.isManager)
         DashboardNavItem(

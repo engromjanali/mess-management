@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
+import '../../features/meal/presentation/screens/meal_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 
 /// App route constants
@@ -18,6 +19,7 @@ class AppRoutes {
   
   // Main routes
   static const String home = '/';
+  static const String meals = '/meals';
   static const String _profile = '/profile';
   static const String settings = '/settings';
   
@@ -60,6 +62,13 @@ final router = GoRouter(
       builder: (context, state) => const HomeScreen(),
     ),
     
+    // Meal route
+    GoRoute(
+      path: AppRoutes.meals,
+      name: 'meals',
+      builder: (context, state) => const MealScreen(),
+    ),
+
     // Settings route
     GoRoute(
       path: AppRoutes.settings,
