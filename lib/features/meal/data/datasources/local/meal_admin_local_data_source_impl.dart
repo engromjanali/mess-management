@@ -69,6 +69,33 @@ class MealAdminLocalDataSourceImpl implements MealAdminDataSource {
   }
 
   @override
+  Future<MealAdminModel> addMealForAll({
+    required DateTime date,
+    required double breakfast,
+    required double lunch,
+    required double dinner,
+  }) async {
+    final key = DateTime(date.year, date.month, date.day);
+    // One write per member — overwriting any existing record for that day.
+    for (final member in _members) {
+      final index = _indexOf(member.id, key);
+      final record = MemberMealModel(
+        memberId: member.id,
+        date: key,
+        breakfast: breakfast,
+        lunch: lunch,
+        dinner: dinner,
+      );
+      if (index == -1) {
+        _entries.add(record);
+      } else {
+        _entries[index] = record;
+      }
+    }
+    return _payload();
+  }
+
+  @override
   Future<MealAdminModel> saveMemberMeal({
     required String memberId,
     required DateTime date,

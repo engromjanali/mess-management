@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import '../../../../core/usecase/usecase.dart';
 import '../../domain/entities/meal_member_entity.dart';
+import '../../domain/usecases/add_meal_for_all_usecase.dart';
 import '../../domain/usecases/delete_member_meal_usecase.dart';
 import '../../domain/usecases/get_meal_admin_data_usecase.dart';
 import '../../domain/usecases/save_member_meal_usecase.dart';
@@ -16,6 +17,7 @@ import 'meal_admin_state.dart';
 @injectable
 class MealAdminBloc extends Bloc<MealAdminEvent, MealAdminState> {
   final GetMealAdminDataUseCase _getAdminData;
+  final AddMealForAllUseCase _addMealForAll;
   final SaveMemberMealUseCase _saveMemberMeal;
   final DeleteMemberMealUseCase _deleteMemberMeal;
 
@@ -25,6 +27,7 @@ class MealAdminBloc extends Bloc<MealAdminEvent, MealAdminState> {
 
   MealAdminBloc(
     this._getAdminData,
+    this._addMealForAll,
     this._saveMemberMeal,
     this._deleteMemberMeal,
   ) : super(const MealAdminState.initial()) {
@@ -46,6 +49,13 @@ class MealAdminBloc extends Bloc<MealAdminEvent, MealAdminState> {
         _selectedDate = date;
         _emitLoaded(emit);
       },
+      addForAll: (date, breakfast, lunch, dinner) => _addForAllMembers(
+        emit,
+        date: date,
+        breakfast: breakfast,
+        lunch: lunch,
+        dinner: dinner,
+      ),
       save: (memberId, date, breakfast, lunch, dinner) => _save(
         emit,
         memberId: memberId,
@@ -70,6 +80,34 @@ class MealAdminBloc extends Bloc<MealAdminEvent, MealAdminState> {
     result.when(
       success: (success) {
         _data = success.data;
+        _emitLoaded(emit);
+      },
+      failure: (failure) =>
+          emit(MealAdminState.error(failure.error.toString())),
+    );
+  }
+
+  Future<void> _addForAllMembers(
+    Emitter<MealAdminState> emit, {
+    required DateTime date,
+    required double breakfast,
+    required double lunch,
+    required double dinner,
+  }) async {
+    final result = await _addMealForAll(
+      AddMealForAllParams(
+        date: date,
+        breakfast: breakfast,
+        lunch: lunch,
+        dinner: dinner,
+      ),
+    );
+
+    result.when(
+      success: (success) {
+        _data = success.data;
+        // Focus the list on the day we just stamped so the result is visible.
+        _selectedDate = DateTime(date.year, date.month, date.day);
         _emitLoaded(emit);
       },
       failure: (failure) =>

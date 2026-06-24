@@ -18,6 +18,14 @@ class MealAdminEvent with _$MealAdminEvent {
   /// Filter the records by date. `null` shows every date.
   const factory MealAdminEvent.selectDate(DateTime? date) = MealAdminSelectDate;
 
+  /// Record the same B/L/D for every member on [date] at once (bulk entry).
+  const factory MealAdminEvent.addForAll({
+    required DateTime date,
+    required double breakfast,
+    required double lunch,
+    required double dinner,
+  }) = MealAdminAddForAll;
+
   /// Add or edit a member's meal for a date.
   const factory MealAdminEvent.save({
     required String memberId,

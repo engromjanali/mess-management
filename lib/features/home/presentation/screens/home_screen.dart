@@ -249,16 +249,22 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
         onTap: () => _onNavTap(1, () => context.push(AppRoutes.meals)),
       ),
       BottomNavItem(
+        icon: Icons.account_balance_wallet_outlined,
+        activeIcon: Icons.account_balance_wallet_rounded,
+        label: 'Deposits',
+        onTap: () => _onNavTap(2, () => context.push(AppRoutes.deposits)),
+      ),
+      BottomNavItem(
         icon: Icons.notifications_outlined,
         activeIcon: Icons.notifications_rounded,
         label: 'Notice',
-        onTap: () => _onNavTap(2, () => _scrollToAnchor(_noticeAnchor)),
+        onTap: () => _onNavTap(3, () => _scrollToAnchor(_noticeAnchor)),
       ),
       BottomNavItem(
         icon: Icons.person_outline_rounded,
         activeIcon: Icons.person_rounded,
         label: 'Profile',
-        onTap: () => _onNavTap(3, () => context.push(AppRoutes.settings)),
+        onTap: () => _onNavTap(4, () => context.push(AppRoutes.settings)),
       ),
     ];
 
@@ -446,6 +452,11 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
         label: 'Meals',
         icon: Icons.restaurant_rounded,
         onTap: () => context.push(AppRoutes.meals),
+      ),
+      DashboardNavItem(
+        label: 'Deposits',
+        icon: Icons.account_balance_wallet_rounded,
+        onTap: () => context.push(AppRoutes.deposits),
       ),
       if (dashboard.isManager)
         DashboardNavItem(

@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
+import '../../features/deposit/presentation/screens/deposit_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
+import '../../features/meal/presentation/screens/meal_entry_screen.dart';
 import '../../features/meal/presentation/screens/meal_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 
@@ -20,6 +22,8 @@ class AppRoutes {
   // Main routes
   static const String home = '/';
   static const String meals = '/meals';
+  static const String addMeal = '/meals/add';
+  static const String deposits = '/deposits';
   static const String _profile = '/profile';
   static const String settings = '/settings';
   
@@ -67,6 +71,20 @@ final router = GoRouter(
       path: AppRoutes.meals,
       name: 'meals',
       builder: (context, state) => const MealScreen(),
+    ),
+
+    // Admin: add meal for all members
+    GoRoute(
+      path: AppRoutes.addMeal,
+      name: 'addMeal',
+      builder: (context, state) => const MealEntryScreen(),
+    ),
+
+    // Deposit route (role-aware: admin manages, user views own list)
+    GoRoute(
+      path: AppRoutes.deposits,
+      name: 'deposits',
+      builder: (context, state) => const DepositScreen(),
     ),
 
     // Settings route

@@ -8,6 +8,15 @@ abstract class MealAdminRepository {
   /// Loads the member roster, meal rate and all per-member day records.
   ResultFuture<MealAdminEntity> getAdminData();
 
+  /// Records the same B/L/D for **every** member on [date] at once
+  /// (bulk entry), returning the refreshed admin data.
+  ResultFuture<MealAdminEntity> addMealForAll({
+    required DateTime date,
+    required double breakfast,
+    required double lunch,
+    required double dinner,
+  });
+
   /// Adds or overwrites the meal counts for [memberId] on [date], returning
   /// the refreshed admin data.
   ResultFuture<MealAdminEntity> saveMemberMeal({

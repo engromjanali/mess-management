@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../config/route/app_router.dart';
 import '../../../../config/util/dimensions.dart';
 import '../../../../config/util/styles.dart';
 import '../../../../core/di/injection.dart';
@@ -47,13 +49,21 @@ class _MealView extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Meals'),
         actions: [
-          BlocBuilder<MealBloc, MealState>(
-            builder: (context, state) => IconButton(
-              tooltip: 'Refresh',
-              icon: const Icon(Icons.refresh_rounded),
-              onPressed: () =>
-                  context.read<MealBloc>().add(const MealEvent.refresh()),
-            ),
+          // Admins get a shortcut to the bulk "add meal for all" page.
+          BlocBuilder<RoleCubit, UserRole>(
+            builder: (context, role) => role.isAdmin
+                ? IconButton(
+                    tooltip: 'Add meal for all',
+                    icon: const Icon(Icons.playlist_add_rounded),
+                    onPressed: () => context.push(AppRoutes.addMeal),
+                  )
+                : const SizedBox.shrink(),
+          ),
+          IconButton(
+            tooltip: 'Refresh',
+            icon: const Icon(Icons.refresh_rounded),
+            onPressed: () =>
+                context.read<MealBloc>().add(const MealEvent.refresh()),
           ),
         ],
       ),
