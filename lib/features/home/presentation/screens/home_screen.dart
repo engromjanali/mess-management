@@ -220,17 +220,6 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
         curve: Curves.easeInOutCubic,
       );
 
-  void _scrollToAnchor(GlobalKey key) {
-    final ctx = key.currentContext;
-    if (ctx == null) return;
-    Scrollable.ensureVisible(
-      ctx,
-      duration: const Duration(milliseconds: 450),
-      curve: Curves.easeInOutCubic,
-      alignment: 0.1,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final dashboard = widget.dashboard;
@@ -270,7 +259,7 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
         icon: Icons.notifications_outlined,
         activeIcon: Icons.notifications_rounded,
         label: 'Notice',
-        onTap: () => _onNavTap(5, () => _scrollToAnchor(_noticeAnchor)),
+        onTap: () => _onNavTap(5, () => context.push(AppRoutes.notices)),
       ),
       BottomNavItem(
         icon: Icons.person_outline_rounded,
@@ -489,7 +478,7 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
       DashboardNavItem(
         label: 'Notice',
         icon: Icons.push_pin_rounded,
-        onTap: () => _scrollTo(_noticeKey),
+        onTap: () => context.push(AppRoutes.notices),
       ),
     ];
 

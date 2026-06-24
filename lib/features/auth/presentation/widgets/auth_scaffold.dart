@@ -17,6 +17,7 @@ class AuthScaffold extends StatelessWidget {
     required this.subtitle,
     required this.child,
     this.footer,
+    this.action,
     super.key,
   });
 
@@ -25,6 +26,9 @@ class AuthScaffold extends StatelessWidget {
   final String subtitle;
   final Widget child;
   final Widget? footer;
+
+  /// Optional top-right action (e.g. an info button).
+  final Widget? action;
 
   /// Auth forms read better narrow — cap well below [Dimensions.webMaxWidth].
   static const double _maxCardWidth = 460;
@@ -36,7 +40,9 @@ class AuthScaffold extends StatelessWidget {
     return Scaffold(
       backgroundColor: colors.backgroundColor,
       body: SafeArea(
-        child: Center(
+        child: Stack(
+          children: [
+            Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(
               horizontal: Dimensions.paddingSizeLarge,
@@ -129,6 +135,14 @@ class AuthScaffold extends StatelessWidget {
               ),
             ),
           ),
+        ),
+            if (action != null)
+              Positioned(
+                top: Dimensions.paddingSizeSmall,
+                right: Dimensions.paddingSizeSmall,
+                child: action!,
+              ),
+          ],
         ),
       ),
     );

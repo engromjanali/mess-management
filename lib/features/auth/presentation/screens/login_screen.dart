@@ -37,6 +37,13 @@ class _LoginScreenState extends State<LoginScreen> {
     context.go(AppRoutes.home);
   }
 
+  /// Fills the form with the demo credentials (dev convenience).
+  void _fillDemoCredentials() {
+    _emailController.text = 'test@gmail.com';
+    _passwordController.text = '12345678';
+    context.showInfoSnackBar('Demo credentials filled');
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
@@ -58,6 +65,11 @@ class _LoginScreenState extends State<LoginScreen> {
           icon: Icons.restaurant_menu_rounded,
           title: context.local.welcomeBack,
           subtitle: 'Sign in to continue managing your mess',
+          action: IconButton(
+            tooltip: 'Fill demo credentials',
+            icon: const Icon(Icons.info_outline_rounded),
+            onPressed: _fillDemoCredentials,
+          ),
           footer: AuthFooterPrompt(
             promptText: "Don't have an account? ",
             actionText: 'Sign up',

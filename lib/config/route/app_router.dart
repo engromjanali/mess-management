@@ -9,6 +9,7 @@ import '../../features/fund/presentation/screens/fund_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/meal/presentation/screens/meal_entry_screen.dart';
 import '../../features/meal/presentation/screens/meal_screen.dart';
+import '../../features/notice/presentation/screens/notice_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 
 /// App route constants
@@ -28,6 +29,7 @@ class AppRoutes {
   static const String deposits = '/deposits';
   static const String funds = '/funds';
   static const String costs = '/costs';
+  static const String notices = '/notices';
   static const String _profile = '/profile';
   static const String settings = '/settings';
   
@@ -103,6 +105,13 @@ final router = GoRouter(
       path: AppRoutes.costs,
       name: 'costs',
       builder: (context, state) => const CostScreen(),
+    ),
+
+    // Notice route (role-aware: admin manages, user views the list)
+    GoRoute(
+      path: AppRoutes.notices,
+      name: 'notices',
+      builder: (context, state) => const NoticeScreen(),
     ),
 
     // Settings route
