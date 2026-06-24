@@ -1,0 +1,24 @@
+import '../../../domain/entities/cost_entity.dart';
+import '../../models/cost_model.dart';
+
+/// Contract for any source that can provide & mutate bazar/cost entries.
+abstract class CostDataSource {
+  Future<List<CostMemberModel>> getMembers();
+
+  Future<List<CostModel>> getCosts();
+
+  Future<CostModel> addCost({
+    required String personId,
+    required DateTime date,
+    required List<CostItemEntity> items,
+  });
+
+  Future<CostModel> updateCost({
+    required String id,
+    required String personId,
+    required DateTime date,
+    required List<CostItemEntity> items,
+  });
+
+  Future<void> deleteCost(String id);
+}

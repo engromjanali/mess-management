@@ -255,16 +255,28 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
         onTap: () => _onNavTap(2, () => context.push(AppRoutes.deposits)),
       ),
       BottomNavItem(
+        icon: Icons.savings_outlined,
+        activeIcon: Icons.savings_rounded,
+        label: 'Fund',
+        onTap: () => _onNavTap(3, () => context.push(AppRoutes.funds)),
+      ),
+      BottomNavItem(
+        icon: Icons.shopping_cart_outlined,
+        activeIcon: Icons.shopping_cart_rounded,
+        label: 'Cost',
+        onTap: () => _onNavTap(4, () => context.push(AppRoutes.costs)),
+      ),
+      BottomNavItem(
         icon: Icons.notifications_outlined,
         activeIcon: Icons.notifications_rounded,
         label: 'Notice',
-        onTap: () => _onNavTap(3, () => _scrollToAnchor(_noticeAnchor)),
+        onTap: () => _onNavTap(5, () => _scrollToAnchor(_noticeAnchor)),
       ),
       BottomNavItem(
         icon: Icons.person_outline_rounded,
         activeIcon: Icons.person_rounded,
         label: 'Profile',
-        onTap: () => _onNavTap(4, () => context.push(AppRoutes.settings)),
+        onTap: () => _onNavTap(6, () => context.push(AppRoutes.settings)),
       ),
     ];
 
@@ -457,6 +469,16 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
         label: 'Deposits',
         icon: Icons.account_balance_wallet_rounded,
         onTap: () => context.push(AppRoutes.deposits),
+      ),
+      DashboardNavItem(
+        label: 'Fund',
+        icon: Icons.savings_rounded,
+        onTap: () => context.push(AppRoutes.funds),
+      ),
+      DashboardNavItem(
+        label: 'Cost',
+        icon: Icons.shopping_cart_rounded,
+        onTap: () => context.push(AppRoutes.costs),
       ),
       if (dashboard.isManager)
         DashboardNavItem(

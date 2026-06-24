@@ -1,0 +1,347 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import '../../../../config/util/dimensions.dart';
+import '../../../../config/util/styles.dart';
+import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/extensions/overly_extensions.dart';
+import '../../../../core/extensions/screen_matres_extensions.dart';
+import '../../domain/entities/fund_entity.dart';
+import 'fund_formatters.dart';
+
+/// Opens the add / edit fund bottom sheet.
+///
+/// When [existing] is null this records a new fund entry; otherwise it edits
+/// that entry in place. [onSave] receives the signed amount — positive for a
+/// credit, negative for a debit.
+Future<void> showFundFormSheet({
+  required BuildContext context,
+  required void Function({required double amount, required DateTime date})
+      onSave,
+  FundEntity? existing,
+}) {
+  return context.showCustomBottomSheet<void>(
+    backgroundColor: context.theme.scaffoldBackgroundColor,
+    child: _FundFormSheet(existing: existing, onSave: onSave),
+  );
+}
+
+class _FundFormSheet extends StatefulWidget {
+  const _FundFormSheet({required this.existing, required this.onSave});
+
+  final FundEntity? existing;
+  final void Function({required double amount, required DateTime date}) onSave;
+
+  @override
+  State<_FundFormSheet> createState() => _FundFormSheetState();
+}
+
+class _FundFormSheetState extends State<_FundFormSheet> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _amountController;
+
+  late FundType _type;
+  late DateTime _date;
+
+  bool get _isEdit => widget.existing != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final existing = widget.existing;
+    _type = existing?.type ?? FundType.credit;
+    _date = existing?.date ?? DateTime.now();
+    _amountController = TextEditingController(
+      text: existing != null
+          ? FundFormatters.taka(existing.absoluteAmount).replaceAll('৳', '')
+          : '',
+    );
+  }
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _date,
+      firstDate: DateTime(_date.year - 2),
+      lastDate: DateTime(_date.year + 2),
+    );
+    if (picked != null) setState(() => _date = picked);
+  }
+
+  void _submit() {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    final magnitude = double.parse(_amountController.text.trim());
+    final signed = _type == FundType.debit ? -magnitude : magnitude;
+    widget.onSave(amount: signed, date: _date);
+    Navigator.of(context).pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        Dimensions.paddingSizeLarge,
+        Dimensions.paddingSizeLarge,
+        Dimensions.paddingSizeLarge,
+        Dimensions.paddingSizeLarge + context.bottomPadding,
+      ),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                margin:
+                    const EdgeInsets.only(bottom: Dimensions.paddingSizeLarge),
+                decoration: BoxDecoration(
+                  color: colors.dividerColor,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            Text(
+              _isEdit ? 'Edit fund' : 'Add fund',
+              style: AppTextStyles.sfProRoundedBold.copyWith(
+                fontSize: Dimensions.fontSizeExtraLarge,
+                color: colors.textPrimaryColor,
+              ),
+            ),
+            Text(
+              'Shared mess fund entry',
+              style: AppTextStyles.sfProRoundedMedium.copyWith(
+                fontSize: Dimensions.fontSizeSmall,
+                color: colors.textSecondaryColor,
+              ),
+            ),
+            const SizedBox(height: Dimensions.paddingSizeLarge),
+
+            // Credit / debit toggle.
+            _Label('Type'),
+            _TypeToggle(
+              type: _type,
+              onChanged: (t) => setState(() => _type = t),
+            ),
+            const SizedBox(height: Dimensions.paddingSizeDefault),
+
+            // Amount (magnitude — the sign comes from the type toggle).
+            _Label('Amount (৳)'),
+            TextFormField(
+              controller: _amountController,
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+              ],
+              decoration: _fieldDecoration(context, hint: '0.00'),
+              validator: (v) {
+                final value = double.tryParse((v ?? '').trim());
+                if (value == null || value <= 0) {
+                  return 'Enter an amount greater than 0';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: Dimensions.paddingSizeDefault),
+
+            // Date.
+            _Label('Date'),
+            InkWell(
+              onTap: _pickDate,
+              borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+              child: InputDecorator(
+                decoration: _fieldDecoration(context),
+                child: Row(
+                  children: [
+                    Icon(Icons.calendar_today_rounded,
+                        size: Dimensions.iconSizeSmall,
+                        color: colors.textSecondaryColor),
+                    const SizedBox(width: Dimensions.paddingSizeSmall),
+                    Text(
+                      FundFormatters.date(_date),
+                      style: AppTextStyles.sfProRoundedMedium.copyWith(
+                        fontSize: Dimensions.fontSizeDefault,
+                        color: colors.textPrimaryColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: Dimensions.paddingSizeExtraLarge),
+
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize:
+                          const Size.fromHeight(Dimensions.buttonHeightDefault),
+                    ),
+                    child: const Text('Cancel'),
+                  ),
+                ),
+                const SizedBox(width: Dimensions.paddingSizeDefault),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _submit,
+                    style: ElevatedButton.styleFrom(
+                      minimumSize:
+                          const Size.fromHeight(Dimensions.buttonHeightDefault),
+                    ),
+                    child: Text(_isEdit ? 'Save' : 'Add'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  InputDecoration _fieldDecoration(BuildContext context, {String? hint}) {
+    final colors = context.customThemeColors;
+    return InputDecoration(
+      isDense: true,
+      hintText: hint,
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: Dimensions.paddingSizeDefault,
+        vertical: Dimensions.paddingSizeDefault,
+      ),
+      filled: true,
+      fillColor: colors.cardBackgroundColor,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+        borderSide: BorderSide(color: colors.borderColor),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+        borderSide: BorderSide(color: colors.borderColor),
+      ),
+    );
+  }
+}
+
+class _Label extends StatelessWidget {
+  const _Label(this.text);
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeExtraSmall),
+      child: Text(
+        text,
+        style: AppTextStyles.sfProRoundedSemiBold.copyWith(
+          fontSize: Dimensions.fontSizeSmall,
+          color: colors.textSecondaryColor,
+        ),
+      ),
+    );
+  }
+}
+
+/// Segmented Credit / Debit selector.
+class _TypeToggle extends StatelessWidget {
+  const _TypeToggle({required this.type, required this.onChanged});
+  final FundType type;
+  final ValueChanged<FundType> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+    return Row(
+      children: [
+        Expanded(
+          child: _Segment(
+            label: 'Credit',
+            icon: Icons.south_west_rounded,
+            selected: type == FundType.credit,
+            accent: colors.successColor,
+            onTap: () => onChanged(FundType.credit),
+          ),
+        ),
+        const SizedBox(width: Dimensions.paddingSizeSmall),
+        Expanded(
+          child: _Segment(
+            label: 'Debit',
+            icon: Icons.north_east_rounded,
+            selected: type == FundType.debit,
+            accent: colors.errorColor,
+            onTap: () => onChanged(FundType.debit),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _Segment extends StatelessWidget {
+  const _Segment({
+    required this.label,
+    required this.icon,
+    required this.selected,
+    required this.accent,
+    required this.onTap,
+  });
+
+  final String label;
+  final IconData icon;
+  final bool selected;
+  final Color accent;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+    return Material(
+      color: selected ? accent.withValues(alpha: 0.14) : Colors.transparent,
+      borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            vertical: Dimensions.paddingSizeDefault,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+            border: Border.all(
+              color: selected ? accent : colors.borderColor,
+              width: selected ? 1.4 : 1,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon,
+                  size: Dimensions.iconSizeSmall,
+                  color: selected ? accent : colors.textSecondaryColor),
+              const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+              Text(
+                label,
+                style: AppTextStyles.sfProRoundedSemiBold.copyWith(
+                  fontSize: Dimensions.fontSizeDefault,
+                  color: selected ? accent : colors.textSecondaryColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

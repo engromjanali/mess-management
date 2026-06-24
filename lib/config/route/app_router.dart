@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
+import '../../features/cost/presentation/screens/cost_screen.dart';
 import '../../features/deposit/presentation/screens/deposit_screen.dart';
+import '../../features/fund/presentation/screens/fund_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/meal/presentation/screens/meal_entry_screen.dart';
 import '../../features/meal/presentation/screens/meal_screen.dart';
@@ -24,6 +26,8 @@ class AppRoutes {
   static const String meals = '/meals';
   static const String addMeal = '/meals/add';
   static const String deposits = '/deposits';
+  static const String funds = '/funds';
+  static const String costs = '/costs';
   static const String _profile = '/profile';
   static const String settings = '/settings';
   
@@ -85,6 +89,20 @@ final router = GoRouter(
       path: AppRoutes.deposits,
       name: 'deposits',
       builder: (context, state) => const DepositScreen(),
+    ),
+
+    // Fund route (role-aware: admin manages, user views the list)
+    GoRoute(
+      path: AppRoutes.funds,
+      name: 'funds',
+      builder: (context, state) => const FundScreen(),
+    ),
+
+    // Cost / bazar route (role-aware: admin manages, user views the list)
+    GoRoute(
+      path: AppRoutes.costs,
+      name: 'costs',
+      builder: (context, state) => const CostScreen(),
     ),
 
     // Settings route
