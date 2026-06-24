@@ -13,20 +13,23 @@ class NoticeCard extends StatelessWidget {
     required this.showActions,
     this.onEdit,
     this.onDelete,
+    this.onTogglePin,
     super.key,
   });
 
   final NoticeEntity notice;
 
-  /// Whether the 3-dot edit / delete menu is shown (admin only).
+  /// Whether the 3-dot edit / delete / pin menu is shown (admin only).
   final bool showActions;
 
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
+  final VoidCallback? onTogglePin;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
+    final pinned = notice.pinned;
 
     return Container(
       width: double.infinity,
@@ -43,11 +46,19 @@ class NoticeCard extends StatelessWidget {
                 .withValues(alpha: context.isDarkMode ? 0.14 : 0.06),
           ],
         ),
-        border: Border.all(color: colors.primaryColor.withValues(alpha: 0.30)),
+        // A pinned notice gets a bolder, solid accent border.
+        border: Border.all(
+          color: colors.primaryColor.withValues(alpha: pinned ? 0.85 : 0.30),
+          width: pinned ? 1.6 : 1,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (pinned) ...[
+            _PinnedBadge(),
+            const SizedBox(height: Dimensions.paddingSizeSmall),
+          ],
           Row(
             children: [
               Icon(Icons.campaign_rounded,
@@ -72,6 +83,8 @@ class NoticeCard extends StatelessWidget {
                         color: colors.textSecondaryColor),
                     onSelected: (a) {
                       switch (a) {
+                        case _NoticeAction.pin:
+                          onTogglePin?.call();
                         case _NoticeAction.edit:
                           onEdit?.call();
                         case _NoticeAction.delete:
@@ -79,6 +92,17 @@ class NoticeCard extends StatelessWidget {
                       }
                     },
                     itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: _NoticeAction.pin,
+                        child: ListTile(
+                          dense: true,
+                          contentPadding: EdgeInsets.zero,
+                          leading: Icon(pinned
+                              ? Icons.push_pin_outlined
+                              : Icons.push_pin_rounded),
+                          title: Text(pinned ? 'Unpin' : 'Pin'),
+                        ),
+                      ),
                       const PopupMenuItem(
                         value: _NoticeAction.edit,
                         child: ListTile(
@@ -132,4 +156,37 @@ class NoticeCard extends StatelessWidget {
   }
 }
 
-enum _NoticeAction { edit, delete }
+enum _NoticeAction { pin, edit, delete }
+
+/// Small "Pinned" indicator chip shown at the top of the pinned notice.
+class _PinnedBadge extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: Dimensions.paddingSizeSmall,
+        vertical: 3,
+      ),
+      decoration: BoxDecoration(
+        color: colors.primaryColor,
+        borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.push_pin_rounded,
+              size: Dimensions.fontSizeDefault, color: Colors.white),
+          const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+          Text(
+            'Pinned',
+            style: AppTextStyles.sfProRoundedBold.copyWith(
+              fontSize: Dimensions.fontSizeExtraSmall,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

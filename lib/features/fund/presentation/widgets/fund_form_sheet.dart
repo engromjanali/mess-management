@@ -4,7 +4,6 @@ import '../../../../config/util/dimensions.dart';
 import '../../../../config/util/styles.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/extensions/overly_extensions.dart';
-import '../../../../core/extensions/screen_matres_extensions.dart';
 import '../../domain/entities/fund_entity.dart';
 import 'fund_formatters.dart';
 
@@ -15,12 +14,14 @@ import 'fund_formatters.dart';
 /// credit, negative for a debit.
 Future<void> showFundFormSheet({
   required BuildContext context,
-  required void Function({required double amount, required DateTime date})
-      onSave,
+  required void Function({
+    required double amount,
+    required DateTime date,
+    String? note,
+  }) onSave,
   FundEntity? existing,
 }) {
-  return context.showCustomBottomSheet<void>(
-    backgroundColor: context.theme.scaffoldBackgroundColor,
+  return context.showAdaptiveSheet<void>(
     child: _FundFormSheet(existing: existing, onSave: onSave),
   );
 }
@@ -29,7 +30,11 @@ class _FundFormSheet extends StatefulWidget {
   const _FundFormSheet({required this.existing, required this.onSave});
 
   final FundEntity? existing;
-  final void Function({required double amount, required DateTime date}) onSave;
+  final void Function({
+    required double amount,
+    required DateTime date,
+    String? note,
+  }) onSave;
 
   @override
   State<_FundFormSheet> createState() => _FundFormSheetState();
@@ -38,6 +43,7 @@ class _FundFormSheet extends StatefulWidget {
 class _FundFormSheetState extends State<_FundFormSheet> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _amountController;
+  late final TextEditingController _noteController;
 
   late FundType _type;
   late DateTime _date;
@@ -55,11 +61,13 @@ class _FundFormSheetState extends State<_FundFormSheet> {
           ? FundFormatters.taka(existing.absoluteAmount).replaceAll('৳', '')
           : '',
     );
+    _noteController = TextEditingController(text: existing?.note ?? '');
   }
 
   @override
   void dispose() {
     _amountController.dispose();
+    _noteController.dispose();
     super.dispose();
   }
 
@@ -77,7 +85,8 @@ class _FundFormSheetState extends State<_FundFormSheet> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     final magnitude = double.parse(_amountController.text.trim());
     final signed = _type == FundType.debit ? -magnitude : magnitude;
-    widget.onSave(amount: signed, date: _date);
+    final note = _noteController.text.trim();
+    widget.onSave(amount: signed, date: _date, note: note.isEmpty ? null : note);
     Navigator.of(context).pop();
   }
 
@@ -85,31 +94,12 @@ class _FundFormSheetState extends State<_FundFormSheet> {
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
 
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        Dimensions.paddingSizeLarge,
-        Dimensions.paddingSizeLarge,
-        Dimensions.paddingSizeLarge,
-        Dimensions.paddingSizeLarge + context.bottomPadding,
-      ),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                margin:
-                    const EdgeInsets.only(bottom: Dimensions.paddingSizeLarge),
-                decoration: BoxDecoration(
-                  color: colors.dividerColor,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
+    return Form(
+      key: _formKey,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
             Text(
               _isEdit ? 'Edit fund' : 'Add fund',
               style: AppTextStyles.sfProRoundedBold.copyWith(
@@ -178,6 +168,16 @@ class _FundFormSheetState extends State<_FundFormSheet> {
                 ),
               ),
             ),
+            const SizedBox(height: Dimensions.paddingSizeDefault),
+
+            // Note (optional).
+            _Label('Note (optional)'),
+            TextFormField(
+              controller: _noteController,
+              textCapitalization: TextCapitalization.sentences,
+              textInputAction: TextInputAction.done,
+              decoration: _fieldDecoration(context, hint: 'e.g. Monthly contribution'),
+            ),
             const SizedBox(height: Dimensions.paddingSizeExtraLarge),
 
             Row(
@@ -207,8 +207,7 @@ class _FundFormSheetState extends State<_FundFormSheet> {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 
   InputDecoration _fieldDecoration(BuildContext context, {String? hint}) {

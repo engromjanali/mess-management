@@ -54,11 +54,12 @@ class GetFundsInRangeUseCase
 class AddFundParams extends Equatable {
   final double amount;
   final DateTime date;
+  final String? note;
 
-  const AddFundParams({required this.amount, required this.date});
+  const AddFundParams({required this.amount, required this.date, this.note});
 
   @override
-  List<Object?> get props => [amount, date];
+  List<Object?> get props => [amount, date, note];
 }
 
 /// Records a fund entry.
@@ -68,8 +69,11 @@ class AddFundUseCase implements UseCase<FundEntity, AddFundParams> {
   AddFundUseCase(this._repository);
 
   @override
-  ResultFuture<FundEntity> call(AddFundParams params) =>
-      _repository.addFund(amount: params.amount, date: params.date);
+  ResultFuture<FundEntity> call(AddFundParams params) => _repository.addFund(
+        amount: params.amount,
+        date: params.date,
+        note: params.note,
+      );
 }
 
 /// Params for editing an existing fund entry.
@@ -77,15 +81,17 @@ class UpdateFundParams extends Equatable {
   final String id;
   final double amount;
   final DateTime date;
+  final String? note;
 
   const UpdateFundParams({
     required this.id,
     required this.amount,
     required this.date,
+    this.note,
   });
 
   @override
-  List<Object?> get props => [id, amount, date];
+  List<Object?> get props => [id, amount, date, note];
 }
 
 /// Edits an existing fund entry.
@@ -100,6 +106,7 @@ class UpdateFundUseCase implements UseCase<FundEntity, UpdateFundParams> {
         id: params.id,
         amount: params.amount,
         date: params.date,
+        note: params.note,
       );
 }
 

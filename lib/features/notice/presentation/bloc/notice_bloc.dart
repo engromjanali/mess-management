@@ -14,6 +14,7 @@ class NoticeBloc extends Bloc<NoticeEvent, NoticeState> {
   final GetNoticesUseCase _getNotices;
   final AddNoticeUseCase _addNotice;
   final UpdateNoticeUseCase _updateNotice;
+  final SetNoticePinnedUseCase _setPinned;
   final DeleteNoticeUseCase _deleteNotice;
 
   bool _isAdmin = false;
@@ -22,12 +23,14 @@ class NoticeBloc extends Bloc<NoticeEvent, NoticeState> {
     this._getNotices,
     this._addNotice,
     this._updateNotice,
+    this._setPinned,
     this._deleteNotice,
   ) : super(const NoticeState.initial()) {
     on<NoticeStarted>(_onStarted);
     on<NoticeRefresh>(_onRefresh);
     on<NoticeAdd>(_onAdd);
     on<NoticeUpdate>(_onUpdate);
+    on<NoticeTogglePin>(_onTogglePin);
     on<NoticeDelete>(_onDelete);
   }
 
@@ -63,6 +66,17 @@ class NoticeBloc extends Bloc<NoticeEvent, NoticeState> {
         title: event.title,
         description: event.description,
       ),
+    );
+    await _afterMutation(emit, result);
+  }
+
+  Future<void> _onTogglePin(
+    NoticeTogglePin event,
+    Emitter<NoticeState> emit,
+  ) async {
+    _emitSaving(emit);
+    final result = await _setPinned(
+      SetNoticePinnedParams(id: event.id, pinned: event.pinned),
     );
     await _afterMutation(emit, result);
   }

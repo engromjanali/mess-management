@@ -24,6 +24,12 @@ class NoticeEvent with _$NoticeEvent {
     required String description,
   }) = NoticeUpdate;
 
+  /// Pin or unpin a notice (pinning one unpins any other).
+  const factory NoticeEvent.togglePin({
+    required String id,
+    required bool pinned,
+  }) = NoticeTogglePin;
+
   /// Remove a notice.
   const factory NoticeEvent.delete(String id) = NoticeDelete;
 }

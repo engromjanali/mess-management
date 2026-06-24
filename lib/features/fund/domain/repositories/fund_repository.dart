@@ -18,6 +18,7 @@ abstract class FundRepository {
   ResultFuture<FundEntity> addFund({
     required double amount,
     required DateTime date,
+    String? note,
   });
 
   /// Edits an existing fund entry.
@@ -25,6 +26,7 @@ abstract class FundRepository {
     required String id,
     required double amount,
     required DateTime date,
+    String? note,
   });
 
   /// Removes a fund entry.

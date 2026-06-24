@@ -70,7 +70,25 @@ class FundTile extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 2),
-                _StatusBadge(label: fund.type.label, accent: accent),
+                Row(
+                  children: [
+                    _StatusBadge(label: fund.type.label, accent: accent),
+                    if (fund.note?.isNotEmpty ?? false) ...[
+                      const SizedBox(width: Dimensions.paddingSizeSmall),
+                      Flexible(
+                        child: Text(
+                          fund.note!,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyles.sfProRoundedMedium.copyWith(
+                            fontSize: Dimensions.fontSizeSmall,
+                            color: colors.textSecondaryColor,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
               ],
             ),
           ),

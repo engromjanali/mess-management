@@ -4,7 +4,6 @@ import '../../../../config/util/dimensions.dart';
 import '../../../../config/util/styles.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/extensions/overly_extensions.dart';
-import '../../../../core/extensions/screen_matres_extensions.dart';
 import '../../domain/entities/deposit_entity.dart';
 import 'deposit_formatters.dart';
 
@@ -25,8 +24,7 @@ Future<void> showDepositFormSheet({
   }) onSave,
   DepositEntity? existing,
 }) {
-  return context.showCustomBottomSheet<void>(
-    backgroundColor: context.theme.scaffoldBackgroundColor,
+  return context.showAdaptiveSheet<void>(
     child: _DepositFormSheet(
       members: members,
       existing: existing,
@@ -122,31 +120,12 @@ class _DepositFormSheetState extends State<_DepositFormSheet> {
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
 
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        Dimensions.paddingSizeLarge,
-        Dimensions.paddingSizeLarge,
-        Dimensions.paddingSizeLarge,
-        Dimensions.paddingSizeLarge + context.bottomPadding,
-      ),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                margin:
-                    const EdgeInsets.only(bottom: Dimensions.paddingSizeLarge),
-                decoration: BoxDecoration(
-                  color: colors.dividerColor,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
+    return Form(
+      key: _formKey,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
             Text(
               _isEdit ? 'Edit deposit' : 'Add deposit',
               style: AppTextStyles.sfProRoundedBold.copyWith(
@@ -270,8 +249,7 @@ class _DepositFormSheetState extends State<_DepositFormSheet> {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 
   InputDecoration _fieldDecoration(BuildContext context, {String? hint}) {

@@ -162,6 +162,12 @@ class _NoticeBody extends StatelessWidget {
     );
   }
 
+  void _onTogglePin(BuildContext context, NoticeEntity notice) {
+    context.read<NoticeBloc>().add(
+          NoticeEvent.togglePin(id: notice.id, pinned: !notice.pinned),
+        );
+  }
+
   Future<void> _onDelete(BuildContext context, NoticeEntity notice) async {
     final bloc = context.read<NoticeBloc>();
     final confirmed = await showDialog<bool>(
@@ -217,6 +223,7 @@ class _NoticeBody extends StatelessWidget {
                           isAdmin: isAdmin,
                           onEdit: (n) => _onEdit(context, n),
                           onDelete: (n) => _onDelete(context, n),
+                          onTogglePin: (n) => _onTogglePin(context, n),
                         ),
                       ),
                     ),
@@ -243,12 +250,14 @@ class _NoticeList extends StatelessWidget {
     required this.isAdmin,
     required this.onEdit,
     required this.onDelete,
+    required this.onTogglePin,
   });
 
   final List<NoticeEntity> notices;
   final bool isAdmin;
   final ValueChanged<NoticeEntity> onEdit;
   final ValueChanged<NoticeEntity> onDelete;
+  final ValueChanged<NoticeEntity> onTogglePin;
 
   @override
   Widget build(BuildContext context) {
@@ -264,6 +273,7 @@ class _NoticeList extends StatelessWidget {
                 showActions: isAdmin,
                 onEdit: () => onEdit(notices[i]),
                 onDelete: () => onDelete(notices[i]),
+                onTogglePin: () => onTogglePin(notices[i]),
               ),
             ),
         ];

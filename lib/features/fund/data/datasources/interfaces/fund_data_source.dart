@@ -11,12 +11,14 @@ abstract class FundDataSource {
   Future<FundModel> addFund({
     required double amount,
     required DateTime date,
+    String? note,
   });
 
   Future<FundModel> updateFund({
     required String id,
     required double amount,
     required DateTime date,
+    String? note,
   });
 
   Future<void> deleteFund(String id);

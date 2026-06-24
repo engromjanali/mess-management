@@ -5,18 +5,23 @@ import '../interfaces/fund_data_source.dart';
 
 /// In-memory mock for the fund feature.
 ///
-/// Holds a flat list of shared fund records (no member, no note). Entries keep
-/// their sign (positive → credit, negative → debit). Swap this binding for a
-/// remote implementation later — the repository and presentation layers won't
-/// change.
+/// Holds a flat list of shared fund records (no member). Entries keep their
+/// sign (positive → credit, negative → debit) and carry an optional note.
+/// Swap this binding for a remote implementation later — the repository and
+/// presentation layers won't change.
 @LazySingleton(as: FundDataSource)
 class FundLocalDataSourceImpl implements FundDataSource {
   /// Session-mutable store of funds, seeded with a few sample records.
   final List<FundModel> _funds = [
-    FundModel(id: 'f1', amount: 5000, date: DateTime(2026, 6, 2)),
-    FundModel(id: 'f2', amount: -1200, date: DateTime(2026, 6, 8)),
+    FundModel(
+      id: 'f1',
+      amount: 5000,
+      date: DateTime(2026, 6, 2),
+      note: 'Monthly contribution',
+    ),
+    FundModel(id: 'f2', amount: -1200, date: DateTime(2026, 6, 8), note: 'Gas bill'),
     FundModel(id: 'f3', amount: 3000, date: DateTime(2026, 6, 8)),
-    FundModel(id: 'f4', amount: -750, date: DateTime(2026, 6, 15)),
+    FundModel(id: 'f4', amount: -750, date: DateTime(2026, 6, 15), note: 'Repairs'),
   ];
 
   /// Monotonic counter for generating new ids within the session.
@@ -63,11 +68,13 @@ class FundLocalDataSourceImpl implements FundDataSource {
   Future<FundModel> addFund({
     required double amount,
     required DateTime date,
+    String? note,
   }) async {
     final model = FundModel(
       id: _nextId(),
       amount: amount,
       date: DateTime(date.year, date.month, date.day),
+      note: note,
     );
     _funds.add(model);
     return model;
@@ -78,14 +85,18 @@ class FundLocalDataSourceImpl implements FundDataSource {
     required String id,
     required double amount,
     required DateTime date,
+    String? note,
   }) async {
     final index = _funds.indexWhere((f) => f.id == id);
     if (index == -1) {
       throw ServerException(message: 'Fund entry not found');
     }
-    final updated = _funds[index].copyWith(
+    // Rebuild directly so a cleared note (null) is honoured.
+    final updated = FundModel(
+      id: id,
       amount: amount,
       date: DateTime(date.year, date.month, date.day),
+      note: note,
     );
     _funds[index] = updated;
     return updated;

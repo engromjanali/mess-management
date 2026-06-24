@@ -102,8 +102,8 @@ class _FundView extends StatelessWidget {
     final bloc = context.read<FundBloc>();
     showFundFormSheet(
       context: context,
-      onSave: ({required amount, required date}) =>
-          bloc.add(FundEvent.add(amount: amount, date: date)),
+      onSave: ({required amount, required date, note}) =>
+          bloc.add(FundEvent.add(amount: amount, date: date, note: note)),
     );
   }
 }
@@ -183,8 +183,9 @@ class _FundBody extends StatelessWidget {
     showFundFormSheet(
       context: context,
       existing: fund,
-      onSave: ({required amount, required date}) =>
-          bloc.add(FundEvent.update(id: fund.id, amount: amount, date: date)),
+      onSave: ({required amount, required date, note}) => bloc.add(
+        FundEvent.update(id: fund.id, amount: amount, date: date, note: note),
+      ),
     );
   }
 

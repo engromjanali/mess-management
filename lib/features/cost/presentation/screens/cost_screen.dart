@@ -382,7 +382,7 @@ class _EntryTab extends StatelessWidget {
   }
 }
 
-/// Opens the edit form in a bottom sheet.
+/// Opens the edit form — a dialog on desktop / tablet, a bottom sheet on phone.
 Future<void> showCostEditSheet({
   required BuildContext context,
   required List<CostMemberEntity> members,
@@ -393,43 +393,28 @@ Future<void> showCostEditSheet({
     required List<CostItemEntity> items,
   }) onSubmit,
 }) {
-  return context.showCustomBottomSheet<void>(
-    backgroundColor: context.theme.scaffoldBackgroundColor,
-    child: DraggableScrollableSheet(
-      expand: false,
-      initialChildSize: 0.85,
-      minChildSize: 0.5,
-      maxChildSize: 0.95,
-      builder: (context, controller) => SingleChildScrollView(
-        controller: controller,
-        padding: EdgeInsets.fromLTRB(
-          Dimensions.paddingSizeLarge,
-          Dimensions.paddingSizeLarge,
-          Dimensions.paddingSizeLarge,
-          Dimensions.paddingSizeLarge + context.bottomPadding,
+  return context.showAdaptiveSheet<void>(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          'Edit bazar entry',
+          style: AppTextStyles.sfProRoundedBold.copyWith(
+            fontSize: Dimensions.fontSizeExtraLarge,
+            color: context.customThemeColors.textPrimaryColor,
+          ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Edit bazar entry',
-              style: AppTextStyles.sfProRoundedBold.copyWith(
-                fontSize: Dimensions.fontSizeExtraLarge,
-                color: context.customThemeColors.textPrimaryColor,
-              ),
-            ),
-            const SizedBox(height: Dimensions.paddingSizeLarge),
-            CostEntryForm(
-              members: members,
-              existing: existing,
-              onSubmit: ({required personId, required date, required items}) {
-                onSubmit(personId: personId, date: date, items: items);
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
+        const SizedBox(height: Dimensions.paddingSizeLarge),
+        CostEntryForm(
+          members: members,
+          existing: existing,
+          onSubmit: ({required personId, required date, required items}) {
+            onSubmit(personId: personId, date: date, items: items);
+            Navigator.of(context).pop();
+          },
         ),
-      ),
+      ],
     ),
   );
 }

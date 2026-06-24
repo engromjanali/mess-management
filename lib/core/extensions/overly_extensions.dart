@@ -193,4 +193,91 @@ extension OverlayExtensions on BuildContext {
       builder: (_) => child,
     );
   }
+
+  /// Presents an entry form responsively.
+  ///
+  /// * **Tablet / desktop** → a centered, width-capped [Dialog].
+  /// * **Phone** → a scrollable bottom sheet with a drag handle.
+  ///
+  /// [child] should be the bare form content — this method supplies the
+  /// surrounding chrome (handle, padding, scrolling, keyboard inset).
+  Future<T?> showAdaptiveSheet<T>({
+    required Widget child,
+    bool isDismissible = true,
+    double maxWidth = 480,
+  }) {
+    final isWide =
+        ResponsiveHelper.isDesktop(this) || ResponsiveHelper.isTab(this);
+    final background = theme.scaffoldBackgroundColor;
+
+    if (isWide) {
+      return showDialog<T>(
+        context: this,
+        barrierDismissible: isDismissible,
+        builder: (ctx) => Dialog(
+          backgroundColor: background,
+          insetPadding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+          clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(Dimensions.radiusExtra2Large),
+          ),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: maxWidth,
+              maxHeight: MediaQuery.of(ctx).size.height * 0.9,
+            ),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+              child: child,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return showModalBottomSheet<T>(
+      context: this,
+      isScrollControlled: true,
+      isDismissible: isDismissible,
+      backgroundColor: background,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(Dimensions.radiusExtra2Large),
+        ),
+      ),
+      builder: (ctx) {
+        final media = MediaQuery.of(ctx);
+        return Padding(
+          padding: EdgeInsets.only(bottom: media.viewInsets.bottom),
+          child: SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(
+              Dimensions.paddingSizeLarge,
+              Dimensions.paddingSizeSmall,
+              Dimensions.paddingSizeLarge,
+              Dimensions.paddingSizeLarge + media.viewPadding.bottom,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(
+                        bottom: Dimensions.paddingSizeLarge),
+                    decoration: BoxDecoration(
+                      color: customThemeColors.dividerColor,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                child,
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 }

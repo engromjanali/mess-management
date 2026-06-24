@@ -6,20 +6,27 @@ class NoticeModel {
   final String title;
   final String description;
   final DateTime createdAt;
+  final bool pinned;
 
   const NoticeModel({
     required this.id,
     required this.title,
     required this.description,
     required this.createdAt,
+    this.pinned = false,
   });
 
-  NoticeModel copyWith({String? title, String? description}) {
+  NoticeModel copyWith({
+    String? title,
+    String? description,
+    bool? pinned,
+  }) {
     return NoticeModel(
       id: id,
       title: title ?? this.title,
       description: description ?? this.description,
       createdAt: createdAt,
+      pinned: pinned ?? this.pinned,
     );
   }
 
@@ -28,5 +35,6 @@ class NoticeModel {
         title: title,
         description: description,
         createdAt: createdAt,
+        pinned: pinned,
       );
 }

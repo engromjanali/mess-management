@@ -15,5 +15,8 @@ abstract class NoticeDataSource {
     required String description,
   });
 
+  /// Pins or unpins a notice. Pinning one unpins any other.
+  Future<void> setPinned({required String id, required bool pinned});
+
   Future<void> deleteNotice(String id);
 }

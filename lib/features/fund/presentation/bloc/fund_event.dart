@@ -27,6 +27,7 @@ class FundEvent with _$FundEvent {
   const factory FundEvent.add({
     required double amount,
     required DateTime date,
+    String? note,
   }) = FundAdd;
 
   /// Edit an existing fund entry.
@@ -34,6 +35,7 @@ class FundEvent with _$FundEvent {
     required String id,
     required double amount,
     required DateTime date,
+    String? note,
   }) = FundUpdate;
 
   /// Remove a fund entry.

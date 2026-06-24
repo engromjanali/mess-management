@@ -48,6 +48,10 @@ class NoticeRepositoryImpl implements NoticeRepository {
       });
 
   @override
+  ResultVoid setPinned({required String id, required bool pinned}) =>
+      _guard(() => _dataSource.setPinned(id: id, pinned: pinned));
+
+  @override
   ResultVoid deleteNotice(String id) =>
       _guard(() => _dataSource.deleteNotice(id));
 

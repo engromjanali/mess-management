@@ -18,6 +18,7 @@ class NoticeLocalDataSourceImpl implements NoticeDataSource {
           'This month\'s meal rate has been revised to ৳62.5 per meal. '
           'Please review your deposits accordingly.',
       createdAt: DateTime(2026, 6, 22, 9, 30),
+      pinned: true,
     ),
     NoticeModel(
       id: 'n2',
@@ -44,7 +45,11 @@ class NoticeLocalDataSourceImpl implements NoticeDataSource {
 
   List<NoticeModel> _sorted(Iterable<NoticeModel> items) {
     final list = items.toList()
-      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      ..sort((a, b) {
+        // Pinned notice first, then newest-first by date.
+        if (a.pinned != b.pinned) return a.pinned ? -1 : 1;
+        return b.createdAt.compareTo(a.createdAt);
+      });
     return list;
   }
 
@@ -83,6 +88,23 @@ class NoticeLocalDataSourceImpl implements NoticeDataSource {
         _notices[index].copyWith(title: title, description: description);
     _notices[index] = updated;
     return updated;
+  }
+
+  @override
+  Future<void> setPinned({required String id, required bool pinned}) async {
+    final index = _notices.indexWhere((n) => n.id == id);
+    if (index == -1) {
+      throw ServerException(message: 'Notice not found');
+    }
+    // Only one notice may be pinned at a time.
+    if (pinned) {
+      for (var i = 0; i < _notices.length; i++) {
+        if (_notices[i].pinned) {
+          _notices[i] = _notices[i].copyWith(pinned: false);
+        }
+      }
+    }
+    _notices[index] = _notices[index].copyWith(pinned: pinned);
   }
 
   @override

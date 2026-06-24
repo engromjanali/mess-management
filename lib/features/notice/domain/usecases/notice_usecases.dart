@@ -72,6 +72,28 @@ class UpdateNoticeUseCase implements UseCase<NoticeEntity, UpdateNoticeParams> {
       );
 }
 
+/// Params for pinning / unpinning a notice.
+class SetNoticePinnedParams extends Equatable {
+  final String id;
+  final bool pinned;
+
+  const SetNoticePinnedParams({required this.id, required this.pinned});
+
+  @override
+  List<Object?> get props => [id, pinned];
+}
+
+/// Pins or unpins a notice.
+@lazySingleton
+class SetNoticePinnedUseCase implements UseCase<void, SetNoticePinnedParams> {
+  final NoticeRepository _repository;
+  SetNoticePinnedUseCase(this._repository);
+
+  @override
+  ResultVoid call(SetNoticePinnedParams params) =>
+      _repository.setPinned(id: params.id, pinned: params.pinned);
+}
+
 /// Removes a notice by id.
 @lazySingleton
 class DeleteNoticeUseCase implements UseCase<void, String> {

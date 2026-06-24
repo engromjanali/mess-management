@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../config/util/dimensions.dart';
 import '../../../../config/util/styles.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../core/extensions/overly_extensions.dart';
 import '../../domain/entities/meal_member_entity.dart';
 import 'meal_formatters.dart';
 import 'meal_stepper.dart';
@@ -35,11 +36,8 @@ Future<MemberMealFormResult?> showMemberMealForm(
   String? presetMemberId,
   DateTime? presetDate,
 }) {
-  return showModalBottomSheet<MemberMealFormResult>(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    builder: (_) => _MemberMealFormSheet(
+  return context.showAdaptiveSheet<MemberMealFormResult>(
+    child: _MemberMealFormSheet(
       members: members,
       existing: existing,
       presetMemberId: presetMemberId,
@@ -119,37 +117,11 @@ class _MemberMealFormSheetState extends State<_MemberMealFormSheet> {
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
-    return Padding(
-      padding: EdgeInsets.only(bottom: bottomInset),
-      child: Container(
-        decoration: BoxDecoration(
-          color: colors.cardBackgroundColor,
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(Dimensions.radiusExtra2Large),
-          ),
-        ),
-        padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
-        child: SafeArea(
-          top: false,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(
-                    bottom: Dimensions.paddingSizeLarge,
-                  ),
-                  decoration: BoxDecoration(
-                    color: colors.borderColor,
-                    borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-                  ),
-                ),
-              ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
               Text(
                 _isEdit ? 'Edit meal' : 'Add meal',
                 style: AppTextStyles.sfProRoundedBold.copyWith(
@@ -228,10 +200,7 @@ class _MemberMealFormSheetState extends State<_MemberMealFormSheet> {
                 ),
               ),
             ],
-          ),
-        ),
-      ),
-    );
+          );
   }
 }
 

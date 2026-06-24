@@ -85,7 +85,7 @@ class FundBloc extends Bloc<FundEvent, FundState> {
   Future<void> _onAdd(FundAdd event, Emitter<FundState> emit) async {
     _emitSaving(emit);
     final result = await _addFund(
-      AddFundParams(amount: event.amount, date: event.date),
+      AddFundParams(amount: event.amount, date: event.date, note: event.note),
     );
     await _afterMutation(emit, result);
   }
@@ -93,7 +93,12 @@ class FundBloc extends Bloc<FundEvent, FundState> {
   Future<void> _onUpdate(FundUpdate event, Emitter<FundState> emit) async {
     _emitSaving(emit);
     final result = await _updateFund(
-      UpdateFundParams(id: event.id, amount: event.amount, date: event.date),
+      UpdateFundParams(
+        id: event.id,
+        amount: event.amount,
+        date: event.date,
+        note: event.note,
+      ),
     );
     await _afterMutation(emit, result);
   }

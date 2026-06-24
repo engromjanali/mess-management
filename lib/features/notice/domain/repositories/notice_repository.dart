@@ -19,6 +19,9 @@ abstract class NoticeRepository {
     required String description,
   });
 
+  /// Pins or unpins a notice. Pinning one unpins any other.
+  ResultVoid setPinned({required String id, required bool pinned});
+
   /// Removes a notice.
   ResultVoid deleteNotice(String id);
 }

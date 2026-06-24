@@ -14,18 +14,20 @@ enum FundType {
 
 /// A single mess fund record.
 ///
-/// Unlike a deposit, a fund is not tied to a member and carries no note —
-/// it is a shared money-in / money-out entry. [amount] keeps its sign:
-/// positive → [FundType.credit], negative → [FundType.debit].
+/// Unlike a deposit, a fund is not tied to a member — it is a shared
+/// money-in / money-out entry, with an optional [note]. [amount] keeps its
+/// sign: positive → [FundType.credit], negative → [FundType.debit].
 class FundEntity extends Equatable {
   final String id;
   final double amount;
   final DateTime date;
+  final String? note;
 
   const FundEntity({
     required this.id,
     required this.amount,
     required this.date,
+    this.note,
   });
 
   /// Credit when zero or positive, debit when negative.
@@ -39,7 +41,7 @@ class FundEntity extends Equatable {
   double get absoluteAmount => amount.abs();
 
   @override
-  List<Object?> get props => [id, amount, date];
+  List<Object?> get props => [id, amount, date, note];
 }
 
 /// Aggregate helpers over a list of funds (used for summary cards).

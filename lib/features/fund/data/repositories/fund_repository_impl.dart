@@ -40,9 +40,11 @@ class FundRepositoryImpl implements FundRepository {
   ResultFuture<FundEntity> addFund({
     required double amount,
     required DateTime date,
+    String? note,
   }) =>
       _guard(() async {
-        final model = await _dataSource.addFund(amount: amount, date: date);
+        final model =
+            await _dataSource.addFund(amount: amount, date: date, note: note);
         return model.toEntity();
       });
 
@@ -51,12 +53,14 @@ class FundRepositoryImpl implements FundRepository {
     required String id,
     required double amount,
     required DateTime date,
+    String? note,
   }) =>
       _guard(() async {
         final model = await _dataSource.updateFund(
           id: id,
           amount: amount,
           date: date,
+          note: note,
         );
         return model.toEntity();
       });
