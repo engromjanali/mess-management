@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../config/util/dimensions.dart';
-import '../../../../config/util/styles.dart';
-import '../../../../core/di/injection.dart';
-import '../../../../core/extensions/context_extensions.dart';
-import '../../../../core/extensions/overly_extensions.dart';
-import '../../../../core/extensions/screen_matres_extensions.dart';
-import '../../../../core/role/role_cubit.dart';
-import '../../../home/presentation/widgets/animated_entrance.dart';
-import '../../domain/entities/notice_entity.dart';
-import '../bloc/notice_bloc.dart';
-import '../bloc/notice_event.dart';
-import '../bloc/notice_state.dart';
-import '../widgets/notice_card.dart';
-import '../widgets/notice_form_sheet.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/di/injection.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
+import 'package:clean_boilerplate/core/extensions/screen_matres_extensions.dart';
+import 'package:clean_boilerplate/core/role/role_cubit.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
+import 'package:clean_boilerplate/features/notice/domain/entities/notice_entity.dart';
+import 'package:clean_boilerplate/features/notice/presentation/bloc/notice_bloc.dart';
+import 'package:clean_boilerplate/features/notice/presentation/bloc/notice_event.dart';
+import 'package:clean_boilerplate/features/notice/presentation/bloc/notice_state.dart';
+import 'package:clean_boilerplate/features/notice/presentation/widgets/notice_card.dart';
+import 'package:clean_boilerplate/features/notice/presentation/widgets/notice_form_sheet.dart';
 
 /// Notice board.
 ///

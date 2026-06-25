@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../config/util/dimensions.dart';
-import '../../../../config/util/styles.dart';
-import '../../../../core/di/injection.dart';
-import '../../../../core/extensions/context_extensions.dart';
-import '../../../home/presentation/widgets/dashboard_formatters.dart';
-import '../../../home/presentation/widgets/section_title.dart';
-import '../../domain/entities/meal_member_entity.dart';
-import '../bloc/meal_admin_bloc.dart';
-import '../bloc/meal_admin_event.dart';
-import '../bloc/meal_admin_state.dart';
-import 'meal_formatters.dart';
-import 'member_meal_form_sheet.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/di/injection.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_formatters.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
+import 'package:clean_boilerplate/features/meal/domain/entities/meal_member_entity.dart';
+import 'package:clean_boilerplate/features/meal/presentation/bloc/meal_admin_bloc.dart';
+import 'package:clean_boilerplate/features/meal/presentation/bloc/meal_admin_event.dart';
+import 'package:clean_boilerplate/features/meal/presentation/bloc/meal_admin_state.dart';
+import 'package:clean_boilerplate/features/meal/presentation/widgets/meal_formatters.dart';
+import 'package:clean_boilerplate/features/meal/presentation/widgets/member_meal_form_sheet.dart';
 
 /// Admin-only meal management section.
 ///

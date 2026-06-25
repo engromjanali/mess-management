@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
-import '../../../../config/util/result.dart';
-import '../../../../core/usecase/usecase.dart';
-import '../entities/deposit_entity.dart';
-import '../repositories/deposit_repository.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/core/usecase/usecase.dart';
+import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_entity.dart';
+import 'package:clean_boilerplate/features/deposit/domain/repositories/deposit_repository.dart';
 
 /// Loads the member roster (for the add/edit picker and the by-member filter).
 @lazySingleton

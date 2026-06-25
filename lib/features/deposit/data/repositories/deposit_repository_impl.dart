@@ -1,10 +1,10 @@
 import 'package:injectable/injectable.dart';
-import '../../../../config/util/result.dart';
-import '../../../../core/errors/exceptions.dart';
-import '../../../../core/errors/failures.dart';
-import '../../domain/entities/deposit_entity.dart';
-import '../../domain/repositories/deposit_repository.dart';
-import '../datasources/interfaces/deposit_data_source.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/core/errors/exceptions.dart';
+import 'package:clean_boilerplate/core/errors/failures.dart';
+import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_entity.dart';
+import 'package:clean_boilerplate/features/deposit/domain/repositories/deposit_repository.dart';
+import 'package:clean_boilerplate/features/deposit/data/datasources/interfaces/deposit_data_source.dart';
 
 /// Concrete [DepositRepository] in the data layer.
 @LazySingleton(as: DepositRepository)

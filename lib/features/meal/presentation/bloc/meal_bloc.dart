@@ -1,10 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import '../../../../core/usecase/usecase.dart';
-import '../../domain/usecases/get_meal_overview_usecase.dart';
-import '../../domain/usecases/update_meal_usecase.dart';
-import 'meal_event.dart';
-import 'meal_state.dart';
+import 'package:clean_boilerplate/core/usecase/usecase.dart';
+import 'package:clean_boilerplate/features/meal/domain/usecases/get_meal_overview_usecase.dart';
+import 'package:clean_boilerplate/features/meal/domain/usecases/update_meal_usecase.dart';
+import 'package:clean_boilerplate/features/meal/presentation/bloc/meal_event.dart';
+import 'package:clean_boilerplate/features/meal/presentation/bloc/meal_state.dart';
 
 /// Meal BLoC — loads, refreshes and edits the user's meal overview.
 @injectable

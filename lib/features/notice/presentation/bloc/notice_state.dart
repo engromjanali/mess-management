@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../domain/entities/notice_entity.dart';
+import 'package:clean_boilerplate/features/notice/domain/entities/notice_entity.dart';
 
 part 'notice_state.freezed.dart';
 

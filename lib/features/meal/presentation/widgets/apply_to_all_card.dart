@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../../config/util/dimensions.dart';
-import '../../../../config/util/styles.dart';
-import '../../../../core/extensions/context_extensions.dart';
-import 'meal_stepper.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/features/meal/presentation/widgets/meal_stepper.dart';
 
 /// Admin "set once, apply to everyone" card.
 ///

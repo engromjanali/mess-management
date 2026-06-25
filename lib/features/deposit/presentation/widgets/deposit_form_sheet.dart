@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../../../config/util/dimensions.dart';
-import '../../../../config/util/styles.dart';
-import '../../../../core/extensions/context_extensions.dart';
-import '../../../../core/extensions/overly_extensions.dart';
-import '../../domain/entities/deposit_entity.dart';
-import 'deposit_formatters.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
+import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_entity.dart';
+import 'package:clean_boilerplate/features/deposit/presentation/widgets/deposit_formatters.dart';
 
 /// Opens the add / edit deposit bottom sheet.
 ///

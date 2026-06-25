@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
-import '../../../../config/util/result.dart';
-import '../../../../core/usecase/usecase.dart';
-import '../entities/theme_mode.dart';
-import '../repositories/settings_repository.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/core/usecase/usecase.dart';
+import 'package:clean_boilerplate/features/settings/domain/entities/theme_mode.dart';
+import 'package:clean_boilerplate/features/settings/domain/repositories/settings_repository.dart';
 
 /// Parameters for SetThemeModeUseCase
 class SetThemeModeParams extends Equatable {

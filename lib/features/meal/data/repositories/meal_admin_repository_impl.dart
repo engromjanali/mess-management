@@ -1,10 +1,10 @@
 import 'package:injectable/injectable.dart';
-import '../../../../config/util/result.dart';
-import '../../../../core/errors/exceptions.dart';
-import '../../../../core/errors/failures.dart';
-import '../../domain/entities/meal_member_entity.dart';
-import '../../domain/repositories/meal_admin_repository.dart';
-import '../datasources/interfaces/meal_admin_data_source.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/core/errors/exceptions.dart';
+import 'package:clean_boilerplate/core/errors/failures.dart';
+import 'package:clean_boilerplate/features/meal/domain/entities/meal_member_entity.dart';
+import 'package:clean_boilerplate/features/meal/domain/repositories/meal_admin_repository.dart';
+import 'package:clean_boilerplate/features/meal/data/datasources/interfaces/meal_admin_data_source.dart';
 
 /// Concrete [MealAdminRepository] in the data layer.
 @LazySingleton(as: MealAdminRepository)

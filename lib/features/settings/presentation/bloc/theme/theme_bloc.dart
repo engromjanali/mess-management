@@ -2,10 +2,10 @@ import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/them
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
-import '../../../../../core/usecase/usecase.dart';
-import '../../../domain/entities/theme_mode.dart';
-import '../../../domain/usecases/get_theme_mode_usecase.dart';
-import '../../../domain/usecases/set_theme_mode_usecase.dart';
+import 'package:clean_boilerplate/core/usecase/usecase.dart';
+import 'package:clean_boilerplate/features/settings/domain/entities/theme_mode.dart';
+import 'package:clean_boilerplate/features/settings/domain/usecases/get_theme_mode_usecase.dart';
+import 'package:clean_boilerplate/features/settings/domain/usecases/set_theme_mode_usecase.dart';
 
 part 'theme_state.dart';
 part 'theme_bloc.freezed.dart';

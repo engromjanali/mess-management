@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../config/util/dimensions.dart';
-import '../../../../config/util/styles.dart';
-import '../../../../core/di/injection.dart';
-import '../../../../core/extensions/context_extensions.dart';
-import '../../../../core/extensions/overly_extensions.dart';
-import '../../../../core/extensions/screen_matres_extensions.dart';
-import '../../../../core/role/role_cubit.dart';
-import '../../../home/presentation/widgets/animated_entrance.dart';
-import '../../../home/presentation/widgets/section_title.dart';
-import '../../../home/presentation/widgets/stat_card.dart';
-import '../../domain/entities/fund_entity.dart';
-import '../bloc/fund_bloc.dart';
-import '../bloc/fund_date_filter.dart';
-import '../bloc/fund_event.dart';
-import '../bloc/fund_state.dart';
-import '../widgets/fund_filter_bar.dart';
-import '../widgets/fund_form_sheet.dart';
-import '../widgets/fund_formatters.dart';
-import '../widgets/fund_tile.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/di/injection.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
+import 'package:clean_boilerplate/core/extensions/screen_matres_extensions.dart';
+import 'package:clean_boilerplate/core/role/role_cubit.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/stat_card.dart';
+import 'package:clean_boilerplate/features/fund/domain/entities/fund_entity.dart';
+import 'package:clean_boilerplate/features/fund/presentation/bloc/fund_bloc.dart';
+import 'package:clean_boilerplate/features/fund/presentation/bloc/fund_date_filter.dart';
+import 'package:clean_boilerplate/features/fund/presentation/bloc/fund_event.dart';
+import 'package:clean_boilerplate/features/fund/presentation/bloc/fund_state.dart';
+import 'package:clean_boilerplate/features/fund/presentation/widgets/fund_filter_bar.dart';
+import 'package:clean_boilerplate/features/fund/presentation/widgets/fund_form_sheet.dart';
+import 'package:clean_boilerplate/features/fund/presentation/widgets/fund_formatters.dart';
+import 'package:clean_boilerplate/features/fund/presentation/widgets/fund_tile.dart';
 
 /// Fund screen.
 ///

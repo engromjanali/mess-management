@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../config/util/app_constants.dart';
+import 'package:clean_boilerplate/config/util/app_constants.dart';
 
 
 /// Supported locales in the application

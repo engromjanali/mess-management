@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import '../../../../core/usecase/usecase.dart';
-import '../../domain/usecases/get_dashboard_usecase.dart';
-import 'home_event.dart';
-import 'home_state.dart';
+import 'package:clean_boilerplate/core/usecase/usecase.dart';
+import 'package:clean_boilerplate/features/home/domain/usecases/get_dashboard_usecase.dart';
+import 'package:clean_boilerplate/features/home/presentation/bloc/home_event.dart';
+import 'package:clean_boilerplate/features/home/presentation/bloc/home_state.dart';
 
 /// Home BLoC — loads and refreshes the dashboard.
 @injectable

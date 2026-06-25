@@ -1,4 +1,4 @@
-import '../../models/notice_model.dart';
+import 'package:clean_boilerplate/features/notice/data/models/notice_model.dart';
 
 /// Contract for any source that can provide & mutate notices.
 abstract class NoticeDataSource {

@@ -1,11 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import '../../../../config/util/result.dart';
-import '../../../../core/usecase/usecase.dart';
-import '../../domain/entities/notice_entity.dart';
-import '../../domain/usecases/notice_usecases.dart';
-import 'notice_event.dart';
-import 'notice_state.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/core/usecase/usecase.dart';
+import 'package:clean_boilerplate/features/notice/domain/entities/notice_entity.dart';
+import 'package:clean_boilerplate/features/notice/domain/usecases/notice_usecases.dart';
+import 'package:clean_boilerplate/features/notice/presentation/bloc/notice_event.dart';
+import 'package:clean_boilerplate/features/notice/presentation/bloc/notice_state.dart';
 
 /// Notice BLoC — loads the notice list and applies add / update / delete
 /// mutations, reloading the list afterwards.

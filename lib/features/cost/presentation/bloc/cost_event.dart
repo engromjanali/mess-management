@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../domain/entities/cost_entity.dart';
+import 'package:clean_boilerplate/features/cost/domain/entities/cost_entity.dart';
 
 part 'cost_event.freezed.dart';
 

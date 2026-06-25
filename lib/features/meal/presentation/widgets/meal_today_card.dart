@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../../../config/util/dimensions.dart';
-import '../../../../config/util/styles.dart';
-import '../../../../core/extensions/context_extensions.dart';
-import '../../../home/presentation/widgets/dashboard_formatters.dart';
-import '../../domain/entities/meal_entity.dart';
-import 'meal_formatters.dart';
-import 'meal_stepper.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_formatters.dart';
+import 'package:clean_boilerplate/features/meal/domain/entities/meal_entity.dart';
+import 'package:clean_boilerplate/features/meal/presentation/widgets/meal_formatters.dart';
+import 'package:clean_boilerplate/features/meal/presentation/widgets/meal_stepper.dart';
 
 /// Editable "today" card — breakfast / lunch / dinner steppers with a live
 /// running total and estimated cost. Emits the full new triple on any change.

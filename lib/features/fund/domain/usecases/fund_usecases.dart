@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
-import '../../../../config/util/result.dart';
-import '../../../../core/usecase/usecase.dart';
-import '../entities/fund_entity.dart';
-import '../repositories/fund_repository.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/core/usecase/usecase.dart';
+import 'package:clean_boilerplate/features/fund/domain/entities/fund_entity.dart';
+import 'package:clean_boilerplate/features/fund/domain/repositories/fund_repository.dart';
 
 /// Loads every fund entry (all dates).
 @lazySingleton

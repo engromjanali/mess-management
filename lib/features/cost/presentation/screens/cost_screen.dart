@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../config/util/dimensions.dart';
-import '../../../../config/util/styles.dart';
-import '../../../../core/di/injection.dart';
-import '../../../../core/extensions/context_extensions.dart';
-import '../../../../core/extensions/overly_extensions.dart';
-import '../../../../core/extensions/screen_matres_extensions.dart';
-import '../../../../core/role/role_cubit.dart';
-import '../../../home/presentation/widgets/animated_entrance.dart';
-import '../../../home/presentation/widgets/section_title.dart';
-import '../../../home/presentation/widgets/stat_card.dart';
-import '../../domain/entities/cost_entity.dart';
-import '../bloc/cost_bloc.dart';
-import '../bloc/cost_event.dart';
-import '../bloc/cost_state.dart';
-import '../widgets/cost_entry_form.dart';
-import '../widgets/cost_formatters.dart';
-import '../widgets/cost_tile.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/di/injection.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
+import 'package:clean_boilerplate/core/extensions/screen_matres_extensions.dart';
+import 'package:clean_boilerplate/core/role/role_cubit.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/stat_card.dart';
+import 'package:clean_boilerplate/features/cost/domain/entities/cost_entity.dart';
+import 'package:clean_boilerplate/features/cost/presentation/bloc/cost_bloc.dart';
+import 'package:clean_boilerplate/features/cost/presentation/bloc/cost_event.dart';
+import 'package:clean_boilerplate/features/cost/presentation/bloc/cost_state.dart';
+import 'package:clean_boilerplate/features/cost/presentation/widgets/cost_entry_form.dart';
+import 'package:clean_boilerplate/features/cost/presentation/widgets/cost_formatters.dart';
+import 'package:clean_boilerplate/features/cost/presentation/widgets/cost_tile.dart';
 
 /// Cost (bazar) screen.
 ///

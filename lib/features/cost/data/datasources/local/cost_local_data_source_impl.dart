@@ -1,8 +1,8 @@
 import 'package:injectable/injectable.dart';
-import '../../../../../core/errors/exceptions.dart';
-import '../../../domain/entities/cost_entity.dart';
-import '../../models/cost_model.dart';
-import '../interfaces/cost_data_source.dart';
+import 'package:clean_boilerplate/core/errors/exceptions.dart';
+import 'package:clean_boilerplate/features/cost/domain/entities/cost_entity.dart';
+import 'package:clean_boilerplate/features/cost/data/models/cost_model.dart';
+import 'package:clean_boilerplate/features/cost/data/datasources/interfaces/cost_data_source.dart';
 
 /// In-memory mock for the bazar/cost feature.
 ///

@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../config/util/dimensions.dart';
-import '../../../../config/util/styles.dart';
-import '../../../../core/di/injection.dart';
-import '../../../../core/extensions/context_extensions.dart';
-import '../../../../core/extensions/overly_extensions.dart';
-import '../../../../core/extensions/screen_matres_extensions.dart';
-import '../../../../core/role/role_cubit.dart';
-import '../../../home/presentation/widgets/animated_entrance.dart';
-import '../../../home/presentation/widgets/section_title.dart';
-import '../../../home/presentation/widgets/stat_card.dart';
-import '../../domain/entities/deposit_entity.dart';
-import '../bloc/deposit_bloc.dart';
-import '../bloc/deposit_event.dart';
-import '../bloc/deposit_state.dart';
-import '../bloc/deposit_view_mode.dart';
-import '../widgets/deposit_filter_bar.dart';
-import '../widgets/deposit_form_sheet.dart';
-import '../widgets/deposit_formatters.dart';
-import '../widgets/deposit_tile.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/di/injection.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
+import 'package:clean_boilerplate/core/extensions/screen_matres_extensions.dart';
+import 'package:clean_boilerplate/core/role/role_cubit.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/stat_card.dart';
+import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_entity.dart';
+import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_bloc.dart';
+import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_event.dart';
+import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_state.dart';
+import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_view_mode.dart';
+import 'package:clean_boilerplate/features/deposit/presentation/widgets/deposit_filter_bar.dart';
+import 'package:clean_boilerplate/features/deposit/presentation/widgets/deposit_form_sheet.dart';
+import 'package:clean_boilerplate/features/deposit/presentation/widgets/deposit_formatters.dart';
+import 'package:clean_boilerplate/features/deposit/presentation/widgets/deposit_tile.dart';
 
 /// Deposit screen.
 ///

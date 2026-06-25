@@ -1,5 +1,5 @@
-import '../../../../config/util/result.dart';
-import '../entities/notice_entity.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/features/notice/domain/entities/notice_entity.dart';
 
 /// Notice repository contract (abstraction in the domain layer).
 abstract class NoticeRepository {

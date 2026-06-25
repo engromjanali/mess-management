@@ -1,10 +1,10 @@
 import 'package:injectable/injectable.dart';
-import '../../../../config/util/result.dart';
-import '../../../../core/errors/failures.dart';
-import '../../../../core/network/api_client.dart';
-import '../../domain/entities/theme_mode.dart';
-import '../../domain/repositories/settings_repository.dart';
-import '../datasources/interfaces/settings_data_source.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/core/errors/failures.dart';
+import 'package:clean_boilerplate/core/network/api_client.dart';
+import 'package:clean_boilerplate/features/settings/domain/entities/theme_mode.dart';
+import 'package:clean_boilerplate/features/settings/domain/repositories/settings_repository.dart';
+import 'package:clean_boilerplate/features/settings/data/datasources/interfaces/settings_data_source.dart';
 
 /// Settings repository implementation (concrete class in data layer)
 @LazySingleton(as: SettingsRepository)

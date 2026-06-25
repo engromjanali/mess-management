@@ -1,6 +1,6 @@
 import 'package:injectable/injectable.dart';
-import '../../models/dashboard_model.dart';
-import '../interfaces/home_data_source.dart';
+import 'package:clean_boilerplate/features/home/data/models/dashboard_model.dart';
+import 'package:clean_boilerplate/features/home/data/datasources/interfaces/home_data_source.dart';
 
 /// Local mock data source.
 ///

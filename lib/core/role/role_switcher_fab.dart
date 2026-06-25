@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../config/util/dimensions.dart';
-import '../../config/util/styles.dart';
-import 'role_cubit.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/role/role_cubit.dart';
 
 /// Overlays a global floating button on top of every route that toggles the
 /// previewed [UserRole]. Wrap the app's router content with this in

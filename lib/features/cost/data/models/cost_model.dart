@@ -1,4 +1,4 @@
-import '../../domain/entities/cost_entity.dart';
+import 'package:clean_boilerplate/features/cost/domain/entities/cost_entity.dart';
 
 /// Data-layer DTO for a single line item.
 class CostItemModel {

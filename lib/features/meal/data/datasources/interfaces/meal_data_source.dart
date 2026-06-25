@@ -1,4 +1,4 @@
-import '../../models/meal_model.dart';
+import 'package:clean_boilerplate/features/meal/data/models/meal_model.dart';
 
 /// Contract for any source that can provide & mutate meal data.
 abstract class MealDataSource {

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../config/route/app_router.dart';
-import '../../../../config/util/dimensions.dart';
-import '../../../../config/util/styles.dart';
-import '../../../../core/extensions/context_extensions.dart';
-import '../../../settings/domain/entities/theme_mode.dart';
-import '../../../settings/presentation/bloc/theme/theme_bloc.dart';
-import '../../../settings/presentation/bloc/theme/theme_event.dart';
+import 'package:clean_boilerplate/config/route/app_router.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/features/settings/domain/entities/theme_mode.dart';
+import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_bloc.dart';
+import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_event.dart';
 
 /// A single navigation entry rendered in the [DashboardTopBar].
 class DashboardNavItem {

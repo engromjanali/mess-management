@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart' show DateTimeRange;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import '../../../../config/util/result.dart';
-import '../../../../core/usecase/usecase.dart';
-import '../../domain/entities/fund_entity.dart';
-import '../../domain/usecases/fund_usecases.dart';
-import 'fund_date_filter.dart';
-import 'fund_event.dart';
-import 'fund_state.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/core/usecase/usecase.dart';
+import 'package:clean_boilerplate/features/fund/domain/entities/fund_entity.dart';
+import 'package:clean_boilerplate/features/fund/domain/usecases/fund_usecases.dart';
+import 'package:clean_boilerplate/features/fund/presentation/bloc/fund_date_filter.dart';
+import 'package:clean_boilerplate/features/fund/presentation/bloc/fund_event.dart';
+import 'package:clean_boilerplate/features/fund/presentation/bloc/fund_state.dart';
 
 /// Fund BLoC — loads fund entries under the active date scope (all time, a
 /// single day, or a custom range) and applies add / update / delete mutations.

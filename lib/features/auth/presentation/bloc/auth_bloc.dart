@@ -1,11 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import '../../../../core/usecase/usecase.dart';
-import '../../domain/usecases/get_current_user_usecase.dart';
-import '../../domain/usecases/login_usecase.dart';
-import '../../domain/usecases/logout_usecase.dart';
-import 'auth_event.dart';
-import 'auth_state.dart';
+import 'package:clean_boilerplate/core/usecase/usecase.dart';
+import 'package:clean_boilerplate/features/auth/domain/usecases/get_current_user_usecase.dart';
+import 'package:clean_boilerplate/features/auth/domain/usecases/login_usecase.dart';
+import 'package:clean_boilerplate/features/auth/domain/usecases/logout_usecase.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_event.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
 
 /// Auth BLoC - Handles authentication logic with Freezed
 @injectable

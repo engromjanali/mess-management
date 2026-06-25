@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../../../config/util/dimensions.dart';
-import '../../../../config/util/styles.dart';
-import '../../../../core/extensions/context_extensions.dart';
-import '../../../../core/extensions/overly_extensions.dart';
-import '../../domain/entities/meal_member_entity.dart';
-import 'meal_formatters.dart';
-import 'meal_stepper.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
+import 'package:clean_boilerplate/features/meal/domain/entities/meal_member_entity.dart';
+import 'package:clean_boilerplate/features/meal/presentation/widgets/meal_formatters.dart';
+import 'package:clean_boilerplate/features/meal/presentation/widgets/meal_stepper.dart';
 
 /// Result returned by the add/edit meal form when the manager saves.
 class MemberMealFormResult {

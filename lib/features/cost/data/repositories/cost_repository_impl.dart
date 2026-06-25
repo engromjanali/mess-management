@@ -1,10 +1,10 @@
 import 'package:injectable/injectable.dart';
-import '../../../../config/util/result.dart';
-import '../../../../core/errors/exceptions.dart';
-import '../../../../core/errors/failures.dart';
-import '../../domain/entities/cost_entity.dart';
-import '../../domain/repositories/cost_repository.dart';
-import '../datasources/interfaces/cost_data_source.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/core/errors/exceptions.dart';
+import 'package:clean_boilerplate/core/errors/failures.dart';
+import 'package:clean_boilerplate/features/cost/domain/entities/cost_entity.dart';
+import 'package:clean_boilerplate/features/cost/domain/repositories/cost_repository.dart';
+import 'package:clean_boilerplate/features/cost/data/datasources/interfaces/cost_data_source.dart';
 
 /// Concrete [CostRepository] in the data layer.
 @LazySingleton(as: CostRepository)

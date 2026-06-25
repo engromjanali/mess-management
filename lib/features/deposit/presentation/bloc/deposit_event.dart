@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'deposit_view_mode.dart';
+import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_view_mode.dart';
 
 part 'deposit_event.freezed.dart';
 

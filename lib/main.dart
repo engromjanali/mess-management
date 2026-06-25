@@ -2,15 +2,15 @@ import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/them
 import 'package:clean_boilerplate/features/splash/presentation/bloc/splash_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'config/route/app_router.dart';
-import 'config/theme/app_theme.dart';
-import 'core/di/injection.dart';
-import 'core/role/role_cubit.dart';
-import 'core/role/role_switcher_fab.dart';
-import 'features/auth/presentation/bloc/auth_bloc.dart';
-import 'features/settings/presentation/bloc/localization/localization_bloc.dart';
-import 'features/settings/presentation/bloc/theme/theme_bloc.dart';
-import 'l10n/gen/app_localizations.dart';
+import 'package:clean_boilerplate/config/route/app_router.dart';
+import 'package:clean_boilerplate/config/theme/app_theme.dart';
+import 'package:clean_boilerplate/core/di/injection.dart';
+import 'package:clean_boilerplate/core/role/role_cubit.dart';
+import 'package:clean_boilerplate/core/role/role_switcher_fab.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:clean_boilerplate/features/settings/presentation/bloc/localization/localization_bloc.dart';
+import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_bloc.dart';
+import 'package:clean_boilerplate/l10n/gen/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

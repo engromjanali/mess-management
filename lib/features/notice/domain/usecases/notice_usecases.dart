@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
-import '../../../../config/util/result.dart';
-import '../../../../core/usecase/usecase.dart';
-import '../entities/notice_entity.dart';
-import '../repositories/notice_repository.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/core/usecase/usecase.dart';
+import 'package:clean_boilerplate/features/notice/domain/entities/notice_entity.dart';
+import 'package:clean_boilerplate/features/notice/domain/repositories/notice_repository.dart';
 
 /// Loads every notice.
 @lazySingleton

@@ -1,6 +1,6 @@
+import 'package:clean_boilerplate/features/auth/data/datasources/remote/auth_api_service.dart';
 import 'package:injectable/injectable.dart';
-import '../network/api_client.dart';
-import '../../features/auth/data/datasources/remote/auth_api_service.dart';
+import 'package:clean_boilerplate/core/network/api_client.dart';
 
 /// Data source module for dependency injection
 @module

@@ -1,7 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../../../config/util/app_constants.dart';
-import '../interfaces/settings_data_source.dart';
+import 'package:clean_boilerplate/config/util/app_constants.dart';
+import 'package:clean_boilerplate/features/settings/data/datasources/interfaces/settings_data_source.dart';
 
 /// Local implementation of SettingsDataSource using SharedPreferences
 @LazySingleton(as: SettingsDataSource)

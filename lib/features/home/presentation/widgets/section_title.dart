@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../../config/util/dimensions.dart';
-import '../../../../config/util/styles.dart';
-import '../../../../core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 
 /// Plain (non-sliver) section heading used by the tablet & desktop dashboards.
 ///

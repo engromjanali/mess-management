@@ -1,5 +1,5 @@
-import '../../../../config/util/result.dart';
-import '../entities/theme_mode.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/features/settings/domain/entities/theme_mode.dart';
 
 /// Settings repository interface (abstraction in domain layer)
 abstract class SettingsRepository {

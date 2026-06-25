@@ -1,5 +1,5 @@
-import '../../../../config/util/result.dart';
-import '../entities/cost_entity.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/features/cost/domain/entities/cost_entity.dart';
 
 /// Cost (bazar) repository contract (abstraction in the domain layer).
 abstract class CostRepository {

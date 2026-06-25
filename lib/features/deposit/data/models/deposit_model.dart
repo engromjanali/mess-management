@@ -1,4 +1,4 @@
-import '../../domain/entities/deposit_entity.dart';
+import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_entity.dart';
 
 /// Data-layer DTO for a selectable member.
 class DepositMemberModel {

@@ -1,7 +1,7 @@
 import 'package:injectable/injectable.dart';
-import '../../models/user_model.dart';
-import '../interfaces/auth_data_source.dart';
-import 'auth_api_service.dart';
+import 'package:clean_boilerplate/features/auth/data/models/user_model.dart';
+import 'package:clean_boilerplate/features/auth/data/datasources/interfaces/auth_data_source.dart';
+import 'package:clean_boilerplate/features/auth/data/datasources/remote/auth_api_service.dart';
 
 /// Remote data source implementation for authentication
 @LazySingleton(as: AuthDataSource)

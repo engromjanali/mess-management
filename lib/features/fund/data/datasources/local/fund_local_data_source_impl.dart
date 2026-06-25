@@ -1,7 +1,7 @@
 import 'package:injectable/injectable.dart';
-import '../../../../../core/errors/exceptions.dart';
-import '../../models/fund_model.dart';
-import '../interfaces/fund_data_source.dart';
+import 'package:clean_boilerplate/core/errors/exceptions.dart';
+import 'package:clean_boilerplate/features/fund/data/models/fund_model.dart';
+import 'package:clean_boilerplate/features/fund/data/datasources/interfaces/fund_data_source.dart';
 
 /// In-memory mock for the fund feature.
 ///

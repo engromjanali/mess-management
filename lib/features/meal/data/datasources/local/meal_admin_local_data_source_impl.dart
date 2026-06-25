@@ -1,6 +1,6 @@
 import 'package:injectable/injectable.dart';
-import '../../models/meal_admin_model.dart';
-import '../interfaces/meal_admin_data_source.dart';
+import 'package:clean_boilerplate/features/meal/data/models/meal_admin_model.dart';
+import 'package:clean_boilerplate/features/meal/data/datasources/interfaces/meal_admin_data_source.dart';
 
 /// Local, in-memory mock admin meal source.
 ///

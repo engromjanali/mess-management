@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../domain/entities/meal_entity.dart';
+import 'package:clean_boilerplate/features/meal/domain/entities/meal_entity.dart';
 
 part 'meal_state.freezed.dart';
 

@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../errors/exceptions.dart';
+import 'package:clean_boilerplate/core/errors/exceptions.dart';
 
 /// Centralized API client for making HTTP requests
 /// 

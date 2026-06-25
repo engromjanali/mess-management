@@ -1,6 +1,6 @@
 import 'package:clean_boilerplate/core/assets/fonts.gen.dart';
 import 'package:flutter/material.dart';
-import 'custom_theme_colors.dart';
+import 'package:clean_boilerplate/config/theme/custom_theme_colors.dart';
 
 /// Dark theme data configuration
 ThemeData darkThemeData = ThemeData(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'light_theme_data.dart';
-import 'dark_theme_data.dart';
+import 'package:clean_boilerplate/config/theme/light_theme_data.dart';
+import 'package:clean_boilerplate/config/theme/dark_theme_data.dart';
 
 /// App theme configuration with singleton pattern
 class AppTheme {

@@ -1,4 +1,4 @@
-import '../../features/settings/domain/entities/language_model.dart';
+import 'package:clean_boilerplate/features/settings/domain/entities/language_model.dart';
 
 /// Application-level constants
 class AppConstants {

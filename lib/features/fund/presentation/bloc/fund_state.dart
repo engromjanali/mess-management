@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart' show DateTimeRange;
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../domain/entities/fund_entity.dart';
-import 'fund_date_filter.dart';
+import 'package:clean_boilerplate/features/fund/domain/entities/fund_entity.dart';
+import 'package:clean_boilerplate/features/fund/presentation/bloc/fund_date_filter.dart';
 
 part 'fund_state.freezed.dart';
 

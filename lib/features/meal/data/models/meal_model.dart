@@ -1,4 +1,4 @@
-import '../../domain/entities/meal_entity.dart';
+import 'package:clean_boilerplate/features/meal/domain/entities/meal_entity.dart';
 
 /// Data-layer DTO for a single day's meal record.
 ///

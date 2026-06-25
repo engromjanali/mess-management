@@ -1,7 +1,7 @@
 import 'package:injectable/injectable.dart';
-import '../../../../../core/errors/exceptions.dart';
-import '../../models/notice_model.dart';
-import '../interfaces/notice_data_source.dart';
+import 'package:clean_boilerplate/core/errors/exceptions.dart';
+import 'package:clean_boilerplate/features/notice/data/models/notice_model.dart';
+import 'package:clean_boilerplate/features/notice/data/datasources/interfaces/notice_data_source.dart';
 
 /// In-memory mock for the notice feature.
 ///

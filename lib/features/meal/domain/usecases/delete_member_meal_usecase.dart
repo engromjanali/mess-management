@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
-import '../../../../config/util/result.dart';
-import '../../../../core/usecase/usecase.dart';
-import '../entities/meal_member_entity.dart';
-import '../repositories/meal_admin_repository.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/core/usecase/usecase.dart';
+import 'package:clean_boilerplate/features/meal/domain/entities/meal_member_entity.dart';
+import 'package:clean_boilerplate/features/meal/domain/repositories/meal_admin_repository.dart';
 
 /// Parameters for [DeleteMemberMealUseCase].
 class DeleteMemberMealParams extends Equatable {

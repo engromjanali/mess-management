@@ -1,10 +1,10 @@
 import 'package:injectable/injectable.dart';
-import '../../../../config/util/result.dart';
-import '../../../../core/errors/exceptions.dart';
-import '../../../../core/errors/failures.dart';
-import '../../domain/entities/notice_entity.dart';
-import '../../domain/repositories/notice_repository.dart';
-import '../datasources/interfaces/notice_data_source.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/core/errors/exceptions.dart';
+import 'package:clean_boilerplate/core/errors/failures.dart';
+import 'package:clean_boilerplate/features/notice/domain/entities/notice_entity.dart';
+import 'package:clean_boilerplate/features/notice/domain/repositories/notice_repository.dart';
+import 'package:clean_boilerplate/features/notice/data/datasources/interfaces/notice_data_source.dart';
 
 /// Concrete [NoticeRepository] in the data layer.
 @LazySingleton(as: NoticeRepository)

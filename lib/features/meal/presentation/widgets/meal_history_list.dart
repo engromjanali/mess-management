@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../../../config/util/dimensions.dart';
-import '../../../../config/util/styles.dart';
-import '../../../../core/extensions/context_extensions.dart';
-import '../../../home/presentation/widgets/dashboard_formatters.dart';
-import '../../domain/entities/meal_entity.dart';
-import 'meal_formatters.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_formatters.dart';
+import 'package:clean_boilerplate/features/meal/domain/entities/meal_entity.dart';
+import 'package:clean_boilerplate/features/meal/presentation/widgets/meal_formatters.dart';
 
 /// Scrollable-free meal history card: one row per day with the B/L/D breakdown,
 /// the day's meal total and its cost. Designed to sit inside an outer scroll.

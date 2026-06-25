@@ -1,4 +1,4 @@
-import '../../domain/entities/notice_entity.dart';
+import 'package:clean_boilerplate/features/notice/domain/entities/notice_entity.dart';
 
 /// Data-layer DTO for a notice.
 class NoticeModel {

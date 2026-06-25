@@ -1,7 +1,7 @@
 import 'package:injectable/injectable.dart';
-import '../../../../../core/errors/exceptions.dart';
-import '../../models/deposit_model.dart';
-import '../interfaces/deposit_data_source.dart';
+import 'package:clean_boilerplate/core/errors/exceptions.dart';
+import 'package:clean_boilerplate/features/deposit/data/models/deposit_model.dart';
+import 'package:clean_boilerplate/features/deposit/data/datasources/interfaces/deposit_data_source.dart';
 
 /// In-memory mock for the deposit feature.
 ///

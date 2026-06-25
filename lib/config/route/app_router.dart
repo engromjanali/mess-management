@@ -1,16 +1,16 @@
 import 'package:clean_boilerplate/features/splash/presentation/screens/splash_screeen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../features/auth/presentation/screens/login_screen.dart';
-import '../../features/auth/presentation/screens/register_screen.dart';
-import '../../features/cost/presentation/screens/cost_screen.dart';
-import '../../features/deposit/presentation/screens/deposit_screen.dart';
-import '../../features/fund/presentation/screens/fund_screen.dart';
-import '../../features/home/presentation/screens/home_screen.dart';
-import '../../features/meal/presentation/screens/meal_entry_screen.dart';
-import '../../features/meal/presentation/screens/meal_screen.dart';
-import '../../features/notice/presentation/screens/notice_screen.dart';
-import '../../features/settings/presentation/screens/settings_screen.dart';
+import 'package:clean_boilerplate/features/auth/presentation/screens/login_screen.dart';
+import 'package:clean_boilerplate/features/auth/presentation/screens/register_screen.dart';
+import 'package:clean_boilerplate/features/cost/presentation/screens/cost_screen.dart';
+import 'package:clean_boilerplate/features/deposit/presentation/screens/deposit_screen.dart';
+import 'package:clean_boilerplate/features/fund/presentation/screens/fund_screen.dart';
+import 'package:clean_boilerplate/features/home/presentation/screens/home_screen.dart';
+import 'package:clean_boilerplate/features/meal/presentation/screens/meal_entry_screen.dart';
+import 'package:clean_boilerplate/features/meal/presentation/screens/meal_screen.dart';
+import 'package:clean_boilerplate/features/notice/presentation/screens/notice_screen.dart';
+import 'package:clean_boilerplate/features/settings/presentation/screens/settings_screen.dart';
 
 /// App route constants
 class AppRoutes {

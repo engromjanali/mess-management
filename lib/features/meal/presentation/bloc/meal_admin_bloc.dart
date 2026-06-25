@@ -1,13 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import '../../../../core/usecase/usecase.dart';
-import '../../domain/entities/meal_member_entity.dart';
-import '../../domain/usecases/add_meal_for_all_usecase.dart';
-import '../../domain/usecases/delete_member_meal_usecase.dart';
-import '../../domain/usecases/get_meal_admin_data_usecase.dart';
-import '../../domain/usecases/save_member_meal_usecase.dart';
-import 'meal_admin_event.dart';
-import 'meal_admin_state.dart';
+import 'package:clean_boilerplate/core/usecase/usecase.dart';
+import 'package:clean_boilerplate/features/meal/domain/entities/meal_member_entity.dart';
+import 'package:clean_boilerplate/features/meal/domain/usecases/add_meal_for_all_usecase.dart';
+import 'package:clean_boilerplate/features/meal/domain/usecases/delete_member_meal_usecase.dart';
+import 'package:clean_boilerplate/features/meal/domain/usecases/get_meal_admin_data_usecase.dart';
+import 'package:clean_boilerplate/features/meal/domain/usecases/save_member_meal_usecase.dart';
+import 'package:clean_boilerplate/features/meal/presentation/bloc/meal_admin_event.dart';
+import 'package:clean_boilerplate/features/meal/presentation/bloc/meal_admin_state.dart';
 
 /// Admin meal-management BLoC — loads the roster and records and lets a manager
 /// add, edit and delete meals for a specific member on a specific date.

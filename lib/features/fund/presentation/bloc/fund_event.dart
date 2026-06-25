@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'fund_date_filter.dart';
+import 'package:clean_boilerplate/features/fund/presentation/bloc/fund_date_filter.dart';
 
 part 'fund_event.freezed.dart';
 

@@ -1,5 +1,5 @@
-import '../../../../config/util/result.dart';
-import '../entities/deposit_entity.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_entity.dart';
 
 /// Deposit repository contract (abstraction in the domain layer).
 abstract class DepositRepository {

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
-import '../../../../../config/util/app_constants.dart';
-import '../../../../../core/usecase/usecase.dart';
-import '../../../domain/entities/locale_entity.dart';
-import '../../../domain/usecases/get_locale_usecase.dart';
-import '../../../domain/usecases/set_locale_usecase.dart';
-import '../../../domain/usecases/update_api_locale_usecase.dart';
+import 'package:clean_boilerplate/config/util/app_constants.dart';
+import 'package:clean_boilerplate/core/usecase/usecase.dart';
+import 'package:clean_boilerplate/features/settings/domain/entities/locale_entity.dart';
+import 'package:clean_boilerplate/features/settings/domain/usecases/get_locale_usecase.dart';
+import 'package:clean_boilerplate/features/settings/domain/usecases/set_locale_usecase.dart';
+import 'package:clean_boilerplate/features/settings/domain/usecases/update_api_locale_usecase.dart';
 
 part 'localization_event.dart';
 part 'localization_state.dart';

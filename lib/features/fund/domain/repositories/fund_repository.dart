@@ -1,5 +1,5 @@
-import '../../../../config/util/result.dart';
-import '../entities/fund_entity.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/features/fund/domain/entities/fund_entity.dart';
 
 /// Fund repository contract (abstraction in the domain layer).
 abstract class FundRepository {

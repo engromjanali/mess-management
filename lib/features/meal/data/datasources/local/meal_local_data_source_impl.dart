@@ -1,6 +1,6 @@
 import 'package:injectable/injectable.dart';
-import '../../models/meal_model.dart';
-import '../interfaces/meal_data_source.dart';
+import 'package:clean_boilerplate/features/meal/data/models/meal_model.dart';
+import 'package:clean_boilerplate/features/meal/data/datasources/interfaces/meal_data_source.dart';
 
 /// Local, in-memory mock meal source.
 ///

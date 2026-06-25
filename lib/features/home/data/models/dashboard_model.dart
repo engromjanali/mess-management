@@ -1,4 +1,4 @@
-import '../../domain/entities/dashboard_entity.dart';
+import 'package:clean_boilerplate/features/home/domain/entities/dashboard_entity.dart';
 
 /// Data-layer representation of the dashboard.
 ///

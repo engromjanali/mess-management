@@ -1,4 +1,4 @@
-import '../../models/fund_model.dart';
+import 'package:clean_boilerplate/features/fund/data/models/fund_model.dart';
 
 /// Contract for any source that can provide & mutate fund entries.
 abstract class FundDataSource {

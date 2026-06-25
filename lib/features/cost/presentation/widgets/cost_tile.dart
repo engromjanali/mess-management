@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../../../config/util/dimensions.dart';
-import '../../../../config/util/styles.dart';
-import '../../../../core/extensions/context_extensions.dart';
-import '../../domain/entities/cost_entity.dart';
-import 'cost_formatters.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/features/cost/domain/entities/cost_entity.dart';
+import 'package:clean_boilerplate/features/cost/presentation/widgets/cost_formatters.dart';
 
 /// One bazar entry card — an index badge, the timestamp + person, the total
 /// (maskable), a 3-dot menu (admin), and an expandable product breakdown.

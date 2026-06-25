@@ -1,4 +1,4 @@
-import '../../domain/entities/meal_member_entity.dart';
+import 'package:clean_boilerplate/features/meal/domain/entities/meal_member_entity.dart';
 
 /// Data-layer DTO for a mess member.
 ///

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../../../config/util/dimensions.dart';
-import '../../../../config/util/styles.dart';
-import '../../../../core/extensions/context_extensions.dart';
-import '../../domain/entities/dashboard_entity.dart';
-import 'dashboard_formatters.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/features/home/domain/entities/dashboard_entity.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_formatters.dart';
 
 /// Manager-only breakdown of every member's deposit / meal / remaining.
 ///

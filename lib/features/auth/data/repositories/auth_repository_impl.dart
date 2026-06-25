@@ -1,10 +1,10 @@
 import 'package:injectable/injectable.dart';
-import '../../../../config/util/result.dart';
-import '../../../../core/errors/exceptions.dart';
-import '../../../../core/errors/failures.dart';
-import '../../domain/entities/user_entity.dart';
-import '../../domain/repositories/auth_repository.dart';
-import '../datasources/interfaces/auth_data_source.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/core/errors/exceptions.dart';
+import 'package:clean_boilerplate/core/errors/failures.dart';
+import 'package:clean_boilerplate/features/auth/domain/entities/user_entity.dart';
+import 'package:clean_boilerplate/features/auth/domain/repositories/auth_repository.dart';
+import 'package:clean_boilerplate/features/auth/data/datasources/interfaces/auth_data_source.dart';
 
 /// Auth repository implementation (concrete class in data layer)
 @LazySingleton(as: AuthRepository)

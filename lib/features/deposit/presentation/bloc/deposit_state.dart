@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart' show DateTimeRange;
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../domain/entities/deposit_entity.dart';
-import 'deposit_view_mode.dart';
+import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_entity.dart';
+import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_view_mode.dart';
 
 part 'deposit_state.freezed.dart';
 

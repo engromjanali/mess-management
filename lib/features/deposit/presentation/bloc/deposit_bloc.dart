@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart' show DateTimeRange;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import '../../../../config/util/result.dart';
-import '../../../../core/usecase/usecase.dart';
-import '../../domain/entities/deposit_entity.dart';
-import '../../domain/usecases/deposit_usecases.dart';
-import 'deposit_event.dart';
-import 'deposit_state.dart';
-import 'deposit_view_mode.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/core/usecase/usecase.dart';
+import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_entity.dart';
+import 'package:clean_boilerplate/features/deposit/domain/usecases/deposit_usecases.dart';
+import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_event.dart';
+import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_state.dart';
+import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_view_mode.dart';
 
 /// Deposit BLoC — loads deposits under the active filter (per-member,
 /// per-date, or "mine") and applies add / update / delete mutations.
