@@ -48,6 +48,7 @@ dependencies:
 
 
   country_code_picker: ^3.4.1
+  firebase_core: ^4.11.0
 
 
 dev_dependencies:
