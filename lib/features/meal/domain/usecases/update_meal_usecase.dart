@@ -12,12 +12,7 @@ class UpdateMealParams extends Equatable {
   final double lunch;
   final double dinner;
 
-  const UpdateMealParams({
-    required this.date,
-    required this.breakfast,
-    required this.lunch,
-    required this.dinner,
-  });
+  const UpdateMealParams({required this.date, required this.breakfast, required this.lunch, required this.dinner});
 
   @override
   List<Object?> get props => [date, breakfast, lunch, dinner];
@@ -25,19 +20,13 @@ class UpdateMealParams extends Equatable {
 
 /// Updates the meal counts for a given day and returns the fresh overview.
 @lazySingleton
-class UpdateMealUseCase
-    implements UseCase<MealOverviewEntity, UpdateMealParams> {
+class UpdateMealUseCase implements UseCase<MealOverviewEntity, UpdateMealParams> {
   final MealRepository _repository;
 
   UpdateMealUseCase(this._repository);
 
   @override
   ResultFuture<MealOverviewEntity> call(UpdateMealParams params) {
-    return _repository.updateMeal(
-      date: params.date,
-      breakfast: params.breakfast,
-      lunch: params.lunch,
-      dinner: params.dinner,
-    );
+    return _repository.updateMeal(date: params.date, breakfast: params.breakfast, lunch: params.lunch, dinner: params.dinner);
   }
 }

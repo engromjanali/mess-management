@@ -10,11 +10,7 @@ import 'package:clean_boilerplate/features/meal/presentation/widgets/meal_steppe
 /// day in one action — the core business rule (add meal for all members at a
 /// time, not one by one).
 class ApplyToAllCard extends StatefulWidget {
-  const ApplyToAllCard({
-    required this.memberCount,
-    required this.onApply,
-    super.key,
-  });
+  const ApplyToAllCard({required this.memberCount, required this.onApply, super.key});
 
   final int memberCount;
   final void Function(double breakfast, double lunch, double dinner) onApply;
@@ -30,8 +26,7 @@ class _ApplyToAllCardState extends State<ApplyToAllCard> {
 
   double get _total => _breakfast + _lunch + _dinner;
 
-  String _fmt(double v) =>
-      v == v.roundToDouble() ? v.toStringAsFixed(0) : v.toString();
+  String _fmt(double v) => v == v.roundToDouble() ? v.toStringAsFixed(0) : v.toString();
 
   @override
   Widget build(BuildContext context) {
@@ -58,12 +53,8 @@ class _ApplyToAllCardState extends State<ApplyToAllCard> {
             children: [
               Container(
                 padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-                decoration: BoxDecoration(
-                  color: colors.primaryColor.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                ),
-                child: Icon(Icons.groups_2_rounded,
-                    color: colors.primaryColor, size: Dimensions.iconSizeDefault),
+                decoration: BoxDecoration(color: colors.primaryColor.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
+                child: Icon(Icons.groups_2_rounded, color: colors.primaryColor, size: Dimensions.iconSizeDefault),
               ),
               const SizedBox(width: Dimensions.paddingSizeDefault),
               Expanded(
@@ -72,17 +63,11 @@ class _ApplyToAllCardState extends State<ApplyToAllCard> {
                   children: [
                     Text(
                       'Add meal for everyone',
-                      style: AppTextStyles.sfProRoundedBold.copyWith(
-                        fontSize: Dimensions.fontSizeExtraLarge,
-                        color: colors.textPrimaryColor,
-                      ),
+                      style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
                     ),
                     Text(
                       'Applies to all ${widget.memberCount} members at once',
-                      style: AppTextStyles.sfProRoundedMedium.copyWith(
-                        fontSize: Dimensions.fontSizeSmall,
-                        color: colors.textSecondaryColor,
-                      ),
+                      style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
                     ),
                   ],
                 ),
@@ -90,48 +75,19 @@ class _ApplyToAllCardState extends State<ApplyToAllCard> {
             ],
           ),
           const SizedBox(height: Dimensions.paddingSizeLarge),
-          _StepRow(
-            icon: Icons.free_breakfast_rounded,
-            label: 'Breakfast',
-            accent: colors.warningColor,
-            value: _breakfast,
-            onChanged: (v) => setState(() => _breakfast = v),
-          ),
+          _StepRow(icon: Icons.free_breakfast_rounded, label: 'Breakfast', accent: colors.warningColor, value: _breakfast, onChanged: (v) => setState(() => _breakfast = v)),
           const SizedBox(height: Dimensions.paddingSizeSmall),
-          _StepRow(
-            icon: Icons.lunch_dining_rounded,
-            label: 'Lunch',
-            accent: colors.primaryColor,
-            value: _lunch,
-            onChanged: (v) => setState(() => _lunch = v),
-          ),
+          _StepRow(icon: Icons.lunch_dining_rounded, label: 'Lunch', accent: colors.primaryColor, value: _lunch, onChanged: (v) => setState(() => _lunch = v)),
           const SizedBox(height: Dimensions.paddingSizeSmall),
-          _StepRow(
-            icon: Icons.dinner_dining_rounded,
-            label: 'Dinner',
-            accent: colors.infoColor,
-            value: _dinner,
-            onChanged: (v) => setState(() => _dinner = v),
-          ),
+          _StepRow(icon: Icons.dinner_dining_rounded, label: 'Dinner', accent: colors.infoColor, value: _dinner, onChanged: (v) => setState(() => _dinner = v)),
           const SizedBox(height: Dimensions.paddingSizeLarge),
           SizedBox(
             height: Dimensions.buttonHeightLarge,
             child: ElevatedButton.icon(
-              onPressed: _total == 0
-                  ? null
-                  : () => widget.onApply(_breakfast, _lunch, _dinner),
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
-                ),
-              ),
+              onPressed: _total == 0 ? null : () => widget.onApply(_breakfast, _lunch, _dinner),
+              style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge))),
               icon: const Icon(Icons.done_all_rounded),
-              label: Text(
-                'Apply ${_fmt(_total)} meals to all',
-                style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-                  fontSize: Dimensions.fontSizeLarge,
-                ),
-              ),
+              label: Text('Apply ${_fmt(_total)} meals to all', style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
             ),
           ),
         ],
@@ -141,13 +97,7 @@ class _ApplyToAllCardState extends State<ApplyToAllCard> {
 }
 
 class _StepRow extends StatelessWidget {
-  const _StepRow({
-    required this.icon,
-    required this.label,
-    required this.accent,
-    required this.value,
-    required this.onChanged,
-  });
+  const _StepRow({required this.icon, required this.label, required this.accent, required this.value, required this.onChanged});
 
   final IconData icon;
   final String label;
@@ -165,10 +115,7 @@ class _StepRow extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-              fontSize: Dimensions.fontSizeLarge,
-              color: colors.textPrimaryColor,
-            ),
+            style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
           ),
         ),
         MealStepper(value: value, onChanged: onChanged, accent: accent),

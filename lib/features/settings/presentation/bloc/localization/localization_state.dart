@@ -15,9 +15,5 @@ class LocalizationState with _$LocalizationState {
 
   /// Get the current locale from any state
   @override
-  Locale get locale => when(
-        initial: (locale) => locale,
-        loaded: (locale) => locale,
-        error: (_, locale) => locale,
-      );
+  Locale get locale => when(initial: (locale) => locale, loaded: (locale) => locale, error: (_, locale) => locale);
 }

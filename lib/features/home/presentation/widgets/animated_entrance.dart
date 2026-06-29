@@ -6,13 +6,7 @@ import 'package:flutter/material.dart';
 /// produce a cascading reveal. Built on a single [AnimationController] so it is
 /// cheap to use across a grid of cards.
 class AnimatedEntrance extends StatefulWidget {
-  const AnimatedEntrance({
-    required this.child,
-    this.delay = Duration.zero,
-    this.duration = const Duration(milliseconds: 450),
-    this.offset = const Offset(0, 0.18),
-    super.key,
-  });
+  const AnimatedEntrance({required this.child, this.delay = Duration.zero, this.duration = const Duration(milliseconds: 450), this.offset = const Offset(0, 0.18), super.key});
 
   final Widget child;
   final Duration delay;
@@ -23,20 +17,12 @@ class AnimatedEntrance extends StatefulWidget {
   State<AnimatedEntrance> createState() => _AnimatedEntranceState();
 }
 
-class _AnimatedEntranceState extends State<AnimatedEntrance>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller =
-      AnimationController(vsync: this, duration: widget.duration);
+class _AnimatedEntranceState extends State<AnimatedEntrance> with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(vsync: this, duration: widget.duration);
 
-  late final Animation<double> _fade = CurvedAnimation(
-    parent: _controller,
-    curve: Curves.easeOut,
-  );
+  late final Animation<double> _fade = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
 
-  late final Animation<Offset> _slide = Tween<Offset>(
-    begin: widget.offset,
-    end: Offset.zero,
-  ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+  late final Animation<Offset> _slide = Tween<Offset>(begin: widget.offset, end: Offset.zero).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
   @override
   void initState() {

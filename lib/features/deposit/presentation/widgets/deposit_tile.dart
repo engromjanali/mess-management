@@ -8,14 +8,7 @@ import 'package:clean_boilerplate/features/deposit/presentation/widgets/deposit_
 /// One deposit row — signed amount with a Debit/Credit status badge, the
 /// member/date context, an optional note, and (for admins) edit / delete.
 class DepositTile extends StatelessWidget {
-  const DepositTile({
-    required this.deposit,
-    required this.showMember,
-    required this.showActions,
-    this.onEdit,
-    this.onDelete,
-    super.key,
-  });
+  const DepositTile({required this.deposit, required this.showMember, required this.showActions, this.onEdit, this.onDelete, super.key});
 
   final DepositEntity deposit;
 
@@ -34,12 +27,8 @@ class DepositTile extends StatelessWidget {
     final isCredit = deposit.isCredit;
     final accent = isCredit ? colors.successColor : colors.errorColor;
 
-    final title = showMember
-        ? deposit.memberName
-        : DepositFormatters.date(deposit.date);
-    final subtitle = showMember
-        ? DepositFormatters.date(deposit.date)
-        : (deposit.note?.isNotEmpty ?? false ? deposit.note! : null);
+    final title = showMember ? deposit.memberName : DepositFormatters.date(deposit.date);
+    final subtitle = showMember ? DepositFormatters.date(deposit.date) : (deposit.note?.isNotEmpty ?? false ? deposit.note! : null);
 
     return Container(
       padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
@@ -55,17 +44,8 @@ class DepositTile extends StatelessWidget {
             width: 40,
             height: 40,
             alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: accent.withValues(alpha: 0.14),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              isCredit
-                  ? Icons.south_west_rounded
-                  : Icons.north_east_rounded,
-              color: accent,
-              size: Dimensions.iconSizeDefault,
-            ),
+            decoration: BoxDecoration(color: accent.withValues(alpha: 0.14), shape: BoxShape.circle),
+            child: Icon(isCredit ? Icons.south_west_rounded : Icons.north_east_rounded, color: accent, size: Dimensions.iconSizeDefault),
           ),
           const SizedBox(width: Dimensions.paddingSizeDefault),
           // Title + context.
@@ -80,10 +60,7 @@ class DepositTile extends StatelessWidget {
                         title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-                          fontSize: Dimensions.fontSizeLarge,
-                          color: colors.textPrimaryColor,
-                        ),
+                        style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
                       ),
                     ),
                     const SizedBox(width: Dimensions.paddingSizeSmall),
@@ -96,10 +73,7 @@ class DepositTile extends StatelessWidget {
                     subtitle,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: AppTextStyles.sfProRoundedMedium.copyWith(
-                      fontSize: Dimensions.fontSizeSmall,
-                      color: colors.textSecondaryColor,
-                    ),
+                    style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
                   ),
                 ],
               ],
@@ -109,25 +83,20 @@ class DepositTile extends StatelessWidget {
           // Signed amount.
           Text(
             DepositFormatters.signedTaka(deposit.amount),
-            style: AppTextStyles.sfProRoundedBold.copyWith(
-              fontSize: Dimensions.fontSizeLarge,
-              color: accent,
-            ),
+            style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: accent),
           ),
           if (showActions) ...[
             const SizedBox(width: Dimensions.paddingSizeExtraSmall),
             IconButton(
               tooltip: 'Edit',
               visualDensity: VisualDensity.compact,
-              icon: Icon(Icons.edit_rounded,
-                  size: Dimensions.iconSizeDefault, color: colors.infoColor),
+              icon: Icon(Icons.edit_rounded, size: Dimensions.iconSizeDefault, color: colors.infoColor),
               onPressed: onEdit,
             ),
             IconButton(
               tooltip: 'Delete',
               visualDensity: VisualDensity.compact,
-              icon: Icon(Icons.delete_outline_rounded,
-                  size: Dimensions.iconSizeDefault, color: colors.errorColor),
+              icon: Icon(Icons.delete_outline_rounded, size: Dimensions.iconSizeDefault, color: colors.errorColor),
               onPressed: onDelete,
             ),
           ],
@@ -145,20 +114,11 @@ class _StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: Dimensions.paddingSizeSmall,
-        vertical: 2,
-      ),
-      decoration: BoxDecoration(
-        color: accent.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: 2),
+      decoration: BoxDecoration(color: accent.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
       child: Text(
         label,
-        style: AppTextStyles.sfProRoundedBold.copyWith(
-          fontSize: Dimensions.fontSizeExtraSmall,
-          color: accent,
-        ),
+        style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: accent),
       ),
     );
   }

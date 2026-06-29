@@ -7,6 +7,7 @@ import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/screen_matres_extensions.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
+import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/stat_card.dart';
@@ -32,8 +33,7 @@ class CostScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final isAdmin = context.read<RoleCubit>().state.isAdmin;
     return BlocProvider<CostBloc>(
-      create: (_) =>
-          getIt<CostBloc>()..add(CostEvent.started(isAdmin: isAdmin)),
+      create: (_) => getIt<CostBloc>()..add(CostEvent.started(isAdmin: isAdmin)),
       child: const _CostView(),
     );
   }
@@ -63,15 +63,9 @@ class _CostViewState extends State<_CostView> {
       child: Scaffold(
         backgroundColor: context.theme.scaffoldBackgroundColor,
         appBar: AppBar(
+          leading: const HomeBackButton(),
           title: const Text('Cost'),
-          actions: [
-            IconButton(
-              tooltip: 'Refresh',
-              icon: const Icon(Icons.refresh_rounded),
-              onPressed: () =>
-                  context.read<CostBloc>().add(const CostEvent.refresh()),
-            ),
-          ],
+          actions: [IconButton(tooltip: 'Refresh', icon: const Icon(Icons.refresh_rounded), onPressed: () => context.read<CostBloc>().add(const CostEvent.refresh()))],
         ),
         body: BlocConsumer<CostBloc, CostState>(
           listener: (context, state) {
@@ -88,8 +82,7 @@ class _CostViewState extends State<_CostView> {
           },
           builder: (context, state) {
             return state.maybeWhen(
-              loading: () =>
-                  const Center(child: CircularProgressIndicator.adaptive()),
+              loading: () => const Center(child: CircularProgressIndicator.adaptive()),
               error: (message) => _ErrorView(message: message),
               loaded: (costs, members, isAdmin, saving, _) {
                 final tab = isAdmin ? _tab : _CostTab.list;
@@ -97,51 +90,28 @@ class _CostViewState extends State<_CostView> {
                   children: [
                     Center(
                       child: ConstrainedBox(
-                        constraints: const BoxConstraints(
-                            maxWidth: Dimensions.webMaxWidth),
+                        constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                         child: Column(
                           children: [
                             if (isAdmin)
                               Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                  Dimensions.paddingSizeLarge,
-                                  Dimensions.paddingSizeLarge,
-                                  Dimensions.paddingSizeLarge,
-                                  0,
-                                ),
-                                child: _TabSwitch(
-                                  tab: tab,
-                                  onChanged: (t) => setState(() => _tab = t),
-                                ),
+                                padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, 0),
+                                child: _TabSwitch(tab: tab, onChanged: (t) => setState(() => _tab = t)),
                               ),
                             Expanded(
                               child: tab == _CostTab.list
-                                  ? _ListTab(
-                                      costs: costs,
-                                      isAdmin: isAdmin,
-                                      members: members,
-                                      showCost: _showCost,
-                                      onToggleCost: () => setState(
-                                          () => _showCost = !_showCost),
-                                    )
+                                  ? _ListTab(costs: costs, isAdmin: isAdmin, members: members, showCost: _showCost, onToggleCost: () => setState(() => _showCost = !_showCost))
                                   : _EntryTab(members: members),
                             ),
                           ],
                         ),
                       ),
                     ),
-                    if (saving)
-                      const Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        child: LinearProgressIndicator(minHeight: 2),
-                      ),
+                    if (saving) const Positioned(top: 0, left: 0, right: 0, child: LinearProgressIndicator(minHeight: 2)),
                   ],
                 );
               },
-              orElse: () =>
-                  const Center(child: CircularProgressIndicator.adaptive()),
+              orElse: () => const Center(child: CircularProgressIndicator.adaptive()),
             );
           },
         ),
@@ -160,16 +130,8 @@ class _TabSwitch extends StatelessWidget {
   Widget build(BuildContext context) {
     return SegmentedButton<_CostTab>(
       segments: const [
-        ButtonSegment(
-          value: _CostTab.list,
-          icon: Icon(Icons.format_list_numbered_rounded),
-          label: Text('Bazar List'),
-        ),
-        ButtonSegment(
-          value: _CostTab.entry,
-          icon: Icon(Icons.edit_rounded),
-          label: Text('Bazar Entry'),
-        ),
+        ButtonSegment(value: _CostTab.list, icon: Icon(Icons.format_list_numbered_rounded), label: Text('Bazar List')),
+        ButtonSegment(value: _CostTab.entry, icon: Icon(Icons.edit_rounded), label: Text('Bazar Entry')),
       ],
       selected: {tab},
       showSelectedIcon: false,
@@ -183,13 +145,7 @@ class _TabSwitch extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────
 
 class _ListTab extends StatelessWidget {
-  const _ListTab({
-    required this.costs,
-    required this.isAdmin,
-    required this.members,
-    required this.showCost,
-    required this.onToggleCost,
-  });
+  const _ListTab({required this.costs, required this.isAdmin, required this.members, required this.showCost, required this.onToggleCost});
 
   final List<CostEntity> costs;
   final bool isAdmin;
@@ -203,14 +159,10 @@ class _ListTab extends StatelessWidget {
     final c = context.customThemeColors;
     final avg = costs.isEmpty ? 0.0 : costs.grandTotal / costs.length;
     return [
-      _Stat('Total Cost', _mask(costs.grandTotal), Icons.shopping_cart_rounded,
-          c.primaryColor),
-      _Stat('Entries', '${costs.length}', Icons.receipt_long_rounded,
-          c.infoColor),
-      _Stat('Products', '${costs.totalItems}', Icons.inventory_2_rounded,
-          c.secondaryColor),
-      _Stat('Avg / Entry', _mask(avg), Icons.trending_up_rounded,
-          c.successColor),
+      _Stat('Total Cost', _mask(costs.grandTotal), Icons.shopping_cart_rounded, c.primaryColor),
+      _Stat('Entries', '${costs.length}', Icons.receipt_long_rounded, c.infoColor),
+      _Stat('Products', '${costs.totalItems}', Icons.inventory_2_rounded, c.secondaryColor),
+      _Stat('Avg / Entry', _mask(avg), Icons.trending_up_rounded, c.successColor),
     ];
   }
 
@@ -220,13 +172,7 @@ class _ListTab extends StatelessWidget {
       context: context,
       members: members,
       existing: cost,
-      onSubmit: ({required personId, required date, required items}) =>
-          bloc.add(CostEvent.update(
-        id: cost.id,
-        personId: personId,
-        date: date,
-        items: items,
-      )),
+      onSubmit: ({required personId, required date, required items}) => bloc.add(CostEvent.update(id: cost.id, personId: personId, date: date, items: items)),
     );
   }
 
@@ -242,14 +188,8 @@ class _ListTab extends StatelessWidget {
           '(${cost.itemCount} item${cost.itemCount == 1 ? '' : 's'})?',
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Delete'),
-          ),
+          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.of(ctx).pop(true), child: const Text('Delete')),
         ],
       ),
     );
@@ -280,18 +220,10 @@ class _ListTab extends StatelessWidget {
             else
               for (var i = 0; i < costs.length; i++)
                 Padding(
-                  padding: const EdgeInsets.only(
-                      bottom: Dimensions.paddingSizeDefault),
+                  padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeDefault),
                   child: AnimatedEntrance(
                     delay: Duration(milliseconds: 30 * i),
-                    child: CostTile(
-                      cost: costs[i],
-                      index: i,
-                      maskCost: !showCost,
-                      showActions: isAdmin,
-                      onEdit: () => _onEdit(context, costs[i]),
-                      onDelete: () => _onDelete(context, costs[i]),
-                    ),
+                    child: CostTile(cost: costs[i], index: i, maskCost: !showCost, showActions: isAdmin, onEdit: () => _onEdit(context, costs[i]), onDelete: () => _onDelete(context, costs[i])),
                   ),
                 ),
             SizedBox(height: context.bottomPadding),
@@ -318,27 +250,16 @@ class _CostBanner extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: Dimensions.paddingSizeLarge,
-            vertical: Dimensions.paddingSizeDefault + 2,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault + 2),
           child: Row(
             children: [
               Expanded(
                 child: Text(
                   showCost ? 'tap to hide Cost' : 'tap to see Cost',
-                  style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-                    fontSize: Dimensions.fontSizeLarge,
-                    color: Colors.white,
-                  ),
+                  style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: Colors.white),
                 ),
               ),
-              Icon(
-                showCost
-                    ? Icons.visibility_rounded
-                    : Icons.visibility_off_rounded,
-                color: Colors.white,
-              ),
+              Icon(showCost ? Icons.visibility_rounded : Icons.visibility_off_rounded, color: Colors.white),
             ],
           ),
         ),
@@ -363,17 +284,11 @@ class _EntryTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SectionTitle(
-              title: 'New bazar', icon: Icons.add_shopping_cart_rounded),
+          const SectionTitle(title: 'New bazar', icon: Icons.add_shopping_cart_rounded),
           CostEntryForm(
             key: const ValueKey('cost-entry-form'),
             members: members,
-            onSubmit: ({required personId, required date, required items}) =>
-                bloc.add(CostEvent.add(
-              personId: personId,
-              date: date,
-              items: items,
-            )),
+            onSubmit: ({required personId, required date, required items}) => bloc.add(CostEvent.add(personId: personId, date: date, items: items)),
           ),
           SizedBox(height: context.bottomPadding),
         ],
@@ -387,11 +302,7 @@ Future<void> showCostEditSheet({
   required BuildContext context,
   required List<CostMemberEntity> members,
   required CostEntity existing,
-  required void Function({
-    required String personId,
-    required DateTime date,
-    required List<CostItemEntity> items,
-  }) onSubmit,
+  required void Function({required String personId, required DateTime date, required List<CostItemEntity> items}) onSubmit,
 }) {
   return context.showAdaptiveSheet<void>(
     child: Column(
@@ -400,10 +311,7 @@ Future<void> showCostEditSheet({
       children: [
         Text(
           'Edit bazar entry',
-          style: AppTextStyles.sfProRoundedBold.copyWith(
-            fontSize: Dimensions.fontSizeExtraLarge,
-            color: context.customThemeColors.textPrimaryColor,
-          ),
+          style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: context.customThemeColors.textPrimaryColor),
         ),
         const SizedBox(height: Dimensions.paddingSizeLarge),
         CostEntryForm(
@@ -437,20 +345,16 @@ class _ErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline_rounded,
-                size: Dimensions.iconSizeExtraLarge, color: colors.errorColor),
+            Icon(Icons.error_outline_rounded, size: Dimensions.iconSizeExtraLarge, color: colors.errorColor),
             const SizedBox(height: Dimensions.paddingSizeDefault),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: AppTextStyles.sfProRoundedMedium.copyWith(
-                color: colors.textSecondaryColor,
-              ),
+              style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor),
             ),
             const SizedBox(height: Dimensions.paddingSizeLarge),
             ElevatedButton.icon(
-              onPressed: () =>
-                  context.read<CostBloc>().add(CostEvent.started(isAdmin: isAdmin)),
+              onPressed: () => context.read<CostBloc>().add(CostEvent.started(isAdmin: isAdmin)),
               icon: const Icon(Icons.refresh_rounded),
               label: const Text('Retry'),
             ),
@@ -468,19 +372,12 @@ class _EmptyView extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
     return Padding(
-      padding: const EdgeInsets.symmetric(
-          vertical: Dimensions.paddingSizeExtraLarge32),
+      padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraLarge32),
       child: Column(
         children: [
-          Icon(Icons.shopping_cart_outlined,
-              size: Dimensions.iconSizeExtraLarge, color: colors.textHintColor),
+          Icon(Icons.shopping_cart_outlined, size: Dimensions.iconSizeExtraLarge, color: colors.textHintColor),
           const SizedBox(height: Dimensions.paddingSizeDefault),
-          Text(
-            'No bazar entries yet',
-            style: AppTextStyles.sfProRoundedMedium.copyWith(
-              color: colors.textSecondaryColor,
-            ),
-          ),
+          Text('No bazar entries yet', style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor)),
         ],
       ),
     );
@@ -509,12 +406,7 @@ class _SummaryGrid extends StatelessWidget {
         final stat = stats[index];
         return AnimatedEntrance(
           delay: Duration(milliseconds: 50 * index),
-          child: StatCard(
-            label: stat.label,
-            value: stat.value,
-            icon: stat.icon,
-            accent: stat.accent,
-          ),
+          child: StatCard(label: stat.label, value: stat.value, icon: stat.icon, accent: stat.accent),
         );
       },
     );

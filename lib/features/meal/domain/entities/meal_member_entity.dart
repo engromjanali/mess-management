@@ -22,21 +22,12 @@ class MemberMealEntity extends Equatable {
   final double lunch;
   final double dinner;
 
-  const MemberMealEntity({
-    required this.memberId,
-    required this.date,
-    this.breakfast = 0,
-    this.lunch = 0,
-    this.dinner = 0,
-  });
+  const MemberMealEntity({required this.memberId, required this.date, this.breakfast = 0, this.lunch = 0, this.dinner = 0});
 
   double get total => breakfast + lunch + dinner;
 
   /// Whether this record falls on the same calendar day as [other].
-  bool sameDay(DateTime other) =>
-      date.year == other.year &&
-      date.month == other.month &&
-      date.day == other.day;
+  bool sameDay(DateTime other) => date.year == other.year && date.month == other.month && date.day == other.day;
 
   @override
   List<Object?> get props => [memberId, date, breakfast, lunch, dinner];
@@ -49,11 +40,7 @@ class MealAdminEntity extends Equatable {
   final double mealRate;
   final List<MemberMealEntity> entries;
 
-  const MealAdminEntity({
-    required this.members,
-    required this.mealRate,
-    required this.entries,
-  });
+  const MealAdminEntity({required this.members, required this.mealRate, required this.entries});
 
   /// Display name for [memberId], or `Unknown` if it isn't on the roster.
   String memberName(String memberId) => members
@@ -70,8 +57,7 @@ class MealAdminEntity extends Equatable {
       if (memberId != null && e.memberId != memberId) return false;
       if (date != null && !e.sameDay(date)) return false;
       return true;
-    }).toList()
-      ..sort((a, b) => b.date.compareTo(a.date));
+    }).toList()..sort((a, b) => b.date.compareTo(a.date));
     return result;
   }
 

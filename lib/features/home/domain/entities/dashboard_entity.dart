@@ -48,39 +48,24 @@ class DashboardEntity extends Equatable {
   });
 
   DashboardEntity copyWith({bool? isManager}) => DashboardEntity(
-        totalBalance: totalBalance,
-        mealBalance: mealBalance,
-        fundBalance: fundBalance,
-        totalDeposit: totalDeposit,
-        bazerCost: bazerCost,
-        totalMeal: totalMeal,
-        mealRate: mealRate,
-        myTotalMeal: myTotalMeal,
-        myDeposit: myDeposit,
-        myRemaining: myRemaining,
-        members: members,
-        userName: userName,
-        isManager: isManager ?? this.isManager,
-        pinnedNotice: pinnedNotice,
-      );
+    totalBalance: totalBalance,
+    mealBalance: mealBalance,
+    fundBalance: fundBalance,
+    totalDeposit: totalDeposit,
+    bazerCost: bazerCost,
+    totalMeal: totalMeal,
+    mealRate: mealRate,
+    myTotalMeal: myTotalMeal,
+    myDeposit: myDeposit,
+    myRemaining: myRemaining,
+    members: members,
+    userName: userName,
+    isManager: isManager ?? this.isManager,
+    pinnedNotice: pinnedNotice,
+  );
 
   @override
-  List<Object?> get props => [
-        totalBalance,
-        mealBalance,
-        fundBalance,
-        totalDeposit,
-        bazerCost,
-        totalMeal,
-        mealRate,
-        myTotalMeal,
-        myDeposit,
-        myRemaining,
-        members,
-        pinnedNotice,
-        isManager,
-        userName,
-      ];
+  List<Object?> get props => [totalBalance, mealBalance, fundBalance, totalDeposit, bazerCost, totalMeal, mealRate, myTotalMeal, myDeposit, myRemaining, members, pinnedNotice, isManager, userName];
 }
 
 /// Per-member statistics rendered in the manager member table.
@@ -90,12 +75,7 @@ class MemberStatEntity extends Equatable {
   final double deposit;
   final double meal;
 
-  const MemberStatEntity({
-    required this.id,
-    required this.name,
-    required this.deposit,
-    required this.meal,
-  });
+  const MemberStatEntity({required this.id, required this.name, required this.deposit, required this.meal});
 
   /// Remaining balance for a member given the current meal rate.
   double remaining(double mealRate) => deposit - (meal * mealRate);
@@ -111,12 +91,7 @@ class NoticeEntity extends Equatable {
   final String description;
   final DateTime createdAt;
 
-  const NoticeEntity({
-    required this.noticeId,
-    required this.title,
-    required this.description,
-    required this.createdAt,
-  });
+  const NoticeEntity({required this.noticeId, required this.title, required this.description, required this.createdAt});
 
   @override
   List<Object?> get props => [noticeId, title, description, createdAt];

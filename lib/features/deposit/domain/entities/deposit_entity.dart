@@ -35,18 +35,10 @@ class DepositEntity extends Equatable {
   final DateTime date;
   final String? note;
 
-  const DepositEntity({
-    required this.id,
-    required this.memberId,
-    required this.memberName,
-    required this.amount,
-    required this.date,
-    this.note,
-  });
+  const DepositEntity({required this.id, required this.memberId, required this.memberName, required this.amount, required this.date, this.note});
 
   /// Credit when zero or positive, debit when negative.
-  DepositType get type =>
-      amount < 0 ? DepositType.debit : DepositType.credit;
+  DepositType get type => amount < 0 ? DepositType.debit : DepositType.credit;
 
   bool get isCredit => type == DepositType.credit;
 
@@ -62,12 +54,10 @@ class DepositEntity extends Equatable {
 /// Aggregate helpers over a list of deposits (used for summary cards).
 extension DepositListX on List<DepositEntity> {
   /// Sum of all credit (positive) amounts.
-  double get totalCredit =>
-      where((d) => d.isCredit).fold<double>(0, (sum, d) => sum + d.amount);
+  double get totalCredit => where((d) => d.isCredit).fold<double>(0, (sum, d) => sum + d.amount);
 
   /// Sum of all debit (negative) amounts, returned as a positive magnitude.
-  double get totalDebit => where((d) => d.isDebit)
-      .fold<double>(0, (sum, d) => sum + d.absoluteAmount);
+  double get totalDebit => where((d) => d.isDebit).fold<double>(0, (sum, d) => sum + d.absoluteAmount);
 
   /// Net balance — credits minus debits (signed).
   double get net => fold<double>(0, (sum, d) => sum + d.amount);

@@ -23,12 +23,7 @@ class FundEntity extends Equatable {
   final DateTime date;
   final String? note;
 
-  const FundEntity({
-    required this.id,
-    required this.amount,
-    required this.date,
-    this.note,
-  });
+  const FundEntity({required this.id, required this.amount, required this.date, this.note});
 
   /// Credit when zero or positive, debit when negative.
   FundType get type => amount < 0 ? FundType.debit : FundType.credit;
@@ -47,12 +42,10 @@ class FundEntity extends Equatable {
 /// Aggregate helpers over a list of funds (used for summary cards).
 extension FundListX on List<FundEntity> {
   /// Sum of all credit (positive) amounts.
-  double get totalCredit =>
-      where((f) => f.isCredit).fold<double>(0, (sum, f) => sum + f.amount);
+  double get totalCredit => where((f) => f.isCredit).fold<double>(0, (sum, f) => sum + f.amount);
 
   /// Sum of all debit (negative) amounts, returned as a positive magnitude.
-  double get totalDebit => where((f) => f.isDebit)
-      .fold<double>(0, (sum, f) => sum + f.absoluteAmount);
+  double get totalDebit => where((f) => f.isDebit).fold<double>(0, (sum, f) => sum + f.absoluteAmount);
 
   /// Net balance — credits minus debits (signed).
   double get net => fold<double>(0, (sum, f) => sum + f.amount);

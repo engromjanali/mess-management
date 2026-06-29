@@ -11,20 +11,11 @@ import 'package:clean_boilerplate/features/cost/presentation/widgets/cost_format
 /// a bottom sheet (edit). Collects a person, a date + time, and a dynamic list
 /// of product / price rows, showing a live running total.
 class CostEntryForm extends StatefulWidget {
-  const CostEntryForm({
-    required this.members,
-    required this.onSubmit,
-    this.existing,
-    super.key,
-  });
+  const CostEntryForm({required this.members, required this.onSubmit, this.existing, super.key});
 
   final List<CostMemberEntity> members;
   final CostEntity? existing;
-  final void Function({
-    required String personId,
-    required DateTime date,
-    required List<CostItemEntity> items,
-  }) onSubmit;
+  final void Function({required String personId, required DateTime date, required List<CostItemEntity> items}) onSubmit;
 
   @override
   State<CostEntryForm> createState() => _CostEntryFormState();
@@ -33,9 +24,7 @@ class CostEntryForm extends StatefulWidget {
 class _ItemRow {
   final TextEditingController product;
   final TextEditingController price;
-  _ItemRow({String product = '', String price = ''})
-      : product = TextEditingController(text: product),
-        price = TextEditingController(text: price);
+  _ItemRow({String product = '', String price = ''}) : product = TextEditingController(text: product), price = TextEditingController(text: price);
 
   void dispose() {
     product.dispose();
@@ -55,17 +44,9 @@ class _CostEntryFormState extends State<CostEntryForm> {
   void initState() {
     super.initState();
     final existing = widget.existing;
-    _personId = existing?.personId ??
-        (widget.members.isNotEmpty ? widget.members.first.id : null);
+    _personId = existing?.personId ?? (widget.members.isNotEmpty ? widget.members.first.id : null);
     _date = existing?.date ?? DateTime.now();
-    _rows = existing != null && existing.items.isNotEmpty
-        ? existing.items
-            .map((i) => _ItemRow(
-                  product: i.product,
-                  price: CostFormatters.number(i.price),
-                ))
-            .toList()
-        : [_ItemRow()];
+    _rows = existing != null && existing.items.isNotEmpty ? existing.items.map((i) => _ItemRow(product: i.product, price: CostFormatters.number(i.price))).toList() : [_ItemRow()];
   }
 
   @override
@@ -94,36 +75,16 @@ class _CostEntryFormState extends State<CostEntryForm> {
   }
 
   Future<void> _pickDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _date,
-      firstDate: DateTime(_date.year - 2),
-      lastDate: DateTime(_date.year + 2),
-    );
+    final picked = await showDatePicker(context: context, initialDate: _date, firstDate: DateTime(_date.year - 2), lastDate: DateTime(_date.year + 2));
     if (picked != null) {
-      setState(() => _date = DateTime(
-            picked.year,
-            picked.month,
-            picked.day,
-            _date.hour,
-            _date.minute,
-          ));
+      setState(() => _date = DateTime(picked.year, picked.month, picked.day, _date.hour, _date.minute));
     }
   }
 
   Future<void> _pickTime() async {
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.fromDateTime(_date),
-    );
+    final picked = await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(_date));
     if (picked != null) {
-      setState(() => _date = DateTime(
-            _date.year,
-            _date.month,
-            _date.day,
-            picked.hour,
-            picked.minute,
-          ));
+      setState(() => _date = DateTime(_date.year, _date.month, _date.day, picked.hour, picked.minute));
     }
   }
 
@@ -160,10 +121,7 @@ class _CostEntryFormState extends State<CostEntryForm> {
           DropdownButtonFormField<String>(
             initialValue: _personId,
             decoration: _decoration(context),
-            items: [
-              for (final m in widget.members)
-                DropdownMenuItem(value: m.id, child: Text(m.name)),
-            ],
+            items: [for (final m in widget.members) DropdownMenuItem(value: m.id, child: Text(m.name))],
             onChanged: (v) => setState(() => _personId = v),
             validator: (v) => v == null ? 'Select a member' : null,
           ),
@@ -173,21 +131,11 @@ class _CostEntryFormState extends State<CostEntryForm> {
           Row(
             children: [
               Expanded(
-                child: _PickerField(
-                  label: 'Bazar Date',
-                  icon: Icons.calendar_today_rounded,
-                  value: CostFormatters.date(_date),
-                  onTap: _pickDate,
-                ),
+                child: _PickerField(label: 'Bazar Date', icon: Icons.calendar_today_rounded, value: CostFormatters.date(_date), onTap: _pickDate),
               ),
               const SizedBox(width: Dimensions.paddingSizeDefault),
               Expanded(
-                child: _PickerField(
-                  label: 'Bazar Time',
-                  icon: Icons.access_time_rounded,
-                  value: CostFormatters.time(_date),
-                  onTap: _pickTime,
-                ),
+                child: _PickerField(label: 'Bazar Time', icon: Icons.access_time_rounded, value: CostFormatters.time(_date), onTap: _pickTime),
               ),
             ],
           ),
@@ -207,8 +155,7 @@ class _CostEntryFormState extends State<CostEntryForm> {
           const SizedBox(height: Dimensions.paddingSizeExtraSmall),
           for (var i = 0; i < _rows.length; i++)
             Padding(
-              padding:
-                  const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
+              padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
               child: Row(
                 children: [
                   Expanded(
@@ -224,12 +171,8 @@ class _CostEntryFormState extends State<CostEntryForm> {
                     flex: 2,
                     child: TextFormField(
                       controller: _rows[i].price,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(
-                            RegExp(r'^\d*\.?\d{0,2}')),
-                      ],
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
                       decoration: _decoration(context, hint: 'Price'),
                       onChanged: (_) => setState(() {}),
                     ),
@@ -237,8 +180,7 @@ class _CostEntryFormState extends State<CostEntryForm> {
                   IconButton(
                     tooltip: 'Remove',
                     visualDensity: VisualDensity.compact,
-                    icon: Icon(Icons.remove_circle_outline_rounded,
-                        color: colors.errorColor),
+                    icon: Icon(Icons.remove_circle_outline_rounded, color: colors.errorColor),
                     onPressed: () => _removeRow(i),
                   ),
                 ],
@@ -249,26 +191,17 @@ class _CostEntryFormState extends State<CostEntryForm> {
           // Live total.
           Container(
             padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
-            decoration: BoxDecoration(
-              color: colors.primaryColor.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-            ),
+            decoration: BoxDecoration(color: colors.primaryColor.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'Total',
-                  style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-                    fontSize: Dimensions.fontSizeLarge,
-                    color: colors.textPrimaryColor,
-                  ),
+                  style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
                 ),
                 Text(
                   CostFormatters.taka(_total),
-                  style: AppTextStyles.sfProRoundedBold.copyWith(
-                    fontSize: Dimensions.fontSizeExtraLarge,
-                    color: colors.primaryColor,
-                  ),
+                  style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.primaryColor),
                 ),
               ],
             ),
@@ -281,11 +214,7 @@ class _CostEntryFormState extends State<CostEntryForm> {
               onPressed: _submit,
               icon: Icon(_isEdit ? Icons.save_rounded : Icons.check_rounded),
               label: Text(_isEdit ? 'Save changes' : 'Save bazar entry'),
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
-                ),
-              ),
+              style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge))),
             ),
           ),
         ],
@@ -298,10 +227,7 @@ class _CostEntryFormState extends State<CostEntryForm> {
     return InputDecoration(
       isDense: true,
       hintText: hint,
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: Dimensions.paddingSizeDefault,
-        vertical: Dimensions.paddingSizeDefault,
-      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeDefault),
       filled: true,
       fillColor: colors.cardBackgroundColor,
       border: OutlineInputBorder(
@@ -327,10 +253,7 @@ class _Label extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeExtraSmall),
       child: Text(
         text,
-        style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-          fontSize: Dimensions.fontSizeSmall,
-          color: colors.textSecondaryColor,
-        ),
+        style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
       ),
     );
   }
@@ -338,12 +261,7 @@ class _Label extends StatelessWidget {
 
 /// A tappable field that shows a label and a picked value.
 class _PickerField extends StatelessWidget {
-  const _PickerField({
-    required this.label,
-    required this.icon,
-    required this.value,
-    required this.onTap,
-  });
+  const _PickerField({required this.label, required this.icon, required this.value, required this.onTap});
 
   final String label;
   final IconData icon;
@@ -369,19 +287,14 @@ class _PickerField extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Icon(icon,
-                    size: Dimensions.iconSizeSmall,
-                    color: colors.textSecondaryColor),
+                Icon(icon, size: Dimensions.iconSizeSmall, color: colors.textSecondaryColor),
                 const SizedBox(width: Dimensions.paddingSizeSmall),
                 Expanded(
                   child: Text(
                     value,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: AppTextStyles.sfProRoundedMedium.copyWith(
-                      fontSize: Dimensions.fontSizeDefault,
-                      color: colors.textPrimaryColor,
-                    ),
+                    style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
                   ),
                 ),
               ],

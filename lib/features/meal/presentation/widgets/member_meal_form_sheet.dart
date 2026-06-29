@@ -9,13 +9,7 @@ import 'package:clean_boilerplate/features/meal/presentation/widgets/meal_steppe
 
 /// Result returned by the add/edit meal form when the manager saves.
 class MemberMealFormResult {
-  const MemberMealFormResult({
-    required this.memberId,
-    required this.date,
-    required this.breakfast,
-    required this.lunch,
-    required this.dinner,
-  });
+  const MemberMealFormResult({required this.memberId, required this.date, required this.breakfast, required this.lunch, required this.dinner});
 
   final String memberId;
   final DateTime date;
@@ -29,30 +23,14 @@ class MemberMealFormResult {
 ///
 /// When [existing] is provided the form is in edit mode: the member and date
 /// are locked (they identify the record) and only the counts can change.
-Future<MemberMealFormResult?> showMemberMealForm(
-  BuildContext context, {
-  required List<MealMemberEntity> members,
-  MemberMealEntity? existing,
-  String? presetMemberId,
-  DateTime? presetDate,
-}) {
+Future<MemberMealFormResult?> showMemberMealForm(BuildContext context, {required List<MealMemberEntity> members, MemberMealEntity? existing, String? presetMemberId, DateTime? presetDate}) {
   return context.showAdaptiveSheet<MemberMealFormResult>(
-    child: _MemberMealFormSheet(
-      members: members,
-      existing: existing,
-      presetMemberId: presetMemberId,
-      presetDate: presetDate,
-    ),
+    child: _MemberMealFormSheet(members: members, existing: existing, presetMemberId: presetMemberId, presetDate: presetDate),
   );
 }
 
 class _MemberMealFormSheet extends StatefulWidget {
-  const _MemberMealFormSheet({
-    required this.members,
-    this.existing,
-    this.presetMemberId,
-    this.presetDate,
-  });
+  const _MemberMealFormSheet({required this.members, this.existing, this.presetMemberId, this.presetDate});
 
   final List<MealMemberEntity> members;
   final MemberMealEntity? existing;
@@ -77,9 +55,7 @@ class _MemberMealFormSheetState extends State<_MemberMealFormSheet> {
     super.initState();
     final existing = widget.existing;
     final now = DateTime.now();
-    _memberId = existing?.memberId ??
-        widget.presetMemberId ??
-        widget.members.first.id;
+    _memberId = existing?.memberId ?? widget.presetMemberId ?? widget.members.first.id;
     final date = existing?.date ?? widget.presetDate ?? now;
     _date = DateTime(date.year, date.month, date.day);
     _breakfast = existing?.breakfast ?? 0;
@@ -91,27 +67,14 @@ class _MemberMealFormSheetState extends State<_MemberMealFormSheet> {
 
   Future<void> _pickDate() async {
     final now = DateTime.now();
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _date,
-      firstDate: DateTime(now.year - 1),
-      lastDate: DateTime(now.year + 1, now.month, now.day),
-    );
+    final picked = await showDatePicker(context: context, initialDate: _date, firstDate: DateTime(now.year - 1), lastDate: DateTime(now.year + 1, now.month, now.day));
     if (picked != null) {
       setState(() => _date = DateTime(picked.year, picked.month, picked.day));
     }
   }
 
   void _submit() {
-    Navigator.of(context).pop(
-      MemberMealFormResult(
-        memberId: _memberId,
-        date: _date,
-        breakfast: _breakfast,
-        lunch: _lunch,
-        dinner: _dinner,
-      ),
-    );
+    Navigator.of(context).pop(MemberMealFormResult(memberId: _memberId, date: _date, breakfast: _breakfast, lunch: _lunch, dinner: _dinner));
   }
 
   @override
@@ -122,85 +85,45 @@ class _MemberMealFormSheetState extends State<_MemberMealFormSheet> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-              Text(
-                _isEdit ? 'Edit meal' : 'Add meal',
-                style: AppTextStyles.sfProRoundedBold.copyWith(
-                  fontSize: Dimensions.fontSizeExtraLarge,
-                  color: colors.textPrimaryColor,
-                ),
-              ),
-              const SizedBox(height: Dimensions.paddingSizeLarge),
-              _FieldLabel(label: 'Member'),
-              const SizedBox(height: Dimensions.paddingSizeSmall),
-              _MemberField(
-                members: widget.members,
-                memberId: _memberId,
-                enabled: !_isEdit,
-                onChanged: (id) => setState(() => _memberId = id),
-              ),
-              const SizedBox(height: Dimensions.paddingSizeLarge),
-              _FieldLabel(label: 'Date'),
-              const SizedBox(height: Dimensions.paddingSizeSmall),
-              _DateField(
-                date: _date,
-                enabled: !_isEdit,
-                onTap: _pickDate,
-              ),
-              const SizedBox(height: Dimensions.paddingSizeLarge),
-              _StepperRow(
-                icon: Icons.free_breakfast_rounded,
-                label: 'Breakfast',
-                accent: colors.warningColor,
-                value: _breakfast,
-                onChanged: (v) => setState(() => _breakfast = v),
-              ),
-              const Divider(height: Dimensions.paddingSizeLarge),
-              _StepperRow(
-                icon: Icons.lunch_dining_rounded,
-                label: 'Lunch',
-                accent: colors.primaryColor,
-                value: _lunch,
-                onChanged: (v) => setState(() => _lunch = v),
-              ),
-              const Divider(height: Dimensions.paddingSizeLarge),
-              _StepperRow(
-                icon: Icons.dinner_dining_rounded,
-                label: 'Dinner',
-                accent: colors.infoColor,
-                value: _dinner,
-                onChanged: (v) => setState(() => _dinner = v),
-              ),
-              const SizedBox(height: Dimensions.paddingSizeLarge),
-              Row(
-                children: [
-                  Text(
-                    'Total',
-                    style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-                      fontSize: Dimensions.fontSizeLarge,
-                      color: colors.textSecondaryColor,
-                    ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    '${MealFormatters.count(_total)} meals',
-                    style: AppTextStyles.sfProRoundedBold.copyWith(
-                      fontSize: Dimensions.fontSizeLarge,
-                      color: colors.primaryColor,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: Dimensions.paddingSizeLarge),
-              SizedBox(
-                height: 50,
-                child: ElevatedButton.icon(
-                  onPressed: _total > 0 ? _submit : null,
-                  icon: const Icon(Icons.check_rounded),
-                  label: Text(_isEdit ? 'Save changes' : 'Add meal'),
-                ),
-              ),
-            ],
-          );
+        Text(
+          _isEdit ? 'Edit meal' : 'Add meal',
+          style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
+        ),
+        const SizedBox(height: Dimensions.paddingSizeLarge),
+        _FieldLabel(label: 'Member'),
+        const SizedBox(height: Dimensions.paddingSizeSmall),
+        _MemberField(members: widget.members, memberId: _memberId, enabled: !_isEdit, onChanged: (id) => setState(() => _memberId = id)),
+        const SizedBox(height: Dimensions.paddingSizeLarge),
+        _FieldLabel(label: 'Date'),
+        const SizedBox(height: Dimensions.paddingSizeSmall),
+        _DateField(date: _date, enabled: !_isEdit, onTap: _pickDate),
+        const SizedBox(height: Dimensions.paddingSizeLarge),
+        _StepperRow(icon: Icons.free_breakfast_rounded, label: 'Breakfast', accent: colors.warningColor, value: _breakfast, onChanged: (v) => setState(() => _breakfast = v)),
+        const Divider(height: Dimensions.paddingSizeLarge),
+        _StepperRow(icon: Icons.lunch_dining_rounded, label: 'Lunch', accent: colors.primaryColor, value: _lunch, onChanged: (v) => setState(() => _lunch = v)),
+        const Divider(height: Dimensions.paddingSizeLarge),
+        _StepperRow(icon: Icons.dinner_dining_rounded, label: 'Dinner', accent: colors.infoColor, value: _dinner, onChanged: (v) => setState(() => _dinner = v)),
+        const SizedBox(height: Dimensions.paddingSizeLarge),
+        Row(
+          children: [
+            Text(
+              'Total',
+              style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textSecondaryColor),
+            ),
+            const Spacer(),
+            Text(
+              '${MealFormatters.count(_total)} meals',
+              style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.primaryColor),
+            ),
+          ],
+        ),
+        const SizedBox(height: Dimensions.paddingSizeLarge),
+        SizedBox(
+          height: 50,
+          child: ElevatedButton.icon(onPressed: _total > 0 ? _submit : null, icon: const Icon(Icons.check_rounded), label: Text(_isEdit ? 'Save changes' : 'Add meal')),
+        ),
+      ],
+    );
   }
 }
 
@@ -213,21 +136,13 @@ class _FieldLabel extends StatelessWidget {
     final colors = context.customThemeColors;
     return Text(
       label,
-      style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-        fontSize: Dimensions.fontSizeDefault,
-        color: colors.textSecondaryColor,
-      ),
+      style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textSecondaryColor),
     );
   }
 }
 
 class _MemberField extends StatelessWidget {
-  const _MemberField({
-    required this.members,
-    required this.memberId,
-    required this.enabled,
-    required this.onChanged,
-  });
+  const _MemberField({required this.members, required this.memberId, required this.enabled, required this.onChanged});
 
   final List<MealMemberEntity> members;
   final String memberId;
@@ -238,9 +153,7 @@ class _MemberField extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: Dimensions.paddingSizeDefault,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault),
       decoration: BoxDecoration(
         color: colors.backgroundColor,
         borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
@@ -257,10 +170,7 @@ class _MemberField extends StatelessWidget {
                 value: m.id,
                 child: Text(
                   m.name,
-                  style: AppTextStyles.sfProRoundedMedium.copyWith(
-                    fontSize: Dimensions.fontSizeLarge,
-                    color: colors.textPrimaryColor,
-                  ),
+                  style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
                 ),
               ),
           ],
@@ -272,11 +182,7 @@ class _MemberField extends StatelessWidget {
 }
 
 class _DateField extends StatelessWidget {
-  const _DateField({
-    required this.date,
-    required this.enabled,
-    required this.onTap,
-  });
+  const _DateField({required this.date, required this.enabled, required this.onTap});
 
   final DateTime date;
   final bool enabled;
@@ -289,10 +195,7 @@ class _DateField extends StatelessWidget {
       onTap: enabled ? onTap : null,
       borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
       child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: Dimensions.paddingSizeDefault,
-          vertical: Dimensions.paddingSizeLarge,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeLarge),
         decoration: BoxDecoration(
           color: colors.backgroundColor,
           borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
@@ -300,20 +203,14 @@ class _DateField extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(Icons.event_rounded,
-                size: Dimensions.iconSizeDefault, color: colors.primaryColor),
+            Icon(Icons.event_rounded, size: Dimensions.iconSizeDefault, color: colors.primaryColor),
             const SizedBox(width: Dimensions.paddingSizeDefault),
             Text(
               MealFormatters.dayLabel(date),
-              style: AppTextStyles.sfProRoundedMedium.copyWith(
-                fontSize: Dimensions.fontSizeLarge,
-                color: colors.textPrimaryColor,
-              ),
+              style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
             ),
             const Spacer(),
-            if (enabled)
-              Icon(Icons.edit_calendar_rounded,
-                  size: Dimensions.iconSizeSmall, color: colors.textHintColor),
+            if (enabled) Icon(Icons.edit_calendar_rounded, size: Dimensions.iconSizeSmall, color: colors.textHintColor),
           ],
         ),
       ),
@@ -322,13 +219,7 @@ class _DateField extends StatelessWidget {
 }
 
 class _StepperRow extends StatelessWidget {
-  const _StepperRow({
-    required this.icon,
-    required this.label,
-    required this.accent,
-    required this.value,
-    required this.onChanged,
-  });
+  const _StepperRow({required this.icon, required this.label, required this.accent, required this.value, required this.onChanged});
 
   final IconData icon;
   final String label;
@@ -343,20 +234,14 @@ class _StepperRow extends StatelessWidget {
       children: [
         Container(
           padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-          decoration: BoxDecoration(
-            color: accent.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-          ),
+          decoration: BoxDecoration(color: accent.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
           child: Icon(icon, color: accent, size: Dimensions.iconSizeDefault),
         ),
         const SizedBox(width: Dimensions.paddingSizeDefault),
         Expanded(
           child: Text(
             label,
-            style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-              fontSize: Dimensions.fontSizeLarge,
-              color: colors.textPrimaryColor,
-            ),
+            style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
           ),
         ),
         MealStepper(value: value, onChanged: onChanged, accent: accent),

@@ -11,15 +11,7 @@ import 'package:flutter/material.dart';
 /// surface card that hosts the form [child]. Responsive (card capped for
 /// web/tablet).
 class AuthScaffold extends StatelessWidget {
-  const AuthScaffold({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.child,
-    this.footer,
-    this.action,
-    super.key,
-  });
+  const AuthScaffold({required this.icon, required this.title, required this.subtitle, required this.child, this.footer, this.action, super.key});
 
   final IconData icon;
   final String title;
@@ -43,105 +35,66 @@ class AuthScaffold extends StatelessWidget {
         child: Stack(
           children: [
             Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: Dimensions.paddingSizeLarge,
-              vertical: Dimensions.paddingSizeExtraLarge32,
-            ),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: _maxCardWidth),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Hero: brand badge + greeting.
-                  AnimatedEntrance(
-                    child: Column(
-                      children: [
-                        Container(
-                          height: 76,
-                          width: 76,
-                          decoration: BoxDecoration(
-                            color: colors.primaryColor.withValues(alpha: 0.12),
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: colors.primaryColor.withValues(alpha: 0.25),
-                              width: 1.5,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeExtraLarge32),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: _maxCardWidth),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Hero: brand badge + greeting.
+                      AnimatedEntrance(
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 76,
+                              width: 76,
+                              decoration: BoxDecoration(
+                                color: colors.primaryColor.withValues(alpha: 0.12),
+                                shape: BoxShape.circle,
+                                border: Border.all(color: colors.primaryColor.withValues(alpha: 0.25), width: 1.5),
+                              ),
+                              child: Icon(icon, size: Dimensions.iconSizeLarge, color: colors.primaryColor),
                             ),
-                          ),
-                          child: Icon(
-                            icon,
-                            size: Dimensions.iconSizeLarge,
-                            color: colors.primaryColor,
-                          ),
+                            const SizedBox(height: Dimensions.paddingSizeLarge),
+                            Text(
+                              title,
+                              textAlign: TextAlign.center,
+                              style: AppTextStyles.sfProRoundedBold.copyWith(color: colors.textPrimaryColor, fontSize: Dimensions.fontSizeExtraOverLarge),
+                            ),
+                            const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                            Text(
+                              subtitle,
+                              textAlign: TextAlign.center,
+                              style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor, fontSize: Dimensions.fontSizeDefault),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: Dimensions.paddingSizeLarge),
-                        Text(
-                          title,
-                          textAlign: TextAlign.center,
-                          style: AppTextStyles.sfProRoundedBold.copyWith(
-                            color: colors.textPrimaryColor,
-                            fontSize: Dimensions.fontSizeExtraOverLarge,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: Dimensions.paddingSizeExtraSmall,
-                        ),
-                        Text(
-                          subtitle,
-                          textAlign: TextAlign.center,
-                          style: AppTextStyles.sfProRoundedRegular.copyWith(
-                            color: colors.textSecondaryColor,
-                            fontSize: Dimensions.fontSizeDefault,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: Dimensions.paddingSizeExtraLarge24),
-
-                  // Form sheet.
-                  AnimatedEntrance(
-                    delay: const Duration(milliseconds: 120),
-                    child: Container(
-                      padding: const EdgeInsets.all(
-                        Dimensions.paddingSizeExtraLarge24,
                       ),
-                      decoration: BoxDecoration(
-                        color: colors.cardBackgroundColor,
-                        borderRadius: BorderRadius.circular(
-                          Dimensions.radiusExtra2Large,
-                        ),
-                        border: Border.all(color: colors.borderColor),
-                        boxShadow: [
-                          BoxShadow(
-                            color: colors.shadowColor,
-                            blurRadius: 24,
-                            offset: const Offset(0, 12),
-                          ),
-                        ],
-                      ),
-                      child: child,
-                    ),
-                  ),
+                      const SizedBox(height: Dimensions.paddingSizeExtraLarge24),
 
-                  if (footer != null) ...[
-                    const SizedBox(height: Dimensions.paddingSizeLarge),
-                    AnimatedEntrance(
-                      delay: const Duration(milliseconds: 220),
-                      child: footer!,
-                    ),
-                  ],
-                ],
+                      // Form sheet.
+                      AnimatedEntrance(
+                        delay: const Duration(milliseconds: 120),
+                        child: Container(
+                          padding: const EdgeInsets.all(Dimensions.paddingSizeExtraLarge24),
+                          decoration: BoxDecoration(
+                            color: colors.cardBackgroundColor,
+                            borderRadius: BorderRadius.circular(Dimensions.radiusExtra2Large),
+                            border: Border.all(color: colors.borderColor),
+                            boxShadow: [BoxShadow(color: colors.shadowColor, blurRadius: 24, offset: const Offset(0, 12))],
+                          ),
+                          child: child,
+                        ),
+                      ),
+
+                      if (footer != null) ...[const SizedBox(height: Dimensions.paddingSizeLarge), AnimatedEntrance(delay: const Duration(milliseconds: 220), child: footer!)],
+                    ],
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-            if (action != null)
-              Positioned(
-                top: Dimensions.paddingSizeSmall,
-                right: Dimensions.paddingSizeSmall,
-                child: action!,
-              ),
+            if (action != null) Positioned(top: Dimensions.paddingSizeSmall, right: Dimensions.paddingSizeSmall, child: action!),
           ],
         ),
       ),
@@ -151,12 +104,7 @@ class AuthScaffold extends StatelessWidget {
 
 /// "Don't have an account? Sign up" style footer row.
 class AuthFooterPrompt extends StatelessWidget {
-  const AuthFooterPrompt({
-    required this.promptText,
-    required this.actionText,
-    required this.onTap,
-    super.key,
-  });
+  const AuthFooterPrompt({required this.promptText, required this.actionText, required this.onTap, super.key});
 
   final String promptText;
   final String actionText;
@@ -170,10 +118,7 @@ class AuthFooterPrompt extends StatelessWidget {
       children: [
         Text(
           promptText,
-          style: AppTextStyles.sfProRoundedRegular.copyWith(
-            color: colors.textSecondaryColor,
-            fontSize: Dimensions.fontSizeDefault,
-          ),
+          style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor, fontSize: Dimensions.fontSizeDefault),
         ),
         GestureDetector(
           onTap: onTap,
@@ -181,10 +126,7 @@ class AuthFooterPrompt extends StatelessWidget {
             padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
             child: Text(
               actionText,
-              style: AppTextStyles.sfProRoundedBold.copyWith(
-                color: colors.primaryColor,
-                fontSize: Dimensions.fontSizeDefault,
-              ),
+              style: AppTextStyles.sfProRoundedBold.copyWith(color: colors.primaryColor, fontSize: Dimensions.fontSizeDefault),
             ),
           ),
         ),

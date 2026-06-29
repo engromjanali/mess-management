@@ -8,18 +8,9 @@ abstract class FundDataSource {
 
   Future<List<FundModel>> getFundsInRange(DateTime start, DateTime end);
 
-  Future<FundModel> addFund({
-    required double amount,
-    required DateTime date,
-    String? note,
-  });
+  Future<FundModel> addFund({required double amount, required DateTime date, String? note});
 
-  Future<FundModel> updateFund({
-    required String id,
-    required double amount,
-    required DateTime date,
-    String? note,
-  });
+  Future<FundModel> updateFund({required String id, required double amount, required DateTime date, String? note});
 
   Future<void> deleteFund(String id);
 }

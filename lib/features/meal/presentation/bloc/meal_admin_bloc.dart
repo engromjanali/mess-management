@@ -25,19 +25,11 @@ class MealAdminBloc extends Bloc<MealAdminEvent, MealAdminState> {
   String? _selectedMemberId;
   DateTime? _selectedDate;
 
-  MealAdminBloc(
-    this._getAdminData,
-    this._addMealForAll,
-    this._saveMemberMeal,
-    this._deleteMemberMeal,
-  ) : super(const MealAdminState.initial()) {
+  MealAdminBloc(this._getAdminData, this._addMealForAll, this._saveMemberMeal, this._deleteMemberMeal) : super(const MealAdminState.initial()) {
     on<MealAdminEvent>(_onEvent);
   }
 
-  Future<void> _onEvent(
-    MealAdminEvent event,
-    Emitter<MealAdminState> emit,
-  ) async {
+  Future<void> _onEvent(MealAdminEvent event, Emitter<MealAdminState> emit) async {
     await event.when(
       load: () => _load(emit, showLoading: true),
       refresh: () => _load(emit, showLoading: false),
@@ -49,30 +41,13 @@ class MealAdminBloc extends Bloc<MealAdminEvent, MealAdminState> {
         _selectedDate = date;
         _emitLoaded(emit);
       },
-      addForAll: (date, breakfast, lunch, dinner) => _addForAllMembers(
-        emit,
-        date: date,
-        breakfast: breakfast,
-        lunch: lunch,
-        dinner: dinner,
-      ),
-      save: (memberId, date, breakfast, lunch, dinner) => _save(
-        emit,
-        memberId: memberId,
-        date: date,
-        breakfast: breakfast,
-        lunch: lunch,
-        dinner: dinner,
-      ),
-      delete: (memberId, date) =>
-          _delete(emit, memberId: memberId, date: date),
+      addForAll: (date, breakfast, lunch, dinner) => _addForAllMembers(emit, date: date, breakfast: breakfast, lunch: lunch, dinner: dinner),
+      save: (memberId, date, breakfast, lunch, dinner) => _save(emit, memberId: memberId, date: date, breakfast: breakfast, lunch: lunch, dinner: dinner),
+      delete: (memberId, date) => _delete(emit, memberId: memberId, date: date),
     );
   }
 
-  Future<void> _load(
-    Emitter<MealAdminState> emit, {
-    required bool showLoading,
-  }) async {
+  Future<void> _load(Emitter<MealAdminState> emit, {required bool showLoading}) async {
     if (showLoading) emit(const MealAdminState.loading());
 
     final result = await _getAdminData(const NoParams());
@@ -82,26 +57,12 @@ class MealAdminBloc extends Bloc<MealAdminEvent, MealAdminState> {
         _data = success.data;
         _emitLoaded(emit);
       },
-      failure: (failure) =>
-          emit(MealAdminState.error(failure.error.toString())),
+      failure: (failure) => emit(MealAdminState.error(failure.error.toString())),
     );
   }
 
-  Future<void> _addForAllMembers(
-    Emitter<MealAdminState> emit, {
-    required DateTime date,
-    required double breakfast,
-    required double lunch,
-    required double dinner,
-  }) async {
-    final result = await _addMealForAll(
-      AddMealForAllParams(
-        date: date,
-        breakfast: breakfast,
-        lunch: lunch,
-        dinner: dinner,
-      ),
-    );
+  Future<void> _addForAllMembers(Emitter<MealAdminState> emit, {required DateTime date, required double breakfast, required double lunch, required double dinner}) async {
+    final result = await _addMealForAll(AddMealForAllParams(date: date, breakfast: breakfast, lunch: lunch, dinner: dinner));
 
     result.when(
       success: (success) {
@@ -110,55 +71,31 @@ class MealAdminBloc extends Bloc<MealAdminEvent, MealAdminState> {
         _selectedDate = DateTime(date.year, date.month, date.day);
         _emitLoaded(emit);
       },
-      failure: (failure) =>
-          emit(MealAdminState.error(failure.error.toString())),
+      failure: (failure) => emit(MealAdminState.error(failure.error.toString())),
     );
   }
 
-  Future<void> _save(
-    Emitter<MealAdminState> emit, {
-    required String memberId,
-    required DateTime date,
-    required double breakfast,
-    required double lunch,
-    required double dinner,
-  }) async {
-    final result = await _saveMemberMeal(
-      SaveMemberMealParams(
-        memberId: memberId,
-        date: date,
-        breakfast: breakfast,
-        lunch: lunch,
-        dinner: dinner,
-      ),
-    );
+  Future<void> _save(Emitter<MealAdminState> emit, {required String memberId, required DateTime date, required double breakfast, required double lunch, required double dinner}) async {
+    final result = await _saveMemberMeal(SaveMemberMealParams(memberId: memberId, date: date, breakfast: breakfast, lunch: lunch, dinner: dinner));
 
     result.when(
       success: (success) {
         _data = success.data;
         _emitLoaded(emit);
       },
-      failure: (failure) =>
-          emit(MealAdminState.error(failure.error.toString())),
+      failure: (failure) => emit(MealAdminState.error(failure.error.toString())),
     );
   }
 
-  Future<void> _delete(
-    Emitter<MealAdminState> emit, {
-    required String memberId,
-    required DateTime date,
-  }) async {
-    final result = await _deleteMemberMeal(
-      DeleteMemberMealParams(memberId: memberId, date: date),
-    );
+  Future<void> _delete(Emitter<MealAdminState> emit, {required String memberId, required DateTime date}) async {
+    final result = await _deleteMemberMeal(DeleteMemberMealParams(memberId: memberId, date: date));
 
     result.when(
       success: (success) {
         _data = success.data;
         _emitLoaded(emit);
       },
-      failure: (failure) =>
-          emit(MealAdminState.error(failure.error.toString())),
+      failure: (failure) => emit(MealAdminState.error(failure.error.toString())),
     );
   }
 
@@ -166,12 +103,6 @@ class MealAdminBloc extends Bloc<MealAdminEvent, MealAdminState> {
   void _emitLoaded(Emitter<MealAdminState> emit) {
     final data = _data;
     if (data == null) return;
-    emit(
-      MealAdminState.loaded(
-        data: data,
-        selectedMemberId: _selectedMemberId,
-        selectedDate: _selectedDate,
-      ),
-    );
+    emit(MealAdminState.loaded(data: data, selectedMemberId: _selectedMemberId, selectedDate: _selectedDate));
   }
 }

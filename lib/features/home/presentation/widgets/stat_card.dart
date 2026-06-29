@@ -6,14 +6,7 @@ import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 /// A single dashboard metric (icon + value + label) rendered as a modern,
 /// tappable card with a tinted icon chip and a soft accent wash.
 class StatCard extends StatelessWidget {
-  const StatCard({
-    required this.label,
-    required this.value,
-    required this.icon,
-    required this.accent,
-    this.onTap,
-    super.key,
-  });
+  const StatCard({required this.label, required this.value, required this.icon, required this.accent, this.onTap, super.key});
 
   final String label;
   final String value;
@@ -51,10 +44,7 @@ class StatCard extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-                decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.18),
-                  borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                ),
+                decoration: BoxDecoration(color: accent.withValues(alpha: 0.18), borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
                 child: Icon(icon, color: accent, size: Dimensions.iconSizeDefault),
               ),
               const SizedBox(height: Dimensions.paddingSizeDefault),
@@ -64,10 +54,7 @@ class StatCard extends StatelessWidget {
                 child: Text(
                   value,
                   maxLines: 1,
-                  style: AppTextStyles.sfProRoundedBold.copyWith(
-                    fontSize: Dimensions.fontSizeExtraOverLarge,
-                    color: colors.textPrimaryColor,
-                  ),
+                  style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraOverLarge, color: colors.textPrimaryColor),
                 ),
               ),
               const SizedBox(height: Dimensions.paddingSizeExtraSmall),
@@ -75,10 +62,7 @@ class StatCard extends StatelessWidget {
                 label,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.sfProRoundedMedium.copyWith(
-                  fontSize: Dimensions.fontSizeSmall,
-                  color: colors.textSecondaryColor,
-                ),
+                style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
               ),
             ],
           ),

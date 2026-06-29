@@ -7,15 +7,7 @@ import 'package:flutter/material.dart';
 /// Sign-in form: email + password, with a "forgot password" affordance and a
 /// full-width primary action. Carried over from the legacy sign-in screen.
 class LoginFormWidget extends StatefulWidget {
-  const LoginFormWidget({
-    required this.formKey,
-    required this.emailController,
-    required this.passwordController,
-    required this.onLogin,
-    this.onForgotPassword,
-    this.isLoading = false,
-    super.key,
-  });
+  const LoginFormWidget({required this.formKey, required this.emailController, required this.passwordController, required this.onLogin, this.onForgotPassword, this.isLoading = false, super.key});
 
   final GlobalKey<FormState> formKey;
   final TextEditingController emailController;
@@ -93,10 +85,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
               onPressed: widget.onForgotPassword,
               child: Text(
                 'Forgot password?',
-                style: AppTextStyles.sfProRoundedMedium.copyWith(
-                  color: context.primaryColor,
-                  fontSize: Dimensions.fontSizeDefault,
-                ),
+                style: AppTextStyles.sfProRoundedMedium.copyWith(color: context.primaryColor, fontSize: Dimensions.fontSizeDefault),
               ),
             ),
           ),
@@ -107,26 +96,14 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
             height: Dimensions.buttonHeightLarge,
             child: ElevatedButton(
               onPressed: widget.isLoading ? null : widget.onLogin,
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
-                ),
-              ),
+              style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge))),
               child: widget.isLoading
                   ? const SizedBox(
                       height: Dimensions.iconSizeDefault,
                       width: Dimensions.iconSizeDefault,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.4,
-                        color: Colors.white,
-                      ),
+                      child: CircularProgressIndicator(strokeWidth: 2.4, color: Colors.white),
                     )
-                  : Text(
-                      context.local.login,
-                      style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-                        fontSize: Dimensions.fontSizeLarge,
-                      ),
-                    ),
+                  : Text(context.local.login, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
             ),
           ),
         ],

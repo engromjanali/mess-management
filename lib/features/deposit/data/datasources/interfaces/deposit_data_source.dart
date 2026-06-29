@@ -14,19 +14,9 @@ abstract class DepositDataSource {
 
   Future<List<DepositModel>> getMyDeposits();
 
-  Future<DepositModel> addDeposit({
-    required String memberId,
-    required double amount,
-    required DateTime date,
-    String? note,
-  });
+  Future<DepositModel> addDeposit({required String memberId, required double amount, required DateTime date, String? note});
 
-  Future<DepositModel> updateDeposit({
-    required String id,
-    required double amount,
-    required DateTime date,
-    String? note,
-  });
+  Future<DepositModel> updateDeposit({required String id, required double amount, required DateTime date, String? note});
 
   Future<void> deleteDeposit(String id);
 }

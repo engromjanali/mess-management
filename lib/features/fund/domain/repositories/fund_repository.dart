@@ -15,19 +15,10 @@ abstract class FundRepository {
   /// Records a fund entry.
   ///
   /// [amount] keeps its sign — positive for a credit, negative for a debit.
-  ResultFuture<FundEntity> addFund({
-    required double amount,
-    required DateTime date,
-    String? note,
-  });
+  ResultFuture<FundEntity> addFund({required double amount, required DateTime date, String? note});
 
   /// Edits an existing fund entry.
-  ResultFuture<FundEntity> updateFund({
-    required String id,
-    required double amount,
-    required DateTime date,
-    String? note,
-  });
+  ResultFuture<FundEntity> updateFund({required String id, required double amount, required DateTime date, String? note});
 
   /// Removes a fund entry.
   ResultVoid deleteFund(String id);

@@ -25,10 +25,7 @@ class MealEntryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<MealAdminBloc>(
-      create: (_) => getIt<MealAdminBloc>()..add(const MealAdminEvent.load()),
-      child: const _MealEntryView(),
-    );
+    return BlocProvider<MealAdminBloc>(create: (_) => getIt<MealAdminBloc>()..add(const MealAdminEvent.load()), child: const _MealEntryView());
   }
 }
 
@@ -48,12 +45,7 @@ class _MealEntryViewState extends State<_MealEntryView> {
   }
 
   Future<void> _pickDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _date,
-      firstDate: DateTime(_date.year - 1),
-      lastDate: DateTime(_date.year + 1),
-    );
+    final picked = await showDatePicker(context: context, initialDate: _date, firstDate: DateTime(_date.year - 1), lastDate: DateTime(_date.year + 1));
     if (picked != null) {
       setState(() => _date = DateTime(picked.year, picked.month, picked.day));
     }
@@ -66,29 +58,20 @@ class _MealEntryViewState extends State<_MealEntryView> {
       appBar: AppBar(
         title: const Text('Add Meal'),
         actions: [
-          TextButton.icon(
-            onPressed: _pickDate,
-            icon: const Icon(Icons.calendar_today_rounded, size: 18),
-            label: Text(MealFormatters.dayLabel(_date)),
-          ),
+          TextButton.icon(onPressed: _pickDate, icon: const Icon(Icons.calendar_today_rounded, size: 18), label: Text(MealFormatters.dayLabel(_date))),
           const SizedBox(width: Dimensions.paddingSizeSmall),
         ],
       ),
       body: BlocConsumer<MealAdminBloc, MealAdminState>(
         listener: (context, state) {
-          state.maybeWhen(
-            error: (message) => context.showErrorSnackBar(message),
-            orElse: () {},
-          );
+          state.maybeWhen(error: (message) => context.showErrorSnackBar(message), orElse: () {});
         },
         builder: (context, state) {
           return state.maybeWhen(
-            loading: () =>
-                const Center(child: CircularProgressIndicator.adaptive()),
+            loading: () => const Center(child: CircularProgressIndicator.adaptive()),
             error: (message) => _ErrorView(message: message),
             loaded: (data, _, _) => _Body(data: data, date: _date),
-            orElse: () =>
-                const Center(child: CircularProgressIndicator.adaptive()),
+            orElse: () => const Center(child: CircularProgressIndicator.adaptive()),
           );
         },
       ),
@@ -109,23 +92,15 @@ class _ErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline_rounded,
-                size: Dimensions.iconSizeExtraLarge, color: colors.errorColor),
+            Icon(Icons.error_outline_rounded, size: Dimensions.iconSizeExtraLarge, color: colors.errorColor),
             const SizedBox(height: Dimensions.paddingSizeDefault),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: AppTextStyles.sfProRoundedMedium.copyWith(
-                color: colors.textSecondaryColor,
-              ),
+              style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor),
             ),
             const SizedBox(height: Dimensions.paddingSizeLarge),
-            ElevatedButton.icon(
-              onPressed: () =>
-                  context.read<MealAdminBloc>().add(const MealAdminEvent.load()),
-              icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Retry'),
-            ),
+            ElevatedButton.icon(onPressed: () => context.read<MealAdminBloc>().add(const MealAdminEvent.load()), icon: const Icon(Icons.refresh_rounded), label: const Text('Retry')),
           ],
         ),
       ),
@@ -154,56 +129,28 @@ class _Body extends StatelessWidget {
     return sum;
   }
 
-  int get _withMeals =>
-      data.members.where((m) => (_recordFor(m.id)?.total ?? 0) > 0).length;
+  int get _withMeals => data.members.where((m) => (_recordFor(m.id)?.total ?? 0) > 0).length;
 
   List<_Stat> _summary(BuildContext context) {
     final c = context.customThemeColors;
     return [
-      _Stat('Members', '${data.members.length}', Icons.groups_rounded,
-          c.primaryColor),
-      _Stat('With meals', '$_withMeals', Icons.how_to_reg_rounded,
-          c.successColor),
-      _Stat('Total meals', MealFormatters.count(_totalMeals),
-          Icons.restaurant_rounded, c.secondaryColor),
-      _Stat('Total cost', DashboardFormatters.taka(_totalMeals * data.mealRate),
-          Icons.payments_rounded, c.infoColor),
+      _Stat('Members', '${data.members.length}', Icons.groups_rounded, c.primaryColor),
+      _Stat('With meals', '$_withMeals', Icons.how_to_reg_rounded, c.successColor),
+      _Stat('Total meals', MealFormatters.count(_totalMeals), Icons.restaurant_rounded, c.secondaryColor),
+      _Stat('Total cost', DashboardFormatters.taka(_totalMeals * data.mealRate), Icons.payments_rounded, c.infoColor),
     ];
   }
 
   void _applyAll(BuildContext context, double b, double l, double d) {
-    context.read<MealAdminBloc>().add(
-          MealAdminEvent.addForAll(
-            date: date,
-            breakfast: b,
-            lunch: l,
-            dinner: d,
-          ),
-        );
-    context.showSuccessSnackBar(
-      'Meal applied to all ${data.members.length} members',
-    );
+    context.read<MealAdminBloc>().add(MealAdminEvent.addForAll(date: date, breakfast: b, lunch: l, dinner: d));
+    context.showSuccessSnackBar('Meal applied to all ${data.members.length} members');
   }
 
   Future<void> _edit(BuildContext context, MealMemberEntity member) async {
     final bloc = context.read<MealAdminBloc>();
-    final result = await showMemberMealForm(
-      context,
-      members: data.members,
-      existing: _recordFor(member.id),
-      presetMemberId: member.id,
-      presetDate: date,
-    );
+    final result = await showMemberMealForm(context, members: data.members, existing: _recordFor(member.id), presetMemberId: member.id, presetDate: date);
     if (result != null) {
-      bloc.add(
-        MealAdminEvent.save(
-          memberId: result.memberId,
-          date: result.date,
-          breakfast: result.breakfast,
-          lunch: result.lunch,
-          dinner: result.dinner,
-        ),
-      );
+      bloc.add(MealAdminEvent.save(memberId: result.memberId, date: result.date, breakfast: result.breakfast, lunch: result.lunch, dinner: result.dinner));
     }
   }
 
@@ -213,18 +160,10 @@ class _Body extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete meal'),
-        content: Text(
-          "Clear ${member.name}'s meal for ${MealFormatters.dayLabel(date)}?",
-        ),
+        content: Text("Clear ${member.name}'s meal for ${MealFormatters.dayLabel(date)}?"),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Delete'),
-          ),
+          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.of(ctx).pop(true), child: const Text('Delete')),
         ],
       ),
     );
@@ -246,21 +185,16 @@ class _Body extends StatelessWidget {
                 final wide = constraints.maxWidth >= 900;
 
                 final applyCard = AnimatedEntrance(
-                  child: ApplyToAllCard(
-                    memberCount: data.members.length,
-                    onApply: (b, l, d) => _applyAll(context, b, l, d),
-                  ),
+                  child: ApplyToAllCard(memberCount: data.members.length, onApply: (b, l, d) => _applyAll(context, b, l, d)),
                 );
 
                 final membersColumn = Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const SectionTitle(
-                        title: 'Members', icon: Icons.people_alt_rounded),
+                    const SectionTitle(title: 'Members', icon: Icons.people_alt_rounded),
                     for (var i = 0; i < data.members.length; i++)
                       Padding(
-                        padding: const EdgeInsets.only(
-                            bottom: Dimensions.paddingSizeDefault),
+                        padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeDefault),
                         child: AnimatedEntrance(
                           delay: Duration(milliseconds: 40 * i),
                           child: _MemberRow(
@@ -290,9 +224,7 @@ class _Body extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                const SectionTitle(
-                                    title: 'Bulk entry',
-                                    icon: Icons.edit_calendar_rounded),
+                                const SectionTitle(title: 'Bulk entry', icon: Icons.edit_calendar_rounded),
                                 applyCard,
                               ],
                             ),
@@ -302,9 +234,7 @@ class _Body extends StatelessWidget {
                         ],
                       )
                     else ...[
-                      const SectionTitle(
-                          title: 'Bulk entry',
-                          icon: Icons.edit_calendar_rounded),
+                      const SectionTitle(title: 'Bulk entry', icon: Icons.edit_calendar_rounded),
                       applyCard,
                       const SizedBox(height: Dimensions.paddingSizeSmall),
                       membersColumn,
@@ -323,14 +253,7 @@ class _Body extends StatelessWidget {
 
 /// One member's row for the selected day, with edit / delete actions.
 class _MemberRow extends StatelessWidget {
-  const _MemberRow({
-    required this.index,
-    required this.name,
-    required this.record,
-    required this.mealRate,
-    required this.onEdit,
-    required this.onDelete,
-  });
+  const _MemberRow({required this.index, required this.name, required this.record, required this.mealRate, required this.onEdit, required this.onDelete});
 
   final int index;
   final String name;
@@ -359,10 +282,7 @@ class _MemberRow extends StatelessWidget {
             backgroundColor: colors.primaryColor.withValues(alpha: 0.15),
             child: Text(
               '$index',
-              style: AppTextStyles.sfProRoundedBold.copyWith(
-                fontSize: Dimensions.fontSizeSmall,
-                color: colors.primaryColor,
-              ),
+              style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.primaryColor),
             ),
           ),
           const SizedBox(width: Dimensions.paddingSizeDefault),
@@ -374,23 +294,15 @@ class _MemberRow extends StatelessWidget {
                   name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-                    fontSize: Dimensions.fontSizeLarge,
-                    color: colors.textPrimaryColor,
-                  ),
+                  style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   hasMeal
                       ? '${MealFormatters.count(total)} meals · '
-                          '${DashboardFormatters.taka(total * mealRate)}'
+                            '${DashboardFormatters.taka(total * mealRate)}'
                       : 'No meal added',
-                  style: AppTextStyles.sfProRoundedMedium.copyWith(
-                    fontSize: Dimensions.fontSizeSmall,
-                    color: hasMeal
-                        ? colors.textSecondaryColor
-                        : colors.textHintColor,
-                  ),
+                  style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: hasMeal ? colors.textSecondaryColor : colors.textHintColor),
                 ),
               ],
             ),
@@ -403,15 +315,13 @@ class _MemberRow extends StatelessWidget {
           IconButton(
             tooltip: 'Edit $name',
             visualDensity: VisualDensity.compact,
-            icon: Icon(Icons.edit_rounded,
-                size: Dimensions.iconSizeDefault, color: colors.infoColor),
+            icon: Icon(Icons.edit_rounded, size: Dimensions.iconSizeDefault, color: colors.infoColor),
             onPressed: onEdit,
           ),
           IconButton(
             tooltip: 'Delete $name',
             visualDensity: VisualDensity.compact,
-            icon: Icon(Icons.delete_outline_rounded,
-                size: Dimensions.iconSizeDefault, color: colors.errorColor),
+            icon: Icon(Icons.delete_outline_rounded, size: Dimensions.iconSizeDefault, color: colors.errorColor),
             onPressed: hasMeal ? onDelete : null,
           ),
         ],
@@ -446,10 +356,7 @@ class _Badge extends StatelessWidget {
           ),
           child: Text(
             MealFormatters.count(value),
-            style: AppTextStyles.sfProRoundedBold.copyWith(
-              fontSize: Dimensions.fontSizeSmall,
-              color: color,
-            ),
+            style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: color),
           ),
         ),
       ),
@@ -478,12 +385,7 @@ class _SummaryGrid extends StatelessWidget {
         final stat = stats[index];
         return AnimatedEntrance(
           delay: Duration(milliseconds: 50 * index),
-          child: StatCard(
-            label: stat.label,
-            value: stat.value,
-            icon: stat.icon,
-            accent: stat.accent,
-          ),
+          child: StatCard(label: stat.label, value: stat.value, icon: stat.icon, accent: stat.accent),
         );
       },
     );

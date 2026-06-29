@@ -36,15 +36,7 @@ class MealAdminLocalDataSourceImpl implements MealAdminDataSource {
       for (var d = 0; d < 5; d++) {
         // d = 0 → 4 days ago, d = 4 → today.
         final date = today.subtract(Duration(days: 4 - d));
-        result.add(
-          MemberMealModel(
-            memberId: _members[m].id,
-            date: date,
-            breakfast: breakfast[m],
-            lunch: lunch[m],
-            dinner: dinner[m],
-          ),
-        );
+        result.add(MemberMealModel(memberId: _members[m].id, date: date, breakfast: breakfast[m], lunch: lunch[m], dinner: dinner[m]));
       }
     }
     return result;
@@ -52,13 +44,7 @@ class MealAdminLocalDataSourceImpl implements MealAdminDataSource {
 
   int _indexOf(String memberId, DateTime date) {
     final key = DateTime(date.year, date.month, date.day);
-    return _entries.indexWhere(
-      (e) =>
-          e.memberId == memberId &&
-          e.date.year == key.year &&
-          e.date.month == key.month &&
-          e.date.day == key.day,
-    );
+    return _entries.indexWhere((e) => e.memberId == memberId && e.date.year == key.year && e.date.month == key.month && e.date.day == key.day);
   }
 
   @override
@@ -69,23 +55,12 @@ class MealAdminLocalDataSourceImpl implements MealAdminDataSource {
   }
 
   @override
-  Future<MealAdminModel> addMealForAll({
-    required DateTime date,
-    required double breakfast,
-    required double lunch,
-    required double dinner,
-  }) async {
+  Future<MealAdminModel> addMealForAll({required DateTime date, required double breakfast, required double lunch, required double dinner}) async {
     final key = DateTime(date.year, date.month, date.day);
     // One write per member — overwriting any existing record for that day.
     for (final member in _members) {
       final index = _indexOf(member.id, key);
-      final record = MemberMealModel(
-        memberId: member.id,
-        date: key,
-        breakfast: breakfast,
-        lunch: lunch,
-        dinner: dinner,
-      );
+      final record = MemberMealModel(memberId: member.id, date: key, breakfast: breakfast, lunch: lunch, dinner: dinner);
       if (index == -1) {
         _entries.add(record);
       } else {
@@ -96,22 +71,10 @@ class MealAdminLocalDataSourceImpl implements MealAdminDataSource {
   }
 
   @override
-  Future<MealAdminModel> saveMemberMeal({
-    required String memberId,
-    required DateTime date,
-    required double breakfast,
-    required double lunch,
-    required double dinner,
-  }) async {
+  Future<MealAdminModel> saveMemberMeal({required String memberId, required DateTime date, required double breakfast, required double lunch, required double dinner}) async {
     final key = DateTime(date.year, date.month, date.day);
     final index = _indexOf(memberId, key);
-    final record = MemberMealModel(
-      memberId: memberId,
-      date: key,
-      breakfast: breakfast,
-      lunch: lunch,
-      dinner: dinner,
-    );
+    final record = MemberMealModel(memberId: memberId, date: key, breakfast: breakfast, lunch: lunch, dinner: dinner);
 
     if (index == -1) {
       _entries.add(record);
@@ -123,18 +86,11 @@ class MealAdminLocalDataSourceImpl implements MealAdminDataSource {
   }
 
   @override
-  Future<MealAdminModel> deleteMemberMeal({
-    required String memberId,
-    required DateTime date,
-  }) async {
+  Future<MealAdminModel> deleteMemberMeal({required String memberId, required DateTime date}) async {
     final index = _indexOf(memberId, date);
     if (index != -1) _entries.removeAt(index);
     return _payload();
   }
 
-  MealAdminModel _payload() => MealAdminModel(
-        members: _members,
-        mealRate: _mealRate,
-        entries: List<MemberMealModel>.unmodifiable(_entries),
-      );
+  MealAdminModel _payload() => MealAdminModel(members: _members, mealRate: _mealRate, entries: List<MemberMealModel>.unmodifiable(_entries));
 }

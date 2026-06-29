@@ -7,11 +7,7 @@ class DateConverter {
     return DateFormat('d MMM, yyyy h:mm a').format(dateTime);
   }
 
-  static String timeAgoLocalized(
-    String? time,
-    dynamic local, {
-    String defaultText = '',
-  }) {
+  static String timeAgoLocalized(String? time, dynamic local, {String defaultText = ''}) {
     if (time == null || time.isEmpty) {
       return defaultText;
     }

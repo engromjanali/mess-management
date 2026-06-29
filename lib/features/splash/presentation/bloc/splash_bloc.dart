@@ -20,9 +20,6 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
     emit(const SplashState.loading());
     final result = await _getConfigUseCase();
 
-    result.when(
-      success: (config) => emit(SplashState.loaded(config.data)),
-      failure: (failure) => emit(SplashState.error(failure.error.toString())),
-    );
+    result.when(success: (config) => emit(SplashState.loaded(config.data)), failure: (failure) => emit(SplashState.error(failure.error.toString())));
   }
 }

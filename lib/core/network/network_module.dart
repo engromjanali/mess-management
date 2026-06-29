@@ -8,8 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 abstract class NetworkModule {
   @preResolve
   @lazySingleton
-  Future<SharedPreferences> get sharedPreferences async =>
-      await SharedPreferences.getInstance();
+  Future<SharedPreferences> get sharedPreferences async => await SharedPreferences.getInstance();
 
   @lazySingleton
   Dio get dio {
@@ -18,20 +17,12 @@ abstract class NetworkModule {
         baseUrl: AppConstants.baseUrl,
         connectTimeout: const Duration(seconds: AppConstants.connectionTimeout),
         receiveTimeout: const Duration(seconds: AppConstants.receiveTimeout),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+        headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
       ),
     );
 
     // Add interceptors
-    dio.interceptors.add(
-      PrettyDioLogger(
-        requestHeader: true,
-        requestBody: true,
-      ),
-    );
+    dio.interceptors.add(PrettyDioLogger(requestHeader: true, requestBody: true));
 
     return dio;
   }

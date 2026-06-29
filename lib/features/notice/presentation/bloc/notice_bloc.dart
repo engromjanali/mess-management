@@ -19,13 +19,7 @@ class NoticeBloc extends Bloc<NoticeEvent, NoticeState> {
 
   bool _isAdmin = false;
 
-  NoticeBloc(
-    this._getNotices,
-    this._addNotice,
-    this._updateNotice,
-    this._setPinned,
-    this._deleteNotice,
-  ) : super(const NoticeState.initial()) {
+  NoticeBloc(this._getNotices, this._addNotice, this._updateNotice, this._setPinned, this._deleteNotice) : super(const NoticeState.initial()) {
     on<NoticeStarted>(_onStarted);
     on<NoticeRefresh>(_onRefresh);
     on<NoticeAdd>(_onAdd);
@@ -34,50 +28,31 @@ class NoticeBloc extends Bloc<NoticeEvent, NoticeState> {
     on<NoticeDelete>(_onDelete);
   }
 
-  Future<void> _onStarted(
-    NoticeStarted event,
-    Emitter<NoticeState> emit,
-  ) async {
+  Future<void> _onStarted(NoticeStarted event, Emitter<NoticeState> emit) async {
     _isAdmin = event.isAdmin;
     emit(const NoticeState.loading());
     await _reload(emit);
   }
 
-  Future<void> _onRefresh(
-    NoticeRefresh event,
-    Emitter<NoticeState> emit,
-  ) async {
+  Future<void> _onRefresh(NoticeRefresh event, Emitter<NoticeState> emit) async {
     await _reload(emit);
   }
 
   Future<void> _onAdd(NoticeAdd event, Emitter<NoticeState> emit) async {
     _emitSaving(emit);
-    final result = await _addNotice(
-      AddNoticeParams(title: event.title, description: event.description),
-    );
+    final result = await _addNotice(AddNoticeParams(title: event.title, description: event.description));
     await _afterMutation(emit, result);
   }
 
   Future<void> _onUpdate(NoticeUpdate event, Emitter<NoticeState> emit) async {
     _emitSaving(emit);
-    final result = await _updateNotice(
-      UpdateNoticeParams(
-        id: event.id,
-        title: event.title,
-        description: event.description,
-      ),
-    );
+    final result = await _updateNotice(UpdateNoticeParams(id: event.id, title: event.title, description: event.description));
     await _afterMutation(emit, result);
   }
 
-  Future<void> _onTogglePin(
-    NoticeTogglePin event,
-    Emitter<NoticeState> emit,
-  ) async {
+  Future<void> _onTogglePin(NoticeTogglePin event, Emitter<NoticeState> emit) async {
     _emitSaving(emit);
-    final result = await _setPinned(
-      SetNoticePinnedParams(id: event.id, pinned: event.pinned),
-    );
+    final result = await _setPinned(SetNoticePinnedParams(id: event.id, pinned: event.pinned));
     await _afterMutation(emit, result);
   }
 
@@ -90,10 +65,7 @@ class NoticeBloc extends Bloc<NoticeEvent, NoticeState> {
   /// Loads the notice list and emits a loaded state.
   Future<void> _reload(Emitter<NoticeState> emit) async {
     final result = await _getNotices(const NoParams());
-    result.when(
-      success: (s) => emit(_loaded(s.data)),
-      failure: (f) => emit(NoticeState.error(f.error.toString())),
-    );
+    result.when(success: (s) => emit(_loaded(s.data)), failure: (f) => emit(NoticeState.error(f.error.toString())));
   }
 
   /// Keeps current data visible while a mutation is in flight.
@@ -105,10 +77,7 @@ class NoticeBloc extends Bloc<NoticeEvent, NoticeState> {
   }
 
   /// On a failed mutation surface the error; otherwise reload the list.
-  Future<void> _afterMutation(
-    Emitter<NoticeState> emit,
-    Result<dynamic> result,
-  ) async {
+  Future<void> _afterMutation(Emitter<NoticeState> emit, Result<dynamic> result) async {
     if (result.isFailure) {
       emit(NoticeState.error(result.error.toString()));
       return;
@@ -116,6 +85,5 @@ class NoticeBloc extends Bloc<NoticeEvent, NoticeState> {
     await _reload(emit);
   }
 
-  NoticeState _loaded(List<NoticeEntity> notices) =>
-      NoticeState.loaded(notices: notices, isAdmin: _isAdmin);
+  NoticeState _loaded(List<NoticeEntity> notices) => NoticeState.loaded(notices: notices, isAdmin: _isAdmin);
 }

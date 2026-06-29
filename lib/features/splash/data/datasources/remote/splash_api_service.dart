@@ -13,9 +13,6 @@ class SplashApiService {
   ResultFuture<ConfigModel> getConfig() async {
     final response = await _apiClient.get(AppConstants.configEndPoint);
 
-    return Result.fromDioResponse(
-      response: response,
-      parser: (data) => ConfigModel.fromJson(data!),
-    );
+    return Result.fromDioResponse(response: response, parser: (data) => ConfigModel.fromJson(data!));
   }
 }

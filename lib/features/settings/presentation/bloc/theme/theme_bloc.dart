@@ -16,22 +16,13 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
   final GetThemeModeUseCase _getThemeModeUseCase;
   final SetThemeModeUseCase _setThemeModeUseCase;
 
-  ThemeBloc(
-    this._getThemeModeUseCase,
-    this._setThemeModeUseCase,
-  ) : super(const ThemeState.system()) {
+  ThemeBloc(this._getThemeModeUseCase, this._setThemeModeUseCase) : super(const ThemeState.system()) {
     on<ThemeEvent>(_onThemeEvent);
   }
 
   /// Handle all theme events using pattern matching
-  Future<void> _onThemeEvent(
-    ThemeEvent event,
-    Emitter<ThemeState> emit,
-  ) async {
-    await event.when(
-      loadThemeMode: () => _handleLoadThemeMode(emit),
-      changeThemeMode: (mode) => _handleChangeThemeMode(mode, emit),
-    );
+  Future<void> _onThemeEvent(ThemeEvent event, Emitter<ThemeState> emit) async {
+    await event.when(loadThemeMode: () => _handleLoadThemeMode(emit), changeThemeMode: (mode) => _handleChangeThemeMode(mode, emit));
   }
 
   /// Handle load theme mode request
@@ -57,10 +48,7 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
   }
 
   /// Handle change theme mode request
-  Future<void> _handleChangeThemeMode(
-    AppThemeMode mode,
-    Emitter<ThemeState> emit,
-  ) async {
+  Future<void> _handleChangeThemeMode(AppThemeMode mode, Emitter<ThemeState> emit) async {
     final result = await _setThemeModeUseCase(SetThemeModeParams(mode: mode));
 
     result.when(

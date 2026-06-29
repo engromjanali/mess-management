@@ -15,10 +15,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Future<void> _onHomeEvent(HomeEvent event, Emitter<HomeState> emit) async {
-    await event.when(
-      loadDashboard: () => _load(emit, showLoading: true),
-      refreshDashboard: () => _load(emit, showLoading: false),
-    );
+    await event.when(loadDashboard: () => _load(emit, showLoading: true), refreshDashboard: () => _load(emit, showLoading: false));
   }
 
   Future<void> _load(Emitter<HomeState> emit, {required bool showLoading}) async {
@@ -27,9 +24,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     final result = await _getDashboardUseCase(const NoParams());
 
-    result.when(
-      success: (success) => emit(HomeState.loaded(success.data)),
-      failure: (failure) => emit(HomeState.error(failure.error.toString())),
-    );
+    result.when(success: (success) => emit(HomeState.loaded(success.data)), failure: (failure) => emit(HomeState.error(failure.error.toString())));
   }
 }

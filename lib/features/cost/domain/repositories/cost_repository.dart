@@ -10,19 +10,10 @@ abstract class CostRepository {
   ResultFuture<List<CostEntity>> getCosts();
 
   /// Records a bazar/cost entry for one member.
-  ResultFuture<CostEntity> addCost({
-    required String personId,
-    required DateTime date,
-    required List<CostItemEntity> items,
-  });
+  ResultFuture<CostEntity> addCost({required String personId, required DateTime date, required List<CostItemEntity> items});
 
   /// Edits an existing bazar/cost entry.
-  ResultFuture<CostEntity> updateCost({
-    required String id,
-    required String personId,
-    required DateTime date,
-    required List<CostItemEntity> items,
-  });
+  ResultFuture<CostEntity> updateCost({required String id, required String personId, required DateTime date, required List<CostItemEntity> items});
 
   /// Removes a bazar/cost entry.
   ResultVoid deleteCost(String id);

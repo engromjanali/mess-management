@@ -35,24 +35,17 @@ class PinnedNoticeCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.push_pin_rounded,
-                  size: Dimensions.iconSizeSmall, color: colors.primaryColor),
+              Icon(Icons.push_pin_rounded, size: Dimensions.iconSizeSmall, color: colors.primaryColor),
               const SizedBox(width: Dimensions.paddingSizeSmall),
               Text(
                 'Pinned notice',
-                style: AppTextStyles.sfProRoundedBold.copyWith(
-                  fontSize: Dimensions.fontSizeDefault,
-                  color: colors.primaryColor,
-                ),
+                style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.primaryColor),
               ),
               const Spacer(),
               if (notice != null)
                 Text(
                   notice!.noticeId,
-                  style: AppTextStyles.sfProRoundedMedium.copyWith(
-                    fontSize: Dimensions.fontSizeSmall,
-                    color: colors.textSecondaryColor,
-                  ),
+                  style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
                 ),
             ],
           ),
@@ -60,41 +53,26 @@ class PinnedNoticeCard extends StatelessWidget {
           if (notice == null)
             Text(
               'No notice pinned right now.',
-              style: AppTextStyles.sfProRoundedRegular.copyWith(
-                fontSize: Dimensions.fontSizeDefault,
-                color: colors.textSecondaryColor,
-              ),
+              style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textSecondaryColor),
             )
           else ...[
             Text(
               notice!.title,
-              style: AppTextStyles.sfProRoundedBold.copyWith(
-                fontSize: Dimensions.fontSizeExtraLarge,
-                color: colors.textPrimaryColor,
-              ),
+              style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
             ),
             const SizedBox(height: Dimensions.paddingSizeSmall),
             Text(
               notice!.description,
-              style: AppTextStyles.sfProRoundedRegular.copyWith(
-                fontSize: Dimensions.fontSizeDefault,
-                color: colors.textSecondaryColor,
-                height: 1.4,
-              ),
+              style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textSecondaryColor, height: 1.4),
             ),
             const SizedBox(height: Dimensions.paddingSizeDefault),
             Row(
               children: [
-                Icon(Icons.schedule_rounded,
-                    size: Dimensions.fontSizeDefault,
-                    color: colors.textHintColor),
+                Icon(Icons.schedule_rounded, size: Dimensions.fontSizeDefault, color: colors.textHintColor),
                 const SizedBox(width: Dimensions.paddingSizeExtraSmall),
                 Text(
                   DashboardFormatters.noticeTime(notice!.createdAt),
-                  style: AppTextStyles.sfProRoundedMedium.copyWith(
-                    fontSize: Dimensions.fontSizeSmall,
-                    color: colors.textHintColor,
-                  ),
+                  style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textHintColor),
                 ),
               ],
             ),

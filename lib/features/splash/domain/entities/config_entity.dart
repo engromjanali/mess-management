@@ -143,75 +143,75 @@ class ConfigEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        restaurantName,
-        restaurantPhone,
-        restaurantScheduleTime,
-        restaurantLogo,
-        restaurantAddress,
-        restaurantEmail,
-        restaurantLocationCoverage,
-        minimumOrderValue,
-        baseUrls,
-        currencySymbol,
-        deliveryCharge,
-        deliveryManagement,
-        branches,
-        emailVerification,
-        phoneVerification,
-        currencySymbolPosition,
-        country,
-        selfPickup,
-        delivery,
-        playStoreConfig,
-        appStoreConfig,
-        socialMediaLink,
-        softwareVersion,
-        decimalPointSettings,
-        scheduleOrderSlotDuration,
-        timeFormat,
-        promotionCampaign,
-        socialLogin,
-        walletStatus,
-        loyaltyPointStatus,
-        refEarningStatus,
-        loyaltyPointItemPurchasePoint,
-        loyaltyPointExchangeRate,
-        loyaltyPointMinimumPoint,
-        customerReferredDiscountStatus,
-        customerReferredDiscountType,
-        customerReferredDiscountAmount,
-        customerReferredValidityType,
-        customerReferredValidityValue,
-        whatsapp,
-        cookiesManagement,
-        toggleDmRegistration,
-        isVegNonVegActive,
-        otpResendTime,
-        digitalPaymentInfo,
-        digitalPaymentStatus,
-        activePaymentMethodList,
-        isCashOnDeliveryActive,
-        isDigitalPaymentActive,
-        isOfflinePaymentActive,
-        isGuestCheckoutActive,
-        isPartialPaymentActive,
-        partialPaymentCombineWith,
-        isAddFundToWalletActive,
-        appleLogin,
-        isCutleryActive,
-        isFirebaseOtpVerificationActive,
-        customerVerification,
-        footerCopyrightText,
-        footerDescriptionText,
-        customerLogin,
-        googleMapStatus,
-        maintenanceMode,
-        advanceMaintenanceMode,
-        isHalalTagActive,
-        maxImageUploadSize,
-        acceptedImageExtensionArray,
-        acceptedImageExtension,
-      ];
+    restaurantName,
+    restaurantPhone,
+    restaurantScheduleTime,
+    restaurantLogo,
+    restaurantAddress,
+    restaurantEmail,
+    restaurantLocationCoverage,
+    minimumOrderValue,
+    baseUrls,
+    currencySymbol,
+    deliveryCharge,
+    deliveryManagement,
+    branches,
+    emailVerification,
+    phoneVerification,
+    currencySymbolPosition,
+    country,
+    selfPickup,
+    delivery,
+    playStoreConfig,
+    appStoreConfig,
+    socialMediaLink,
+    softwareVersion,
+    decimalPointSettings,
+    scheduleOrderSlotDuration,
+    timeFormat,
+    promotionCampaign,
+    socialLogin,
+    walletStatus,
+    loyaltyPointStatus,
+    refEarningStatus,
+    loyaltyPointItemPurchasePoint,
+    loyaltyPointExchangeRate,
+    loyaltyPointMinimumPoint,
+    customerReferredDiscountStatus,
+    customerReferredDiscountType,
+    customerReferredDiscountAmount,
+    customerReferredValidityType,
+    customerReferredValidityValue,
+    whatsapp,
+    cookiesManagement,
+    toggleDmRegistration,
+    isVegNonVegActive,
+    otpResendTime,
+    digitalPaymentInfo,
+    digitalPaymentStatus,
+    activePaymentMethodList,
+    isCashOnDeliveryActive,
+    isDigitalPaymentActive,
+    isOfflinePaymentActive,
+    isGuestCheckoutActive,
+    isPartialPaymentActive,
+    partialPaymentCombineWith,
+    isAddFundToWalletActive,
+    appleLogin,
+    isCutleryActive,
+    isFirebaseOtpVerificationActive,
+    customerVerification,
+    footerCopyrightText,
+    footerDescriptionText,
+    customerLogin,
+    googleMapStatus,
+    maintenanceMode,
+    advanceMaintenanceMode,
+    isHalalTagActive,
+    maxImageUploadSize,
+    acceptedImageExtensionArray,
+    acceptedImageExtension,
+  ];
 }
 
 class RestaurantScheduleTimeEntity extends Equatable {
@@ -219,11 +219,7 @@ class RestaurantScheduleTimeEntity extends Equatable {
   final String openingTime;
   final String closingTime;
 
-  const RestaurantScheduleTimeEntity({
-    required this.day,
-    required this.openingTime,
-    required this.closingTime,
-  });
+  const RestaurantScheduleTimeEntity({required this.day, required this.openingTime, required this.closingTime});
 
   @override
   List<Object?> get props => [day, openingTime, closingTime];
@@ -234,11 +230,7 @@ class RestaurantLocationCoverageEntity extends Equatable {
   final String latitude;
   final int coverage;
 
-  const RestaurantLocationCoverageEntity({
-    required this.longitude,
-    required this.latitude,
-    required this.coverage,
-  });
+  const RestaurantLocationCoverageEntity({required this.longitude, required this.latitude, required this.coverage});
 
   @override
   List<Object?> get props => [longitude, latitude, coverage];
@@ -283,23 +275,23 @@ class BaseUrlsEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        productImageUrl,
-        customerImageUrl,
-        bannerImageUrl,
-        categoryImageUrl,
-        categoryBannerImageUrl,
-        reviewImageUrl,
-        notificationImageUrl,
-        restaurantImageUrl,
-        deliveryManImageUrl,
-        chatImageUrl,
-        promotionalUrl,
-        kitchenImageUrl,
-        branchImageUrl,
-        gatewayImageUrl,
-        paymentImageUrl,
-        cuisineImageUrl,
-      ];
+    productImageUrl,
+    customerImageUrl,
+    bannerImageUrl,
+    categoryImageUrl,
+    categoryBannerImageUrl,
+    reviewImageUrl,
+    notificationImageUrl,
+    restaurantImageUrl,
+    deliveryManImageUrl,
+    chatImageUrl,
+    promotionalUrl,
+    kitchenImageUrl,
+    branchImageUrl,
+    gatewayImageUrl,
+    paymentImageUrl,
+    cuisineImageUrl,
+  ];
 }
 
 class DeliveryManagementEntity extends Equatable {
@@ -307,11 +299,7 @@ class DeliveryManagementEntity extends Equatable {
   final int minShippingCharge;
   final int shippingPerKm;
 
-  const DeliveryManagementEntity({
-    required this.status,
-    required this.minShippingCharge,
-    required this.shippingPerKm,
-  });
+  const DeliveryManagementEntity({required this.status, required this.minShippingCharge, required this.shippingPerKm});
 
   @override
   List<Object?> get props => [status, minShippingCharge, shippingPerKm];
@@ -345,19 +333,7 @@ class BranchEntity extends Equatable {
   });
 
   @override
-  List<Object?> get props => [
-        id,
-        name,
-        email,
-        longitude,
-        latitude,
-        address,
-        coverage,
-        status,
-        image,
-        coverImage,
-        preparationTime,
-      ];
+  List<Object?> get props => [id, name, email, longitude, latitude, address, coverage, status, image, coverImage, preparationTime];
 }
 
 class StoreConfigEntity extends Equatable {
@@ -365,11 +341,7 @@ class StoreConfigEntity extends Equatable {
   final String link;
   final String minVersion;
 
-  const StoreConfigEntity({
-    required this.status,
-    required this.link,
-    required this.minVersion,
-  });
+  const StoreConfigEntity({required this.status, required this.link, required this.minVersion});
 
   @override
   List<Object?> get props => [status, link, minVersion];
@@ -383,14 +355,7 @@ class SocialMediaLinkEntity extends Equatable {
   final dynamic createdAt;
   final dynamic updatedAt;
 
-  const SocialMediaLinkEntity({
-    required this.id,
-    required this.name,
-    required this.link,
-    required this.status,
-    this.createdAt,
-    this.updatedAt,
-  });
+  const SocialMediaLinkEntity({required this.id, required this.name, required this.link, required this.status, this.createdAt, this.updatedAt});
 
   @override
   List<Object?> get props => [id, name, link, status, createdAt, updatedAt];
@@ -441,26 +406,26 @@ class PromotionCampaignEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        restaurantId,
-        name,
-        email,
-        password,
-        latitude,
-        longitude,
-        address,
-        status,
-        branchPromotionStatus,
-        createdAt,
-        updatedAt,
-        coverage,
-        rememberToken,
-        image,
-        phone,
-        coverImage,
-        preparationTime,
-        branchPromotion,
-      ];
+    id,
+    restaurantId,
+    name,
+    email,
+    password,
+    latitude,
+    longitude,
+    address,
+    status,
+    branchPromotionStatus,
+    createdAt,
+    updatedAt,
+    coverage,
+    rememberToken,
+    image,
+    phone,
+    coverImage,
+    preparationTime,
+    branchPromotion,
+  ];
 }
 
 class BranchPromotionEntity extends Equatable {
@@ -471,34 +436,17 @@ class BranchPromotionEntity extends Equatable {
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  const BranchPromotionEntity({
-    required this.id,
-    required this.branchId,
-    required this.promotionType,
-    required this.promotionName,
-    required this.createdAt,
-    required this.updatedAt,
-  });
+  const BranchPromotionEntity({required this.id, required this.branchId, required this.promotionType, required this.promotionName, required this.createdAt, required this.updatedAt});
 
   @override
-  List<Object?> get props => [
-        id,
-        branchId,
-        promotionType,
-        promotionName,
-        createdAt,
-        updatedAt,
-      ];
+  List<Object?> get props => [id, branchId, promotionType, promotionName, createdAt, updatedAt];
 }
 
 class SocialLoginEntity extends Equatable {
   final int google;
   final int facebook;
 
-  const SocialLoginEntity({
-    required this.google,
-    required this.facebook,
-  });
+  const SocialLoginEntity({required this.google, required this.facebook});
 
   @override
   List<Object?> get props => [google, facebook];
@@ -508,10 +456,7 @@ class WhatsappEntity extends Equatable {
   final int status;
   final String number;
 
-  const WhatsappEntity({
-    required this.status,
-    required this.number,
-  });
+  const WhatsappEntity({required this.status, required this.number});
 
   @override
   List<Object?> get props => [status, number];
@@ -521,10 +466,7 @@ class CookiesManagementEntity extends Equatable {
   final int status;
   final String text;
 
-  const CookiesManagementEntity({
-    required this.status,
-    required this.text,
-  });
+  const CookiesManagementEntity({required this.status, required this.text});
 
   @override
   List<Object?> get props => [status, text];
@@ -535,15 +477,10 @@ class DigitalPaymentInfoEntity extends Equatable {
   final String pluginPaymentGateways;
   final String defaultPaymentGateways;
 
-  const DigitalPaymentInfoEntity({
-    required this.digitalPayment,
-    required this.pluginPaymentGateways,
-    required this.defaultPaymentGateways,
-  });
+  const DigitalPaymentInfoEntity({required this.digitalPayment, required this.pluginPaymentGateways, required this.defaultPaymentGateways});
 
   @override
-  List<Object?> get props =>
-      [digitalPayment, pluginPaymentGateways, defaultPaymentGateways];
+  List<Object?> get props => [digitalPayment, pluginPaymentGateways, defaultPaymentGateways];
 }
 
 class ActivePaymentMethodListEntity extends Equatable {
@@ -551,11 +488,7 @@ class ActivePaymentMethodListEntity extends Equatable {
   final String gatewayTitle;
   final String gatewayImage;
 
-  const ActivePaymentMethodListEntity({
-    required this.gateway,
-    required this.gatewayTitle,
-    required this.gatewayImage,
-  });
+  const ActivePaymentMethodListEntity({required this.gateway, required this.gatewayTitle, required this.gatewayImage});
 
   @override
   List<Object?> get props => [gateway, gatewayTitle, gatewayImage];
@@ -566,11 +499,7 @@ class AppleLoginEntity extends Equatable {
   final int status;
   final String clientId;
 
-  const AppleLoginEntity({
-    required this.loginMedium,
-    required this.status,
-    required this.clientId,
-  });
+  const AppleLoginEntity({required this.loginMedium, required this.status, required this.clientId});
 
   @override
   List<Object?> get props => [loginMedium, status, clientId];
@@ -582,12 +511,7 @@ class CustomerVerificationEntity extends Equatable {
   final int email;
   final int firebase;
 
-  const CustomerVerificationEntity({
-    required this.status,
-    required this.phone,
-    required this.email,
-    required this.firebase,
-  });
+  const CustomerVerificationEntity({required this.status, required this.phone, required this.email, required this.firebase});
 
   @override
   List<Object?> get props => [status, phone, email, firebase];
@@ -597,10 +521,7 @@ class CustomerLoginEntity extends Equatable {
   final LoginOptionEntity loginOption;
   final SocialMediaLoginOptionsEntity socialMediaLoginOptions;
 
-  const CustomerLoginEntity({
-    required this.loginOption,
-    required this.socialMediaLoginOptions,
-  });
+  const CustomerLoginEntity({required this.loginOption, required this.socialMediaLoginOptions});
 
   @override
   List<Object?> get props => [loginOption, socialMediaLoginOptions];
@@ -611,11 +532,7 @@ class LoginOptionEntity extends Equatable {
   final int otpLogin;
   final int socialMediaLogin;
 
-  const LoginOptionEntity({
-    required this.manualLogin,
-    required this.otpLogin,
-    required this.socialMediaLogin,
-  });
+  const LoginOptionEntity({required this.manualLogin, required this.otpLogin, required this.socialMediaLogin});
 
   @override
   List<Object?> get props => [manualLogin, otpLogin, socialMediaLogin];
@@ -626,11 +543,7 @@ class SocialMediaLoginOptionsEntity extends Equatable {
   final int facebook;
   final int apple;
 
-  const SocialMediaLoginOptionsEntity({
-    required this.google,
-    required this.facebook,
-    required this.apple,
-  });
+  const SocialMediaLoginOptionsEntity({required this.google, required this.facebook, required this.apple});
 
   @override
   List<Object?> get props => [google, facebook, apple];
@@ -642,20 +555,10 @@ class AdvanceMaintenanceModeEntity extends Equatable {
   final MaintenanceMessagesEntity maintenanceMessages;
   final MaintenanceTypeAndDurationEntity maintenanceTypeAndDuration;
 
-  const AdvanceMaintenanceModeEntity({
-    required this.maintenanceStatus,
-    required this.selectedMaintenanceSystem,
-    required this.maintenanceMessages,
-    required this.maintenanceTypeAndDuration,
-  });
+  const AdvanceMaintenanceModeEntity({required this.maintenanceStatus, required this.selectedMaintenanceSystem, required this.maintenanceMessages, required this.maintenanceTypeAndDuration});
 
   @override
-  List<Object?> get props => [
-        maintenanceStatus,
-        selectedMaintenanceSystem,
-        maintenanceMessages,
-        maintenanceTypeAndDuration,
-      ];
+  List<Object?> get props => [maintenanceStatus, selectedMaintenanceSystem, maintenanceMessages, maintenanceTypeAndDuration];
 }
 
 class SelectedMaintenanceSystemEntity extends Equatable {
@@ -664,16 +567,10 @@ class SelectedMaintenanceSystemEntity extends Equatable {
   final int webApp;
   final int deliverymanApp;
 
-  const SelectedMaintenanceSystemEntity({
-    required this.branchPanel,
-    required this.customerApp,
-    required this.webApp,
-    required this.deliverymanApp,
-  });
+  const SelectedMaintenanceSystemEntity({required this.branchPanel, required this.customerApp, required this.webApp, required this.deliverymanApp});
 
   @override
-  List<Object?> get props =>
-      [branchPanel, customerApp, webApp, deliverymanApp];
+  List<Object?> get props => [branchPanel, customerApp, webApp, deliverymanApp];
 }
 
 class MaintenanceMessagesEntity extends Equatable {
@@ -682,16 +579,10 @@ class MaintenanceMessagesEntity extends Equatable {
   final String maintenanceMessage;
   final String messageBody;
 
-  const MaintenanceMessagesEntity({
-    required this.businessNumber,
-    required this.businessEmail,
-    required this.maintenanceMessage,
-    required this.messageBody,
-  });
+  const MaintenanceMessagesEntity({required this.businessNumber, required this.businessEmail, required this.maintenanceMessage, required this.messageBody});
 
   @override
-  List<Object?> get props =>
-      [businessNumber, businessEmail, maintenanceMessage, messageBody];
+  List<Object?> get props => [businessNumber, businessEmail, maintenanceMessage, messageBody];
 }
 
 class MaintenanceTypeAndDurationEntity extends Equatable {
@@ -699,11 +590,7 @@ class MaintenanceTypeAndDurationEntity extends Equatable {
   final dynamic startDate;
   final dynamic endDate;
 
-  const MaintenanceTypeAndDurationEntity({
-    required this.maintenanceDuration,
-    required this.startDate,
-    required this.endDate,
-  });
+  const MaintenanceTypeAndDurationEntity({required this.maintenanceDuration, required this.startDate, required this.endDate});
 
   @override
   List<Object?> get props => [maintenanceDuration, startDate, endDate];
@@ -713,10 +600,7 @@ class AcceptedImageExtensionArrayEntity extends Equatable {
   final String key;
   final String value;
 
-  const AcceptedImageExtensionArrayEntity({
-    required this.key,
-    required this.value,
-  });
+  const AcceptedImageExtensionArrayEntity({required this.key, required this.value});
 
   @override
   List<Object?> get props => [key, value];

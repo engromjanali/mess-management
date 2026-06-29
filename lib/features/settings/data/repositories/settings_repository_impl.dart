@@ -21,11 +21,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
       final themeMode = themeString.toAppThemeMode();
       return Result.success(data: themeMode);
     } catch (e) {
-      return Result.failure(
-        error: CacheFailure(
-          message: 'Failed to get theme mode: ${e.toString()}',
-        ),
-      );
+      return Result.failure(error: CacheFailure(message: 'Failed to get theme mode: ${e.toString()}'));
     }
   }
 
@@ -35,11 +31,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
       await _dataSource.saveThemeMode(mode.toStringValue());
       return Result.success(data: null);
     } catch (e) {
-      return Result.failure(
-        error: CacheFailure(
-          message: 'Failed to save theme mode: ${e.toString()}',
-        ),
-      );
+      return Result.failure(error: CacheFailure(message: 'Failed to save theme mode: ${e.toString()}'));
     }
   }
 
@@ -49,11 +41,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
       final localeCode = await _dataSource.getLocale();
       return Result.success(data: localeCode);
     } catch (e) {
-      return Result.failure(
-        error: CacheFailure(
-          message: 'Failed to get locale: ${e.toString()}',
-        ),
-      );
+      return Result.failure(error: CacheFailure(message: 'Failed to get locale: ${e.toString()}'));
     }
   }
 
@@ -63,11 +51,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
       await _dataSource.saveLocale(localeCode);
       return Result.success(data: null);
     } catch (e) {
-      return Result.failure(
-        error: CacheFailure(
-          message: 'Failed to save locale: ${e.toString()}',
-        ),
-      );
+      return Result.failure(error: CacheFailure(message: 'Failed to save locale: ${e.toString()}'));
     }
   }
 
@@ -77,11 +61,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
       await _apiClient.updateLocale(localeCode);
       return Result.success(data: null);
     } catch (e) {
-      return Result.failure(
-        error: CacheFailure(
-          message: 'Failed to update API locale: ${e.toString()}',
-        ),
-      );
+      return Result.failure(error: CacheFailure(message: 'Failed to update API locale: ${e.toString()}'));
     }
   }
 }

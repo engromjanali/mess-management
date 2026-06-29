@@ -10,9 +10,7 @@ enum UserRole {
 
   String get label => this == UserRole.admin ? 'Admin' : 'User';
 
-  IconData get icon => this == UserRole.admin
-      ? Icons.admin_panel_settings_rounded
-      : Icons.person_rounded;
+  IconData get icon => this == UserRole.admin ? Icons.admin_panel_settings_rounded : Icons.person_rounded;
 }
 
 /// Holds the currently previewed [UserRole].

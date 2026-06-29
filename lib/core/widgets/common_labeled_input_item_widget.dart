@@ -41,7 +41,9 @@ class CommonLabeledInputItemWidget extends StatefulWidget {
   final ValueChanged<String>? onFieldSubmitted;
 
   const CommonLabeledInputItemWidget({
-    required this.hintText, required this.controller, super.key,
+    required this.hintText,
+    required this.controller,
+    super.key,
     this.label,
     this.keyboardType = TextInputType.text,
     this.validator,
@@ -84,10 +86,7 @@ class _CommonLabeledInputItemWidgetState extends State<CommonLabeledInputItemWid
   late FocusNode _focusNode;
   bool _isInternalFocusNode = false;
 
-  bool get _isPasswordField =>
-      widget.keyboardType == TextInputType.visiblePassword ||
-      (widget.label ?? "").toLowerCase().contains('password') ||
-      widget.hintText.toLowerCase().contains('password');
+  bool get _isPasswordField => widget.keyboardType == TextInputType.visiblePassword || (widget.label ?? "").toLowerCase().contains('password') || widget.hintText.toLowerCase().contains('password');
 
   @override
   void initState() {
@@ -169,7 +168,6 @@ class _CommonLabeledInputItemWidgetState extends State<CommonLabeledInputItemWid
     return null;
   }
 
-
   void _togglePasswordVisibility() {
     setState(() {
       _obscurePassword = !_obscurePassword;
@@ -195,11 +193,7 @@ class _CommonLabeledInputItemWidgetState extends State<CommonLabeledInputItemWid
               Row(
                 children: [
                   Text(widget.label ?? '', style: AppTextStyles.sfProRoundedMedium),
-                  if (widget.isRequired)
-                    Text(
-                      ' *',
-                      style: AppTextStyles.sfProRoundedSemiBold.copyWith(color: widget.enabled ? Theme.of(context).colorScheme.error : disabledColor),
-                    ),
+                  if (widget.isRequired) Text(' *', style: AppTextStyles.sfProRoundedSemiBold.copyWith(color: widget.enabled ? Theme.of(context).colorScheme.error : disabledColor)),
                 ],
               ),
               widget.labelSuffixWidget ?? const SizedBox(),
@@ -269,24 +263,18 @@ class _CommonLabeledInputItemWidgetState extends State<CommonLabeledInputItemWid
                     enabled: widget.enabled,
                     customSuffixIcon: widget.suffixIcon != null
                         ? IconTheme(
-                            data: IconThemeData(
-                              color: widget.suffixIconColor ?? Theme.of(context).primaryColor,
-                              size: widget.suffixIconSize ?? 24,
-                            ),
+                            data: IconThemeData(color: widget.suffixIconColor ?? Theme.of(context).primaryColor, size: widget.suffixIconSize ?? 24),
                             child: widget.suffixIcon!,
                           )
                         : null,
                     onTogglePasswordVisibility: _togglePasswordVisibility,
                   )
                 : widget.suffixIcon != null
-                    ? IconTheme(
-                        data: IconThemeData(
-                          color: widget.suffixIconColor ?? Theme.of(context).primaryColor,
-                          size: widget.suffixIconSize ?? 24,
-                        ),
-                        child: widget.suffixIcon!,
-                      )
-                    : null,
+                ? IconTheme(
+                    data: IconThemeData(color: widget.suffixIconColor ?? Theme.of(context).primaryColor, size: widget.suffixIconSize ?? 24),
+                    child: widget.suffixIcon!,
+                  )
+                : null,
 
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(widget.borderRadius ?? Dimensions.radiusSmall)),
             enabledBorder: OutlineInputBorder(
@@ -310,14 +298,9 @@ class _CommonLabeledInputItemWidgetState extends State<CommonLabeledInputItemWid
               borderSide: BorderSide(color: Theme.of(context).colorScheme.error, width: 2.0),
             ),
             hintStyle: AppTextStyles.sfProRoundedRegular.copyWith(
-              color: widget.enabled
-                  ? Theme.of(context).textTheme.titleLarge!.color!.withValues(alpha: widget.hintOpacity ?? 0.7)
-                  : disabledColor.withValues(alpha: widget.hintOpacity ?? 0.5),
+              color: widget.enabled ? Theme.of(context).textTheme.titleLarge!.color!.withValues(alpha: widget.hintOpacity ?? 0.7) : disabledColor.withValues(alpha: widget.hintOpacity ?? 0.5),
             ),
-            errorStyle: AppTextStyles.sfProRoundedRegular.copyWith(
-              color: Theme.of(context).colorScheme.error,
-              fontSize: widget.borderRadius ?? Dimensions.fontSizeSmall,
-            ),
+            errorStyle: AppTextStyles.sfProRoundedRegular.copyWith(color: Theme.of(context).colorScheme.error, fontSize: widget.borderRadius ?? Dimensions.fontSizeSmall),
           ),
         ),
       ],

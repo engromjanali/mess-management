@@ -8,8 +8,6 @@ final getIt = GetIt.instance;
 
 @InjectableInit(preferRelativeImports: true)
 Future<void> configureDependencies() async {
-  await Firebase.initializeApp(  
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await getIt.init();
 }

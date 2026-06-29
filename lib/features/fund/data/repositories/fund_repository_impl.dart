@@ -15,55 +15,33 @@ class FundRepositoryImpl implements FundRepository {
 
   @override
   ResultFuture<List<FundEntity>> getAllFunds() => _guard(() async {
-        final models = await _dataSource.getAllFunds();
-        return models.map((m) => m.toEntity()).toList();
-      });
+    final models = await _dataSource.getAllFunds();
+    return models.map((m) => m.toEntity()).toList();
+  });
 
   @override
-  ResultFuture<List<FundEntity>> getFundsByDate(DateTime date) =>
-      _guard(() async {
-        final models = await _dataSource.getFundsByDate(date);
-        return models.map((m) => m.toEntity()).toList();
-      });
+  ResultFuture<List<FundEntity>> getFundsByDate(DateTime date) => _guard(() async {
+    final models = await _dataSource.getFundsByDate(date);
+    return models.map((m) => m.toEntity()).toList();
+  });
 
   @override
-  ResultFuture<List<FundEntity>> getFundsInRange(
-    DateTime start,
-    DateTime end,
-  ) =>
-      _guard(() async {
-        final models = await _dataSource.getFundsInRange(start, end);
-        return models.map((m) => m.toEntity()).toList();
-      });
+  ResultFuture<List<FundEntity>> getFundsInRange(DateTime start, DateTime end) => _guard(() async {
+    final models = await _dataSource.getFundsInRange(start, end);
+    return models.map((m) => m.toEntity()).toList();
+  });
 
   @override
-  ResultFuture<FundEntity> addFund({
-    required double amount,
-    required DateTime date,
-    String? note,
-  }) =>
-      _guard(() async {
-        final model =
-            await _dataSource.addFund(amount: amount, date: date, note: note);
-        return model.toEntity();
-      });
+  ResultFuture<FundEntity> addFund({required double amount, required DateTime date, String? note}) => _guard(() async {
+    final model = await _dataSource.addFund(amount: amount, date: date, note: note);
+    return model.toEntity();
+  });
 
   @override
-  ResultFuture<FundEntity> updateFund({
-    required String id,
-    required double amount,
-    required DateTime date,
-    String? note,
-  }) =>
-      _guard(() async {
-        final model = await _dataSource.updateFund(
-          id: id,
-          amount: amount,
-          date: date,
-          note: note,
-        );
-        return model.toEntity();
-      });
+  ResultFuture<FundEntity> updateFund({required String id, required double amount, required DateTime date, String? note}) => _guard(() async {
+    final model = await _dataSource.updateFund(id: id, amount: amount, date: date, note: note);
+    return model.toEntity();
+  });
 
   @override
   ResultVoid deleteFund(String id) => _guard(() => _dataSource.deleteFund(id));
@@ -84,11 +62,7 @@ class FundRepositoryImpl implements FundRepository {
         error: ServerFailure(message: e.message, statusCode: e.statusCode),
       );
     } catch (e) {
-      return Result.failure(
-        error: ServerFailure(
-          message: 'An unexpected error occurred: ${e.toString()}',
-        ),
-      );
+      return Result.failure(error: ServerFailure(message: 'An unexpected error occurred: ${e.toString()}'));
     }
   }
 }

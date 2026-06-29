@@ -5,10 +5,7 @@ class ServerException implements Exception {
   final String message;
   final int? statusCode;
 
-  ServerException({
-    required this.message,
-    this.statusCode,
-  });
+  ServerException({required this.message, this.statusCode});
 }
 
 class CacheException implements Exception {
@@ -39,10 +36,7 @@ class UnauthorizedException implements Exception {
   final String message;
   final int statusCode;
 
-  UnauthorizedException({
-    required this.message,
-    this.statusCode = 401,
-  });
+  UnauthorizedException({required this.message, this.statusCode = 401});
 }
 
 /// Extension to convert DioException to appropriate exceptions
@@ -52,39 +46,25 @@ extension DioExceptionX on DioException {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
-        return RequestTimeoutException(
-          message: 'Request timeout. Please try again.',
-        );
+        return RequestTimeoutException(message: 'Request timeout. Please try again.');
       case DioExceptionType.badResponse:
         final statusCode = response?.statusCode;
         if (statusCode == 401) {
-          return UnauthorizedException(
-            message: response?.data['message'] ?? 'Unauthorized access',
-            statusCode: statusCode!,
-          );
+          return UnauthorizedException(message: response?.data['message'] ?? 'Unauthorized access', statusCode: statusCode!);
         }
-        return ServerException(
-          message: _extractErrorMessage(response?.data),
-          statusCode: statusCode,
-        );
+        return ServerException(message: _extractErrorMessage(response?.data), statusCode: statusCode);
       case DioExceptionType.cancel:
-        return ServerException(
-          message: 'Request was cancelled',
-        );
+        return ServerException(message: 'Request was cancelled');
       case DioExceptionType.connectionError:
-        return NoInternetException(
-          message: 'No internet connection. Please check your network.',
-        );
+        return NoInternetException(message: 'No internet connection. Please check your network.');
       default:
-        return ServerException(
-          message: message ?? 'An unexpected error occurred',
-        );
+        return ServerException(message: message ?? 'An unexpected error occurred');
     }
   }
 
   String _extractErrorMessage(dynamic data) {
     if (data == null) return 'Server error occurred';
-    
+
     if (data is Map) {
       // Try common error message keys
       if (data['message'] != null) return data['message'].toString();
@@ -101,7 +81,7 @@ extension DioExceptionX on DioException {
         }
       }
     }
-    
+
     return 'Server error occurred';
   }
 
@@ -110,13 +90,8 @@ extension DioExceptionX on DioException {
     final exception = toAppException();
     if (exception is ServerException) return exception;
     if (exception is UnauthorizedException) {
-      return ServerException(
-        message: exception.message,
-        statusCode: exception.statusCode,
-      );
+      return ServerException(message: exception.message, statusCode: exception.statusCode);
     }
-    return ServerException(
-      message: exception.toString(),
-    );
+    return ServerException(message: exception.toString());
   }
 }

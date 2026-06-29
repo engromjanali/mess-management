@@ -8,13 +8,7 @@ import 'package:clean_boilerplate/features/fund/presentation/widgets/fund_format
 /// One fund row — signed amount with a Debit/Credit status badge, the date,
 /// and (for admins) edit / delete.
 class FundTile extends StatelessWidget {
-  const FundTile({
-    required this.fund,
-    required this.showActions,
-    this.onEdit,
-    this.onDelete,
-    super.key,
-  });
+  const FundTile({required this.fund, required this.showActions, this.onEdit, this.onDelete, super.key});
 
   final FundEntity fund;
 
@@ -44,15 +38,8 @@ class FundTile extends StatelessWidget {
             width: 40,
             height: 40,
             alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: accent.withValues(alpha: 0.14),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              isCredit ? Icons.south_west_rounded : Icons.north_east_rounded,
-              color: accent,
-              size: Dimensions.iconSizeDefault,
-            ),
+            decoration: BoxDecoration(color: accent.withValues(alpha: 0.14), shape: BoxShape.circle),
+            child: Icon(isCredit ? Icons.south_west_rounded : Icons.north_east_rounded, color: accent, size: Dimensions.iconSizeDefault),
           ),
           const SizedBox(width: Dimensions.paddingSizeDefault),
           // Date + status.
@@ -64,10 +51,7 @@ class FundTile extends StatelessWidget {
                   FundFormatters.date(fund.date),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-                    fontSize: Dimensions.fontSizeLarge,
-                    color: colors.textPrimaryColor,
-                  ),
+                  style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
                 ),
                 const SizedBox(height: 2),
                 Row(
@@ -80,10 +64,7 @@ class FundTile extends StatelessWidget {
                           fund.note!,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: AppTextStyles.sfProRoundedMedium.copyWith(
-                            fontSize: Dimensions.fontSizeSmall,
-                            color: colors.textSecondaryColor,
-                          ),
+                          style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
                         ),
                       ),
                     ],
@@ -96,25 +77,20 @@ class FundTile extends StatelessWidget {
           // Signed amount.
           Text(
             FundFormatters.signedTaka(fund.amount),
-            style: AppTextStyles.sfProRoundedBold.copyWith(
-              fontSize: Dimensions.fontSizeLarge,
-              color: accent,
-            ),
+            style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: accent),
           ),
           if (showActions) ...[
             const SizedBox(width: Dimensions.paddingSizeExtraSmall),
             IconButton(
               tooltip: 'Edit',
               visualDensity: VisualDensity.compact,
-              icon: Icon(Icons.edit_rounded,
-                  size: Dimensions.iconSizeDefault, color: colors.infoColor),
+              icon: Icon(Icons.edit_rounded, size: Dimensions.iconSizeDefault, color: colors.infoColor),
               onPressed: onEdit,
             ),
             IconButton(
               tooltip: 'Delete',
               visualDensity: VisualDensity.compact,
-              icon: Icon(Icons.delete_outline_rounded,
-                  size: Dimensions.iconSizeDefault, color: colors.errorColor),
+              icon: Icon(Icons.delete_outline_rounded, size: Dimensions.iconSizeDefault, color: colors.errorColor),
               onPressed: onDelete,
             ),
           ],
@@ -132,20 +108,11 @@ class _StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: Dimensions.paddingSizeSmall,
-        vertical: 2,
-      ),
-      decoration: BoxDecoration(
-        color: accent.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: 2),
+      decoration: BoxDecoration(color: accent.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
       child: Text(
         label,
-        style: AppTextStyles.sfProRoundedBold.copyWith(
-          fontSize: Dimensions.fontSizeExtraSmall,
-          color: accent,
-        ),
+        style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: accent),
       ),
     );
   }

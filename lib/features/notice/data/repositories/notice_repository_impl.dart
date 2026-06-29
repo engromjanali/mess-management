@@ -15,45 +15,27 @@ class NoticeRepositoryImpl implements NoticeRepository {
 
   @override
   ResultFuture<List<NoticeEntity>> getNotices() => _guard(() async {
-        final models = await _dataSource.getNotices();
-        return models.map((m) => m.toEntity()).toList();
-      });
+    final models = await _dataSource.getNotices();
+    return models.map((m) => m.toEntity()).toList();
+  });
 
   @override
-  ResultFuture<NoticeEntity> addNotice({
-    required String title,
-    required String description,
-  }) =>
-      _guard(() async {
-        final model = await _dataSource.addNotice(
-          title: title,
-          description: description,
-        );
-        return model.toEntity();
-      });
+  ResultFuture<NoticeEntity> addNotice({required String title, required String description}) => _guard(() async {
+    final model = await _dataSource.addNotice(title: title, description: description);
+    return model.toEntity();
+  });
 
   @override
-  ResultFuture<NoticeEntity> updateNotice({
-    required String id,
-    required String title,
-    required String description,
-  }) =>
-      _guard(() async {
-        final model = await _dataSource.updateNotice(
-          id: id,
-          title: title,
-          description: description,
-        );
-        return model.toEntity();
-      });
+  ResultFuture<NoticeEntity> updateNotice({required String id, required String title, required String description}) => _guard(() async {
+    final model = await _dataSource.updateNotice(id: id, title: title, description: description);
+    return model.toEntity();
+  });
 
   @override
-  ResultVoid setPinned({required String id, required bool pinned}) =>
-      _guard(() => _dataSource.setPinned(id: id, pinned: pinned));
+  ResultVoid setPinned({required String id, required bool pinned}) => _guard(() => _dataSource.setPinned(id: id, pinned: pinned));
 
   @override
-  ResultVoid deleteNotice(String id) =>
-      _guard(() => _dataSource.deleteNotice(id));
+  ResultVoid deleteNotice(String id) => _guard(() => _dataSource.deleteNotice(id));
 
   /// Shared try/catch mapping data-layer exceptions to domain failures.
   ResultFuture<T> _guard<T>(Future<T> Function() action) async {
@@ -71,11 +53,7 @@ class NoticeRepositoryImpl implements NoticeRepository {
         error: ServerFailure(message: e.message, statusCode: e.statusCode),
       );
     } catch (e) {
-      return Result.failure(
-        error: ServerFailure(
-          message: 'An unexpected error occurred: ${e.toString()}',
-        ),
-      );
+      return Result.failure(error: ServerFailure(message: 'An unexpected error occurred: ${e.toString()}'));
     }
   }
 }

@@ -4,10 +4,5 @@ import 'package:clean_boilerplate/features/meal/data/models/meal_model.dart';
 abstract class MealDataSource {
   Future<MealOverviewModel> getMealOverview();
 
-  Future<MealOverviewModel> updateMeal({
-    required DateTime date,
-    required double breakfast,
-    required double lunch,
-    required double dinner,
-  });
+  Future<MealOverviewModel> updateMeal({required DateTime date, required double breakfast, required double lunch, required double dinner});
 }

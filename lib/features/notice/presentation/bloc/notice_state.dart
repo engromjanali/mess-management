@@ -14,11 +14,7 @@ class NoticeState with _$NoticeState {
 
   /// Notices loaded (or just mutated). [isAdmin] gates add / edit / delete.
   /// [saving] flags an in-flight mutation.
-  const factory NoticeState.loaded({
-    required List<NoticeEntity> notices,
-    required bool isAdmin,
-    @Default(false) bool saving,
-  }) = NoticeLoaded;
+  const factory NoticeState.loaded({required List<NoticeEntity> notices, required bool isAdmin, @Default(false) bool saving}) = NoticeLoaded;
 
   /// Loading failed.
   const factory NoticeState.error(String message) = NoticeError;

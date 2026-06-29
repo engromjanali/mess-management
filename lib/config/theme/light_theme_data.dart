@@ -7,7 +7,7 @@ ThemeData lightThemeData = ThemeData(
   fontFamily: FontFamily.sFProRounded,
   useMaterial3: true,
   brightness: Brightness.light,
-  
+
   // Color scheme
   colorScheme: ColorScheme.fromSeed(
     seedColor: const Color(0xFF1FA463),
@@ -20,10 +20,10 @@ ThemeData lightThemeData = ThemeData(
     onError: Colors.white,
     onSurface: const Color(0xFF212121),
   ),
-  
+
   // Scaffold
   scaffoldBackgroundColor: const Color(0xFFF5F5F5),
-  
+
   // AppBar
   appBarTheme: const AppBarTheme(
     centerTitle: true,
@@ -32,58 +32,40 @@ ThemeData lightThemeData = ThemeData(
     foregroundColor: Colors.white,
     iconTheme: IconThemeData(color: Colors.white),
   ),
-  
+
   // Card
   cardTheme: CardThemeData(
     elevation: 2,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
-    ),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     color: Colors.white,
   ),
-  
+
   // Elevated Button
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: const Color(0xFF1FA463),
       foregroundColor: Colors.white,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 32,
-        vertical: 16,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       elevation: 2,
     ),
   ),
-  
+
   // Text Button
   textButtonTheme: TextButtonThemeData(
-    style: TextButton.styleFrom(
-      foregroundColor: const Color(0xFF1FA463),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 12,
-      ),
-    ),
+    style: TextButton.styleFrom(foregroundColor: const Color(0xFF1FA463), padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12)),
   ),
-  
+
   // Outlined Button
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
       foregroundColor: const Color(0xFF1FA463),
       side: const BorderSide(color: Color(0xFF1FA463)),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 32,
-        vertical: 16,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     ),
   ),
-  
+
   // Input Decoration
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
@@ -104,22 +86,15 @@ ThemeData lightThemeData = ThemeData(
       borderRadius: BorderRadius.circular(8),
       borderSide: const BorderSide(color: Color(0xFFE53935)),
     ),
-    contentPadding: const EdgeInsets.symmetric(
-      horizontal: 16,
-      vertical: 16,
-    ),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
   ),
-  
+
   // Divider
   dividerColor: const Color(0xFFBDBDBD),
-  
+
   // Icon
-  iconTheme: const IconThemeData(
-    color: Color(0xFF757575),
-  ),
-  
+  iconTheme: const IconThemeData(color: Color(0xFF757575)),
+
   // Custom theme extension
-  extensions: <ThemeExtension<CustomThemeColors>>[
-    CustomThemeColors.light(),
-  ],
+  extensions: <ThemeExtension<CustomThemeColors>>[CustomThemeColors.light()],
 );

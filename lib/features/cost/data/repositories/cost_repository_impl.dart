@@ -15,47 +15,27 @@ class CostRepositoryImpl implements CostRepository {
 
   @override
   ResultFuture<List<CostMemberEntity>> getMembers() => _guard(() async {
-        final models = await _dataSource.getMembers();
-        return models.map((m) => m.toEntity()).toList();
-      });
+    final models = await _dataSource.getMembers();
+    return models.map((m) => m.toEntity()).toList();
+  });
 
   @override
   ResultFuture<List<CostEntity>> getCosts() => _guard(() async {
-        final models = await _dataSource.getCosts();
-        return models.map((m) => m.toEntity()).toList();
-      });
+    final models = await _dataSource.getCosts();
+    return models.map((m) => m.toEntity()).toList();
+  });
 
   @override
-  ResultFuture<CostEntity> addCost({
-    required String personId,
-    required DateTime date,
-    required List<CostItemEntity> items,
-  }) =>
-      _guard(() async {
-        final model = await _dataSource.addCost(
-          personId: personId,
-          date: date,
-          items: items,
-        );
-        return model.toEntity();
-      });
+  ResultFuture<CostEntity> addCost({required String personId, required DateTime date, required List<CostItemEntity> items}) => _guard(() async {
+    final model = await _dataSource.addCost(personId: personId, date: date, items: items);
+    return model.toEntity();
+  });
 
   @override
-  ResultFuture<CostEntity> updateCost({
-    required String id,
-    required String personId,
-    required DateTime date,
-    required List<CostItemEntity> items,
-  }) =>
-      _guard(() async {
-        final model = await _dataSource.updateCost(
-          id: id,
-          personId: personId,
-          date: date,
-          items: items,
-        );
-        return model.toEntity();
-      });
+  ResultFuture<CostEntity> updateCost({required String id, required String personId, required DateTime date, required List<CostItemEntity> items}) => _guard(() async {
+    final model = await _dataSource.updateCost(id: id, personId: personId, date: date, items: items);
+    return model.toEntity();
+  });
 
   @override
   ResultVoid deleteCost(String id) => _guard(() => _dataSource.deleteCost(id));
@@ -76,11 +56,7 @@ class CostRepositoryImpl implements CostRepository {
         error: ServerFailure(message: e.message, statusCode: e.statusCode),
       );
     } catch (e) {
-      return Result.failure(
-        error: ServerFailure(
-          message: 'An unexpected error occurred: ${e.toString()}',
-        ),
-      );
+      return Result.failure(error: ServerFailure(message: 'An unexpected error occurred: ${e.toString()}'));
     }
   }
 }

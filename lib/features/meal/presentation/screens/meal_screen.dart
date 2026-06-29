@@ -8,6 +8,7 @@ import 'package:clean_boilerplate/core/di/injection.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/screen_matres_extensions.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
+import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_formatters.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
@@ -32,10 +33,7 @@ class MealScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<MealBloc>(
-      create: (_) => getIt<MealBloc>()..add(const MealEvent.load()),
-      child: const _MealView(),
-    );
+    return BlocProvider<MealBloc>(create: (_) => getIt<MealBloc>()..add(const MealEvent.load()), child: const _MealView());
   }
 }
 
@@ -47,24 +45,15 @@ class _MealView extends StatelessWidget {
     return Scaffold(
       backgroundColor: context.theme.scaffoldBackgroundColor,
       appBar: AppBar(
+        leading: const HomeBackButton(),
         title: const Text('Meals'),
         actions: [
           // Admins get a shortcut to the bulk "add meal for all" page.
           BlocBuilder<RoleCubit, UserRole>(
-            builder: (context, role) => role.isAdmin
-                ? IconButton(
-                    tooltip: 'Add meal for all',
-                    icon: const Icon(Icons.playlist_add_rounded),
-                    onPressed: () => context.push(AppRoutes.addMeal),
-                  )
-                : const SizedBox.shrink(),
+            builder: (context, role) =>
+                role.isAdmin ? IconButton(tooltip: 'Add meal for all', icon: const Icon(Icons.playlist_add_rounded), onPressed: () => context.push(AppRoutes.addMeal)) : const SizedBox.shrink(),
           ),
-          IconButton(
-            tooltip: 'Refresh',
-            icon: const Icon(Icons.refresh_rounded),
-            onPressed: () =>
-                context.read<MealBloc>().add(const MealEvent.refresh()),
-          ),
+          IconButton(tooltip: 'Refresh', icon: const Icon(Icons.refresh_rounded), onPressed: () => context.read<MealBloc>().add(const MealEvent.refresh())),
         ],
       ),
       body: BlocBuilder<MealBloc, MealState>(
@@ -80,8 +69,7 @@ class _MealView extends StatelessWidget {
     );
   }
 
-  Widget _loading() =>
-      const Center(child: CircularProgressIndicator.adaptive());
+  Widget _loading() => const Center(child: CircularProgressIndicator.adaptive());
 }
 
 class _ErrorView extends StatelessWidget {
@@ -97,23 +85,15 @@ class _ErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline_rounded,
-                size: Dimensions.iconSizeExtraLarge, color: colors.errorColor),
+            Icon(Icons.error_outline_rounded, size: Dimensions.iconSizeExtraLarge, color: colors.errorColor),
             const SizedBox(height: Dimensions.paddingSizeDefault),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: AppTextStyles.sfProRoundedMedium.copyWith(
-                color: colors.textSecondaryColor,
-              ),
+              style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor),
             ),
             const SizedBox(height: Dimensions.paddingSizeLarge),
-            ElevatedButton.icon(
-              onPressed: () =>
-                  context.read<MealBloc>().add(const MealEvent.load()),
-              icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Retry'),
-            ),
+            ElevatedButton.icon(onPressed: () => context.read<MealBloc>().add(const MealEvent.load()), icon: const Icon(Icons.refresh_rounded), label: const Text('Retry')),
           ],
         ),
       ),
@@ -128,30 +108,15 @@ class _MealBody extends StatelessWidget {
   List<_Stat> _summary(BuildContext context) {
     final c = context.customThemeColors;
     return [
-      _Stat('My Meals', MealFormatters.count(overview.totalMeals),
-          Icons.restaurant_menu_rounded, c.primaryColor),
-      _Stat('Meal Rate', DashboardFormatters.taka(overview.mealRate),
-          Icons.sell_rounded, c.secondaryColor),
-      _Stat('My Cost', DashboardFormatters.taka(overview.mealCost),
-          Icons.account_balance_wallet_rounded, c.infoColor),
-      _Stat('Avg / Day', overview.averagePerDay.toStringAsFixed(1),
-          Icons.trending_up_rounded, c.successColor),
+      _Stat('My Meals', MealFormatters.count(overview.totalMeals), Icons.restaurant_menu_rounded, c.primaryColor),
+      _Stat('Meal Rate', DashboardFormatters.taka(overview.mealRate), Icons.sell_rounded, c.secondaryColor),
+      _Stat('My Cost', DashboardFormatters.taka(overview.mealCost), Icons.account_balance_wallet_rounded, c.infoColor),
+      _Stat('Avg / Day', overview.averagePerDay.toStringAsFixed(1), Icons.trending_up_rounded, c.successColor),
     ];
   }
 
-  void _onMealChanged(
-    BuildContext context,
-    double breakfast,
-    double lunch,
-    double dinner,
-  ) {
-    context.read<MealBloc>().add(
-          MealEvent.updateToday(
-            breakfast: breakfast,
-            lunch: lunch,
-            dinner: dinner,
-          ),
-        );
+  void _onMealChanged(BuildContext context, double breakfast, double lunch, double dinner) {
+    context.read<MealBloc>().add(MealEvent.updateToday(breakfast: breakfast, lunch: lunch, dinner: dinner));
   }
 
   @override
@@ -162,30 +127,21 @@ class _MealBody extends StatelessWidget {
     // Only the admin role can edit meal counts; users get a read-only view.
     final editable = context.watch<RoleCubit>().state.isAdmin;
     final logTitle = editable ? 'Log meals' : 'Today';
-    final logIcon =
-        editable ? Icons.edit_calendar_rounded : Icons.today_rounded;
+    final logIcon = editable ? Icons.edit_calendar_rounded : Icons.today_rounded;
 
     Widget todayCard() => AnimatedEntrance(
-          child: MealTodayCard(
-            today: today,
-            mealRate: overview.mealRate,
-            editable: editable,
-            onChanged: (b, l, d) => _onMealChanged(context, b, l, d),
-          ),
-        );
+      child: MealTodayCard(today: today, mealRate: overview.mealRate, editable: editable, onChanged: (b, l, d) => _onMealChanged(context, b, l, d)),
+    );
 
     Widget weekChart() => AnimatedEntrance(
-          delay: const Duration(milliseconds: 80),
-          child: MealWeekChart(days: overview.lastSevenDays),
-        );
+      delay: const Duration(milliseconds: 80),
+      child: MealWeekChart(days: overview.lastSevenDays),
+    );
 
     Widget history() => AnimatedEntrance(
-          delay: const Duration(milliseconds: 120),
-          child: MealHistoryList(
-            days: overview.recentFirst,
-            mealRate: overview.mealRate,
-          ),
-        );
+      delay: const Duration(milliseconds: 120),
+      child: MealHistoryList(days: overview.recentFirst, mealRate: overview.mealRate),
+    );
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -210,10 +166,7 @@ class _MealBody extends StatelessWidget {
                       const SizedBox(height: Dimensions.paddingSizeSmall),
                       // Admins get a full-width management section to record,
                       // edit and delete meals for any member on any date.
-                      if (editable) ...[
-                        const AnimatedEntrance(child: MealAdminPanel()),
-                        const SizedBox(height: Dimensions.paddingSizeLarge),
-                      ],
+                      if (editable) ...[const AnimatedEntrance(child: MealAdminPanel()), const SizedBox(height: Dimensions.paddingSizeLarge)],
                       if (wide)
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -225,8 +178,7 @@ class _MealBody extends StatelessWidget {
                                 children: [
                                   SectionTitle(title: logTitle, icon: logIcon),
                                   todayCard(),
-                                  const SizedBox(
-                                      height: Dimensions.paddingSizeLarge),
+                                  const SizedBox(height: Dimensions.paddingSizeLarge),
                                   weekChart(),
                                 ],
                               ),
@@ -237,9 +189,7 @@ class _MealBody extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  const SectionTitle(
-                                      title: 'History',
-                                      icon: Icons.history_rounded),
+                                  const SectionTitle(title: 'History', icon: Icons.history_rounded),
                                   history(),
                                 ],
                               ),
@@ -251,8 +201,7 @@ class _MealBody extends StatelessWidget {
                         todayCard(),
                         const SizedBox(height: Dimensions.paddingSizeLarge),
                         weekChart(),
-                        const SectionTitle(
-                            title: 'History', icon: Icons.history_rounded),
+                        const SectionTitle(title: 'History', icon: Icons.history_rounded),
                         history(),
                       ],
                       SizedBox(height: context.bottomPadding),
@@ -290,12 +239,7 @@ class _SummaryGrid extends StatelessWidget {
         final stat = stats[index];
         return AnimatedEntrance(
           delay: Duration(milliseconds: 50 * index),
-          child: StatCard(
-            label: stat.label,
-            value: stat.value,
-            icon: stat.icon,
-            accent: stat.accent,
-          ),
+          child: StatCard(label: stat.label, value: stat.value, icon: stat.icon, accent: stat.accent),
         );
       },
     );

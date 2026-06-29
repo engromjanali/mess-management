@@ -13,19 +13,10 @@ class CostEvent with _$CostEvent {
   const factory CostEvent.refresh() = CostRefresh;
 
   /// Record a bazar entry for one member.
-  const factory CostEvent.add({
-    required String personId,
-    required DateTime date,
-    required List<CostItemEntity> items,
-  }) = CostAdd;
+  const factory CostEvent.add({required String personId, required DateTime date, required List<CostItemEntity> items}) = CostAdd;
 
   /// Edit an existing bazar entry.
-  const factory CostEvent.update({
-    required String id,
-    required String personId,
-    required DateTime date,
-    required List<CostItemEntity> items,
-  }) = CostUpdate;
+  const factory CostEvent.update({required String id, required String personId, required DateTime date, required List<CostItemEntity> items}) = CostUpdate;
 
   /// Remove a bazar entry.
   const factory CostEvent.delete(String id) = CostDelete;

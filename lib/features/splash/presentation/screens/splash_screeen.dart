@@ -1,4 +1,3 @@
-
 import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
 import 'package:flutter/material.dart';
@@ -24,11 +23,7 @@ class SplashScreen extends StatelessWidget {
         );
       },
       builder: (context, state) {
-        return Scaffold(
-          body: Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
+        return Scaffold(body: Center(child: CircularProgressIndicator()));
       },
     );
   }

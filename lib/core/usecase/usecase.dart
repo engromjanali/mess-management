@@ -1,7 +1,7 @@
 import 'package:clean_boilerplate/config/util/result.dart';
 
 /// Base class for all use cases
-/// 
+///
 /// [Type] is the return type
 /// [Params] is the input parameter type
 abstract class UseCase<Type, Params> {

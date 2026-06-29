@@ -48,42 +48,24 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
-        state.maybeWhen(
-          error: (message) => context.showErrorSnackBar(message),
-          authenticated: (user) =>
-              context.showSuccessSnackBar(context.local.welcome(user.name)),
-          orElse: () {},
-        );
+        state.maybeWhen(error: (message) => context.showErrorSnackBar(message), authenticated: (user) => context.showSuccessSnackBar(context.local.welcome(user.name)), orElse: () {});
       },
       builder: (context, state) {
-        final isLoading = state.maybeWhen(
-          loading: () => true,
-          orElse: () => false,
-        );
+        final isLoading = state.maybeWhen(loading: () => true, orElse: () => false);
 
         return AuthScaffold(
           icon: Icons.restaurant_menu_rounded,
           title: context.local.welcomeBack,
           subtitle: 'Sign in to continue managing your mess',
-          action: IconButton(
-            tooltip: 'Fill demo credentials',
-            icon: const Icon(Icons.info_outline_rounded),
-            onPressed: _fillDemoCredentials,
-          ),
-          footer: AuthFooterPrompt(
-            promptText: "Don't have an account? ",
-            actionText: 'Sign up',
-            onTap: () => context.push(AppRoutes.register),
-          ),
+          action: IconButton(tooltip: 'Fill demo credentials', icon: const Icon(Icons.info_outline_rounded), onPressed: _fillDemoCredentials),
+          footer: AuthFooterPrompt(promptText: "Don't have an account? ", actionText: 'Sign up', onTap: () => context.push(AppRoutes.register)),
           child: LoginFormWidget(
             formKey: _formKey,
             emailController: _emailController,
             passwordController: _passwordController,
             onLogin: _handleLogin,
             isLoading: isLoading,
-            onForgotPassword: () => context.showInfoSnackBar(
-              'Password reset is coming soon.',
-            ),
+            onForgotPassword: () => context.showInfoSnackBar('Password reset is coming soon.'),
           ),
         );
       },

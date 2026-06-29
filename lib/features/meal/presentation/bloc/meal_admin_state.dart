@@ -13,11 +13,7 @@ class MealAdminState with _$MealAdminState {
   const factory MealAdminState.loading() = MealAdminLoading;
 
   /// Data loaded successfully, with the active member/date filters.
-  const factory MealAdminState.loaded({
-    required MealAdminEntity data,
-    String? selectedMemberId,
-    DateTime? selectedDate,
-  }) = MealAdminLoaded;
+  const factory MealAdminState.loaded({required MealAdminEntity data, String? selectedMemberId, DateTime? selectedDate}) = MealAdminLoaded;
 
   /// Loading or a mutation failed.
   const factory MealAdminState.error(String message) = MealAdminError;

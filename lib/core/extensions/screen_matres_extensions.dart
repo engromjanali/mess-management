@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 /// Screen size extension on BuildContext

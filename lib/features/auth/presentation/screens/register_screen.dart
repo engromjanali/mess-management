@@ -54,11 +54,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       icon: Icons.person_add_alt_1_rounded,
       title: 'Create account',
       subtitle: 'Join and start managing your mess',
-      footer: AuthFooterPrompt(
-        promptText: 'Already have an account? ',
-        actionText: context.local.login,
-        onTap: _goToLogin,
-      ),
+      footer: AuthFooterPrompt(promptText: 'Already have an account? ', actionText: context.local.login, onTap: _goToLogin),
       child: RegisterFormWidget(
         formKey: _formKey,
         nameController: _nameController,

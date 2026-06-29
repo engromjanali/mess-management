@@ -24,6 +24,5 @@ class FundFormatters {
   static String shortDate(DateTime value) => _shortDay.format(value);
 
   /// Compact inclusive range, e.g. `01 Jun – 10 Jun`.
-  static String rangeLabel(DateTime start, DateTime end) =>
-      '${_shortDay.format(start)} – ${_shortDay.format(end)}';
+  static String rangeLabel(DateTime start, DateTime end) => '${_shortDay.format(start)} – ${_shortDay.format(end)}';
 }

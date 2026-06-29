@@ -7,10 +7,5 @@ abstract class MealRepository {
   ResultFuture<MealOverviewEntity> getMealOverview();
 
   /// Persists the meal counts for [date] and returns the updated overview.
-  ResultFuture<MealOverviewEntity> updateMeal({
-    required DateTime date,
-    required double breakfast,
-    required double lunch,
-    required double dinner,
-  });
+  ResultFuture<MealOverviewEntity> updateMeal({required DateTime date, required double breakfast, required double lunch, required double dinner});
 }

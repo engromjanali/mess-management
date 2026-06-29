@@ -11,28 +11,13 @@ class MealModel {
   final double lunch;
   final double dinner;
 
-  const MealModel({
-    required this.date,
-    this.breakfast = 0,
-    this.lunch = 0,
-    this.dinner = 0,
-  });
+  const MealModel({required this.date, this.breakfast = 0, this.lunch = 0, this.dinner = 0});
 
   MealModel copyWith({double? breakfast, double? lunch, double? dinner}) {
-    return MealModel(
-      date: date,
-      breakfast: breakfast ?? this.breakfast,
-      lunch: lunch ?? this.lunch,
-      dinner: dinner ?? this.dinner,
-    );
+    return MealModel(date: date, breakfast: breakfast ?? this.breakfast, lunch: lunch ?? this.lunch, dinner: dinner ?? this.dinner);
   }
 
-  MealEntity toEntity() => MealEntity(
-        date: date,
-        breakfast: breakfast,
-        lunch: lunch,
-        dinner: dinner,
-      );
+  MealEntity toEntity() => MealEntity(date: date, breakfast: breakfast, lunch: lunch, dinner: dinner);
 }
 
 /// Data-layer DTO for the full meal overview.
@@ -41,15 +26,7 @@ class MealOverviewModel {
   final double mealRate;
   final List<MealModel> days;
 
-  const MealOverviewModel({
-    required this.userName,
-    required this.mealRate,
-    required this.days,
-  });
+  const MealOverviewModel({required this.userName, required this.mealRate, required this.days});
 
-  MealOverviewEntity toEntity() => MealOverviewEntity(
-        userName: userName,
-        mealRate: mealRate,
-        days: days.map((d) => d.toEntity()).toList(),
-      );
+  MealOverviewEntity toEntity() => MealOverviewEntity(userName: userName, mealRate: mealRate, days: days.map((d) => d.toEntity()).toList());
 }

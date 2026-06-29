@@ -20,13 +20,7 @@ class CostBloc extends Bloc<CostEvent, CostState> {
   bool _isAdmin = false;
   List<CostMemberEntity> _members = const [];
 
-  CostBloc(
-    this._getMembers,
-    this._getCosts,
-    this._addCost,
-    this._updateCost,
-    this._deleteCost,
-  ) : super(const CostState.initial()) {
+  CostBloc(this._getMembers, this._getCosts, this._addCost, this._updateCost, this._deleteCost) : super(const CostState.initial()) {
     on<CostStarted>(_onStarted);
     on<CostRefresh>(_onRefresh);
     on<CostAdd>(_onAdd);
@@ -34,19 +28,13 @@ class CostBloc extends Bloc<CostEvent, CostState> {
     on<CostDelete>(_onDelete);
   }
 
-  Future<void> _onStarted(
-    CostStarted event,
-    Emitter<CostState> emit,
-  ) async {
+  Future<void> _onStarted(CostStarted event, Emitter<CostState> emit) async {
     _isAdmin = event.isAdmin;
     emit(const CostState.loading());
 
     if (_isAdmin) {
       final membersResult = await _getMembers(const NoParams());
-      membersResult.when(
-        success: (s) => _members = s.data,
-        failure: (_) => _members = const [],
-      );
+      membersResult.when(success: (s) => _members = s.data, failure: (_) => _members = const []);
     } else {
       _members = const [];
     }
@@ -54,35 +42,19 @@ class CostBloc extends Bloc<CostEvent, CostState> {
     await _reload(emit);
   }
 
-  Future<void> _onRefresh(
-    CostRefresh event,
-    Emitter<CostState> emit,
-  ) async {
+  Future<void> _onRefresh(CostRefresh event, Emitter<CostState> emit) async {
     await _reload(emit);
   }
 
   Future<void> _onAdd(CostAdd event, Emitter<CostState> emit) async {
     _emitSaving(emit);
-    final result = await _addCost(
-      AddCostParams(
-        personId: event.personId,
-        date: event.date,
-        items: event.items,
-      ),
-    );
+    final result = await _addCost(AddCostParams(personId: event.personId, date: event.date, items: event.items));
     await _afterMutation(emit, result, flagSaved: true);
   }
 
   Future<void> _onUpdate(CostUpdate event, Emitter<CostState> emit) async {
     _emitSaving(emit);
-    final result = await _updateCost(
-      UpdateCostParams(
-        id: event.id,
-        personId: event.personId,
-        date: event.date,
-        items: event.items,
-      ),
-    );
+    final result = await _updateCost(UpdateCostParams(id: event.id, personId: event.personId, date: event.date, items: event.items));
     await _afterMutation(emit, result, flagSaved: true);
   }
 
@@ -110,11 +82,7 @@ class CostBloc extends Bloc<CostEvent, CostState> {
   }
 
   /// On a failed mutation surface the error; otherwise reload the list.
-  Future<void> _afterMutation(
-    Emitter<CostState> emit,
-    Result<dynamic> result, {
-    bool flagSaved = false,
-  }) async {
+  Future<void> _afterMutation(Emitter<CostState> emit, Result<dynamic> result, {bool flagSaved = false}) async {
     if (result.isFailure) {
       emit(CostState.error(result.error.toString()));
       return;
@@ -122,11 +90,5 @@ class CostBloc extends Bloc<CostEvent, CostState> {
     await _reload(emit, justSaved: flagSaved);
   }
 
-  CostState _loaded(List<CostEntity> costs, {bool justSaved = false}) =>
-      CostState.loaded(
-        costs: costs,
-        members: _members,
-        isAdmin: _isAdmin,
-        justSaved: justSaved,
-      );
+  CostState _loaded(List<CostEntity> costs, {bool justSaved = false}) => CostState.loaded(costs: costs, members: _members, isAdmin: _isAdmin, justSaved: justSaved);
 }

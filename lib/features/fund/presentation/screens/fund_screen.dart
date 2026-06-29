@@ -7,6 +7,7 @@ import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/screen_matres_extensions.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
+import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/stat_card.dart';
@@ -33,8 +34,7 @@ class FundScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final isAdmin = context.read<RoleCubit>().state.isAdmin;
     return BlocProvider<FundBloc>(
-      create: (_) =>
-          getIt<FundBloc>()..add(FundEvent.started(isAdmin: isAdmin)),
+      create: (_) => getIt<FundBloc>()..add(FundEvent.started(isAdmin: isAdmin)),
       child: const _FundView(),
     );
   }
@@ -48,49 +48,28 @@ class _FundView extends StatelessWidget {
     // Re-load when the global role switcher flips between user / admin.
     return BlocListener<RoleCubit, UserRole>(
       listenWhen: (prev, curr) => prev != curr,
-      listener: (context, role) =>
-          context.read<FundBloc>().add(FundEvent.started(isAdmin: role.isAdmin)),
+      listener: (context, role) => context.read<FundBloc>().add(FundEvent.started(isAdmin: role.isAdmin)),
       child: Scaffold(
         backgroundColor: context.theme.scaffoldBackgroundColor,
-        appBar: AppBar(title: const Text('Fund')),
+        appBar: AppBar(leading: const HomeBackButton(), title: const Text('Fund')),
         floatingActionButton: BlocBuilder<FundBloc, FundState>(
           builder: (context, state) {
-            final canAdd = state.maybeWhen(
-              loaded: (_, _, _, isAdmin, _, _) => isAdmin,
-              orElse: () => false,
-            );
+            final canAdd = state.maybeWhen(loaded: (_, _, _, isAdmin, _, _) => isAdmin, orElse: () => false);
             if (!canAdd) return const SizedBox.shrink();
-            return FloatingActionButton.extended(
-              onPressed: () => _openAdd(context),
-              icon: const Icon(Icons.add_rounded),
-              label: const Text('Add fund'),
-            );
+            return FloatingActionButton.extended(onPressed: () => _openAdd(context), icon: const Icon(Icons.add_rounded), label: const Text('Add fund'));
           },
         ),
         body: BlocConsumer<FundBloc, FundState>(
           listener: (context, state) {
-            state.maybeWhen(
-              error: (message) => context.showErrorSnackBar(message),
-              orElse: () {},
-            );
+            state.maybeWhen(error: (message) => context.showErrorSnackBar(message), orElse: () {});
           },
           builder: (context, state) {
             return state.maybeWhen(
-              loading: () =>
-                  const Center(child: CircularProgressIndicator.adaptive()),
+              loading: () => const Center(child: CircularProgressIndicator.adaptive()),
               error: (message) => _ErrorView(message: message),
-              loaded: (funds, dateFilter, selectedDate, isAdmin, selectedRange,
-                      saving) =>
-                  _FundBody(
-                funds: funds,
-                dateFilter: dateFilter,
-                selectedDate: selectedDate,
-                isAdmin: isAdmin,
-                selectedRange: selectedRange,
-                saving: saving,
-              ),
-              orElse: () =>
-                  const Center(child: CircularProgressIndicator.adaptive()),
+              loaded: (funds, dateFilter, selectedDate, isAdmin, selectedRange, saving) =>
+                  _FundBody(funds: funds, dateFilter: dateFilter, selectedDate: selectedDate, isAdmin: isAdmin, selectedRange: selectedRange, saving: saving),
+              orElse: () => const Center(child: CircularProgressIndicator.adaptive()),
             );
           },
         ),
@@ -102,8 +81,7 @@ class _FundView extends StatelessWidget {
     final bloc = context.read<FundBloc>();
     showFundFormSheet(
       context: context,
-      onSave: ({required amount, required date, note}) =>
-          bloc.add(FundEvent.add(amount: amount, date: date, note: note)),
+      onSave: ({required amount, required date, note}) => bloc.add(FundEvent.add(amount: amount, date: date, note: note)),
     );
   }
 }
@@ -122,20 +100,16 @@ class _ErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline_rounded,
-                size: Dimensions.iconSizeExtraLarge, color: colors.errorColor),
+            Icon(Icons.error_outline_rounded, size: Dimensions.iconSizeExtraLarge, color: colors.errorColor),
             const SizedBox(height: Dimensions.paddingSizeDefault),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: AppTextStyles.sfProRoundedMedium.copyWith(
-                color: colors.textSecondaryColor,
-              ),
+              style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor),
             ),
             const SizedBox(height: Dimensions.paddingSizeLarge),
             ElevatedButton.icon(
-              onPressed: () =>
-                  context.read<FundBloc>().add(FundEvent.started(isAdmin: isAdmin)),
+              onPressed: () => context.read<FundBloc>().add(FundEvent.started(isAdmin: isAdmin)),
               icon: const Icon(Icons.refresh_rounded),
               label: const Text('Retry'),
             ),
@@ -147,14 +121,7 @@ class _ErrorView extends StatelessWidget {
 }
 
 class _FundBody extends StatelessWidget {
-  const _FundBody({
-    required this.funds,
-    required this.dateFilter,
-    required this.selectedDate,
-    required this.isAdmin,
-    required this.selectedRange,
-    required this.saving,
-  });
+  const _FundBody({required this.funds, required this.dateFilter, required this.selectedDate, required this.isAdmin, required this.selectedRange, required this.saving});
 
   final List<FundEntity> funds;
   final FundDateFilter dateFilter;
@@ -167,14 +134,10 @@ class _FundBody extends StatelessWidget {
     final c = context.customThemeColors;
     final net = funds.net;
     return [
-      _Stat('Total Credit', FundFormatters.taka(funds.totalCredit),
-          Icons.south_west_rounded, c.successColor),
-      _Stat('Total Debit', FundFormatters.taka(funds.totalDebit),
-          Icons.north_east_rounded, c.errorColor),
-      _Stat('Net Balance', FundFormatters.signedTaka(net),
-          Icons.savings_rounded, net < 0 ? c.errorColor : c.primaryColor),
-      _Stat('Entries', '${funds.length}', Icons.receipt_long_rounded,
-          c.infoColor),
+      _Stat('Total Credit', FundFormatters.taka(funds.totalCredit), Icons.south_west_rounded, c.successColor),
+      _Stat('Total Debit', FundFormatters.taka(funds.totalDebit), Icons.north_east_rounded, c.errorColor),
+      _Stat('Net Balance', FundFormatters.signedTaka(net), Icons.savings_rounded, net < 0 ? c.errorColor : c.primaryColor),
+      _Stat('Entries', '${funds.length}', Icons.receipt_long_rounded, c.infoColor),
     ];
   }
 
@@ -183,9 +146,7 @@ class _FundBody extends StatelessWidget {
     showFundFormSheet(
       context: context,
       existing: fund,
-      onSave: ({required amount, required date, note}) => bloc.add(
-        FundEvent.update(id: fund.id, amount: amount, date: date, note: note),
-      ),
+      onSave: ({required amount, required date, note}) => bloc.add(FundEvent.update(id: fund.id, amount: amount, date: date, note: note)),
     );
   }
 
@@ -201,14 +162,8 @@ class _FundBody extends StatelessWidget {
           '${FundFormatters.date(fund.date)}?',
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Delete'),
-          ),
+          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.of(ctx).pop(true), child: const Text('Delete')),
         ],
       ),
     );
@@ -224,8 +179,7 @@ class _FundBody extends StatelessWidget {
         SingleChildScrollView(
           child: Center(
             child: ConstrainedBox(
-              constraints:
-                  const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
+              constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
               child: Padding(
                 padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
                 child: Column(
@@ -233,25 +187,10 @@ class _FundBody extends StatelessWidget {
                   children: [
                     _SummaryGrid(stats: _summary(context)),
                     const SizedBox(height: Dimensions.paddingSizeLarge),
-                    FundFilterBar(
-                      dateFilter: dateFilter,
-                      selectedDate: selectedDate,
-                      selectedRange: selectedRange,
-                    ),
+                    FundFilterBar(dateFilter: dateFilter, selectedDate: selectedDate, selectedRange: selectedRange),
                     const SizedBox(height: Dimensions.paddingSizeDefault),
-                    SectionTitle(
-                      title: _listTitle(),
-                      icon: Icons.receipt_long_rounded,
-                    ),
-                    if (funds.isEmpty)
-                      const _EmptyView()
-                    else
-                      _FundList(
-                        funds: funds,
-                        isAdmin: isAdmin,
-                        onEdit: (f) => _onEdit(context, f),
-                        onDelete: (f) => _onDelete(context, f),
-                      ),
+                    SectionTitle(title: _listTitle(), icon: Icons.receipt_long_rounded),
+                    if (funds.isEmpty) const _EmptyView() else _FundList(funds: funds, isAdmin: isAdmin, onEdit: (f) => _onEdit(context, f), onDelete: (f) => _onDelete(context, f)),
                     SizedBox(height: context.bottomPadding + 72),
                   ],
                 ),
@@ -259,13 +198,7 @@ class _FundBody extends StatelessWidget {
             ),
           ),
         ),
-        if (saving)
-          const Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: LinearProgressIndicator(minHeight: 2),
-          ),
+        if (saving) const Positioned(top: 0, left: 0, right: 0, child: LinearProgressIndicator(minHeight: 2)),
       ],
     );
   }
@@ -278,9 +211,7 @@ class _FundBody extends StatelessWidget {
         return 'Funds · ${FundFormatters.shortDate(selectedDate)}';
       case FundDateFilter.range:
         final r = selectedRange;
-        return r == null
-            ? 'All funds'
-            : 'Funds · ${FundFormatters.rangeLabel(r.start, r.end)}';
+        return r == null ? 'All funds' : 'Funds · ${FundFormatters.rangeLabel(r.start, r.end)}';
     }
   }
 }
@@ -288,12 +219,7 @@ class _FundBody extends StatelessWidget {
 /// Responsive fund list — a single column on phones, two balanced columns
 /// once there's room (tablet / desktop).
 class _FundList extends StatelessWidget {
-  const _FundList({
-    required this.funds,
-    required this.isAdmin,
-    required this.onEdit,
-    required this.onDelete,
-  });
+  const _FundList({required this.funds, required this.isAdmin, required this.onEdit, required this.onDelete});
 
   final List<FundEntity> funds;
   final bool isAdmin;
@@ -309,12 +235,7 @@ class _FundList extends StatelessWidget {
           for (var i = 0; i < funds.length; i++)
             AnimatedEntrance(
               delay: Duration(milliseconds: 25 * i),
-              child: FundTile(
-                fund: funds[i],
-                showActions: isAdmin,
-                onEdit: () => onEdit(funds[i]),
-                onDelete: () => onDelete(funds[i]),
-              ),
+              child: FundTile(fund: funds[i], showActions: isAdmin, onEdit: () => onEdit(funds[i]), onDelete: () => onDelete(funds[i])),
             ),
         ];
 
@@ -323,8 +244,7 @@ class _FundList extends StatelessWidget {
             children: [
               for (final tile in tiles)
                 Padding(
-                  padding: const EdgeInsets.only(
-                      bottom: Dimensions.paddingSizeDefault),
+                  padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeDefault),
                   child: tile,
                 ),
             ],
@@ -336,8 +256,7 @@ class _FundList extends StatelessWidget {
         for (var i = 0; i < tiles.length; i++) {
           (i.isEven ? left : right).add(
             Padding(
-              padding:
-                  const EdgeInsets.only(bottom: Dimensions.paddingSizeDefault),
+              padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeDefault),
               child: tiles[i],
             ),
           );
@@ -362,19 +281,12 @@ class _EmptyView extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
     return Padding(
-      padding: const EdgeInsets.symmetric(
-          vertical: Dimensions.paddingSizeExtraLarge32),
+      padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraLarge32),
       child: Column(
         children: [
-          Icon(Icons.savings_outlined,
-              size: Dimensions.iconSizeExtraLarge, color: colors.textHintColor),
+          Icon(Icons.savings_outlined, size: Dimensions.iconSizeExtraLarge, color: colors.textHintColor),
           const SizedBox(height: Dimensions.paddingSizeDefault),
-          Text(
-            'No fund entries yet',
-            style: AppTextStyles.sfProRoundedMedium.copyWith(
-              color: colors.textSecondaryColor,
-            ),
-          ),
+          Text('No fund entries yet', style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor)),
         ],
       ),
     );
@@ -403,12 +315,7 @@ class _SummaryGrid extends StatelessWidget {
         final stat = stats[index];
         return AnimatedEntrance(
           delay: Duration(milliseconds: 50 * index),
-          child: StatCard(
-            label: stat.label,
-            value: stat.value,
-            icon: stat.icon,
-            accent: stat.accent,
-          ),
+          child: StatCard(label: stat.label, value: stat.value, icon: stat.icon, accent: stat.accent),
         );
       },
     );

@@ -16,10 +16,7 @@ abstract class DepositRepository {
   ResultFuture<List<DepositEntity>> getDepositsByDate(DateTime date);
 
   /// Every member's deposits within an inclusive [start]–[end] range.
-  ResultFuture<List<DepositEntity>> getDepositsInRange(
-    DateTime start,
-    DateTime end,
-  );
+  ResultFuture<List<DepositEntity>> getDepositsInRange(DateTime start, DateTime end);
 
   /// The signed-in user's own deposits only (newest first).
   ResultFuture<List<DepositEntity>> getMyDeposits();
@@ -27,20 +24,10 @@ abstract class DepositRepository {
   /// Records a deposit for **one** member at a time.
   ///
   /// [amount] keeps its sign — positive for a credit, negative for a debit.
-  ResultFuture<DepositEntity> addDeposit({
-    required String memberId,
-    required double amount,
-    required DateTime date,
-    String? note,
-  });
+  ResultFuture<DepositEntity> addDeposit({required String memberId, required double amount, required DateTime date, String? note});
 
   /// Edits an existing deposit.
-  ResultFuture<DepositEntity> updateDeposit({
-    required String id,
-    required double amount,
-    required DateTime date,
-    String? note,
-  });
+  ResultFuture<DepositEntity> updateDeposit({required String id, required double amount, required DateTime date, String? note});
 
   /// Removes a deposit.
   ResultVoid deleteDeposit(String id);

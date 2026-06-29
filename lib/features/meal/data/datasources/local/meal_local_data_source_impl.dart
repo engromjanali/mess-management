@@ -27,12 +27,7 @@ class MealLocalDataSourceImpl implements MealDataSource {
       // i = 0 → 13 days ago, i = 13 → today.
       final date = today.subtract(Duration(days: 13 - i));
       final p = i % 7;
-      return MealModel(
-        date: date,
-        breakfast: breakfastPattern[p],
-        lunch: lunchPattern[p],
-        dinner: dinnerPattern[p],
-      );
+      return MealModel(date: date, breakfast: breakfastPattern[p], lunch: lunchPattern[p], dinner: dinnerPattern[p]);
     });
   }
 
@@ -44,26 +39,11 @@ class MealLocalDataSourceImpl implements MealDataSource {
   }
 
   @override
-  Future<MealOverviewModel> updateMeal({
-    required DateTime date,
-    required double breakfast,
-    required double lunch,
-    required double dinner,
-  }) async {
+  Future<MealOverviewModel> updateMeal({required DateTime date, required double breakfast, required double lunch, required double dinner}) async {
     final key = DateTime(date.year, date.month, date.day);
-    final index = _days.indexWhere(
-      (d) =>
-          d.date.year == key.year &&
-          d.date.month == key.month &&
-          d.date.day == key.day,
-    );
+    final index = _days.indexWhere((d) => d.date.year == key.year && d.date.month == key.month && d.date.day == key.day);
 
-    final updated = MealModel(
-      date: key,
-      breakfast: breakfast,
-      lunch: lunch,
-      dinner: dinner,
-    );
+    final updated = MealModel(date: key, breakfast: breakfast, lunch: lunch, dinner: dinner);
 
     if (index == -1) {
       _days.add(updated);
@@ -75,9 +55,5 @@ class MealLocalDataSourceImpl implements MealDataSource {
     return _overview();
   }
 
-  MealOverviewModel _overview() => MealOverviewModel(
-        userName: 'Romjan',
-        mealRate: _mealRate,
-        days: List<MealModel>.unmodifiable(_days),
-      );
+  MealOverviewModel _overview() => MealOverviewModel(userName: 'Romjan', mealRate: _mealRate, days: List<MealModel>.unmodifiable(_days));
 }

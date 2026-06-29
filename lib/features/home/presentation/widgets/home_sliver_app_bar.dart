@@ -16,14 +16,7 @@ import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_f
 /// greeting, the headline total balance and quick "meal / fund" chips. Hosts
 /// the theme toggle and settings actions.
 class HomeSliverAppBar extends StatelessWidget {
-  const HomeSliverAppBar({
-    required this.userName,
-    required this.totalBalance,
-    required this.mealBalance,
-    required this.fundBalance,
-    required this.expandedHeight,
-    super.key,
-  });
+  const HomeSliverAppBar({required this.userName, required this.totalBalance, required this.mealBalance, required this.fundBalance, required this.expandedHeight, super.key});
 
   final String userName;
   final double totalBalance;
@@ -42,58 +35,28 @@ class HomeSliverAppBar extends StatelessWidget {
       backgroundColor: colors.primaryDarkColor,
       foregroundColor: Colors.white,
       elevation: 0,
-      title: Text(
-        'Dashboard',
-        style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white),
-      ),
+      title: Text('Dashboard', style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white)),
       actions: [
         IconButton(
           tooltip: 'Toggle theme',
-          icon: Icon(
-            context.isDarkMode
-                ? Icons.light_mode_rounded
-                : Icons.dark_mode_rounded,
-          ),
+          icon: Icon(context.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded),
           onPressed: () {
-            context.read<ThemeBloc>().add(
-                  ThemeEvent.changeThemeMode(
-                    context.isDarkMode
-                        ? AppThemeMode.light
-                        : AppThemeMode.dark,
-                  ),
-                );
+            context.read<ThemeBloc>().add(ThemeEvent.changeThemeMode(context.isDarkMode ? AppThemeMode.light : AppThemeMode.dark));
           },
         ),
-        IconButton(
-          tooltip: context.local.settings,
-          icon: const Icon(Icons.settings_rounded),
-          onPressed: () => context.push(AppRoutes.settings),
-        ),
+        IconButton(tooltip: context.local.settings, icon: const Icon(Icons.settings_rounded), onPressed: () => context.go(AppRoutes.settings)),
         const SizedBox(width: Dimensions.paddingSizeExtraSmall),
       ],
       flexibleSpace: FlexibleSpaceBar(
-        stretchModes: const [
-          StretchMode.zoomBackground,
-          StretchMode.fadeTitle,
-        ],
-        background: _HeaderBackground(
-          userName: userName,
-          totalBalance: totalBalance,
-          mealBalance: mealBalance,
-          fundBalance: fundBalance,
-        ),
+        stretchModes: const [StretchMode.zoomBackground, StretchMode.fadeTitle],
+        background: _HeaderBackground(userName: userName, totalBalance: totalBalance, mealBalance: mealBalance, fundBalance: fundBalance),
       ),
     );
   }
 }
 
 class _HeaderBackground extends StatelessWidget {
-  const _HeaderBackground({
-    required this.userName,
-    required this.totalBalance,
-    required this.mealBalance,
-    required this.fundBalance,
-  });
+  const _HeaderBackground({required this.userName, required this.totalBalance, required this.mealBalance, required this.fundBalance});
 
   final String userName;
   final double totalBalance;
@@ -106,78 +69,42 @@ class _HeaderBackground extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            colors.primaryDarkColor,
-            colors.primaryColor,
-            colors.primaryLightColor,
-          ],
-        ),
+        gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [colors.primaryDarkColor, colors.primaryColor, colors.primaryLightColor]),
       ),
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            Dimensions.paddingSizeLarge,
-            Dimensions.paddingSizeExtraLarge24,
-            Dimensions.paddingSizeLarge,
-            Dimensions.paddingSizeLarge,
-          ),
+          padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeExtraLarge24, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Welcome back,',
-                style: AppTextStyles.sfProRoundedMedium.copyWith(
-                  color: Colors.white.withValues(alpha: 0.85),
-                  fontSize: Dimensions.fontSizeDefault,
-                ),
+                style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.85), fontSize: Dimensions.fontSizeDefault),
               ),
               Text(
                 userName,
-                style: AppTextStyles.sfProRoundedBold.copyWith(
-                  color: Colors.white,
-                  fontSize: Dimensions.fontSizeExtraOverLarge,
-                ),
+                style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeExtraOverLarge),
               ),
               const SizedBox(height: Dimensions.paddingSizeLarge),
               Text(
                 'Total balance',
-                style: AppTextStyles.sfProRoundedMedium.copyWith(
-                  color: Colors.white.withValues(alpha: 0.85),
-                  fontSize: Dimensions.fontSizeSmall,
-                ),
+                style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.85), fontSize: Dimensions.fontSizeSmall),
               ),
               const SizedBox(height: Dimensions.paddingSizeExtraSmall),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 alignment: Alignment.centerLeft,
-                child: Text(
-                  DashboardFormatters.taka(totalBalance),
-                  style: AppTextStyles.sfProRoundedBold.copyWith(
-                    color: Colors.white,
-                    fontSize: 34,
-                  ),
-                ),
+                child: Text(DashboardFormatters.taka(totalBalance), style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: 34)),
               ),
               const SizedBox(height: Dimensions.paddingSizeDefault),
               Wrap(
                 spacing: Dimensions.paddingSizeSmall,
                 runSpacing: Dimensions.paddingSizeSmall,
                 children: [
-                  _HeaderChip(
-                    icon: Icons.restaurant_rounded,
-                    label: 'Meal',
-                    value: DashboardFormatters.taka(mealBalance),
-                  ),
-                  _HeaderChip(
-                    icon: Icons.savings_rounded,
-                    label: 'Fund',
-                    value: DashboardFormatters.taka(fundBalance),
-                  ),
+                  _HeaderChip(icon: Icons.restaurant_rounded, label: 'Meal', value: DashboardFormatters.taka(mealBalance)),
+                  _HeaderChip(icon: Icons.savings_rounded, label: 'Fund', value: DashboardFormatters.taka(fundBalance)),
                 ],
               ),
             ],
@@ -189,11 +116,7 @@ class _HeaderBackground extends StatelessWidget {
 }
 
 class _HeaderChip extends StatelessWidget {
-  const _HeaderChip({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
+  const _HeaderChip({required this.icon, required this.label, required this.value});
 
   final IconData icon;
   final String label;
@@ -202,10 +125,7 @@ class _HeaderChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: Dimensions.paddingSizeDefault,
-        vertical: Dimensions.paddingSizeSmall,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeSmall),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(Dimensions.radiusExtra2Large),
@@ -218,10 +138,7 @@ class _HeaderChip extends StatelessWidget {
           const SizedBox(width: Dimensions.paddingSizeExtraSmall),
           Text(
             '$label · $value',
-            style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-              color: Colors.white,
-              fontSize: Dimensions.fontSizeSmall,
-            ),
+            style: AppTextStyles.sfProRoundedSemiBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeSmall),
           ),
         ],
       ),

@@ -12,15 +12,7 @@ import 'package:clean_boilerplate/features/fund/presentation/widgets/fund_format
 /// When [existing] is null this records a new fund entry; otherwise it edits
 /// that entry in place. [onSave] receives the signed amount — positive for a
 /// credit, negative for a debit.
-Future<void> showFundFormSheet({
-  required BuildContext context,
-  required void Function({
-    required double amount,
-    required DateTime date,
-    String? note,
-  }) onSave,
-  FundEntity? existing,
-}) {
+Future<void> showFundFormSheet({required BuildContext context, required void Function({required double amount, required DateTime date, String? note}) onSave, FundEntity? existing}) {
   return context.showAdaptiveSheet<void>(
     child: _FundFormSheet(existing: existing, onSave: onSave),
   );
@@ -30,11 +22,7 @@ class _FundFormSheet extends StatefulWidget {
   const _FundFormSheet({required this.existing, required this.onSave});
 
   final FundEntity? existing;
-  final void Function({
-    required double amount,
-    required DateTime date,
-    String? note,
-  }) onSave;
+  final void Function({required double amount, required DateTime date, String? note}) onSave;
 
   @override
   State<_FundFormSheet> createState() => _FundFormSheetState();
@@ -56,11 +44,7 @@ class _FundFormSheetState extends State<_FundFormSheet> {
     final existing = widget.existing;
     _type = existing?.type ?? FundType.credit;
     _date = existing?.date ?? DateTime.now();
-    _amountController = TextEditingController(
-      text: existing != null
-          ? FundFormatters.taka(existing.absoluteAmount).replaceAll('৳', '')
-          : '',
-    );
+    _amountController = TextEditingController(text: existing != null ? FundFormatters.taka(existing.absoluteAmount).replaceAll('৳', '') : '');
     _noteController = TextEditingController(text: existing?.note ?? '');
   }
 
@@ -72,12 +56,7 @@ class _FundFormSheetState extends State<_FundFormSheet> {
   }
 
   Future<void> _pickDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _date,
-      firstDate: DateTime(_date.year - 2),
-      lastDate: DateTime(_date.year + 2),
-    );
+    final picked = await showDatePicker(context: context, initialDate: _date, firstDate: DateTime(_date.year - 2), lastDate: DateTime(_date.year + 2));
     if (picked != null) setState(() => _date = picked);
   }
 
@@ -100,114 +79,91 @@ class _FundFormSheetState extends State<_FundFormSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-            Text(
-              _isEdit ? 'Edit fund' : 'Add fund',
-              style: AppTextStyles.sfProRoundedBold.copyWith(
-                fontSize: Dimensions.fontSizeExtraLarge,
-                color: colors.textPrimaryColor,
-              ),
-            ),
-            Text(
-              'Shared mess fund entry',
-              style: AppTextStyles.sfProRoundedMedium.copyWith(
-                fontSize: Dimensions.fontSizeSmall,
-                color: colors.textSecondaryColor,
-              ),
-            ),
-            const SizedBox(height: Dimensions.paddingSizeLarge),
+          Text(
+            _isEdit ? 'Edit fund' : 'Add fund',
+            style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
+          ),
+          Text(
+            'Shared mess fund entry',
+            style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
+          ),
+          const SizedBox(height: Dimensions.paddingSizeLarge),
 
-            // Credit / debit toggle.
-            _Label('Type'),
-            _TypeToggle(
-              type: _type,
-              onChanged: (t) => setState(() => _type = t),
-            ),
-            const SizedBox(height: Dimensions.paddingSizeDefault),
+          // Credit / debit toggle.
+          _Label('Type'),
+          _TypeToggle(type: _type, onChanged: (t) => setState(() => _type = t)),
+          const SizedBox(height: Dimensions.paddingSizeDefault),
 
-            // Amount (magnitude — the sign comes from the type toggle).
-            _Label('Amount (৳)'),
-            TextFormField(
-              controller: _amountController,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
-              ],
-              decoration: _fieldDecoration(context, hint: '0.00'),
-              validator: (v) {
-                final value = double.tryParse((v ?? '').trim());
-                if (value == null || value <= 0) {
-                  return 'Enter an amount greater than 0';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: Dimensions.paddingSizeDefault),
+          // Amount (magnitude — the sign comes from the type toggle).
+          _Label('Amount (৳)'),
+          TextFormField(
+            controller: _amountController,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
+            decoration: _fieldDecoration(context, hint: '0.00'),
+            validator: (v) {
+              final value = double.tryParse((v ?? '').trim());
+              if (value == null || value <= 0) {
+                return 'Enter an amount greater than 0';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: Dimensions.paddingSizeDefault),
 
-            // Date.
-            _Label('Date'),
-            InkWell(
-              onTap: _pickDate,
-              borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-              child: InputDecorator(
-                decoration: _fieldDecoration(context),
-                child: Row(
-                  children: [
-                    Icon(Icons.calendar_today_rounded,
-                        size: Dimensions.iconSizeSmall,
-                        color: colors.textSecondaryColor),
-                    const SizedBox(width: Dimensions.paddingSizeSmall),
-                    Text(
-                      FundFormatters.date(_date),
-                      style: AppTextStyles.sfProRoundedMedium.copyWith(
-                        fontSize: Dimensions.fontSizeDefault,
-                        color: colors.textPrimaryColor,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: Dimensions.paddingSizeDefault),
-
-            // Note (optional).
-            _Label('Note (optional)'),
-            TextFormField(
-              controller: _noteController,
-              textCapitalization: TextCapitalization.sentences,
-              textInputAction: TextInputAction.done,
-              decoration: _fieldDecoration(context, hint: 'e.g. Monthly contribution'),
-            ),
-            const SizedBox(height: Dimensions.paddingSizeExtraLarge),
-
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    style: OutlinedButton.styleFrom(
-                      minimumSize:
-                          const Size.fromHeight(Dimensions.buttonHeightDefault),
-                    ),
-                    child: const Text('Cancel'),
+          // Date.
+          _Label('Date'),
+          InkWell(
+            onTap: _pickDate,
+            borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+            child: InputDecorator(
+              decoration: _fieldDecoration(context),
+              child: Row(
+                children: [
+                  Icon(Icons.calendar_today_rounded, size: Dimensions.iconSizeSmall, color: colors.textSecondaryColor),
+                  const SizedBox(width: Dimensions.paddingSizeSmall),
+                  Text(
+                    FundFormatters.date(_date),
+                    style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
                   ),
-                ),
-                const SizedBox(width: Dimensions.paddingSizeDefault),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _submit,
-                    style: ElevatedButton.styleFrom(
-                      minimumSize:
-                          const Size.fromHeight(Dimensions.buttonHeightDefault),
-                    ),
-                    child: Text(_isEdit ? 'Save' : 'Add'),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ],
-        ),
-      );
+          ),
+          const SizedBox(height: Dimensions.paddingSizeDefault),
+
+          // Note (optional).
+          _Label('Note (optional)'),
+          TextFormField(
+            controller: _noteController,
+            textCapitalization: TextCapitalization.sentences,
+            textInputAction: TextInputAction.done,
+            decoration: _fieldDecoration(context, hint: 'e.g. Monthly contribution'),
+          ),
+          const SizedBox(height: Dimensions.paddingSizeExtraLarge),
+
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeightDefault)),
+                  child: const Text('Cancel'),
+                ),
+              ),
+              const SizedBox(width: Dimensions.paddingSizeDefault),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: _submit,
+                  style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeightDefault)),
+                  child: Text(_isEdit ? 'Save' : 'Add'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   InputDecoration _fieldDecoration(BuildContext context, {String? hint}) {
@@ -215,10 +171,7 @@ class _FundFormSheetState extends State<_FundFormSheet> {
     return InputDecoration(
       isDense: true,
       hintText: hint,
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: Dimensions.paddingSizeDefault,
-        vertical: Dimensions.paddingSizeDefault,
-      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeDefault),
       filled: true,
       fillColor: colors.cardBackgroundColor,
       border: OutlineInputBorder(
@@ -244,10 +197,7 @@ class _Label extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeExtraSmall),
       child: Text(
         text,
-        style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-          fontSize: Dimensions.fontSizeSmall,
-          color: colors.textSecondaryColor,
-        ),
+        style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
       ),
     );
   }
@@ -265,23 +215,11 @@ class _TypeToggle extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: _Segment(
-            label: 'Credit',
-            icon: Icons.south_west_rounded,
-            selected: type == FundType.credit,
-            accent: colors.successColor,
-            onTap: () => onChanged(FundType.credit),
-          ),
+          child: _Segment(label: 'Credit', icon: Icons.south_west_rounded, selected: type == FundType.credit, accent: colors.successColor, onTap: () => onChanged(FundType.credit)),
         ),
         const SizedBox(width: Dimensions.paddingSizeSmall),
         Expanded(
-          child: _Segment(
-            label: 'Debit',
-            icon: Icons.north_east_rounded,
-            selected: type == FundType.debit,
-            accent: colors.errorColor,
-            onTap: () => onChanged(FundType.debit),
-          ),
+          child: _Segment(label: 'Debit', icon: Icons.north_east_rounded, selected: type == FundType.debit, accent: colors.errorColor, onTap: () => onChanged(FundType.debit)),
         ),
       ],
     );
@@ -289,13 +227,7 @@ class _TypeToggle extends StatelessWidget {
 }
 
 class _Segment extends StatelessWidget {
-  const _Segment({
-    required this.label,
-    required this.icon,
-    required this.selected,
-    required this.accent,
-    required this.onTap,
-  });
+  const _Segment({required this.label, required this.icon, required this.selected, required this.accent, required this.onTap});
 
   final String label;
   final IconData icon;
@@ -313,29 +245,19 @@ class _Segment extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
         child: Container(
-          padding: const EdgeInsets.symmetric(
-            vertical: Dimensions.paddingSizeDefault,
-          ),
+          padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeDefault),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-            border: Border.all(
-              color: selected ? accent : colors.borderColor,
-              width: selected ? 1.4 : 1,
-            ),
+            border: Border.all(color: selected ? accent : colors.borderColor, width: selected ? 1.4 : 1),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon,
-                  size: Dimensions.iconSizeSmall,
-                  color: selected ? accent : colors.textSecondaryColor),
+              Icon(icon, size: Dimensions.iconSizeSmall, color: selected ? accent : colors.textSecondaryColor),
               const SizedBox(width: Dimensions.paddingSizeExtraSmall),
               Text(
                 label,
-                style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-                  fontSize: Dimensions.fontSizeDefault,
-                  color: selected ? accent : colors.textSecondaryColor,
-                ),
+                style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: selected ? accent : colors.textSecondaryColor),
               ),
             ],
           ),

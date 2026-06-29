@@ -54,19 +54,13 @@ class DepositBloc extends Bloc<DepositEvent, DepositState> {
     on<DepositDelete>(_onDelete);
   }
 
-  Future<void> _onStarted(
-    DepositStarted event,
-    Emitter<DepositState> emit,
-  ) async {
+  Future<void> _onStarted(DepositStarted event, Emitter<DepositState> emit) async {
     _isAdmin = event.isAdmin;
     emit(const DepositState.loading());
 
     if (_isAdmin) {
       final membersResult = await _getMembers(const NoParams());
-      membersResult.when(
-        success: (s) => _members = s.data,
-        failure: (_) => _members = const [],
-      );
+      membersResult.when(success: (s) => _members = s.data, failure: (_) => _members = const []);
       // Admins start on the by-member view, focused on all members.
       _mode = DepositViewMode.byMember;
       _selectedMember = null;
@@ -79,37 +73,23 @@ class DepositBloc extends Bloc<DepositEvent, DepositState> {
     await _reload(emit);
   }
 
-  Future<void> _onChangeMode(
-    DepositChangeMode event,
-    Emitter<DepositState> emit,
-  ) async {
+  Future<void> _onChangeMode(DepositChangeMode event, Emitter<DepositState> emit) async {
     if (!_isAdmin || event.mode == DepositViewMode.mine) return;
     _mode = event.mode;
     emit(const DepositState.loading());
     await _reload(emit);
   }
 
-  Future<void> _onSelectMember(
-    DepositSelectMember event,
-    Emitter<DepositState> emit,
-  ) async {
+  Future<void> _onSelectMember(DepositSelectMember event, Emitter<DepositState> emit) async {
     if (!_isAdmin) return;
     _mode = DepositViewMode.byMember;
     final id = event.memberId;
-    _selectedMember = id == null
-        ? null
-        : _members.firstWhere(
-            (m) => m.id == id,
-            orElse: () => _selectedMember ?? _members.first,
-          );
+    _selectedMember = id == null ? null : _members.firstWhere((m) => m.id == id, orElse: () => _selectedMember ?? _members.first);
     emit(const DepositState.loading());
     await _reload(emit);
   }
 
-  Future<void> _onChangeDateFilter(
-    DepositChangeDateFilter event,
-    Emitter<DepositState> emit,
-  ) async {
+  Future<void> _onChangeDateFilter(DepositChangeDateFilter event, Emitter<DepositState> emit) async {
     if (!_isAdmin) return;
     _mode = DepositViewMode.byDate;
     _dateFilter = event.filter;
@@ -117,23 +97,16 @@ class DepositBloc extends Bloc<DepositEvent, DepositState> {
     await _reload(emit);
   }
 
-  Future<void> _onSelectDate(
-    DepositSelectDate event,
-    Emitter<DepositState> emit,
-  ) async {
+  Future<void> _onSelectDate(DepositSelectDate event, Emitter<DepositState> emit) async {
     if (!_isAdmin) return;
     _mode = DepositViewMode.byDate;
     _dateFilter = DepositDateFilter.day;
-    _selectedDate =
-        DateTime(event.date.year, event.date.month, event.date.day);
+    _selectedDate = DateTime(event.date.year, event.date.month, event.date.day);
     emit(const DepositState.loading());
     await _reload(emit);
   }
 
-  Future<void> _onSelectRange(
-    DepositSelectRange event,
-    Emitter<DepositState> emit,
-  ) async {
+  Future<void> _onSelectRange(DepositSelectRange event, Emitter<DepositState> emit) async {
     if (!_isAdmin) return;
     _mode = DepositViewMode.byDate;
     _dateFilter = DepositDateFilter.range;
@@ -144,37 +117,17 @@ class DepositBloc extends Bloc<DepositEvent, DepositState> {
 
   Future<void> _onAdd(DepositAdd event, Emitter<DepositState> emit) async {
     _emitSaving(emit);
-    final result = await _addDeposit(
-      AddDepositParams(
-        memberId: event.memberId,
-        amount: event.amount,
-        date: event.date,
-        note: event.note,
-      ),
-    );
+    final result = await _addDeposit(AddDepositParams(memberId: event.memberId, amount: event.amount, date: event.date, note: event.note));
     await _afterMutation(emit, result);
   }
 
-  Future<void> _onUpdate(
-    DepositUpdate event,
-    Emitter<DepositState> emit,
-  ) async {
+  Future<void> _onUpdate(DepositUpdate event, Emitter<DepositState> emit) async {
     _emitSaving(emit);
-    final result = await _updateDeposit(
-      UpdateDepositParams(
-        id: event.id,
-        amount: event.amount,
-        date: event.date,
-        note: event.note,
-      ),
-    );
+    final result = await _updateDeposit(UpdateDepositParams(id: event.id, amount: event.amount, date: event.date, note: event.note));
     await _afterMutation(emit, result);
   }
 
-  Future<void> _onDelete(
-    DepositDelete event,
-    Emitter<DepositState> emit,
-  ) async {
+  Future<void> _onDelete(DepositDelete event, Emitter<DepositState> emit) async {
     _emitSaving(emit);
     final result = await _deleteDeposit(event.id);
     await _afterMutation(emit, result);
@@ -185,9 +138,7 @@ class DepositBloc extends Bloc<DepositEvent, DepositState> {
     final Result<List<DepositEntity>> result;
     switch (_mode) {
       case DepositViewMode.byMember:
-        result = _selectedMember == null
-            ? await _getAllDeposits(const NoParams())
-            : await _getMemberDeposits(_selectedMember!.id);
+        result = _selectedMember == null ? await _getAllDeposits(const NoParams()) : await _getMemberDeposits(_selectedMember!.id);
       case DepositViewMode.byDate:
         switch (_dateFilter) {
           case DepositDateFilter.allTime:
@@ -196,20 +147,13 @@ class DepositBloc extends Bloc<DepositEvent, DepositState> {
             result = await _getDepositsByDate(_selectedDate);
           case DepositDateFilter.range:
             final range = _selectedRange;
-            result = range == null
-                ? await _getAllDeposits(const NoParams())
-                : await _getDepositsInRange(
-                    DepositRangeParams(start: range.start, end: range.end),
-                  );
+            result = range == null ? await _getAllDeposits(const NoParams()) : await _getDepositsInRange(DepositRangeParams(start: range.start, end: range.end));
         }
       case DepositViewMode.mine:
         result = await _getMyDeposits(const NoParams());
     }
 
-    result.when(
-      success: (s) => emit(_loaded(s.data)),
-      failure: (f) => emit(DepositState.error(f.error.toString())),
-    );
+    result.when(success: (s) => emit(_loaded(s.data)), failure: (f) => emit(DepositState.error(f.error.toString())));
   }
 
   /// Keeps current data visible while a mutation is in flight.
@@ -221,10 +165,7 @@ class DepositBloc extends Bloc<DepositEvent, DepositState> {
   }
 
   /// On a failed mutation surface the error; otherwise reload the active list.
-  Future<void> _afterMutation(
-    Emitter<DepositState> emit,
-    Result<dynamic> result,
-  ) async {
+  Future<void> _afterMutation(Emitter<DepositState> emit, Result<dynamic> result) async {
     if (result.isFailure) {
       emit(DepositState.error(result.error.toString()));
       return;
@@ -233,13 +174,13 @@ class DepositBloc extends Bloc<DepositEvent, DepositState> {
   }
 
   DepositState _loaded(List<DepositEntity> deposits) => DepositState.loaded(
-        mode: _mode,
-        deposits: deposits,
-        members: _members,
-        dateFilter: _dateFilter,
-        selectedDate: _selectedDate,
-        isAdmin: _isAdmin,
-        selectedMember: _selectedMember,
-        selectedRange: _selectedRange,
-      );
+    mode: _mode,
+    deposits: deposits,
+    members: _members,
+    dateFilter: _dateFilter,
+    selectedDate: _selectedDate,
+    isAdmin: _isAdmin,
+    selectedMember: _selectedMember,
+    selectedRange: _selectedRange,
+  );
 }

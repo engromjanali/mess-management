@@ -11,13 +11,7 @@ class NoticeEntity extends Equatable {
   /// notice is pinned at a time.
   final bool pinned;
 
-  const NoticeEntity({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.createdAt,
-    this.pinned = false,
-  });
+  const NoticeEntity({required this.id, required this.title, required this.description, required this.createdAt, this.pinned = false});
 
   @override
   List<Object?> get props => [id, title, description, createdAt, pinned];

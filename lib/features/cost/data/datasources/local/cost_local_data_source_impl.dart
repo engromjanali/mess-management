@@ -62,22 +62,18 @@ class CostLocalDataSourceImpl implements CostDataSource {
 
   String _nextId() => 'c${_seq++}';
 
-  String _nameFor(String personId) =>
-      _roster.firstWhere((m) => m.id == personId).name;
+  String _nameFor(String personId) => _roster.firstWhere((m) => m.id == personId).name;
 
   List<CostModel> _sorted(Iterable<CostModel> items) {
     final list = items.toList()..sort((a, b) => b.date.compareTo(a.date));
     return list;
   }
 
-  List<CostItemModel> _toModels(List<CostItemEntity> items) =>
-      items.map(CostItemModel.fromEntity).toList();
+  List<CostItemModel> _toModels(List<CostItemEntity> items) => items.map(CostItemModel.fromEntity).toList();
 
   @override
   Future<List<CostMemberModel>> getMembers() async {
-    return _roster
-        .map((m) => CostMemberModel(id: m.id, name: m.name))
-        .toList();
+    return _roster.map((m) => CostMemberModel(id: m.id, name: m.name)).toList();
   }
 
   @override
@@ -87,32 +83,17 @@ class CostLocalDataSourceImpl implements CostDataSource {
   }
 
   @override
-  Future<CostModel> addCost({
-    required String personId,
-    required DateTime date,
-    required List<CostItemEntity> items,
-  }) async {
+  Future<CostModel> addCost({required String personId, required DateTime date, required List<CostItemEntity> items}) async {
     if (!_roster.any((m) => m.id == personId)) {
       throw ServerException(message: 'Unknown member');
     }
-    final model = CostModel(
-      id: _nextId(),
-      personId: personId,
-      personName: _nameFor(personId),
-      date: date,
-      items: _toModels(items),
-    );
+    final model = CostModel(id: _nextId(), personId: personId, personName: _nameFor(personId), date: date, items: _toModels(items));
     _costs.add(model);
     return model;
   }
 
   @override
-  Future<CostModel> updateCost({
-    required String id,
-    required String personId,
-    required DateTime date,
-    required List<CostItemEntity> items,
-  }) async {
+  Future<CostModel> updateCost({required String id, required String personId, required DateTime date, required List<CostItemEntity> items}) async {
     final index = _costs.indexWhere((c) => c.id == id);
     if (index == -1) {
       throw ServerException(message: 'Cost entry not found');
@@ -120,12 +101,7 @@ class CostLocalDataSourceImpl implements CostDataSource {
     if (!_roster.any((m) => m.id == personId)) {
       throw ServerException(message: 'Unknown member');
     }
-    final updated = _costs[index].copyWith(
-      personId: personId,
-      personName: _nameFor(personId),
-      date: date,
-      items: _toModels(items),
-    );
+    final updated = _costs[index].copyWith(personId: personId, personName: _nameFor(personId), date: date, items: _toModels(items));
     _costs[index] = updated;
     return updated;
   }

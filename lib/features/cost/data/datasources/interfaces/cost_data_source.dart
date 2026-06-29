@@ -7,18 +7,9 @@ abstract class CostDataSource {
 
   Future<List<CostModel>> getCosts();
 
-  Future<CostModel> addCost({
-    required String personId,
-    required DateTime date,
-    required List<CostItemEntity> items,
-  });
+  Future<CostModel> addCost({required String personId, required DateTime date, required List<CostItemEntity> items});
 
-  Future<CostModel> updateCost({
-    required String id,
-    required String personId,
-    required DateTime date,
-    required List<CostItemEntity> items,
-  });
+  Future<CostModel> updateCost({required String id, required String personId, required DateTime date, required List<CostItemEntity> items});
 
   Future<void> deleteCost(String id);
 }

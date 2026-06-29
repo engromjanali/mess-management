@@ -9,11 +9,7 @@ import 'package:clean_boilerplate/features/meal/presentation/widgets/meal_format
 /// Scrollable-free meal history card: one row per day with the B/L/D breakdown,
 /// the day's meal total and its cost. Designed to sit inside an outer scroll.
 class MealHistoryList extends StatelessWidget {
-  const MealHistoryList({
-    required this.days,
-    required this.mealRate,
-    super.key,
-  });
+  const MealHistoryList({required this.days, required this.mealRate, super.key});
 
   /// Most-recent-first list of days.
   final List<MealEntity> days;
@@ -34,18 +30,8 @@ class MealHistoryList extends StatelessWidget {
       child: Column(
         children: [
           for (var i = 0; i < days.length; i++) ...[
-            if (i > 0)
-              Divider(
-                height: 1,
-                color: colors.dividerColor.withValues(alpha: 0.3),
-              ),
-            _HistoryRow(
-              day: days[i],
-              mealRate: mealRate,
-              isToday: days[i].date.year == now.year &&
-                  days[i].date.month == now.month &&
-                  days[i].date.day == now.day,
-            ),
+            if (i > 0) Divider(height: 1, color: colors.dividerColor.withValues(alpha: 0.3)),
+            _HistoryRow(day: days[i], mealRate: mealRate, isToday: days[i].date.year == now.year && days[i].date.month == now.month && days[i].date.day == now.day),
           ],
         ],
       ),
@@ -54,11 +40,7 @@ class MealHistoryList extends StatelessWidget {
 }
 
 class _HistoryRow extends StatelessWidget {
-  const _HistoryRow({
-    required this.day,
-    required this.mealRate,
-    required this.isToday,
-  });
+  const _HistoryRow({required this.day, required this.mealRate, required this.isToday});
 
   final MealEntity day;
   final double mealRate;
@@ -69,10 +51,7 @@ class _HistoryRow extends StatelessWidget {
     final colors = context.customThemeColors;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: Dimensions.paddingSizeLarge,
-        vertical: Dimensions.paddingSizeDefault,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault),
       child: Row(
         children: [
           // Date + today chip.
@@ -85,30 +64,17 @@ class _HistoryRow extends StatelessWidget {
                     MealFormatters.dayLabel(day.date),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-                      fontSize: Dimensions.fontSizeDefault,
-                      color: colors.textPrimaryColor,
-                    ),
+                    style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
                   ),
                 ),
                 if (isToday) ...[
                   const SizedBox(width: Dimensions.paddingSizeSmall),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: Dimensions.paddingSizeSmall,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colors.primaryColor.withValues(alpha: 0.14),
-                      borderRadius:
-                          BorderRadius.circular(Dimensions.radiusSmall),
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: 2),
+                    decoration: BoxDecoration(color: colors.primaryColor.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(Dimensions.radiusSmall)),
                     child: Text(
                       'Today',
-                      style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-                        fontSize: Dimensions.fontSizeExtraSmall,
-                        color: colors.primaryColor,
-                      ),
+                      style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: colors.primaryColor),
                     ),
                   ),
                 ],
@@ -135,17 +101,11 @@ class _HistoryRow extends StatelessWidget {
               children: [
                 Text(
                   '${MealFormatters.count(day.total)} meals',
-                  style: AppTextStyles.sfProRoundedBold.copyWith(
-                    fontSize: Dimensions.fontSizeDefault,
-                    color: colors.textPrimaryColor,
-                  ),
+                  style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
                 ),
                 Text(
                   DashboardFormatters.taka(day.total * mealRate),
-                  style: AppTextStyles.sfProRoundedMedium.copyWith(
-                    fontSize: Dimensions.fontSizeSmall,
-                    color: colors.textSecondaryColor,
-                  ),
+                  style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
                 ),
               ],
             ),
@@ -169,9 +129,7 @@ class _Mini extends StatelessWidget {
     final color = muted ? colors.textHintColor : accent;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: Dimensions.paddingSizeExtraSmall,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall),
       child: Tooltip(
         message: '$label · ${MealFormatters.count(value)}',
         child: Container(
@@ -184,10 +142,7 @@ class _Mini extends StatelessWidget {
           ),
           child: Text(
             MealFormatters.count(value),
-            style: AppTextStyles.sfProRoundedBold.copyWith(
-              fontSize: Dimensions.fontSizeSmall,
-              color: color,
-            ),
+            style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: color),
           ),
         ),
       ),

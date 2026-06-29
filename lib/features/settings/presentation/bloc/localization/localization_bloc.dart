@@ -20,23 +20,13 @@ class LocalizationBloc extends Bloc<LocalizationEvent, LocalizationState> {
   final SetLocaleUseCase _setLocaleUseCase;
   final UpdateApiLocaleUseCase _updateApiLocaleUseCase;
 
-  LocalizationBloc(
-    this._getLocaleUseCase,
-    this._setLocaleUseCase,
-    this._updateApiLocaleUseCase,
-  ) : super(LocalizationState.initial(Locale(AppConstants.languages.first.code))) {
+  LocalizationBloc(this._getLocaleUseCase, this._setLocaleUseCase, this._updateApiLocaleUseCase) : super(LocalizationState.initial(Locale(AppConstants.languages.first.code))) {
     on<LocalizationEvent>(_onLocalizationEvent);
   }
 
   /// Handle all localization events using pattern matching
-  Future<void> _onLocalizationEvent(
-    LocalizationEvent event,
-    Emitter<LocalizationState> emit,
-  ) async {
-    await event.when(
-      loadLocale: () => _handleLoadLocale(emit),
-      changeLocale: (localeCode) => _handleChangeLocale(localeCode, emit),
-    );
+  Future<void> _onLocalizationEvent(LocalizationEvent event, Emitter<LocalizationState> emit) async {
+    await event.when(loadLocale: () => _handleLoadLocale(emit), changeLocale: (localeCode) => _handleChangeLocale(localeCode, emit));
   }
 
   /// Handle load locale request
@@ -56,10 +46,7 @@ class LocalizationBloc extends Bloc<LocalizationEvent, LocalizationState> {
   }
 
   /// Handle change locale request
-  Future<void> _handleChangeLocale(
-    String localeCode,
-    Emitter<LocalizationState> emit,
-  ) async {
+  Future<void> _handleChangeLocale(String localeCode, Emitter<LocalizationState> emit) async {
     final locale = AppLocale.fromCode(localeCode);
     final result = await _setLocaleUseCase(SetLocaleParams(localeCode: localeCode));
 
@@ -71,10 +58,7 @@ class LocalizationBloc extends Bloc<LocalizationEvent, LocalizationState> {
       },
       failure: (failure) async {
         // On error, emit error state but keep current locale
-        emit(LocalizationState.error(
-          'Failed to change locale',
-          state.locale,
-        ));
+        emit(LocalizationState.error('Failed to change locale', state.locale));
       },
     );
   }

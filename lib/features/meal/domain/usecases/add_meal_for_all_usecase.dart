@@ -12,12 +12,7 @@ class AddMealForAllParams extends Equatable {
   final double lunch;
   final double dinner;
 
-  const AddMealForAllParams({
-    required this.date,
-    required this.breakfast,
-    required this.lunch,
-    required this.dinner,
-  });
+  const AddMealForAllParams({required this.date, required this.breakfast, required this.lunch, required this.dinner});
 
   @override
   List<Object?> get props => [date, breakfast, lunch, dinner];
@@ -26,19 +21,13 @@ class AddMealForAllParams extends Equatable {
 /// Records the same B/L/D for every member on a date in a single action — the
 /// core "add meal for all at once" business rule.
 @lazySingleton
-class AddMealForAllUseCase
-    implements UseCase<MealAdminEntity, AddMealForAllParams> {
+class AddMealForAllUseCase implements UseCase<MealAdminEntity, AddMealForAllParams> {
   final MealAdminRepository _repository;
 
   AddMealForAllUseCase(this._repository);
 
   @override
   ResultFuture<MealAdminEntity> call(AddMealForAllParams params) {
-    return _repository.addMealForAll(
-      date: params.date,
-      breakfast: params.breakfast,
-      lunch: params.lunch,
-      dinner: params.dinner,
-    );
+    return _repository.addMealForAll(date: params.date, breakfast: params.breakfast, lunch: params.lunch, dinner: params.dinner);
   }
 }

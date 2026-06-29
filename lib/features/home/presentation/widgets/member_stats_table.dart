@@ -10,11 +10,7 @@ import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_f
 /// Collapsed by default to the first few rows with a "Show more" toggle,
 /// mirroring the legacy first screen's see-more behaviour.
 class MemberStatsTable extends StatefulWidget {
-  const MemberStatsTable({
-    required this.members,
-    required this.mealRate,
-    super.key,
-  });
+  const MemberStatsTable({required this.members, required this.mealRate, super.key});
 
   final List<MemberStatEntity> members;
   final double mealRate;
@@ -30,9 +26,7 @@ class _MemberStatsTableState extends State<MemberStatsTable> {
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
-    final visible = _expanded
-        ? widget.members
-        : widget.members.take(_collapsedCount).toList();
+    final visible = _expanded ? widget.members : widget.members.take(_collapsedCount).toList();
     final canToggle = widget.members.length > _collapsedCount;
 
     return Container(
@@ -49,19 +43,12 @@ class _MemberStatsTableState extends State<MemberStatsTable> {
           AnimatedSize(
             duration: const Duration(milliseconds: 250),
             curve: Curves.easeInOut,
-            child: Column(
-              children: [
-                for (var i = 0; i < visible.length; i++)
-                  _buildMemberRow(context, i, visible[i]),
-              ],
-            ),
+            child: Column(children: [for (var i = 0; i < visible.length; i++) _buildMemberRow(context, i, visible[i])]),
           ),
           if (canToggle)
             TextButton.icon(
               onPressed: () => setState(() => _expanded = !_expanded),
-              icon: Icon(
-                _expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
-              ),
+              icon: Icon(_expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded),
               label: Text(_expanded ? 'Show less' : 'Show all members'),
             ),
         ],
@@ -71,22 +58,22 @@ class _MemberStatsTableState extends State<MemberStatsTable> {
 
   Widget _buildHeaderRow(BuildContext context) {
     final colors = context.customThemeColors;
-    final style = AppTextStyles.sfProRoundedSemiBold.copyWith(
-      fontSize: Dimensions.fontSizeSmall,
-      color: colors.textSecondaryColor,
-    );
+    final style = AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor);
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: Dimensions.paddingSizeLarge,
-        vertical: Dimensions.paddingSizeDefault,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault),
       child: Row(
         children: [
           SizedBox(width: 28, child: Text('#', style: style)),
           Expanded(flex: 3, child: Text('Member', style: style)),
-          Expanded(child: Text('Deposit', style: style, textAlign: TextAlign.end)),
-          Expanded(child: Text('Meal', style: style, textAlign: TextAlign.end)),
-          Expanded(child: Text('Remaining', style: style, textAlign: TextAlign.end)),
+          Expanded(
+            child: Text('Deposit', style: style, textAlign: TextAlign.end),
+          ),
+          Expanded(
+            child: Text('Meal', style: style, textAlign: TextAlign.end),
+          ),
+          Expanded(
+            child: Text('Remaining', style: style, textAlign: TextAlign.end),
+          ),
         ],
       ),
     );
@@ -95,19 +82,12 @@ class _MemberStatsTableState extends State<MemberStatsTable> {
   Widget _buildMemberRow(BuildContext context, int index, MemberStatEntity m) {
     final colors = context.customThemeColors;
     final remaining = m.remaining(widget.mealRate);
-    final remainingColor =
-        remaining < 0 ? colors.errorColor : colors.successColor;
+    final remainingColor = remaining < 0 ? colors.errorColor : colors.successColor;
 
-    final valueStyle = AppTextStyles.sfProRoundedMedium.copyWith(
-      fontSize: Dimensions.fontSizeSmall,
-      color: colors.textPrimaryColor,
-    );
+    final valueStyle = AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textPrimaryColor);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: Dimensions.paddingSizeLarge,
-        vertical: Dimensions.paddingSizeDefault,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault),
       child: Row(
         children: [
           CircleAvatar(
@@ -115,10 +95,7 @@ class _MemberStatsTableState extends State<MemberStatsTable> {
             backgroundColor: colors.primaryColor.withValues(alpha: 0.15),
             child: Text(
               '${index + 1}',
-              style: AppTextStyles.sfProRoundedBold.copyWith(
-                fontSize: Dimensions.fontSizeExtraSmall,
-                color: colors.primaryColor,
-              ),
+              style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: colors.primaryColor),
             ),
           ),
           const SizedBox(width: Dimensions.paddingSizeSmall),
@@ -128,28 +105,20 @@ class _MemberStatsTableState extends State<MemberStatsTable> {
               m.name,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-                fontSize: Dimensions.fontSizeDefault,
-                color: colors.textPrimaryColor,
-              ),
+              style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
             ),
           ),
           Expanded(
-            child: Text(DashboardFormatters.taka(m.deposit),
-                style: valueStyle, textAlign: TextAlign.end),
+            child: Text(DashboardFormatters.taka(m.deposit), style: valueStyle, textAlign: TextAlign.end),
           ),
           Expanded(
-            child: Text(DashboardFormatters.number(m.meal),
-                style: valueStyle, textAlign: TextAlign.end),
+            child: Text(DashboardFormatters.number(m.meal), style: valueStyle, textAlign: TextAlign.end),
           ),
           Expanded(
             child: Text(
               DashboardFormatters.taka(remaining),
               textAlign: TextAlign.end,
-              style: AppTextStyles.sfProRoundedBold.copyWith(
-                fontSize: Dimensions.fontSizeSmall,
-                color: remainingColor,
-              ),
+              style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: remainingColor),
             ),
           ),
         ],

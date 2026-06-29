@@ -8,7 +8,6 @@ ThemeData darkThemeData = ThemeData(
   useMaterial3: true,
   brightness: Brightness.dark,
 
-  
   // Color scheme
   colorScheme: ColorScheme.fromSeed(
     seedColor: const Color(0xFF35C57F),
@@ -22,10 +21,10 @@ ThemeData darkThemeData = ThemeData(
     onError: Colors.white,
     onSurface: Colors.white,
   ),
-  
+
   // Scaffold
   scaffoldBackgroundColor: const Color(0xFF121212),
-  
+
   // AppBar
   appBarTheme: const AppBarTheme(
     centerTitle: true,
@@ -34,58 +33,40 @@ ThemeData darkThemeData = ThemeData(
     foregroundColor: Colors.white,
     iconTheme: IconThemeData(color: Colors.white),
   ),
-  
+
   // Card
   cardTheme: CardThemeData(
     elevation: 2,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
-    ),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     color: const Color(0xFF2C2C2C),
   ),
-  
+
   // Elevated Button
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: const Color(0xFF35C57F),
       foregroundColor: Colors.white,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 32,
-        vertical: 16,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       elevation: 2,
     ),
   ),
-  
+
   // Text Button
   textButtonTheme: TextButtonThemeData(
-    style: TextButton.styleFrom(
-      foregroundColor: const Color(0xFF35C57F),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 12,
-      ),
-    ),
+    style: TextButton.styleFrom(foregroundColor: const Color(0xFF35C57F), padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12)),
   ),
-  
+
   // Outlined Button
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
       foregroundColor: const Color(0xFF35C57F),
       side: const BorderSide(color: Color(0xFF35C57F)),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 32,
-        vertical: 16,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     ),
   ),
-  
+
   // Input Decoration
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
@@ -106,22 +87,15 @@ ThemeData darkThemeData = ThemeData(
       borderRadius: BorderRadius.circular(8),
       borderSide: const BorderSide(color: Color(0xFFEF5350)),
     ),
-    contentPadding: const EdgeInsets.symmetric(
-      horizontal: 16,
-      vertical: 16,
-    ),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
   ),
-  
+
   // Divider
   dividerColor: const Color(0xFF616161),
-  
+
   // Icon
-  iconTheme: const IconThemeData(
-    color: Color(0xFFB0B0B0),
-  ),
-  
+  iconTheme: const IconThemeData(color: Color(0xFFB0B0B0)),
+
   // Custom theme extension
-  extensions: <ThemeExtension<CustomThemeColors>>[
-    CustomThemeColors.dark(),
-  ],
+  extensions: <ThemeExtension<CustomThemeColors>>[CustomThemeColors.dark()],
 );

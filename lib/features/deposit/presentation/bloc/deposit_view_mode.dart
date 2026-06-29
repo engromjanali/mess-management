@@ -22,8 +22,8 @@ enum DepositDateFilter {
   range;
 
   String get label => switch (this) {
-        DepositDateFilter.allTime => 'All time',
-        DepositDateFilter.day => 'Day',
-        DepositDateFilter.range => 'Range',
-      };
+    DepositDateFilter.allTime => 'All time',
+    DepositDateFilter.day => 'Day',
+    DepositDateFilter.range => 'Range',
+  };
 }

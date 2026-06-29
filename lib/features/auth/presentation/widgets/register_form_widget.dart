@@ -135,26 +135,14 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
             height: Dimensions.buttonHeightLarge,
             child: ElevatedButton(
               onPressed: widget.isLoading ? null : widget.onRegister,
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
-                ),
-              ),
+              style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge))),
               child: widget.isLoading
                   ? const SizedBox(
                       height: Dimensions.iconSizeDefault,
                       width: Dimensions.iconSizeDefault,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.4,
-                        color: Colors.white,
-                      ),
+                      child: CircularProgressIndicator(strokeWidth: 2.4, color: Colors.white),
                     )
-                  : Text(
-                      'Create account',
-                      style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-                        fontSize: Dimensions.fontSizeLarge,
-                      ),
-                    ),
+                  : Text('Create account', style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
             ),
           ),
         ],

@@ -25,8 +25,7 @@ class HomeLocalDataSourceImpl implements HomeDataSource {
       const MemberStatModel(id: '7', name: 'Nayeem Islam', deposit: 2600, meal: 36),
     ];
 
-    final totalDeposit =
-        members.fold<double>(0, (sum, m) => sum + m.deposit);
+    final totalDeposit = members.fold<double>(0, (sum, m) => sum + m.deposit);
     final totalMeal = members.fold<double>(0, (sum, m) => sum + m.meal);
     const bazerCost = 12450.0;
     const fundBalance = 4500.0;

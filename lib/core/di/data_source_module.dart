@@ -6,6 +6,5 @@ import 'package:clean_boilerplate/core/network/api_client.dart';
 @module
 abstract class DataSourceModule {
   @lazySingleton
-  AuthApiService authApiService(ApiClient apiClient) => 
-      AuthApiService(apiClient);
+  AuthApiService authApiService(ApiClient apiClient) => AuthApiService(apiClient);
 }

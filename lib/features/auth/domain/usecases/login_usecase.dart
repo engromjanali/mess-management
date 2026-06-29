@@ -9,10 +9,7 @@ class LoginParams {
   final String email;
   final String password;
 
-  const LoginParams({
-    required this.email,
-    required this.password,
-  });
+  const LoginParams({required this.email, required this.password});
 }
 
 /// Login use case - Single responsibility: handle login business logic
@@ -24,9 +21,6 @@ class LoginUseCase implements UseCase<UserEntity, LoginParams> {
 
   @override
   ResultFuture<UserEntity> call(LoginParams params) {
-    return _repository.login(
-      email: params.email,
-      password: params.password,
-    );
+    return _repository.login(email: params.email, password: params.password);
   }
 }

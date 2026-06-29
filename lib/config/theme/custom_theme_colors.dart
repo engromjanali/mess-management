@@ -7,23 +7,23 @@ class CustomThemeColors extends ThemeExtension<CustomThemeColors> {
   final Color primaryLightColor;
   final Color primaryDarkColor;
   final Color secondaryColor;
-  
+
   // Background colors
   final Color backgroundColor;
   final Color surfaceColor;
   final Color cardBackgroundColor;
-  
+
   // Text colors
   final Color textPrimaryColor;
   final Color textSecondaryColor;
   final Color textHintColor;
-  
+
   // Status colors
   final Color successColor;
   final Color warningColor;
   final Color errorColor;
   final Color infoColor;
-  
+
   // UI colors
   final Color borderColor;
   final Color dividerColor;

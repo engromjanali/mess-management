@@ -9,8 +9,7 @@ class CostItemModel {
 
   CostItemEntity toEntity() => CostItemEntity(product: product, price: price);
 
-  static CostItemModel fromEntity(CostItemEntity e) =>
-      CostItemModel(product: e.product, price: e.price);
+  static CostItemModel fromEntity(CostItemEntity e) => CostItemModel(product: e.product, price: e.price);
 }
 
 /// Data-layer DTO for a selectable member.
@@ -31,34 +30,11 @@ class CostModel {
   final DateTime date;
   final List<CostItemModel> items;
 
-  const CostModel({
-    required this.id,
-    required this.personId,
-    required this.personName,
-    required this.date,
-    required this.items,
-  });
+  const CostModel({required this.id, required this.personId, required this.personName, required this.date, required this.items});
 
-  CostModel copyWith({
-    String? personId,
-    String? personName,
-    DateTime? date,
-    List<CostItemModel>? items,
-  }) {
-    return CostModel(
-      id: id,
-      personId: personId ?? this.personId,
-      personName: personName ?? this.personName,
-      date: date ?? this.date,
-      items: items ?? this.items,
-    );
+  CostModel copyWith({String? personId, String? personName, DateTime? date, List<CostItemModel>? items}) {
+    return CostModel(id: id, personId: personId ?? this.personId, personName: personName ?? this.personName, date: date ?? this.date, items: items ?? this.items);
   }
 
-  CostEntity toEntity() => CostEntity(
-        id: id,
-        personId: personId,
-        personName: personName,
-        date: date,
-        items: items.map((i) => i.toEntity()).toList(),
-      );
+  CostEntity toEntity() => CostEntity(id: id, personId: personId, personName: personName, date: date, items: items.map((i) => i.toEntity()).toList());
 }

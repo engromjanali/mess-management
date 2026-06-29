@@ -8,10 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Bottom sheet widget for language selection
 class LanguageBottomSheet extends StatelessWidget {
-  const LanguageBottomSheet({
-    required this.currentLocale,
-    super.key,
-  });
+  const LanguageBottomSheet({required this.currentLocale, super.key});
 
   final Locale currentLocale;
 
@@ -22,22 +19,13 @@ class LanguageBottomSheet extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            context.local.selectLanguage,
-            style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-              fontSize: Dimensions.fontSizeExtraLarge,
-            ),
-          ),
+          Text(context.local.selectLanguage, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge)),
           const SizedBox(height: Dimensions.spaceDefault),
           ...AppLocale.supportedLocales.map((locale) {
             final isSelected = locale.languageCode == currentLocale.languageCode;
             final languageName = AppLocale.getLanguageName(locale);
 
-            return _LanguageListItem(
-              isSelected: isSelected,
-              languageName: languageName,
-              locale: locale,
-            );
+            return _LanguageListItem(isSelected: isSelected, languageName: languageName, locale: locale);
           }),
           const SizedBox(height: Dimensions.spaceDefault),
         ],
@@ -52,19 +40,12 @@ class _LanguageListItem extends StatelessWidget {
   final String languageName;
   final Locale locale;
 
-  const _LanguageListItem({
-    required this.isSelected,
-    required this.languageName,
-    required this.locale,
-  });
+  const _LanguageListItem({required this.isSelected, required this.languageName, required this.locale});
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(
-        isSelected ? Icons.check_circle : Icons.circle_outlined,
-        color: isSelected ? Theme.of(context).primaryColor : null,
-      ),
+      leading: Icon(isSelected ? Icons.check_circle : Icons.circle_outlined, color: isSelected ? Theme.of(context).primaryColor : null),
       title: Text(
         languageName,
         style: AppTextStyles.sfProRoundedMedium.copyWith(
@@ -74,9 +55,7 @@ class _LanguageListItem extends StatelessWidget {
         ),
       ),
       onTap: () {
-        context.read<LocalizationBloc>().add(
-              LocalizationEvent.changeLocale(locale.languageCode),
-            );
+        context.read<LocalizationBloc>().add(LocalizationEvent.changeLocale(locale.languageCode));
         Navigator.pop(context);
       },
     );

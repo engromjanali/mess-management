@@ -1,5 +1,5 @@
 /// Language model for multi-language support
-/// 
+///
 /// This model defines the structure for supported languages in the application.
 /// Clients can easily add new languages by updating the list in AppConstants.
 class LanguageModel {
@@ -12,9 +12,5 @@ class LanguageModel {
   /// Native name of the language, e.g., 'English', 'বাংলা', 'العربية'
   final String nativeName;
 
-  const LanguageModel({
-    required this.code,
-    required this.name,
-    required this.nativeName,
-  });
+  const LanguageModel({required this.code, required this.name, required this.nativeName});
 }

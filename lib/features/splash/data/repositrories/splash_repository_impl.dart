@@ -13,15 +13,9 @@ class SplashRepositoryImpl implements SplashRepository {
   ResultFuture<ConfigEntity> getConfig() async {
     final result = await _splashDataSource.getConfig();
 
-    if(result.isSuccess){
+    if (result.isSuccess) {
       return Result.success(data: result.data!.toEntity());
     }
-    return Result.failure(
-      error: result.error!,
-      message: result.message,
-      title: result.title,
-      state: result.state,
-    );
-
+    return Result.failure(error: result.error!, message: result.message, title: result.title, state: result.state);
   }
 }

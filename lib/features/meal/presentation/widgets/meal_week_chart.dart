@@ -17,10 +17,7 @@ class MealWeekChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
     final now = DateTime.now();
-    final maxTotal = days.fold<double>(
-      0,
-      (m, d) => d.total > m ? d.total : m,
-    );
+    final maxTotal = days.fold<double>(0, (m, d) => d.total > m ? d.total : m);
     // Avoid divide-by-zero when everything is empty.
     final denominator = maxTotal == 0 ? 1.0 : maxTotal;
 
@@ -36,10 +33,7 @@ class MealWeekChart extends StatelessWidget {
         children: [
           Text(
             'This week',
-            style: AppTextStyles.sfProRoundedBold.copyWith(
-              fontSize: Dimensions.fontSizeLarge,
-              color: colors.textPrimaryColor,
-            ),
+            style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
           ),
           const SizedBox(height: Dimensions.paddingSizeLarge),
           SizedBox(
@@ -53,9 +47,7 @@ class MealWeekChart extends StatelessWidget {
                       heightFactor: day.total / denominator,
                       value: day.total,
                       label: MealFormatters.weekdayInitial(day.date),
-                      isToday: day.date.year == now.year &&
-                          day.date.month == now.month &&
-                          day.date.day == now.day,
+                      isToday: day.date.year == now.year && day.date.month == now.month && day.date.day == now.day,
                     ),
                   ),
               ],
@@ -68,12 +60,7 @@ class MealWeekChart extends StatelessWidget {
 }
 
 class _Bar extends StatelessWidget {
-  const _Bar({
-    required this.heightFactor,
-    required this.value,
-    required this.label,
-    required this.isToday,
-  });
+  const _Bar({required this.heightFactor, required this.value, required this.label, required this.isToday});
 
   final double heightFactor;
   final double value;
@@ -83,22 +70,16 @@ class _Bar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
-    final barColor =
-        isToday ? colors.primaryColor : colors.primaryColor.withValues(alpha: 0.35);
+    final barColor = isToday ? colors.primaryColor : colors.primaryColor.withValues(alpha: 0.35);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: Dimensions.paddingSizeExtraSmall,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Text(
             MealFormatters.count(value),
-            style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-              fontSize: Dimensions.fontSizeExtraSmall,
-              color: colors.textSecondaryColor,
-            ),
+            style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: colors.textSecondaryColor),
           ),
           const SizedBox(height: Dimensions.paddingSizeExtraSmall),
           Expanded(
@@ -115,11 +96,7 @@ class _Bar extends StatelessWidget {
                     tween: Tween(begin: 0, end: target),
                     builder: (context, height, _) => Container(
                       height: height,
-                      decoration: BoxDecoration(
-                        color: barColor,
-                        borderRadius:
-                            BorderRadius.circular(Dimensions.radiusSmall),
-                      ),
+                      decoration: BoxDecoration(color: barColor, borderRadius: BorderRadius.circular(Dimensions.radiusSmall)),
                     ),
                   ),
                 );
@@ -129,10 +106,7 @@ class _Bar extends StatelessWidget {
           const SizedBox(height: Dimensions.paddingSizeSmall),
           Text(
             label,
-            style: AppTextStyles.sfProRoundedMedium.copyWith(
-              fontSize: Dimensions.fontSizeSmall,
-              color: isToday ? colors.primaryColor : colors.textSecondaryColor,
-            ),
+            style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: isToday ? colors.primaryColor : colors.textSecondaryColor),
           ),
         ],
       ),

@@ -11,7 +11,7 @@ class UpdateApiLocaleParams {
 }
 
 /// UseCase to update API client locale headers
-/// 
+///
 /// This use case ensures that the API client's locale headers are synchronized
 /// with the user's language preference after a locale change
 @lazySingleton

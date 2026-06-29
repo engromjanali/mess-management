@@ -19,7 +19,6 @@ class AppConstants {
   static const String refreshTokenEndpoint = '/auth/refresh';
   static const String profileEndpoint = '/user/profile';
 
-
   static const String tokenKey = 'auth_token';
   static const String guestUserIdKey = 'guest_user_id';
   static const String languageCodeKey = 'language_code';
@@ -42,24 +41,11 @@ class AppConstants {
   static const String unknownErrorMessage = 'An unknown error occurred.';
   static const String validationErrorMessage = 'Please check your input and try again.';
 
-
   static final List<LanguageModel> languages = [
-    LanguageModel(
-      code: 'bn',
-      name: 'Bangla',
-      nativeName: 'বাংলা',
-    ),
+    LanguageModel(code: 'bn', name: 'Bangla', nativeName: 'বাংলা'),
 
-    LanguageModel(
-      code: 'en',
-      name: 'English',
-      nativeName: 'English',
-    ),
+    LanguageModel(code: 'en', name: 'English', nativeName: 'English'),
 
-    LanguageModel(
-      code: 'ar',
-      name: 'Arabic',
-      nativeName: 'العربية',
-    ),
+    LanguageModel(code: 'ar', name: 'Arabic', nativeName: 'العربية'),
   ];
 }

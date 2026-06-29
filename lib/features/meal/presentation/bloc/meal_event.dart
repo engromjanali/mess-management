@@ -12,9 +12,5 @@ class MealEvent with _$MealEvent {
   const factory MealEvent.refresh() = MealRefresh;
 
   /// Update today's meal counts (from the today editor steppers).
-  const factory MealEvent.updateToday({
-    required double breakfast,
-    required double lunch,
-    required double dinner,
-  }) = MealUpdateToday;
+  const factory MealEvent.updateToday({required double breakfast, required double lunch, required double dinner}) = MealUpdateToday;
 }

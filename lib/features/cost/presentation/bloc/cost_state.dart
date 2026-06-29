@@ -16,13 +16,8 @@ class CostState with _$CostState {
   /// picker (empty for non-admins). [isAdmin] gates add / edit / delete.
   /// [saving] flags an in-flight mutation; [justSaved] briefly flags a
   /// successful add / update so the UI can react (e.g. jump to the list).
-  const factory CostState.loaded({
-    required List<CostEntity> costs,
-    required List<CostMemberEntity> members,
-    required bool isAdmin,
-    @Default(false) bool saving,
-    @Default(false) bool justSaved,
-  }) = CostLoaded;
+  const factory CostState.loaded({required List<CostEntity> costs, required List<CostMemberEntity> members, required bool isAdmin, @Default(false) bool saving, @Default(false) bool justSaved}) =
+      CostLoaded;
 
   /// Loading failed.
   const factory CostState.error(String message) = CostError;

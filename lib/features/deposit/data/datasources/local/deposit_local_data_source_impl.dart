@@ -27,37 +27,10 @@ class DepositLocalDataSourceImpl implements DepositDataSource {
 
   /// Session-mutable store of deposits, seeded with a few sample records.
   final List<DepositModel> _deposits = [
-    DepositModel(
-      id: 'd1',
-      memberId: '1',
-      memberName: 'Romjan Ali',
-      amount: 2000,
-      date: DateTime(2026, 6),
-      note: 'Monthly deposit',
-    ),
-    DepositModel(
-      id: 'd2',
-      memberId: '2',
-      memberName: 'Mehedi Hasan',
-      amount: 1500,
-      date: DateTime(2026, 6),
-      note: 'Monthly deposit',
-    ),
-    DepositModel(
-      id: 'd3',
-      memberId: '1',
-      memberName: 'Romjan Ali',
-      amount: -300,
-      date: DateTime(2026, 6, 10),
-      note: 'Refund adjustment',
-    ),
-    DepositModel(
-      id: 'd4',
-      memberId: '3',
-      memberName: 'Sakib Khan',
-      amount: 2500,
-      date: DateTime(2026, 6, 10),
-    ),
+    DepositModel(id: 'd1', memberId: '1', memberName: 'Romjan Ali', amount: 2000, date: DateTime(2026, 6), note: 'Monthly deposit'),
+    DepositModel(id: 'd2', memberId: '2', memberName: 'Mehedi Hasan', amount: 1500, date: DateTime(2026, 6), note: 'Monthly deposit'),
+    DepositModel(id: 'd3', memberId: '1', memberName: 'Romjan Ali', amount: -300, date: DateTime(2026, 6, 10), note: 'Refund adjustment'),
+    DepositModel(id: 'd4', memberId: '3', memberName: 'Sakib Khan', amount: 2500, date: DateTime(2026, 6, 10)),
   ];
 
   /// Monotonic counter for generating new ids within the session.
@@ -65,11 +38,9 @@ class DepositLocalDataSourceImpl implements DepositDataSource {
 
   String _nextId() => 'd${_seq++}';
 
-  String _nameFor(String memberId) =>
-      _roster.firstWhere((m) => m.id == memberId).name;
+  String _nameFor(String memberId) => _roster.firstWhere((m) => m.id == memberId).name;
 
-  bool _sameDay(DateTime a, DateTime b) =>
-      a.year == b.year && a.month == b.month && a.day == b.day;
+  bool _sameDay(DateTime a, DateTime b) => a.year == b.year && a.month == b.month && a.day == b.day;
 
   /// Newest-first ordering shared by every list query.
   List<DepositModel> _sorted(Iterable<DepositModel> items) {
@@ -79,9 +50,7 @@ class DepositLocalDataSourceImpl implements DepositDataSource {
 
   @override
   Future<List<DepositMemberModel>> getMembers() async {
-    return _roster
-        .map((m) => DepositMemberModel(id: m.id, name: m.name))
-        .toList();
+    return _roster.map((m) => DepositMemberModel(id: m.id, name: m.name)).toList();
   }
 
   @override
@@ -103,17 +72,12 @@ class DepositLocalDataSourceImpl implements DepositDataSource {
   }
 
   @override
-  Future<List<DepositModel>> getDepositsInRange(
-    DateTime start,
-    DateTime end,
-  ) async {
+  Future<List<DepositModel>> getDepositsInRange(DateTime start, DateTime end) async {
     await Future<void>.delayed(const Duration(milliseconds: 400));
     // Normalise to inclusive day bounds regardless of the time component.
     final from = DateTime(start.year, start.month, start.day);
     final to = DateTime(end.year, end.month, end.day, 23, 59, 59);
-    return _sorted(
-      _deposits.where((d) => !d.date.isBefore(from) && !d.date.isAfter(to)),
-    );
+    return _sorted(_deposits.where((d) => !d.date.isBefore(from) && !d.date.isAfter(to)));
   }
 
   @override
@@ -123,43 +87,22 @@ class DepositLocalDataSourceImpl implements DepositDataSource {
   }
 
   @override
-  Future<DepositModel> addDeposit({
-    required String memberId,
-    required double amount,
-    required DateTime date,
-    String? note,
-  }) async {
+  Future<DepositModel> addDeposit({required String memberId, required double amount, required DateTime date, String? note}) async {
     if (!_roster.any((m) => m.id == memberId)) {
       throw ServerException(message: 'Unknown member');
     }
-    final model = DepositModel(
-      id: _nextId(),
-      memberId: memberId,
-      memberName: _nameFor(memberId),
-      amount: amount,
-      date: DateTime(date.year, date.month, date.day),
-      note: note,
-    );
+    final model = DepositModel(id: _nextId(), memberId: memberId, memberName: _nameFor(memberId), amount: amount, date: DateTime(date.year, date.month, date.day), note: note);
     _deposits.add(model);
     return model;
   }
 
   @override
-  Future<DepositModel> updateDeposit({
-    required String id,
-    required double amount,
-    required DateTime date,
-    String? note,
-  }) async {
+  Future<DepositModel> updateDeposit({required String id, required double amount, required DateTime date, String? note}) async {
     final index = _deposits.indexWhere((d) => d.id == id);
     if (index == -1) {
       throw ServerException(message: 'Deposit not found');
     }
-    final updated = _deposits[index].copyWith(
-      amount: amount,
-      date: DateTime(date.year, date.month, date.day),
-      note: note,
-    );
+    final updated = _deposits[index].copyWith(amount: amount, date: DateTime(date.year, date.month, date.day), note: note);
     _deposits[index] = updated;
     return updated;
   }

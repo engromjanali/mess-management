@@ -12,8 +12,7 @@ class MealBloc extends Bloc<MealEvent, MealState> {
   final GetMealOverviewUseCase _getMealOverviewUseCase;
   final UpdateMealUseCase _updateMealUseCase;
 
-  MealBloc(this._getMealOverviewUseCase, this._updateMealUseCase)
-      : super(const MealState.initial()) {
+  MealBloc(this._getMealOverviewUseCase, this._updateMealUseCase) : super(const MealState.initial()) {
     on<MealEvent>(_onMealEvent);
   }
 
@@ -21,46 +20,24 @@ class MealBloc extends Bloc<MealEvent, MealState> {
     await event.when(
       load: () => _load(emit, showLoading: true),
       refresh: () => _load(emit, showLoading: false),
-      updateToday: (breakfast, lunch, dinner) =>
-          _updateToday(emit, breakfast, lunch, dinner),
+      updateToday: (breakfast, lunch, dinner) => _updateToday(emit, breakfast, lunch, dinner),
     );
   }
 
-  Future<void> _load(
-    Emitter<MealState> emit, {
-    required bool showLoading,
-  }) async {
+  Future<void> _load(Emitter<MealState> emit, {required bool showLoading}) async {
     if (showLoading) emit(const MealState.loading());
 
     final result = await _getMealOverviewUseCase(const NoParams());
 
-    result.when(
-      success: (success) => emit(MealState.loaded(success.data)),
-      failure: (failure) => emit(MealState.error(failure.error.toString())),
-    );
+    result.when(success: (success) => emit(MealState.loaded(success.data)), failure: (failure) => emit(MealState.error(failure.error.toString())));
   }
 
-  Future<void> _updateToday(
-    Emitter<MealState> emit,
-    double breakfast,
-    double lunch,
-    double dinner,
-  ) async {
+  Future<void> _updateToday(Emitter<MealState> emit, double breakfast, double lunch, double dinner) async {
     final now = DateTime.now();
     final date = DateTime(now.year, now.month, now.day);
 
-    final result = await _updateMealUseCase(
-      UpdateMealParams(
-        date: date,
-        breakfast: breakfast,
-        lunch: lunch,
-        dinner: dinner,
-      ),
-    );
+    final result = await _updateMealUseCase(UpdateMealParams(date: date, breakfast: breakfast, lunch: lunch, dinner: dinner));
 
-    result.when(
-      success: (success) => emit(MealState.loaded(success.data)),
-      failure: (failure) => emit(MealState.error(failure.error.toString())),
-    );
+    result.when(success: (success) => emit(MealState.loaded(success.data)), failure: (failure) => emit(MealState.error(failure.error.toString())));
   }
 }

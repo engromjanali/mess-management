@@ -12,32 +12,17 @@ class MealAdminEvent with _$MealAdminEvent {
   const factory MealAdminEvent.refresh() = MealAdminRefresh;
 
   /// Filter the records by member. `null` shows every member.
-  const factory MealAdminEvent.selectMember(String? memberId) =
-      MealAdminSelectMember;
+  const factory MealAdminEvent.selectMember(String? memberId) = MealAdminSelectMember;
 
   /// Filter the records by date. `null` shows every date.
   const factory MealAdminEvent.selectDate(DateTime? date) = MealAdminSelectDate;
 
   /// Record the same B/L/D for every member on [date] at once (bulk entry).
-  const factory MealAdminEvent.addForAll({
-    required DateTime date,
-    required double breakfast,
-    required double lunch,
-    required double dinner,
-  }) = MealAdminAddForAll;
+  const factory MealAdminEvent.addForAll({required DateTime date, required double breakfast, required double lunch, required double dinner}) = MealAdminAddForAll;
 
   /// Add or edit a member's meal for a date.
-  const factory MealAdminEvent.save({
-    required String memberId,
-    required DateTime date,
-    required double breakfast,
-    required double lunch,
-    required double dinner,
-  }) = MealAdminSave;
+  const factory MealAdminEvent.save({required String memberId, required DateTime date, required double breakfast, required double lunch, required double dinner}) = MealAdminSave;
 
   /// Remove a member's meal record for a date.
-  const factory MealAdminEvent.delete({
-    required String memberId,
-    required DateTime date,
-  }) = MealAdminDelete;
+  const factory MealAdminEvent.delete({required String memberId, required DateTime date}) = MealAdminDelete;
 }

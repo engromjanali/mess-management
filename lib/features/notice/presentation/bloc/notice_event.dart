@@ -12,23 +12,13 @@ class NoticeEvent with _$NoticeEvent {
   const factory NoticeEvent.refresh() = NoticeRefresh;
 
   /// Publish a new notice.
-  const factory NoticeEvent.add({
-    required String title,
-    required String description,
-  }) = NoticeAdd;
+  const factory NoticeEvent.add({required String title, required String description}) = NoticeAdd;
 
   /// Edit an existing notice.
-  const factory NoticeEvent.update({
-    required String id,
-    required String title,
-    required String description,
-  }) = NoticeUpdate;
+  const factory NoticeEvent.update({required String id, required String title, required String description}) = NoticeUpdate;
 
   /// Pin or unpin a notice (pinning one unpins any other).
-  const factory NoticeEvent.togglePin({
-    required String id,
-    required bool pinned,
-  }) = NoticeTogglePin;
+  const factory NoticeEvent.togglePin({required String id, required bool pinned}) = NoticeTogglePin;
 
   /// Remove a notice.
   const factory NoticeEvent.delete(String id) = NoticeDelete;

@@ -2,6 +2,7 @@ import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/them
 import 'package:clean_boilerplate/features/splash/presentation/bloc/splash_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/theme/app_theme.dart';
 import 'package:clean_boilerplate/core/di/injection.dart';
@@ -14,6 +15,8 @@ import 'package:clean_boilerplate/l10n/gen/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  usePathUrlStrategy();
 
   // Configure dependency injection
   await configureDependencies();
@@ -28,36 +31,18 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        
-        BlocProvider(
-          create: (context) => getIt<ThemeBloc>()
-            ..add(const ThemeEvent.loadThemeMode()),
-        ),
-        BlocProvider(
-          create: (context) => getIt<LocalizationBloc>()
-            ..add(const LocalizationEvent.loadLocale()),
-        ),
-        BlocProvider(
-          create: (context) => getIt<SplashBloc>()
-            ..add(const SplashEvent.getConfig()),
-        ),
-        BlocProvider(
-          create: (context) => getIt<AuthBloc>(),
-        ),
-        BlocProvider(
-          create: (context) => RoleCubit(),
-        ),
+        BlocProvider(create: (context) => getIt<ThemeBloc>()..add(const ThemeEvent.loadThemeMode())),
+        BlocProvider(create: (context) => getIt<LocalizationBloc>()..add(const LocalizationEvent.loadLocale())),
+        BlocProvider(create: (context) => getIt<SplashBloc>()..add(const SplashEvent.getConfig())),
+        BlocProvider(create: (context) => getIt<AuthBloc>()),
+        BlocProvider(create: (context) => RoleCubit()),
       ],
       child: BlocBuilder<LocalizationBloc, LocalizationState>(
         builder: (context, localeState) {
           return BlocBuilder<ThemeBloc, ThemeState>(
             builder: (context, themeState) {
               // Determine theme mode based on state value
-              final themeMode = themeState.when(
-                dark: (value) => ThemeMode.dark,
-                light: (value) => ThemeMode.light,
-                system: (value) => ThemeMode.system,
-              );
+              final themeMode = themeState.when(dark: (value) => ThemeMode.dark, light: (value) => ThemeMode.light, system: (value) => ThemeMode.system);
 
               return MaterialApp.router(
                 debugShowCheckedModeBanner: false,
@@ -66,9 +51,7 @@ class MyApp extends StatelessWidget {
                 themeMode: themeMode,
                 locale: localeState.locale,
                 routerConfig: router,
-                builder: (context, child) => RoleSwitcherOverlay(
-                  child: child ?? const SizedBox.shrink(),
-                ),
+                builder: (context, child) => RoleSwitcherOverlay(child: child ?? const SizedBox.shrink()),
                 localizationsDelegates: AppLocalizations.localizationsDelegates,
                 supportedLocales: AppLocalizations.supportedLocales,
               );

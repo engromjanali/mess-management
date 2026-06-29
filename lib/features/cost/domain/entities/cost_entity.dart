@@ -31,13 +31,7 @@ class CostEntity extends Equatable {
   final DateTime date;
   final List<CostItemEntity> items;
 
-  const CostEntity({
-    required this.id,
-    required this.personId,
-    required this.personName,
-    required this.date,
-    required this.items,
-  });
+  const CostEntity({required this.id, required this.personId, required this.personName, required this.date, required this.items});
 
   /// Sum of every line item's price.
   double get total => items.fold<double>(0, (sum, i) => sum + i.price);

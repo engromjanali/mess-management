@@ -14,22 +14,13 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl(this._dataSource);
 
   @override
-  ResultFuture<UserEntity> login({
-    required String email,
-    required String password,
-  }) async {
+  ResultFuture<UserEntity> login({required String email, required String password}) async {
     try {
-      final userModel = await _dataSource.login(
-        email: email,
-        password: password,
-      );
+      final userModel = await _dataSource.login(email: email, password: password);
       return Result.success(data: userModel.toEntity());
     } on UnauthorizedException catch (e) {
       return Result.failure(
-        error: AuthenticationFailure(
-          message: e.message,
-          statusCode: e.statusCode,
-        ),
+        error: AuthenticationFailure(message: e.message, statusCode: e.statusCode),
       );
     } on NoInternetException catch (e) {
       return Result.failure(error: NetworkFailure(message: e.message));
@@ -39,17 +30,10 @@ class AuthRepositoryImpl implements AuthRepository {
       return Result.failure(error: NetworkFailure(message: e.message));
     } on ServerException catch (e) {
       return Result.failure(
-        error: ServerFailure(
-          message: e.message,
-          statusCode: e.statusCode,
-        ),
+        error: ServerFailure(message: e.message, statusCode: e.statusCode),
       );
     } catch (e) {
-      return Result.failure(
-        error: ServerFailure(
-          message: 'An unexpected error occurred: ${e.toString()}',
-        ),
-      );
+      return Result.failure(error: ServerFailure(message: 'An unexpected error occurred: ${e.toString()}'));
     }
   }
 
@@ -60,10 +44,7 @@ class AuthRepositoryImpl implements AuthRepository {
       return Result.success(data: null);
     } on UnauthorizedException catch (e) {
       return Result.failure(
-        error: AuthenticationFailure(
-          message: e.message,
-          statusCode: e.statusCode,
-        ),
+        error: AuthenticationFailure(message: e.message, statusCode: e.statusCode),
       );
     } on NoInternetException catch (e) {
       return Result.failure(error: NetworkFailure(message: e.message));
@@ -73,17 +54,10 @@ class AuthRepositoryImpl implements AuthRepository {
       return Result.failure(error: NetworkFailure(message: e.message));
     } on ServerException catch (e) {
       return Result.failure(
-        error: ServerFailure(
-          message: e.message,
-          statusCode: e.statusCode,
-        ),
+        error: ServerFailure(message: e.message, statusCode: e.statusCode),
       );
     } catch (e) {
-      return Result.failure(
-        error: ServerFailure(
-          message: 'An unexpected error occurred: ${e.toString()}',
-        ),
-      );
+      return Result.failure(error: ServerFailure(message: 'An unexpected error occurred: ${e.toString()}'));
     }
   }
 
@@ -94,10 +68,7 @@ class AuthRepositoryImpl implements AuthRepository {
       return Result.success(data: userModel?.toEntity());
     } on UnauthorizedException catch (e) {
       return Result.failure(
-        error: AuthenticationFailure(
-          message: e.message,
-          statusCode: e.statusCode,
-        ),
+        error: AuthenticationFailure(message: e.message, statusCode: e.statusCode),
       );
     } on NoInternetException catch (e) {
       return Result.failure(error: NetworkFailure(message: e.message));
@@ -107,17 +78,10 @@ class AuthRepositoryImpl implements AuthRepository {
       return Result.failure(error: NetworkFailure(message: e.message));
     } on ServerException catch (e) {
       return Result.failure(
-        error: ServerFailure(
-          message: e.message,
-          statusCode: e.statusCode,
-        ),
+        error: ServerFailure(message: e.message, statusCode: e.statusCode),
       );
     } catch (e) {
-      return Result.failure(
-        error: ServerFailure(
-          message: 'An unexpected error occurred: ${e.toString()}',
-        ),
-      );
+      return Result.failure(error: ServerFailure(message: 'An unexpected error occurred: ${e.toString()}'));
     }
   }
 }

@@ -14,56 +14,21 @@ class MealAdminRepositoryImpl implements MealAdminRepository {
   MealAdminRepositoryImpl(this._dataSource);
 
   @override
-  ResultFuture<MealAdminEntity> getAdminData() =>
-      _guard(() => _dataSource.getAdminData());
+  ResultFuture<MealAdminEntity> getAdminData() => _guard(() => _dataSource.getAdminData());
 
   @override
-  ResultFuture<MealAdminEntity> addMealForAll({
-    required DateTime date,
-    required double breakfast,
-    required double lunch,
-    required double dinner,
-  }) =>
-      _guard(
-        () => _dataSource.addMealForAll(
-          date: date,
-          breakfast: breakfast,
-          lunch: lunch,
-          dinner: dinner,
-        ),
-      );
+  ResultFuture<MealAdminEntity> addMealForAll({required DateTime date, required double breakfast, required double lunch, required double dinner}) =>
+      _guard(() => _dataSource.addMealForAll(date: date, breakfast: breakfast, lunch: lunch, dinner: dinner));
 
   @override
-  ResultFuture<MealAdminEntity> saveMemberMeal({
-    required String memberId,
-    required DateTime date,
-    required double breakfast,
-    required double lunch,
-    required double dinner,
-  }) =>
-      _guard(
-        () => _dataSource.saveMemberMeal(
-          memberId: memberId,
-          date: date,
-          breakfast: breakfast,
-          lunch: lunch,
-          dinner: dinner,
-        ),
-      );
+  ResultFuture<MealAdminEntity> saveMemberMeal({required String memberId, required DateTime date, required double breakfast, required double lunch, required double dinner}) =>
+      _guard(() => _dataSource.saveMemberMeal(memberId: memberId, date: date, breakfast: breakfast, lunch: lunch, dinner: dinner));
 
   @override
-  ResultFuture<MealAdminEntity> deleteMemberMeal({
-    required String memberId,
-    required DateTime date,
-  }) =>
-      _guard(
-        () => _dataSource.deleteMemberMeal(memberId: memberId, date: date),
-      );
+  ResultFuture<MealAdminEntity> deleteMemberMeal({required String memberId, required DateTime date}) => _guard(() => _dataSource.deleteMemberMeal(memberId: memberId, date: date));
 
   /// Shared try/catch that maps data-layer exceptions to domain failures.
-  ResultFuture<MealAdminEntity> _guard(
-    Future<dynamic> Function() action,
-  ) async {
+  ResultFuture<MealAdminEntity> _guard(Future<dynamic> Function() action) async {
     try {
       final model = await action();
       return Result.success(data: model.toEntity());
@@ -78,11 +43,7 @@ class MealAdminRepositoryImpl implements MealAdminRepository {
         error: ServerFailure(message: e.message, statusCode: e.statusCode),
       );
     } catch (e) {
-      return Result.failure(
-        error: ServerFailure(
-          message: 'An unexpected error occurred: ${e.toString()}',
-        ),
-      );
+      return Result.failure(error: ServerFailure(message: 'An unexpected error occurred: ${e.toString()}'));
     }
   }
 }

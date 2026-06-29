@@ -7,6 +7,7 @@ import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/screen_matres_extensions.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
+import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
 import 'package:clean_boilerplate/features/notice/domain/entities/notice_entity.dart';
 import 'package:clean_boilerplate/features/notice/presentation/bloc/notice_bloc.dart';
@@ -26,8 +27,7 @@ class NoticeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final isAdmin = context.read<RoleCubit>().state.isAdmin;
     return BlocProvider<NoticeBloc>(
-      create: (_) =>
-          getIt<NoticeBloc>()..add(NoticeEvent.started(isAdmin: isAdmin)),
+      create: (_) => getIt<NoticeBloc>()..add(NoticeEvent.started(isAdmin: isAdmin)),
       child: const _NoticeView(),
     );
   }
@@ -40,45 +40,27 @@ class _NoticeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<RoleCubit, UserRole>(
       listenWhen: (prev, curr) => prev != curr,
-      listener: (context, role) => context
-          .read<NoticeBloc>()
-          .add(NoticeEvent.started(isAdmin: role.isAdmin)),
+      listener: (context, role) => context.read<NoticeBloc>().add(NoticeEvent.started(isAdmin: role.isAdmin)),
       child: Scaffold(
         backgroundColor: context.theme.scaffoldBackgroundColor,
-        appBar: AppBar(title: const Text('Notices')),
+        appBar: AppBar(leading: const HomeBackButton(), title: const Text('Notices')),
         floatingActionButton: BlocBuilder<NoticeBloc, NoticeState>(
           builder: (context, state) {
-            final canAdd = state.maybeWhen(
-              loaded: (_, isAdmin, _) => isAdmin,
-              orElse: () => false,
-            );
+            final canAdd = state.maybeWhen(loaded: (_, isAdmin, _) => isAdmin, orElse: () => false);
             if (!canAdd) return const SizedBox.shrink();
-            return FloatingActionButton.extended(
-              onPressed: () => _openAdd(context),
-              icon: const Icon(Icons.add_rounded),
-              label: const Text('New notice'),
-            );
+            return FloatingActionButton.extended(onPressed: () => _openAdd(context), icon: const Icon(Icons.add_rounded), label: const Text('New notice'));
           },
         ),
         body: BlocConsumer<NoticeBloc, NoticeState>(
           listener: (context, state) {
-            state.maybeWhen(
-              error: (message) => context.showErrorSnackBar(message),
-              orElse: () {},
-            );
+            state.maybeWhen(error: (message) => context.showErrorSnackBar(message), orElse: () {});
           },
           builder: (context, state) {
             return state.maybeWhen(
-              loading: () =>
-                  const Center(child: CircularProgressIndicator.adaptive()),
+              loading: () => const Center(child: CircularProgressIndicator.adaptive()),
               error: (message) => _ErrorView(message: message),
-              loaded: (notices, isAdmin, saving) => _NoticeBody(
-                notices: notices,
-                isAdmin: isAdmin,
-                saving: saving,
-              ),
-              orElse: () =>
-                  const Center(child: CircularProgressIndicator.adaptive()),
+              loaded: (notices, isAdmin, saving) => _NoticeBody(notices: notices, isAdmin: isAdmin, saving: saving),
+              orElse: () => const Center(child: CircularProgressIndicator.adaptive()),
             );
           },
         ),
@@ -90,9 +72,7 @@ class _NoticeView extends StatelessWidget {
     final bloc = context.read<NoticeBloc>();
     showNoticeFormSheet(
       context: context,
-      onSave: ({required title, required description}) => bloc.add(
-        NoticeEvent.add(title: title, description: description),
-      ),
+      onSave: ({required title, required description}) => bloc.add(NoticeEvent.add(title: title, description: description)),
     );
   }
 }
@@ -111,21 +91,16 @@ class _ErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline_rounded,
-                size: Dimensions.iconSizeExtraLarge, color: colors.errorColor),
+            Icon(Icons.error_outline_rounded, size: Dimensions.iconSizeExtraLarge, color: colors.errorColor),
             const SizedBox(height: Dimensions.paddingSizeDefault),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: AppTextStyles.sfProRoundedMedium.copyWith(
-                color: colors.textSecondaryColor,
-              ),
+              style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor),
             ),
             const SizedBox(height: Dimensions.paddingSizeLarge),
             ElevatedButton.icon(
-              onPressed: () => context
-                  .read<NoticeBloc>()
-                  .add(NoticeEvent.started(isAdmin: isAdmin)),
+              onPressed: () => context.read<NoticeBloc>().add(NoticeEvent.started(isAdmin: isAdmin)),
               icon: const Icon(Icons.refresh_rounded),
               label: const Text('Retry'),
             ),
@@ -137,11 +112,7 @@ class _ErrorView extends StatelessWidget {
 }
 
 class _NoticeBody extends StatelessWidget {
-  const _NoticeBody({
-    required this.notices,
-    required this.isAdmin,
-    required this.saving,
-  });
+  const _NoticeBody({required this.notices, required this.isAdmin, required this.saving});
 
   final List<NoticeEntity> notices;
   final bool isAdmin;
@@ -152,20 +123,12 @@ class _NoticeBody extends StatelessWidget {
     showNoticeFormSheet(
       context: context,
       existing: notice,
-      onSave: ({required title, required description}) => bloc.add(
-        NoticeEvent.update(
-          id: notice.id,
-          title: title,
-          description: description,
-        ),
-      ),
+      onSave: ({required title, required description}) => bloc.add(NoticeEvent.update(id: notice.id, title: title, description: description)),
     );
   }
 
   void _onTogglePin(BuildContext context, NoticeEntity notice) {
-    context.read<NoticeBloc>().add(
-          NoticeEvent.togglePin(id: notice.id, pinned: !notice.pinned),
-        );
+    context.read<NoticeBloc>().add(NoticeEvent.togglePin(id: notice.id, pinned: !notice.pinned));
   }
 
   Future<void> _onDelete(BuildContext context, NoticeEntity notice) async {
@@ -176,14 +139,8 @@ class _NoticeBody extends StatelessWidget {
         title: const Text('Delete notice'),
         content: Text('Delete "${notice.title}"?'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Delete'),
-          ),
+          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.of(ctx).pop(true), child: const Text('Delete')),
         ],
       ),
     );
@@ -202,22 +159,14 @@ class _NoticeBody extends StatelessWidget {
             await Future<void>.delayed(const Duration(milliseconds: 600));
           },
           child: notices.isEmpty
-              ? ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  children: const [
-                    SizedBox(height: 120),
-                    _EmptyView(),
-                  ],
-                )
+              ? ListView(physics: const AlwaysScrollableScrollPhysics(), children: const [SizedBox(height: 120), _EmptyView()])
               : SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   child: Center(
                     child: ConstrainedBox(
-                      constraints: const BoxConstraints(
-                          maxWidth: Dimensions.webMaxWidth),
+                      constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                       child: Padding(
-                        padding:
-                            const EdgeInsets.all(Dimensions.paddingSizeLarge),
+                        padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
                         child: _NoticeList(
                           notices: notices,
                           isAdmin: isAdmin,
@@ -230,13 +179,7 @@ class _NoticeBody extends StatelessWidget {
                   ),
                 ),
         ),
-        if (saving)
-          const Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: LinearProgressIndicator(minHeight: 2),
-          ),
+        if (saving) const Positioned(top: 0, left: 0, right: 0, child: LinearProgressIndicator(minHeight: 2)),
       ],
     );
   }
@@ -245,13 +188,7 @@ class _NoticeBody extends StatelessWidget {
 /// Responsive notice list — single column on phones, two columns on wide
 /// screens (tablet / desktop).
 class _NoticeList extends StatelessWidget {
-  const _NoticeList({
-    required this.notices,
-    required this.isAdmin,
-    required this.onEdit,
-    required this.onDelete,
-    required this.onTogglePin,
-  });
+  const _NoticeList({required this.notices, required this.isAdmin, required this.onEdit, required this.onDelete, required this.onTogglePin});
 
   final List<NoticeEntity> notices;
   final bool isAdmin;
@@ -268,13 +205,7 @@ class _NoticeList extends StatelessWidget {
           for (var i = 0; i < notices.length; i++)
             AnimatedEntrance(
               delay: Duration(milliseconds: 30 * i),
-              child: NoticeCard(
-                notice: notices[i],
-                showActions: isAdmin,
-                onEdit: () => onEdit(notices[i]),
-                onDelete: () => onDelete(notices[i]),
-                onTogglePin: () => onTogglePin(notices[i]),
-              ),
+              child: NoticeCard(notice: notices[i], showActions: isAdmin, onEdit: () => onEdit(notices[i]), onDelete: () => onDelete(notices[i]), onTogglePin: () => onTogglePin(notices[i])),
             ),
         ];
 
@@ -284,8 +215,7 @@ class _NoticeList extends StatelessWidget {
             children: [
               for (final card in cards)
                 Padding(
-                  padding: const EdgeInsets.only(
-                      bottom: Dimensions.paddingSizeDefault),
+                  padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeDefault),
                   child: card,
                 ),
               SizedBox(height: context.bottomPadding + 72),
@@ -298,8 +228,7 @@ class _NoticeList extends StatelessWidget {
         for (var i = 0; i < cards.length; i++) {
           (i.isEven ? left : right).add(
             Padding(
-              padding:
-                  const EdgeInsets.only(bottom: Dimensions.paddingSizeDefault),
+              padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeDefault),
               child: cards[i],
             ),
           );
@@ -329,19 +258,12 @@ class _EmptyView extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
     return Padding(
-      padding: const EdgeInsets.symmetric(
-          vertical: Dimensions.paddingSizeExtraLarge32),
+      padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraLarge32),
       child: Column(
         children: [
-          Icon(Icons.campaign_outlined,
-              size: Dimensions.iconSizeExtraLarge, color: colors.textHintColor),
+          Icon(Icons.campaign_outlined, size: Dimensions.iconSizeExtraLarge, color: colors.textHintColor),
           const SizedBox(height: Dimensions.paddingSizeDefault),
-          Text(
-            'No notices yet',
-            style: AppTextStyles.sfProRoundedMedium.copyWith(
-              color: colors.textSecondaryColor,
-            ),
-          ),
+          Text('No notices yet', style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor)),
         ],
       ),
     );

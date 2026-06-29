@@ -12,8 +12,7 @@ class GetAllFundsUseCase implements UseCase<List<FundEntity>, NoParams> {
   GetAllFundsUseCase(this._repository);
 
   @override
-  ResultFuture<List<FundEntity>> call(NoParams params) =>
-      _repository.getAllFunds();
+  ResultFuture<List<FundEntity>> call(NoParams params) => _repository.getAllFunds();
 }
 
 /// Loads fund entries on a given day.
@@ -23,8 +22,7 @@ class GetFundsByDateUseCase implements UseCase<List<FundEntity>, DateTime> {
   GetFundsByDateUseCase(this._repository);
 
   @override
-  ResultFuture<List<FundEntity>> call(DateTime date) =>
-      _repository.getFundsByDate(date);
+  ResultFuture<List<FundEntity>> call(DateTime date) => _repository.getFundsByDate(date);
 }
 
 /// Params for a custom inclusive date range.
@@ -40,14 +38,12 @@ class FundRangeParams extends Equatable {
 
 /// Loads fund entries within a date range.
 @lazySingleton
-class GetFundsInRangeUseCase
-    implements UseCase<List<FundEntity>, FundRangeParams> {
+class GetFundsInRangeUseCase implements UseCase<List<FundEntity>, FundRangeParams> {
   final FundRepository _repository;
   GetFundsInRangeUseCase(this._repository);
 
   @override
-  ResultFuture<List<FundEntity>> call(FundRangeParams params) =>
-      _repository.getFundsInRange(params.start, params.end);
+  ResultFuture<List<FundEntity>> call(FundRangeParams params) => _repository.getFundsInRange(params.start, params.end);
 }
 
 /// Params for recording a fund entry.
@@ -69,11 +65,7 @@ class AddFundUseCase implements UseCase<FundEntity, AddFundParams> {
   AddFundUseCase(this._repository);
 
   @override
-  ResultFuture<FundEntity> call(AddFundParams params) => _repository.addFund(
-        amount: params.amount,
-        date: params.date,
-        note: params.note,
-      );
+  ResultFuture<FundEntity> call(AddFundParams params) => _repository.addFund(amount: params.amount, date: params.date, note: params.note);
 }
 
 /// Params for editing an existing fund entry.
@@ -83,12 +75,7 @@ class UpdateFundParams extends Equatable {
   final DateTime date;
   final String? note;
 
-  const UpdateFundParams({
-    required this.id,
-    required this.amount,
-    required this.date,
-    this.note,
-  });
+  const UpdateFundParams({required this.id, required this.amount, required this.date, this.note});
 
   @override
   List<Object?> get props => [id, amount, date, note];
@@ -101,13 +88,7 @@ class UpdateFundUseCase implements UseCase<FundEntity, UpdateFundParams> {
   UpdateFundUseCase(this._repository);
 
   @override
-  ResultFuture<FundEntity> call(UpdateFundParams params) =>
-      _repository.updateFund(
-        id: params.id,
-        amount: params.amount,
-        date: params.date,
-        note: params.note,
-      );
+  ResultFuture<FundEntity> call(UpdateFundParams params) => _repository.updateFund(id: params.id, amount: params.amount, date: params.date, note: params.note);
 }
 
 /// Removes a fund entry by id.

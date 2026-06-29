@@ -11,12 +11,7 @@ import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/them
 
 /// A single navigation entry rendered in the [DashboardTopBar].
 class DashboardNavItem {
-  const DashboardNavItem({
-    required this.label,
-    required this.icon,
-    required this.onTap,
-    this.active = false,
-  });
+  const DashboardNavItem({required this.label, required this.icon, required this.onTap, this.active = false});
 
   final String label;
   final IconData icon;
@@ -25,12 +20,7 @@ class DashboardNavItem {
 }
 
 class DashboardTopBar extends StatelessWidget {
-  const DashboardTopBar({
-    required this.userName,
-    required this.onRefresh,
-    this.navItems = const [],
-    super.key,
-  });
+  const DashboardTopBar({required this.userName, required this.onRefresh, this.navItems = const [], super.key});
 
   final String userName;
   final VoidCallback onRefresh;
@@ -53,9 +43,7 @@ class DashboardTopBar extends StatelessWidget {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: Dimensions.paddingSizeExtraLarge24,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraLarge24),
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   final width = constraints.maxWidth;
@@ -68,48 +56,23 @@ class DashboardTopBar extends StatelessWidget {
                     children: [
                       _Brand(showText: showBrandText),
                       if (navItems.isNotEmpty) ...[
-                        SizedBox(
-                          width: showNavLabels
-                              ? Dimensions.paddingSizeExtraLarge32
-                              : Dimensions.paddingSizeLarge,
-                        ),
+                        SizedBox(width: showNavLabels ? Dimensions.paddingSizeExtraLarge32 : Dimensions.paddingSizeLarge),
                         for (final item in navItems)
                           Padding(
-                            padding: const EdgeInsets.only(
-                              right: Dimensions.paddingSizeExtraSmall,
-                            ),
+                            padding: const EdgeInsets.only(right: Dimensions.paddingSizeExtraSmall),
                             child: _NavButton(item: item, showLabel: showNavLabels),
                           ),
                       ],
                       const Spacer(),
+                      _ActionIcon(icon: Icons.refresh_rounded, tooltip: 'Refresh', onPressed: onRefresh),
                       _ActionIcon(
-                        icon: Icons.refresh_rounded,
-                        tooltip: 'Refresh',
-                        onPressed: onRefresh,
-                      ),
-                      _ActionIcon(
-                        icon: context.isDarkMode
-                            ? Icons.light_mode_rounded
-                            : Icons.dark_mode_rounded,
+                        icon: context.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
                         tooltip: 'Toggle theme',
-                        onPressed: () => context.read<ThemeBloc>().add(
-                              ThemeEvent.changeThemeMode(
-                                context.isDarkMode
-                                    ? AppThemeMode.light
-                                    : AppThemeMode.dark,
-                              ),
-                            ),
+                        onPressed: () => context.read<ThemeBloc>().add(ThemeEvent.changeThemeMode(context.isDarkMode ? AppThemeMode.light : AppThemeMode.dark)),
                       ),
-                      _ActionIcon(
-                        icon: Icons.settings_outlined,
-                        tooltip: context.local.settings,
-                        onPressed: () => context.push(AppRoutes.settings),
-                      ),
+                      _ActionIcon(icon: Icons.settings_outlined, tooltip: context.local.settings, onPressed: () => context.go(AppRoutes.settings)),
                       const SizedBox(width: Dimensions.paddingSizeDefault),
-                      _ProfileChip(
-                        userName: userName,
-                        showText: showProfileText,
-                      ),
+                      _ProfileChip(userName: userName, showText: showProfileText),
                     ],
                   );
                 },
@@ -135,15 +98,8 @@ class _Brand extends StatelessWidget {
         Container(
           height: 40,
           width: 40,
-          decoration: BoxDecoration(
-            color: colors.primaryColor.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-          ),
-          child: Icon(
-            Icons.restaurant_menu_rounded,
-            color: colors.primaryColor,
-            size: Dimensions.iconSizeDefault,
-          ),
+          decoration: BoxDecoration(color: colors.primaryColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
+          child: Icon(Icons.restaurant_menu_rounded, color: colors.primaryColor, size: Dimensions.iconSizeDefault),
         ),
         if (showText) ...[
           const SizedBox(width: Dimensions.paddingSizeDefault),
@@ -153,17 +109,11 @@ class _Brand extends StatelessWidget {
             children: [
               Text(
                 'Mess Manager',
-                style: AppTextStyles.sfProRoundedBold.copyWith(
-                  fontSize: Dimensions.fontSizeLarge,
-                  color: colors.textPrimaryColor,
-                ),
+                style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
               ),
               Text(
                 'Dashboard',
-                style: AppTextStyles.sfProRoundedMedium.copyWith(
-                  fontSize: Dimensions.fontSizeSmall,
-                  color: colors.textSecondaryColor,
-                ),
+                style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
               ),
             ],
           ),
@@ -182,9 +132,7 @@ class _NavButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
     final color = item.active ? colors.primaryColor : colors.textSecondaryColor;
-    final background = item.active
-        ? colors.primaryColor.withValues(alpha: 0.12)
-        : Colors.transparent;
+    final background = item.active ? colors.primaryColor.withValues(alpha: 0.12) : Colors.transparent;
 
     // Icon-only when space is tight — keep the label in a tooltip.
     if (!showLabel) {
@@ -210,31 +158,19 @@ class _NavButton extends StatelessWidget {
       icon: Icon(item.icon, size: Dimensions.iconSizeSmall, color: color),
       label: Text(
         item.label,
-        style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-          fontSize: Dimensions.fontSizeDefault,
-          color: color,
-        ),
+        style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: color),
       ),
       style: TextButton.styleFrom(
         backgroundColor: background,
-        padding: const EdgeInsets.symmetric(
-          horizontal: Dimensions.paddingSizeDefault,
-          vertical: Dimensions.paddingSizeDefault,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeDefault),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
       ),
     );
   }
 }
 
 class _ActionIcon extends StatelessWidget {
-  const _ActionIcon({
-    required this.icon,
-    required this.tooltip,
-    required this.onPressed,
-  });
+  const _ActionIcon({required this.icon, required this.tooltip, required this.onPressed});
 
   final IconData icon;
   final String tooltip;
@@ -259,8 +195,7 @@ class _ProfileChip extends StatelessWidget {
     final parts = userName.trim().split(RegExp(r'\s+'));
     if (parts.isEmpty || parts.first.isEmpty) return '?';
     if (parts.length == 1) return parts.first.characters.first.toUpperCase();
-    return (parts.first.characters.first + parts.last.characters.first)
-        .toUpperCase();
+    return (parts.first.characters.first + parts.last.characters.first).toUpperCase();
   }
 
   @override
@@ -272,22 +207,14 @@ class _ProfileChip extends StatelessWidget {
       backgroundColor: colors.primaryColor.withValues(alpha: 0.15),
       child: Text(
         _initials,
-        style: AppTextStyles.sfProRoundedBold.copyWith(
-          fontSize: Dimensions.fontSizeDefault,
-          color: colors.primaryColor,
-        ),
+        style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.primaryColor),
       ),
     );
 
     if (!showText) return avatar;
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(
-        Dimensions.paddingSizeExtraSmall,
-        Dimensions.paddingSizeExtraSmall,
-        Dimensions.paddingSizeDefault,
-        Dimensions.paddingSizeExtraSmall,
-      ),
+      padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeExtraSmall, Dimensions.paddingSizeExtraSmall, Dimensions.paddingSizeDefault, Dimensions.paddingSizeExtraSmall),
       decoration: BoxDecoration(
         color: colors.backgroundColor,
         borderRadius: BorderRadius.circular(Dimensions.radiusExtra2Large),
@@ -308,27 +235,17 @@ class _ProfileChip extends StatelessWidget {
                   userName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-                    fontSize: Dimensions.fontSizeDefault,
-                    color: colors.textPrimaryColor,
-                  ),
+                  style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
                 ),
                 Text(
                   'Member',
-                  style: AppTextStyles.sfProRoundedRegular.copyWith(
-                    fontSize: Dimensions.fontSizeExtraSmall,
-                    color: colors.textSecondaryColor,
-                  ),
+                  style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: colors.textSecondaryColor),
                 ),
               ],
             ),
           ),
           const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-          Icon(
-            Icons.keyboard_arrow_down_rounded,
-            size: Dimensions.iconSizeSmall,
-            color: colors.textSecondaryColor,
-          ),
+          Icon(Icons.keyboard_arrow_down_rounded, size: Dimensions.iconSizeSmall, color: colors.textSecondaryColor),
         ],
       ),
     );

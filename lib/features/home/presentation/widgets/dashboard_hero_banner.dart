@@ -10,13 +10,7 @@ import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_f
 /// chips) but as a self-contained rounded card. Internally responsive: places
 /// the balance and chips side-by-side when wide, stacked when narrow.
 class DashboardHeroBanner extends StatelessWidget {
-  const DashboardHeroBanner({
-    required this.userName,
-    required this.totalBalance,
-    required this.mealBalance,
-    required this.fundBalance,
-    super.key,
-  });
+  const DashboardHeroBanner({required this.userName, required this.totalBalance, required this.mealBalance, required this.fundBalance, super.key});
 
   final String userName;
   final double totalBalance;
@@ -32,37 +26,15 @@ class DashboardHeroBanner extends StatelessWidget {
       padding: const EdgeInsets.all(Dimensions.paddingSizeExtraLarge32),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(Dimensions.radiusExtra2Large),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            colors.primaryDarkColor,
-            colors.primaryColor,
-            colors.primaryLightColor,
-          ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: colors.primaryColor.withValues(alpha: 0.3),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
-          ),
-        ],
+        gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [colors.primaryDarkColor, colors.primaryColor, colors.primaryLightColor]),
+        boxShadow: [BoxShadow(color: colors.primaryColor.withValues(alpha: 0.3), blurRadius: 24, offset: const Offset(0, 12))],
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
           final wide = constraints.maxWidth > 640;
           final chips = [
-            _HeaderChip(
-              icon: Icons.restaurant_rounded,
-              label: 'Meal',
-              value: DashboardFormatters.taka(mealBalance),
-            ),
-            _HeaderChip(
-              icon: Icons.savings_rounded,
-              label: 'Fund',
-              value: DashboardFormatters.taka(fundBalance),
-            ),
+            _HeaderChip(icon: Icons.restaurant_rounded, label: 'Meal', value: DashboardFormatters.taka(mealBalance)),
+            _HeaderChip(icon: Icons.savings_rounded, label: 'Fund', value: DashboardFormatters.taka(fundBalance)),
           ];
 
           if (wide) {
@@ -88,11 +60,7 @@ class DashboardHeroBanner extends StatelessWidget {
             children: [
               _balanceBlock(context),
               const SizedBox(height: Dimensions.paddingSizeLarge),
-              Wrap(
-                spacing: Dimensions.paddingSizeSmall,
-                runSpacing: Dimensions.paddingSizeSmall,
-                children: chips,
-              ),
+              Wrap(spacing: Dimensions.paddingSizeSmall, runSpacing: Dimensions.paddingSizeSmall, children: chips),
             ],
           );
         },
@@ -107,37 +75,22 @@ class DashboardHeroBanner extends StatelessWidget {
       children: [
         Text(
           'Welcome back,',
-          style: AppTextStyles.sfProRoundedMedium.copyWith(
-            color: Colors.white.withValues(alpha: 0.85),
-            fontSize: Dimensions.fontSizeDefault,
-          ),
+          style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.85), fontSize: Dimensions.fontSizeDefault),
         ),
         Text(
           userName,
-          style: AppTextStyles.sfProRoundedBold.copyWith(
-            color: Colors.white,
-            fontSize: Dimensions.fontSizeExtraOverLarge,
-          ),
+          style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeExtraOverLarge),
         ),
         const SizedBox(height: Dimensions.paddingSizeExtraLarge),
         Text(
           'Total balance',
-          style: AppTextStyles.sfProRoundedMedium.copyWith(
-            color: Colors.white.withValues(alpha: 0.85),
-            fontSize: Dimensions.fontSizeSmall,
-          ),
+          style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.85), fontSize: Dimensions.fontSizeSmall),
         ),
         const SizedBox(height: Dimensions.paddingSizeExtraSmall),
         FittedBox(
           fit: BoxFit.scaleDown,
           alignment: Alignment.centerLeft,
-          child: Text(
-            DashboardFormatters.taka(totalBalance),
-            style: AppTextStyles.sfProRoundedBold.copyWith(
-              color: Colors.white,
-              fontSize: 36,
-            ),
-          ),
+          child: Text(DashboardFormatters.taka(totalBalance), style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: 36)),
         ),
       ],
     );
@@ -145,11 +98,7 @@ class DashboardHeroBanner extends StatelessWidget {
 }
 
 class _HeaderChip extends StatelessWidget {
-  const _HeaderChip({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
+  const _HeaderChip({required this.icon, required this.label, required this.value});
 
   final IconData icon;
   final String label;
@@ -158,10 +107,7 @@ class _HeaderChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: Dimensions.paddingSizeDefault,
-        vertical: Dimensions.paddingSizeSmall,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeSmall),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(Dimensions.radiusExtra2Large),
@@ -174,10 +120,7 @@ class _HeaderChip extends StatelessWidget {
           const SizedBox(width: Dimensions.paddingSizeExtraSmall),
           Text(
             '$label · $value',
-            style: AppTextStyles.sfProRoundedSemiBold.copyWith(
-              color: Colors.white,
-              fontSize: Dimensions.fontSizeSmall,
-            ),
+            style: AppTextStyles.sfProRoundedSemiBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeSmall),
           ),
         ],
       ),

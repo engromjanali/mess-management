@@ -12,8 +12,8 @@ enum FundDateFilter {
   range;
 
   String get label => switch (this) {
-        FundDateFilter.allTime => 'All time',
-        FundDateFilter.day => 'Day',
-        FundDateFilter.range => 'Range',
-      };
+    FundDateFilter.allTime => 'All time',
+    FundDateFilter.day => 'Day',
+    FundDateFilter.range => 'Range',
+  };
 }

@@ -10,15 +10,9 @@ enum SnackBarStatus { error, success, alert, info }
 
 /// Overlay extensions for snackbars, dialogs, and keyboard management
 extension OverlayExtensions on BuildContext {
-
   /// Show custom styled snackbar/toast
-  Future<void> _showCustomSnackBar(
-    String? message, {
-    SnackBarStatus status = SnackBarStatus.success,
-    Duration duration = const Duration(seconds: 3),
-  }) async {
+  Future<void> _showCustomSnackBar(String? message, {SnackBarStatus status = SnackBarStatus.success, Duration duration = const Duration(seconds: 3)}) async {
     if (message == null || message.isEmpty) return;
-
 
     // Determine icon and colors based on status
     Widget statusIcon;
@@ -28,37 +22,21 @@ extension OverlayExtensions on BuildContext {
         statusIcon = CircleAvatar(
           radius: 12,
           backgroundColor: customThemeColors.errorColor,
-          child: const Icon(
-            Icons.close_rounded,
-            color: Colors.white,
-            size: 16,
-          ),
+          child: const Icon(Icons.close_rounded, color: Colors.white, size: 16),
         );
         break;
       case SnackBarStatus.success:
         statusIcon = CircleAvatar(
           radius: 12,
           backgroundColor: customThemeColors.successColor,
-          child: const Icon(
-            Icons.check_rounded,
-            color: Colors.white,
-            size: 16,
-          ),
+          child: const Icon(Icons.check_rounded, color: Colors.white, size: 16),
         );
         break;
       case SnackBarStatus.info:
-        statusIcon = const Icon(
-          Icons.warning_rounded,
-          color: Colors.orangeAccent,
-          size: 22,
-        );
+        statusIcon = const Icon(Icons.warning_rounded, color: Colors.orangeAccent, size: 22);
         break;
       case SnackBarStatus.alert:
-        statusIcon = Icon(
-          Icons.warning_rounded,
-          color: customThemeColors.warningColor,
-          size: 22,
-        );
+        statusIcon = Icon(Icons.warning_rounded, color: customThemeColors.warningColor, size: 22);
         break;
     }
 
@@ -68,18 +46,14 @@ extension OverlayExtensions on BuildContext {
         SnackBar(
           elevation: 0,
           duration: duration,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(50),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
           content: Align(
             child: Material(
               color: Colors.black,
               elevation: 0,
               borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
               child: Container(
-                constraints: const BoxConstraints(
-                  minHeight: 60,
-                ),
+                constraints: const BoxConstraints(minHeight: 60),
                 padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -92,10 +66,7 @@ extension OverlayExtensions on BuildContext {
                     Flexible(
                       child: Text(
                         message,
-                        style: AppTextStyles.sfProRoundedBold.copyWith(
-                          color: Colors.white,
-                          fontSize: Dimensions.fontSizeDefault,
-                        ),
+                        style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeDefault),
                       ),
                     ),
                   ],
@@ -104,11 +75,7 @@ extension OverlayExtensions on BuildContext {
             ),
           ),
           margin: ResponsiveHelper.isDesktop(this)
-              ? EdgeInsets.only(
-                  right: screenWidth * 0.7,
-                  bottom: Dimensions.paddingSizeExtraSmall,
-                  left: Dimensions.paddingSizeExtraSmall,
-                )
+              ? EdgeInsets.only(right: screenWidth * 0.7, bottom: Dimensions.paddingSizeExtraSmall, left: Dimensions.paddingSizeExtraSmall)
               : EdgeInsets.only(bottom: screenHeight * 0.08),
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.transparent,
@@ -118,37 +85,22 @@ extension OverlayExtensions on BuildContext {
 
   /// Show error snackbar
   void showErrorSnackBar(String? message, {Duration? duration}) {
-    _showCustomSnackBar(
-      message,
-      status: SnackBarStatus.error,
-      duration: duration ?? const Duration(seconds: 4),
-    );
+    _showCustomSnackBar(message, status: SnackBarStatus.error, duration: duration ?? const Duration(seconds: 4));
   }
 
   /// Show success snackbar
   void showSuccessSnackBar(String? message, {Duration? duration}) {
-    _showCustomSnackBar(
-      message,
-      duration: duration ?? const Duration(seconds: 3),
-    );
+    _showCustomSnackBar(message, duration: duration ?? const Duration(seconds: 3));
   }
 
   /// Show info snackbar
   void showInfoSnackBar(String? message, {Duration? duration}) {
-    _showCustomSnackBar(
-      message,
-      status: SnackBarStatus.info,
-      duration: duration ?? const Duration(seconds: 3),
-    );
+    _showCustomSnackBar(message, status: SnackBarStatus.info, duration: duration ?? const Duration(seconds: 3));
   }
 
   /// Show alert/warning snackbar
   void showAlertSnackBar(String? message, {Duration? duration}) {
-    _showCustomSnackBar(
-      message,
-      status: SnackBarStatus.alert,
-      duration: duration ?? const Duration(seconds: 3),
-    );
+    _showCustomSnackBar(message, status: SnackBarStatus.alert, duration: duration ?? const Duration(seconds: 3));
   }
 
   /// Dismiss keyboard
@@ -162,34 +114,18 @@ extension OverlayExtensions on BuildContext {
   }
 
   /// Show custom dialog
-  Future<T?> showCustomDialog<T>({
-    required Widget child,
-    bool barrierDismissible = true,
-  }) {
-    return showDialog<T>(
-      context: this,
-      barrierDismissible: barrierDismissible,
-      builder: (_) => child,
-    );
+  Future<T?> showCustomDialog<T>({required Widget child, bool barrierDismissible = true}) {
+    return showDialog<T>(context: this, barrierDismissible: barrierDismissible, builder: (_) => child);
   }
 
   /// Show bottom sheet
-  Future<T?> showCustomBottomSheet<T>({
-    required Widget child,
-    bool isDismissible = true,
-    bool enableDrag = true,
-    Color? backgroundColor,
-  }) {
+  Future<T?> showCustomBottomSheet<T>({required Widget child, bool isDismissible = true, bool enableDrag = true, Color? backgroundColor}) {
     return showModalBottomSheet<T>(
       context: this,
       isDismissible: isDismissible,
       enableDrag: enableDrag,
       backgroundColor: backgroundColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(Dimensions.radiusExtra2Large),
-        ),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(Dimensions.radiusExtra2Large))),
       builder: (_) => child,
     );
   }
@@ -201,13 +137,8 @@ extension OverlayExtensions on BuildContext {
   ///
   /// [child] should be the bare form content — this method supplies the
   /// surrounding chrome (handle, padding, scrolling, keyboard inset).
-  Future<T?> showAdaptiveSheet<T>({
-    required Widget child,
-    bool isDismissible = true,
-    double maxWidth = 480,
-  }) {
-    final isWide =
-        ResponsiveHelper.isDesktop(this) || ResponsiveHelper.isTab(this);
+  Future<T?> showAdaptiveSheet<T>({required Widget child, bool isDismissible = true, double maxWidth = 480}) {
+    final isWide = ResponsiveHelper.isDesktop(this) || ResponsiveHelper.isTab(this);
     final background = theme.scaffoldBackgroundColor;
 
     if (isWide) {
@@ -218,18 +149,10 @@ extension OverlayExtensions on BuildContext {
           backgroundColor: background,
           insetPadding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
           clipBehavior: Clip.antiAlias,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(Dimensions.radiusExtra2Large),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusExtra2Large)),
           child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: maxWidth,
-              maxHeight: MediaQuery.of(ctx).size.height * 0.9,
-            ),
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
-              child: child,
-            ),
+            constraints: BoxConstraints(maxWidth: maxWidth, maxHeight: MediaQuery.of(ctx).size.height * 0.9),
+            child: SingleChildScrollView(padding: const EdgeInsets.all(Dimensions.paddingSizeLarge), child: child),
           ),
         ),
       );
@@ -240,22 +163,13 @@ extension OverlayExtensions on BuildContext {
       isScrollControlled: true,
       isDismissible: isDismissible,
       backgroundColor: background,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(Dimensions.radiusExtra2Large),
-        ),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(Dimensions.radiusExtra2Large))),
       builder: (ctx) {
         final media = MediaQuery.of(ctx);
         return Padding(
           padding: EdgeInsets.only(bottom: media.viewInsets.bottom),
           child: SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(
-              Dimensions.paddingSizeLarge,
-              Dimensions.paddingSizeSmall,
-              Dimensions.paddingSizeLarge,
-              Dimensions.paddingSizeLarge + media.viewPadding.bottom,
-            ),
+            padding: EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge + media.viewPadding.bottom),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -264,12 +178,8 @@ extension OverlayExtensions on BuildContext {
                   child: Container(
                     width: 40,
                     height: 4,
-                    margin: const EdgeInsets.only(
-                        bottom: Dimensions.paddingSizeLarge),
-                    decoration: BoxDecoration(
-                      color: customThemeColors.dividerColor,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
+                    margin: const EdgeInsets.only(bottom: Dimensions.paddingSizeLarge),
+                    decoration: BoxDecoration(color: customThemeColors.dividerColor, borderRadius: BorderRadius.circular(2)),
                   ),
                 ),
                 child,

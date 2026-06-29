@@ -18,17 +18,13 @@ class DeleteMemberMealParams extends Equatable {
 
 /// Removes a member's meal record for a given day.
 @lazySingleton
-class DeleteMemberMealUseCase
-    implements UseCase<MealAdminEntity, DeleteMemberMealParams> {
+class DeleteMemberMealUseCase implements UseCase<MealAdminEntity, DeleteMemberMealParams> {
   final MealAdminRepository _repository;
 
   DeleteMemberMealUseCase(this._repository);
 
   @override
   ResultFuture<MealAdminEntity> call(DeleteMemberMealParams params) {
-    return _repository.deleteMemberMeal(
-      memberId: params.memberId,
-      date: params.date,
-    );
+    return _repository.deleteMemberMeal(memberId: params.memberId, date: params.date);
   }
 }

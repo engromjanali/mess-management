@@ -7,38 +7,32 @@ import 'package:clean_boilerplate/features/deposit/domain/repositories/deposit_r
 
 /// Loads the member roster (for the add/edit picker and the by-member filter).
 @lazySingleton
-class GetDepositMembersUseCase
-    implements UseCase<List<DepositMemberEntity>, NoParams> {
+class GetDepositMembersUseCase implements UseCase<List<DepositMemberEntity>, NoParams> {
   final DepositRepository _repository;
   GetDepositMembersUseCase(this._repository);
 
   @override
-  ResultFuture<List<DepositMemberEntity>> call(NoParams params) =>
-      _repository.getMembers();
+  ResultFuture<List<DepositMemberEntity>> call(NoParams params) => _repository.getMembers();
 }
 
 /// Loads every deposit (all members, all dates).
 @lazySingleton
-class GetAllDepositsUseCase
-    implements UseCase<List<DepositEntity>, NoParams> {
+class GetAllDepositsUseCase implements UseCase<List<DepositEntity>, NoParams> {
   final DepositRepository _repository;
   GetAllDepositsUseCase(this._repository);
 
   @override
-  ResultFuture<List<DepositEntity>> call(NoParams params) =>
-      _repository.getAllDeposits();
+  ResultFuture<List<DepositEntity>> call(NoParams params) => _repository.getAllDeposits();
 }
 
 /// Loads every deposit for a single member.
 @lazySingleton
-class GetMemberDepositsUseCase
-    implements UseCase<List<DepositEntity>, String> {
+class GetMemberDepositsUseCase implements UseCase<List<DepositEntity>, String> {
   final DepositRepository _repository;
   GetMemberDepositsUseCase(this._repository);
 
   @override
-  ResultFuture<List<DepositEntity>> call(String memberId) =>
-      _repository.getMemberDeposits(memberId);
+  ResultFuture<List<DepositEntity>> call(String memberId) => _repository.getMemberDeposits(memberId);
 }
 
 /// Params for a custom inclusive date range.
@@ -54,38 +48,32 @@ class DepositRangeParams extends Equatable {
 
 /// Loads every member's deposits within a date range.
 @lazySingleton
-class GetDepositsInRangeUseCase
-    implements UseCase<List<DepositEntity>, DepositRangeParams> {
+class GetDepositsInRangeUseCase implements UseCase<List<DepositEntity>, DepositRangeParams> {
   final DepositRepository _repository;
   GetDepositsInRangeUseCase(this._repository);
 
   @override
-  ResultFuture<List<DepositEntity>> call(DepositRangeParams params) =>
-      _repository.getDepositsInRange(params.start, params.end);
+  ResultFuture<List<DepositEntity>> call(DepositRangeParams params) => _repository.getDepositsInRange(params.start, params.end);
 }
 
 /// Loads every member's deposits on a given day.
 @lazySingleton
-class GetDepositsByDateUseCase
-    implements UseCase<List<DepositEntity>, DateTime> {
+class GetDepositsByDateUseCase implements UseCase<List<DepositEntity>, DateTime> {
   final DepositRepository _repository;
   GetDepositsByDateUseCase(this._repository);
 
   @override
-  ResultFuture<List<DepositEntity>> call(DateTime date) =>
-      _repository.getDepositsByDate(date);
+  ResultFuture<List<DepositEntity>> call(DateTime date) => _repository.getDepositsByDate(date);
 }
 
 /// Loads the signed-in user's own deposits.
 @lazySingleton
-class GetMyDepositsUseCase
-    implements UseCase<List<DepositEntity>, NoParams> {
+class GetMyDepositsUseCase implements UseCase<List<DepositEntity>, NoParams> {
   final DepositRepository _repository;
   GetMyDepositsUseCase(this._repository);
 
   @override
-  ResultFuture<List<DepositEntity>> call(NoParams params) =>
-      _repository.getMyDeposits();
+  ResultFuture<List<DepositEntity>> call(NoParams params) => _repository.getMyDeposits();
 }
 
 /// Params for recording a deposit against a single member.
@@ -95,12 +83,7 @@ class AddDepositParams extends Equatable {
   final DateTime date;
   final String? note;
 
-  const AddDepositParams({
-    required this.memberId,
-    required this.amount,
-    required this.date,
-    this.note,
-  });
+  const AddDepositParams({required this.memberId, required this.amount, required this.date, this.note});
 
   @override
   List<Object?> get props => [memberId, amount, date, note];
@@ -113,13 +96,7 @@ class AddDepositUseCase implements UseCase<DepositEntity, AddDepositParams> {
   AddDepositUseCase(this._repository);
 
   @override
-  ResultFuture<DepositEntity> call(AddDepositParams params) =>
-      _repository.addDeposit(
-        memberId: params.memberId,
-        amount: params.amount,
-        date: params.date,
-        note: params.note,
-      );
+  ResultFuture<DepositEntity> call(AddDepositParams params) => _repository.addDeposit(memberId: params.memberId, amount: params.amount, date: params.date, note: params.note);
 }
 
 /// Params for editing an existing deposit.
@@ -129,12 +106,7 @@ class UpdateDepositParams extends Equatable {
   final DateTime date;
   final String? note;
 
-  const UpdateDepositParams({
-    required this.id,
-    required this.amount,
-    required this.date,
-    this.note,
-  });
+  const UpdateDepositParams({required this.id, required this.amount, required this.date, this.note});
 
   @override
   List<Object?> get props => [id, amount, date, note];
@@ -142,19 +114,12 @@ class UpdateDepositParams extends Equatable {
 
 /// Edits an existing deposit.
 @lazySingleton
-class UpdateDepositUseCase
-    implements UseCase<DepositEntity, UpdateDepositParams> {
+class UpdateDepositUseCase implements UseCase<DepositEntity, UpdateDepositParams> {
   final DepositRepository _repository;
   UpdateDepositUseCase(this._repository);
 
   @override
-  ResultFuture<DepositEntity> call(UpdateDepositParams params) =>
-      _repository.updateDeposit(
-        id: params.id,
-        amount: params.amount,
-        date: params.date,
-        note: params.note,
-      );
+  ResultFuture<DepositEntity> call(UpdateDepositParams params) => _repository.updateDeposit(id: params.id, amount: params.amount, date: params.date, note: params.note);
 }
 
 /// Removes a deposit by id.

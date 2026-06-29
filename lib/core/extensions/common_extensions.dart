@@ -1,4 +1,3 @@
-
 /// String extensions
 extension StringExtensions on String {
   /// Capitalize first letter
@@ -25,5 +24,3 @@ extension StringExtensions on String {
     return phoneRegExp.hasMatch(this);
   }
 }
-
-

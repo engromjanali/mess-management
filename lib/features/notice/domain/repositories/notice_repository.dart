@@ -7,17 +7,10 @@ abstract class NoticeRepository {
   ResultFuture<List<NoticeEntity>> getNotices();
 
   /// Publishes a new notice.
-  ResultFuture<NoticeEntity> addNotice({
-    required String title,
-    required String description,
-  });
+  ResultFuture<NoticeEntity> addNotice({required String title, required String description});
 
   /// Edits an existing notice.
-  ResultFuture<NoticeEntity> updateNotice({
-    required String id,
-    required String title,
-    required String description,
-  });
+  ResultFuture<NoticeEntity> updateNotice({required String id, required String title, required String description});
 
   /// Pins or unpins a notice. Pinning one unpins any other.
   ResultVoid setPinned({required String id, required bool pinned});

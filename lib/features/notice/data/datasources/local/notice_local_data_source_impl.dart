@@ -60,32 +60,19 @@ class NoticeLocalDataSourceImpl implements NoticeDataSource {
   }
 
   @override
-  Future<NoticeModel> addNotice({
-    required String title,
-    required String description,
-  }) async {
-    final model = NoticeModel(
-      id: _nextId(),
-      title: title,
-      description: description,
-      createdAt: DateTime.now(),
-    );
+  Future<NoticeModel> addNotice({required String title, required String description}) async {
+    final model = NoticeModel(id: _nextId(), title: title, description: description, createdAt: DateTime.now());
     _notices.add(model);
     return model;
   }
 
   @override
-  Future<NoticeModel> updateNotice({
-    required String id,
-    required String title,
-    required String description,
-  }) async {
+  Future<NoticeModel> updateNotice({required String id, required String title, required String description}) async {
     final index = _notices.indexWhere((n) => n.id == id);
     if (index == -1) {
       throw ServerException(message: 'Notice not found');
     }
-    final updated =
-        _notices[index].copyWith(title: title, description: description);
+    final updated = _notices[index].copyWith(title: title, description: description);
     _notices[index] = updated;
     return updated;
   }

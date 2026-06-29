@@ -12,8 +12,7 @@ class GetNoticesUseCase implements UseCase<List<NoticeEntity>, NoParams> {
   GetNoticesUseCase(this._repository);
 
   @override
-  ResultFuture<List<NoticeEntity>> call(NoParams params) =>
-      _repository.getNotices();
+  ResultFuture<List<NoticeEntity>> call(NoParams params) => _repository.getNotices();
 }
 
 /// Params for publishing a notice.
@@ -34,11 +33,7 @@ class AddNoticeUseCase implements UseCase<NoticeEntity, AddNoticeParams> {
   AddNoticeUseCase(this._repository);
 
   @override
-  ResultFuture<NoticeEntity> call(AddNoticeParams params) =>
-      _repository.addNotice(
-        title: params.title,
-        description: params.description,
-      );
+  ResultFuture<NoticeEntity> call(AddNoticeParams params) => _repository.addNotice(title: params.title, description: params.description);
 }
 
 /// Params for editing a notice.
@@ -47,11 +42,7 @@ class UpdateNoticeParams extends Equatable {
   final String title;
   final String description;
 
-  const UpdateNoticeParams({
-    required this.id,
-    required this.title,
-    required this.description,
-  });
+  const UpdateNoticeParams({required this.id, required this.title, required this.description});
 
   @override
   List<Object?> get props => [id, title, description];
@@ -64,12 +55,7 @@ class UpdateNoticeUseCase implements UseCase<NoticeEntity, UpdateNoticeParams> {
   UpdateNoticeUseCase(this._repository);
 
   @override
-  ResultFuture<NoticeEntity> call(UpdateNoticeParams params) =>
-      _repository.updateNotice(
-        id: params.id,
-        title: params.title,
-        description: params.description,
-      );
+  ResultFuture<NoticeEntity> call(UpdateNoticeParams params) => _repository.updateNotice(id: params.id, title: params.title, description: params.description);
 }
 
 /// Params for pinning / unpinning a notice.
@@ -90,8 +76,7 @@ class SetNoticePinnedUseCase implements UseCase<void, SetNoticePinnedParams> {
   SetNoticePinnedUseCase(this._repository);
 
   @override
-  ResultVoid call(SetNoticePinnedParams params) =>
-      _repository.setPinned(id: params.id, pinned: params.pinned);
+  ResultVoid call(SetNoticePinnedParams params) => _repository.setPinned(id: params.id, pinned: params.pinned);
 }
 
 /// Removes a notice by id.

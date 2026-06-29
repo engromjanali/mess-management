@@ -7,14 +7,12 @@ import 'package:clean_boilerplate/features/cost/domain/repositories/cost_reposit
 
 /// Loads the member roster (for the entry person picker).
 @lazySingleton
-class GetCostMembersUseCase
-    implements UseCase<List<CostMemberEntity>, NoParams> {
+class GetCostMembersUseCase implements UseCase<List<CostMemberEntity>, NoParams> {
   final CostRepository _repository;
   GetCostMembersUseCase(this._repository);
 
   @override
-  ResultFuture<List<CostMemberEntity>> call(NoParams params) =>
-      _repository.getMembers();
+  ResultFuture<List<CostMemberEntity>> call(NoParams params) => _repository.getMembers();
 }
 
 /// Loads every bazar/cost entry.
@@ -24,8 +22,7 @@ class GetCostsUseCase implements UseCase<List<CostEntity>, NoParams> {
   GetCostsUseCase(this._repository);
 
   @override
-  ResultFuture<List<CostEntity>> call(NoParams params) =>
-      _repository.getCosts();
+  ResultFuture<List<CostEntity>> call(NoParams params) => _repository.getCosts();
 }
 
 /// Params for recording a bazar/cost entry.
@@ -34,11 +31,7 @@ class AddCostParams extends Equatable {
   final DateTime date;
   final List<CostItemEntity> items;
 
-  const AddCostParams({
-    required this.personId,
-    required this.date,
-    required this.items,
-  });
+  const AddCostParams({required this.personId, required this.date, required this.items});
 
   @override
   List<Object?> get props => [personId, date, items];
@@ -51,11 +44,7 @@ class AddCostUseCase implements UseCase<CostEntity, AddCostParams> {
   AddCostUseCase(this._repository);
 
   @override
-  ResultFuture<CostEntity> call(AddCostParams params) => _repository.addCost(
-        personId: params.personId,
-        date: params.date,
-        items: params.items,
-      );
+  ResultFuture<CostEntity> call(AddCostParams params) => _repository.addCost(personId: params.personId, date: params.date, items: params.items);
 }
 
 /// Params for editing an existing bazar/cost entry.
@@ -65,12 +54,7 @@ class UpdateCostParams extends Equatable {
   final DateTime date;
   final List<CostItemEntity> items;
 
-  const UpdateCostParams({
-    required this.id,
-    required this.personId,
-    required this.date,
-    required this.items,
-  });
+  const UpdateCostParams({required this.id, required this.personId, required this.date, required this.items});
 
   @override
   List<Object?> get props => [id, personId, date, items];
@@ -83,13 +67,7 @@ class UpdateCostUseCase implements UseCase<CostEntity, UpdateCostParams> {
   UpdateCostUseCase(this._repository);
 
   @override
-  ResultFuture<CostEntity> call(UpdateCostParams params) =>
-      _repository.updateCost(
-        id: params.id,
-        personId: params.personId,
-        date: params.date,
-        items: params.items,
-      );
+  ResultFuture<CostEntity> call(UpdateCostParams params) => _repository.updateCost(id: params.id, personId: params.personId, date: params.date, items: params.items);
 }
 
 /// Removes a bazar/cost entry by id.

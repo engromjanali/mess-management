@@ -8,7 +8,12 @@ class InputSuffixIconWidget extends StatelessWidget {
   final VoidCallback onTogglePasswordVisibility;
 
   const InputSuffixIconWidget({
-    required this.isPasswordField, required this.obscurePassword, required this.enabled, required this.customSuffixIcon, required this.onTogglePasswordVisibility, super.key,
+    required this.isPasswordField,
+    required this.obscurePassword,
+    required this.enabled,
+    required this.customSuffixIcon,
+    required this.onTogglePasswordVisibility,
+    super.key,
   });
 
   @override
@@ -20,9 +25,7 @@ class InputSuffixIconWidget extends StatelessWidget {
           transform: Matrix4.rotationY(3.1416),
           child: Icon(
             obscurePassword ? Icons.visibility_off : Icons.visibility,
-            color: enabled
-                ? Theme.of(context).textTheme.titleLarge!.color!.withValues(alpha: 0.5)
-                : Theme.of(context).disabledColor,
+            color: enabled ? Theme.of(context).textTheme.titleLarge!.color!.withValues(alpha: 0.5) : Theme.of(context).disabledColor,
           ),
         ),
         onPressed: enabled ? onTogglePasswordVisibility : null,

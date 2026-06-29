@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:clean_boilerplate/core/errors/exceptions.dart';
 
 /// Centralized API client for making HTTP requests
-/// 
+///
 /// Features:
 /// - Automatic token management
 /// - Centralized error handling
@@ -19,16 +19,11 @@ class ApiClient {
   final Dio _dio;
   final SharedPreferences _sharedPreferences;
 
-  
   String? _token;
   String? _guestUserId;
   String? _languageCode;
 
-  ApiClient({
-    required Dio dio,
-    required SharedPreferences sharedPreferences,
-  })  : _dio = dio,
-        _sharedPreferences = sharedPreferences {
+  ApiClient({required Dio dio, required SharedPreferences sharedPreferences}) : _dio = dio, _sharedPreferences = sharedPreferences {
     _initializeHeaders();
   }
 
@@ -102,26 +97,14 @@ class ApiClient {
   }
 
   /// GET request
-  Future<Response<T>> get<T>(
-    String path, {
-    Map<String, dynamic>? queryParameters,
-    Options? options,
-    CancelToken? cancelToken,
-    ProgressCallback? onReceiveProgress,
-  }) async {
+  Future<Response<T>> get<T>(String path, {Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken, ProgressCallback? onReceiveProgress}) async {
     try {
       if (kDebugMode) {
         print('=====> GET: $path');
         print('=====> Query Parameters: $queryParameters');
       }
 
-      final response = await _dio.get<T>(
-        path,
-        queryParameters: queryParameters,
-        options: options,
-        cancelToken: cancelToken,
-        onReceiveProgress: onReceiveProgress,
-      );
+      final response = await _dio.get<T>(path, queryParameters: queryParameters, options: options, cancelToken: cancelToken, onReceiveProgress: onReceiveProgress);
 
       if (kDebugMode) {
         print('=====> Response [${response.statusCode}]: $path');
@@ -254,25 +237,13 @@ class ApiClient {
   }
 
   /// DELETE request
-  Future<Response<T>> delete<T>(
-    String path, {
-    dynamic data,
-    Map<String, dynamic>? queryParameters,
-    Options? options,
-    CancelToken? cancelToken,
-  }) async {
+  Future<Response<T>> delete<T>(String path, {dynamic data, Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken}) async {
     try {
       if (kDebugMode) {
         print('=====> DELETE: $path');
       }
 
-      final response = await _dio.delete<T>(
-        path,
-        data: data,
-        queryParameters: queryParameters,
-        options: options,
-        cancelToken: cancelToken,
-      );
+      final response = await _dio.delete<T>(path, data: data, queryParameters: queryParameters, options: options, cancelToken: cancelToken);
 
       if (kDebugMode) {
         print('=====> Response [${response.statusCode}]: $path');

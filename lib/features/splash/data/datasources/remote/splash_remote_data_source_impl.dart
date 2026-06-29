@@ -8,7 +8,6 @@ import 'package:clean_boilerplate/features/splash/data/models/config_model.dart'
 class SplashRemoteDataSourceImpl implements SplashDataSource {
   final SplashApiService _splashApiService;
 
-
   SplashRemoteDataSourceImpl(this._splashApiService);
   @override
   ResultFuture<ConfigModel> getConfig() {

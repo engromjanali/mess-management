@@ -11,7 +11,7 @@ class AuthRemoteDataSourceImpl implements AuthDataSource {
   AuthRemoteDataSourceImpl(this._apiService);
 
   @override
-  Future<UserModel> login({required String email, required String password,}) async {
+  Future<UserModel> login({required String email, required String password}) async {
     return _apiService.login({'email': email, 'password': password});
   }
 

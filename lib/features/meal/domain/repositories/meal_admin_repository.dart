@@ -10,26 +10,12 @@ abstract class MealAdminRepository {
 
   /// Records the same B/L/D for **every** member on [date] at once
   /// (bulk entry), returning the refreshed admin data.
-  ResultFuture<MealAdminEntity> addMealForAll({
-    required DateTime date,
-    required double breakfast,
-    required double lunch,
-    required double dinner,
-  });
+  ResultFuture<MealAdminEntity> addMealForAll({required DateTime date, required double breakfast, required double lunch, required double dinner});
 
   /// Adds or overwrites the meal counts for [memberId] on [date], returning
   /// the refreshed admin data.
-  ResultFuture<MealAdminEntity> saveMemberMeal({
-    required String memberId,
-    required DateTime date,
-    required double breakfast,
-    required double lunch,
-    required double dinner,
-  });
+  ResultFuture<MealAdminEntity> saveMemberMeal({required String memberId, required DateTime date, required double breakfast, required double lunch, required double dinner});
 
   /// Removes the record for [memberId] on [date], returning refreshed data.
-  ResultFuture<MealAdminEntity> deleteMemberMeal({
-    required String memberId,
-    required DateTime date,
-  });
+  ResultFuture<MealAdminEntity> deleteMemberMeal({required String memberId, required DateTime date});
 }

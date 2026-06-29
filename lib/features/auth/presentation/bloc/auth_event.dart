@@ -7,10 +7,7 @@ part 'auth_event.freezed.dart';
 @Freezed(toJson: false, fromJson: false)
 class AuthEvent with _$AuthEvent {
   /// Login requested event
-  const factory AuthEvent.loginRequested({
-    required String email,
-    required String password,
-  }) = LoginRequested;
+  const factory AuthEvent.loginRequested({required String email, required String password}) = LoginRequested;
 
   /// Logout requested event
   const factory AuthEvent.logoutRequested() = LogoutRequested;

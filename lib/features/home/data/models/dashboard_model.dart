@@ -39,21 +39,21 @@ class DashboardModel {
   });
 
   DashboardEntity toEntity() => DashboardEntity(
-        totalBalance: totalBalance,
-        mealBalance: mealBalance,
-        fundBalance: fundBalance,
-        totalDeposit: totalDeposit,
-        bazerCost: bazerCost,
-        totalMeal: totalMeal,
-        mealRate: mealRate,
-        myTotalMeal: myTotalMeal,
-        myDeposit: myDeposit,
-        myRemaining: myRemaining,
-        members: members.map((m) => m.toEntity()).toList(),
-        pinnedNotice: pinnedNotice?.toEntity(),
-        isManager: isManager,
-        userName: userName,
-      );
+    totalBalance: totalBalance,
+    mealBalance: mealBalance,
+    fundBalance: fundBalance,
+    totalDeposit: totalDeposit,
+    bazerCost: bazerCost,
+    totalMeal: totalMeal,
+    mealRate: mealRate,
+    myTotalMeal: myTotalMeal,
+    myDeposit: myDeposit,
+    myRemaining: myRemaining,
+    members: members.map((m) => m.toEntity()).toList(),
+    pinnedNotice: pinnedNotice?.toEntity(),
+    isManager: isManager,
+    userName: userName,
+  );
 }
 
 class MemberStatModel {
@@ -62,19 +62,9 @@ class MemberStatModel {
   final double deposit;
   final double meal;
 
-  const MemberStatModel({
-    required this.id,
-    required this.name,
-    required this.deposit,
-    required this.meal,
-  });
+  const MemberStatModel({required this.id, required this.name, required this.deposit, required this.meal});
 
-  MemberStatEntity toEntity() => MemberStatEntity(
-        id: id,
-        name: name,
-        deposit: deposit,
-        meal: meal,
-      );
+  MemberStatEntity toEntity() => MemberStatEntity(id: id, name: name, deposit: deposit, meal: meal);
 }
 
 class NoticeModel {
@@ -83,17 +73,7 @@ class NoticeModel {
   final String description;
   final DateTime createdAt;
 
-  const NoticeModel({
-    required this.noticeId,
-    required this.title,
-    required this.description,
-    required this.createdAt,
-  });
+  const NoticeModel({required this.noticeId, required this.title, required this.description, required this.createdAt});
 
-  NoticeEntity toEntity() => NoticeEntity(
-        noticeId: noticeId,
-        title: title,
-        description: description,
-        createdAt: createdAt,
-      );
+  NoticeEntity toEntity() => NoticeEntity(noticeId: noticeId, title: title, description: description, createdAt: createdAt);
 }

@@ -2,6 +2,7 @@ import 'package:clean_boilerplate/features/splash/presentation/screens/splash_sc
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:clean_boilerplate/features/auth/presentation/screens/login_screen.dart';
+import 'package:clean_boilerplate/features/auth/presentation/screens/profile_screen.dart';
 import 'package:clean_boilerplate/features/auth/presentation/screens/register_screen.dart';
 import 'package:clean_boilerplate/features/cost/presentation/screens/cost_screen.dart';
 import 'package:clean_boilerplate/features/deposit/presentation/screens/deposit_screen.dart';
@@ -16,12 +17,12 @@ import 'package:clean_boilerplate/features/settings/presentation/screens/setting
 class AppRoutes {
   // Private constructor to prevent instantiation
   AppRoutes._();
-  
+
   // Authentication routes
   static const String _splash = '/splash';
   static const String _login = '/login';
   static const String register = '/register';
-  
+
   // Main routes
   static const String home = '/';
   static const String meals = '/meals';
@@ -30,11 +31,11 @@ class AppRoutes {
   static const String funds = '/funds';
   static const String costs = '/costs';
   static const String notices = '/notices';
-  static const String _profile = '/profile';
+  static const String profile = '/profile';
   static const String settings = '/settings';
-  
+
   // Helper methods for parameterized routes
-  static String getProfileRoute({required String userId}) => '$_profile?userId=$userId';
+  static String getProfileRoute({required String userId}) => '$profile?userId=$userId';
 
   static String getSplashRoute() => _splash;
 
@@ -45,89 +46,43 @@ class AppRoutes {
 final router = GoRouter(
   initialLocation: AppRoutes._splash,
   routes: [
-
-    GoRoute(
-      path: AppRoutes._splash,
-      name: 'splash',
-      builder: (context, state) => const SplashScreen(),
-    ),
+    GoRoute(path: AppRoutes._splash, name: 'splash', builder: (context, state) => const SplashScreen()),
 
     // Authentication routes
-    GoRoute(
-      path: AppRoutes._login,
-      name: 'login',
-      builder: (context, state) => const LoginScreen(),
-    ),
+    GoRoute(path: AppRoutes._login, name: 'login', builder: (context, state) => const LoginScreen()),
 
-    GoRoute(
-      path: AppRoutes.register,
-      name: 'register',
-      builder: (context, state) => const RegisterScreen(),
-    ),
+    GoRoute(path: AppRoutes.register, name: 'register', builder: (context, state) => const RegisterScreen()),
 
     // Home route
-    GoRoute(
-      path: AppRoutes.home,
-      name: 'home',
-      builder: (context, state) => const HomeScreen(),
-    ),
-    
+    GoRoute(path: AppRoutes.home, name: 'home', builder: (context, state) => const HomeScreen()),
+
     // Meal route
-    GoRoute(
-      path: AppRoutes.meals,
-      name: 'meals',
-      builder: (context, state) => const MealScreen(),
-    ),
+    GoRoute(path: AppRoutes.meals, name: 'meals', builder: (context, state) => const MealScreen()),
 
     // Admin: add meal for all members
-    GoRoute(
-      path: AppRoutes.addMeal,
-      name: 'addMeal',
-      builder: (context, state) => const MealEntryScreen(),
-    ),
+    GoRoute(path: AppRoutes.addMeal, name: 'addMeal', builder: (context, state) => const MealEntryScreen()),
 
     // Deposit route (role-aware: admin manages, user views own list)
-    GoRoute(
-      path: AppRoutes.deposits,
-      name: 'deposits',
-      builder: (context, state) => const DepositScreen(),
-    ),
+    GoRoute(path: AppRoutes.deposits, name: 'deposits', builder: (context, state) => const DepositScreen()),
 
     // Fund route (role-aware: admin manages, user views the list)
-    GoRoute(
-      path: AppRoutes.funds,
-      name: 'funds',
-      builder: (context, state) => const FundScreen(),
-    ),
+    GoRoute(path: AppRoutes.funds, name: 'funds', builder: (context, state) => const FundScreen()),
 
     // Cost / bazar route (role-aware: admin manages, user views the list)
-    GoRoute(
-      path: AppRoutes.costs,
-      name: 'costs',
-      builder: (context, state) => const CostScreen(),
-    ),
+    GoRoute(path: AppRoutes.costs, name: 'costs', builder: (context, state) => const CostScreen()),
 
     // Notice route (role-aware: admin manages, user views the list)
-    GoRoute(
-      path: AppRoutes.notices,
-      name: 'notices',
-      builder: (context, state) => const NoticeScreen(),
-    ),
+    GoRoute(path: AppRoutes.notices, name: 'notices', builder: (context, state) => const NoticeScreen()),
+
+    // Profile route
+    GoRoute(path: AppRoutes.profile, name: 'profile', builder: (context, state) => const ProfileScreen()),
 
     // Settings route
-    GoRoute(
-      path: AppRoutes.settings,
-      name: 'settings',
-      builder: (context, state) => const SettingsScreen(),
-    ),
-    
+    GoRoute(path: AppRoutes.settings, name: 'settings', builder: (context, state) => const SettingsScreen()),
+
     // Add more routes as your app grows
   ],
-  
+
   // Error handling
-  errorBuilder: (context, state) => Scaffold(
-    body: Center(
-      child: Text('Page not found: ${state.matchedLocation}'),
-    ),
-  ),
+  errorBuilder: (context, state) => Scaffold(body: Center(child: Text('Page not found: ${state.matchedLocation}'))),
 );

@@ -6,14 +6,7 @@ import 'package:clean_boilerplate/features/notice/domain/entities/notice_entity.
 import 'package:clean_boilerplate/features/notice/presentation/widgets/notice_formatters.dart';
 
 class NoticeCard extends StatelessWidget {
-  const NoticeCard({
-    required this.notice,
-    required this.showActions,
-    this.onEdit,
-    this.onDelete,
-    this.onTogglePin,
-    super.key,
-  });
+  const NoticeCard({required this.notice, required this.showActions, this.onEdit, this.onDelete, this.onTogglePin, super.key});
 
   final NoticeEntity notice;
 
@@ -30,12 +23,7 @@ class NoticeCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(
-        Dimensions.paddingSizeLarge,
-        Dimensions.paddingSizeLarge,
-        Dimensions.paddingSizeLarge,
-        Dimensions.paddingSizeDefault,
-      ),
+      padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeDefault),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge),
         gradient: LinearGradient(
@@ -58,19 +46,12 @@ class NoticeCard extends StatelessWidget {
           if (pinned) ...[_PinnedBadge(), const SizedBox(height: Dimensions.paddingSizeSmall)],
           Row(
             children: [
-              Icon(
-                Icons.campaign_rounded,
-                size: Dimensions.iconSizeDefault,
-                color: colors.primaryColor,
-              ),
+              Icon(Icons.campaign_rounded, size: Dimensions.iconSizeDefault, color: colors.primaryColor),
               const SizedBox(width: Dimensions.paddingSizeSmall),
               Expanded(
                 child: Text(
                   notice.title,
-                  style: AppTextStyles.sfProRoundedBold.copyWith(
-                    fontSize: Dimensions.fontSizeExtraLarge,
-                    color: colors.textPrimaryColor,
-                  ),
+                  style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
                 ),
               ),
             ],
@@ -78,51 +59,24 @@ class NoticeCard extends StatelessWidget {
           const SizedBox(height: Dimensions.paddingSizeSmall),
           Text(
             notice.description,
-            style: AppTextStyles.sfProRoundedRegular.copyWith(
-              fontSize: Dimensions.fontSizeDefault,
-              color: colors.textSecondaryColor,
-              height: 1.4,
-            ),
+            style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textSecondaryColor, height: 1.4),
           ),
           const SizedBox(height: Dimensions.paddingSizeDefault),
           Row(
             children: [
-              Icon(
-                Icons.schedule_rounded,
-                size: Dimensions.fontSizeDefault,
-                color: colors.textHintColor,
-              ),
+              Icon(Icons.schedule_rounded, size: Dimensions.fontSizeDefault, color: colors.textHintColor),
               const SizedBox(width: Dimensions.paddingSizeExtraSmall),
               Text(
                 NoticeFormatters.time(notice.createdAt),
-                style: AppTextStyles.sfProRoundedMedium.copyWith(
-                  fontSize: Dimensions.fontSizeSmall,
-                  color: colors.textHintColor,
-                ),
+                style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textHintColor),
               ),
               if (showActions) ...[
                 const Spacer(),
-                _NoticeActionButton(
-                  icon: pinned ? Icons.push_pin_outlined : Icons.push_pin_rounded,
-                  tooltip: pinned ? 'Unpin' : 'Pin',
-                  color: colors.primaryColor,
-                  active: pinned,
-                  onTap: onTogglePin,
-                ),
+                _NoticeActionButton(icon: pinned ? Icons.push_pin_outlined : Icons.push_pin_rounded, tooltip: pinned ? 'Unpin' : 'Pin', color: colors.primaryColor, active: pinned, onTap: onTogglePin),
                 const SizedBox(width: Dimensions.paddingSizeSmall),
-                _NoticeActionButton(
-                  icon: Icons.edit_rounded,
-                  tooltip: 'Edit',
-                  color: colors.secondaryColor,
-                  onTap: onEdit,
-                ),
+                _NoticeActionButton(icon: Icons.edit_rounded, tooltip: 'Edit', color: colors.secondaryColor, onTap: onEdit),
                 const SizedBox(width: Dimensions.paddingSizeSmall),
-                _NoticeActionButton(
-                  icon: Icons.delete_outline_rounded,
-                  tooltip: 'Delete',
-                  color: Colors.redAccent,
-                  onTap: onDelete,
-                ),
+                _NoticeActionButton(icon: Icons.delete_outline_rounded, tooltip: 'Delete', color: Colors.redAccent, onTap: onDelete),
               ],
             ],
           ),
@@ -134,13 +88,7 @@ class NoticeCard extends StatelessWidget {
 
 /// A single circular, tinted action icon used in the notice card header row.
 class _NoticeActionButton extends StatelessWidget {
-  const _NoticeActionButton({
-    required this.icon,
-    required this.tooltip,
-    required this.color,
-    this.active = false,
-    this.onTap,
-  });
+  const _NoticeActionButton({required this.icon, required this.tooltip, required this.color, this.active = false, this.onTap});
 
   final IconData icon;
   final String tooltip;
@@ -178,10 +126,7 @@ class _PinnedBadge extends StatelessWidget {
     final colors = context.customThemeColors;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: 3),
-      decoration: BoxDecoration(
-        color: colors.primaryColor,
-        borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-      ),
+      decoration: BoxDecoration(color: colors.primaryColor, borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -189,7 +134,7 @@ class _PinnedBadge extends StatelessWidget {
           const SizedBox(width: Dimensions.paddingSizeExtraSmall),
           Text(
             'Pinned',
-            style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraSmall,color: Colors.white),
+            style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Colors.white),
           ),
         ],
       ),

@@ -1,4 +1,3 @@
-
 import 'package:clean_boilerplate/config/theme/custom_theme_colors.dart';
 import 'package:clean_boilerplate/l10n/gen/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +8,6 @@ extension ContextExtensions on BuildContext {
   ThemeData get theme => Theme.of(this);
 
   CustomThemeColors get customThemeColors => theme.extension<CustomThemeColors>()!;
-
 
   TextTheme get textTheme => theme.textTheme;
 
@@ -27,11 +25,9 @@ extension ContextExtensions on BuildContext {
   /// Error color
   Color get errorColor => colorScheme.error;
 
-
   /// Check if theme is dark
   bool get isDarkMode => theme.brightness == Brightness.dark;
 
   /// Localization
   AppLocalizations get local => AppLocalizations.of(this);
-
 }

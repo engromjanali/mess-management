@@ -38,33 +38,22 @@ class _Stat {
 List<_Stat> _messStats(BuildContext context, DashboardEntity d) {
   final c = context.customThemeColors;
   return [
-    _Stat('Total Balance', DashboardFormatters.taka(d.totalBalance),
-        Icons.account_balance_wallet_rounded, c.primaryColor),
-    _Stat('Meal Balance', DashboardFormatters.taka(d.mealBalance),
-        Icons.restaurant_rounded, c.secondaryColor),
-    _Stat('Fund Balance', DashboardFormatters.taka(d.fundBalance),
-        Icons.savings_rounded, c.infoColor),
-    _Stat('Total Deposit', DashboardFormatters.taka(d.totalDeposit),
-        Icons.payments_rounded, c.successColor),
-    _Stat('Bazar Cost', DashboardFormatters.taka(d.bazerCost),
-        Icons.shopping_cart_rounded, c.warningColor),
-    _Stat('Total Meal', DashboardFormatters.number(d.totalMeal),
-        Icons.set_meal_rounded, c.infoColor),
-    _Stat('Meal Rate', DashboardFormatters.taka(d.mealRate),
-        Icons.sell_rounded, c.secondaryColor),
+    _Stat('Total Balance', DashboardFormatters.taka(d.totalBalance), Icons.account_balance_wallet_rounded, c.primaryColor),
+    _Stat('Meal Balance', DashboardFormatters.taka(d.mealBalance), Icons.restaurant_rounded, c.secondaryColor),
+    _Stat('Fund Balance', DashboardFormatters.taka(d.fundBalance), Icons.savings_rounded, c.infoColor),
+    _Stat('Total Deposit', DashboardFormatters.taka(d.totalDeposit), Icons.payments_rounded, c.successColor),
+    _Stat('Bazar Cost', DashboardFormatters.taka(d.bazerCost), Icons.shopping_cart_rounded, c.warningColor),
+    _Stat('Total Meal', DashboardFormatters.number(d.totalMeal), Icons.set_meal_rounded, c.infoColor),
+    _Stat('Meal Rate', DashboardFormatters.taka(d.mealRate), Icons.sell_rounded, c.secondaryColor),
   ];
 }
 
 List<_Stat> _myStats(BuildContext context, DashboardEntity d) {
   final c = context.customThemeColors;
   return [
-    _Stat('My Total Meal', DashboardFormatters.number(d.myTotalMeal),
-        Icons.restaurant_menu_rounded, c.primaryColor),
-    _Stat('My Deposit', DashboardFormatters.taka(d.myDeposit),
-        Icons.account_balance_wallet_rounded, c.successColor),
-    _Stat('My Remaining', DashboardFormatters.taka(d.myRemaining),
-        Icons.account_balance_rounded,
-        d.myRemaining < 0 ? c.errorColor : c.successColor),
+    _Stat('My Total Meal', DashboardFormatters.number(d.myTotalMeal), Icons.restaurant_menu_rounded, c.primaryColor),
+    _Stat('My Deposit', DashboardFormatters.taka(d.myDeposit), Icons.account_balance_wallet_rounded, c.successColor),
+    _Stat('My Remaining', DashboardFormatters.taka(d.myRemaining), Icons.account_balance_rounded, d.myRemaining < 0 ? c.errorColor : c.successColor),
   ];
 }
 
@@ -79,10 +68,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<HomeBloc>(
-      create: (_) => getIt<HomeBloc>()..add(const HomeEvent.loadDashboard()),
-      child: const _HomeView(),
-    );
+    return BlocProvider<HomeBloc>(create: (_) => getIt<HomeBloc>()..add(const HomeEvent.loadDashboard()), child: const _HomeView());
   }
 }
 
@@ -117,8 +103,7 @@ class _HomeView extends StatelessWidget {
     );
   }
 
-  Widget _loading() =>
-      const Center(child: CircularProgressIndicator.adaptive());
+  Widget _loading() => const Center(child: CircularProgressIndicator.adaptive());
 }
 
 class _ErrorView extends StatelessWidget {
@@ -134,24 +119,15 @@ class _ErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline_rounded,
-                size: Dimensions.iconSizeExtraLarge, color: colors.errorColor),
+            Icon(Icons.error_outline_rounded, size: Dimensions.iconSizeExtraLarge, color: colors.errorColor),
             const SizedBox(height: Dimensions.paddingSizeDefault),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: AppTextStyles.sfProRoundedMedium.copyWith(
-                color: colors.textSecondaryColor,
-              ),
+              style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor),
             ),
             const SizedBox(height: Dimensions.paddingSizeLarge),
-            ElevatedButton.icon(
-              onPressed: () => context
-                  .read<HomeBloc>()
-                  .add(const HomeEvent.loadDashboard()),
-              icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Retry'),
-            ),
+            ElevatedButton.icon(onPressed: () => context.read<HomeBloc>().add(const HomeEvent.loadDashboard()), icon: const Icon(Icons.refresh_rounded), label: const Text('Retry')),
           ],
         ),
       ),
@@ -214,59 +190,20 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
     action();
   }
 
-  void _scrollToTop() => _scrollController.animateTo(
-        0,
-        duration: const Duration(milliseconds: 450),
-        curve: Curves.easeInOutCubic,
-      );
+  void _scrollToTop() => _scrollController.animateTo(0, duration: const Duration(milliseconds: 450), curve: Curves.easeInOutCubic);
 
   @override
   Widget build(BuildContext context) {
     final dashboard = widget.dashboard;
 
     final navItems = <BottomNavItem>[
-      BottomNavItem(
-        icon: Icons.home_outlined,
-        activeIcon: Icons.home_rounded,
-        label: 'Home',
-        onTap: () => _onNavTap(0, _scrollToTop),
-      ),
-      BottomNavItem(
-        icon: Icons.restaurant_outlined,
-        activeIcon: Icons.restaurant_rounded,
-        label: 'Meals',
-        onTap: () => _onNavTap(1, () => context.push(AppRoutes.meals)),
-      ),
-      BottomNavItem(
-        icon: Icons.account_balance_wallet_outlined,
-        activeIcon: Icons.account_balance_wallet_rounded,
-        label: 'Deposits',
-        onTap: () => _onNavTap(2, () => context.push(AppRoutes.deposits)),
-      ),
-      BottomNavItem(
-        icon: Icons.savings_outlined,
-        activeIcon: Icons.savings_rounded,
-        label: 'Fund',
-        onTap: () => _onNavTap(3, () => context.push(AppRoutes.funds)),
-      ),
-      BottomNavItem(
-        icon: Icons.shopping_cart_outlined,
-        activeIcon: Icons.shopping_cart_rounded,
-        label: 'Cost',
-        onTap: () => _onNavTap(4, () => context.push(AppRoutes.costs)),
-      ),
-      BottomNavItem(
-        icon: Icons.notifications_outlined,
-        activeIcon: Icons.notifications_rounded,
-        label: 'Notice',
-        onTap: () => _onNavTap(5, () => context.push(AppRoutes.notices)),
-      ),
-      BottomNavItem(
-        icon: Icons.person_outline_rounded,
-        activeIcon: Icons.person_rounded,
-        label: 'Profile',
-        onTap: () => _onNavTap(6, () => context.push(AppRoutes.settings)),
-      ),
+      BottomNavItem(icon: Icons.home_outlined, activeIcon: Icons.home_rounded, label: 'Home', onTap: () => _onNavTap(0, _scrollToTop)),
+      BottomNavItem(icon: Icons.restaurant_outlined, activeIcon: Icons.restaurant_rounded, label: 'Meals', onTap: () => _onNavTap(1, () => context.go(AppRoutes.meals))),
+      BottomNavItem(icon: Icons.account_balance_wallet_outlined, activeIcon: Icons.account_balance_wallet_rounded, label: 'Deposits', onTap: () => _onNavTap(2, () => context.go(AppRoutes.deposits))),
+      BottomNavItem(icon: Icons.savings_outlined, activeIcon: Icons.savings_rounded, label: 'Fund', onTap: () => _onNavTap(3, () => context.go(AppRoutes.funds))),
+      BottomNavItem(icon: Icons.shopping_cart_outlined, activeIcon: Icons.shopping_cart_rounded, label: 'Cost', onTap: () => _onNavTap(4, () => context.go(AppRoutes.costs))),
+      BottomNavItem(icon: Icons.notifications_outlined, activeIcon: Icons.notifications_rounded, label: 'Notice', onTap: () => _onNavTap(5, () => context.go(AppRoutes.notices))),
+      BottomNavItem(icon: Icons.person_outline_rounded, activeIcon: Icons.person_rounded, label: 'Profile', onTap: () => _onNavTap(6, () => context.go(AppRoutes.profile))),
     ];
 
     return Stack(
@@ -279,71 +216,37 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
-                HomeSliverAppBar(
-                  userName: dashboard.userName,
-                  totalBalance: dashboard.totalBalance,
-                  mealBalance: dashboard.mealBalance,
-                  fundBalance: dashboard.fundBalance,
-                  expandedHeight: 260,
-                ),
+                HomeSliverAppBar(userName: dashboard.userName, totalBalance: dashboard.totalBalance, mealBalance: dashboard.mealBalance, fundBalance: dashboard.fundBalance, expandedHeight: 260),
                 SliverPersistentHeader(
                   pinned: true,
-                  delegate: PinnedSectionHeader(
-                    title: 'Mess Section',
-                    icon: Icons.groups_rounded,
-                  ),
+                  delegate: PinnedSectionHeader(title: 'Mess Section', icon: Icons.groups_rounded),
                 ),
                 _StatSliverGrid(stats: _messStats(context, dashboard)),
-                SliverToBoxAdapter(
-                  child: SizedBox(key: _statsAnchor, height: 0),
-                ),
+                SliverToBoxAdapter(child: SizedBox(key: _statsAnchor, height: 0)),
                 SliverPersistentHeader(
                   pinned: true,
-                  delegate: PinnedSectionHeader(
-                    title: 'My Section',
-                    icon: Icons.person_rounded,
-                  ),
+                  delegate: PinnedSectionHeader(title: 'My Section', icon: Icons.person_rounded),
                 ),
                 _StatSliverGrid(stats: _myStats(context, dashboard)),
                 if (dashboard.isManager) ...[
                   SliverPersistentHeader(
                     pinned: true,
-                    delegate: PinnedSectionHeader(
-                      title: 'Members',
-                      icon: Icons.bar_chart_rounded,
-                    ),
+                    delegate: PinnedSectionHeader(title: 'Members', icon: Icons.bar_chart_rounded),
                   ),
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(
-                      Dimensions.paddingSizeLarge,
-                      Dimensions.paddingSizeSmall,
-                      Dimensions.paddingSizeLarge,
-                      Dimensions.paddingSizeLarge,
-                    ),
+                    padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge),
                     sliver: SliverToBoxAdapter(
                       child: AnimatedEntrance(
-                        child: MemberStatsTable(
-                          members: dashboard.members,
-                          mealRate: dashboard.mealRate,
-                        ),
+                        child: MemberStatsTable(members: dashboard.members, mealRate: dashboard.mealRate),
                       ),
                     ),
                   ),
                 ],
-                SliverToBoxAdapter(
-                  child: SizedBox(key: _noticeAnchor, height: 0),
-                ),
+                SliverToBoxAdapter(child: SizedBox(key: _noticeAnchor, height: 0)),
                 SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(
-                    Dimensions.paddingSizeLarge,
-                    Dimensions.paddingSizeSmall,
-                    Dimensions.paddingSizeLarge,
-                    Dimensions.paddingSizeExtraLarge32,
-                  ),
+                  padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeExtraLarge32),
                   sliver: SliverToBoxAdapter(
-                    child: AnimatedEntrance(
-                      child: PinnedNoticeCard(notice: dashboard.pinnedNotice),
-                    ),
+                    child: AnimatedEntrance(child: PinnedNoticeCard(notice: dashboard.pinnedNotice)),
                   ),
                 ),
               ],
@@ -352,11 +255,7 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
         ),
         Align(
           alignment: Alignment.bottomCenter,
-          child: AnimatedBottomNavBar(
-            items: navItems,
-            currentIndex: _currentIndex,
-            visible: _navVisible,
-          ),
+          child: AnimatedBottomNavBar(items: navItems, currentIndex: _currentIndex, visible: _navVisible),
         ),
       ],
     );
@@ -371,12 +270,7 @@ class _StatSliverGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(
-        Dimensions.paddingSizeLarge,
-        Dimensions.paddingSizeSmall,
-        Dimensions.paddingSizeLarge,
-        Dimensions.paddingSizeSmall,
-      ),
+      padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall),
       sliver: SliverGrid.builder(
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: 200,
@@ -422,12 +316,7 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
   void _scrollTo(GlobalKey key) {
     final ctx = key.currentContext;
     if (ctx == null) return;
-    Scrollable.ensureVisible(
-      ctx,
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeInOutCubic,
-      alignment: 0.02,
-    );
+    Scrollable.ensureVisible(ctx, duration: const Duration(milliseconds: 400), curve: Curves.easeInOutCubic, alignment: 0.02);
   }
 
   @override
@@ -438,57 +327,20 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
         label: 'Overview',
         icon: Icons.dashboard_rounded,
         active: true,
-        onTap: () => _scrollController.animateTo(
-          0,
-          duration: const Duration(milliseconds: 400),
-          curve: Curves.easeInOutCubic,
-        ),
+        onTap: () => _scrollController.animateTo(0, duration: const Duration(milliseconds: 400), curve: Curves.easeInOutCubic),
       ),
-      DashboardNavItem(
-        label: 'Mess',
-        icon: Icons.groups_rounded,
-        onTap: () => _scrollTo(_messKey),
-      ),
-      DashboardNavItem(
-        label: 'Meals',
-        icon: Icons.restaurant_rounded,
-        onTap: () => context.push(AppRoutes.meals),
-      ),
-      DashboardNavItem(
-        label: 'Deposits',
-        icon: Icons.account_balance_wallet_rounded,
-        onTap: () => context.push(AppRoutes.deposits),
-      ),
-      DashboardNavItem(
-        label: 'Fund',
-        icon: Icons.savings_rounded,
-        onTap: () => context.push(AppRoutes.funds),
-      ),
-      DashboardNavItem(
-        label: 'Cost',
-        icon: Icons.shopping_cart_rounded,
-        onTap: () => context.push(AppRoutes.costs),
-      ),
-      if (dashboard.isManager)
-        DashboardNavItem(
-          label: 'Members',
-          icon: Icons.bar_chart_rounded,
-          onTap: () => _scrollTo(_membersKey),
-        ),
-      DashboardNavItem(
-        label: 'Notice',
-        icon: Icons.push_pin_rounded,
-        onTap: () => context.push(AppRoutes.notices),
-      ),
+      DashboardNavItem(label: 'Mess', icon: Icons.groups_rounded, onTap: () => _scrollTo(_messKey)),
+      DashboardNavItem(label: 'Meals', icon: Icons.restaurant_rounded, onTap: () => context.go(AppRoutes.meals)),
+      DashboardNavItem(label: 'Deposits', icon: Icons.account_balance_wallet_rounded, onTap: () => context.go(AppRoutes.deposits)),
+      DashboardNavItem(label: 'Fund', icon: Icons.savings_rounded, onTap: () => context.go(AppRoutes.funds)),
+      DashboardNavItem(label: 'Cost', icon: Icons.shopping_cart_rounded, onTap: () => context.go(AppRoutes.costs)),
+      if (dashboard.isManager) DashboardNavItem(label: 'Members', icon: Icons.bar_chart_rounded, onTap: () => _scrollTo(_membersKey)),
+      DashboardNavItem(label: 'Notice', icon: Icons.push_pin_rounded, onTap: () => context.go(AppRoutes.notices)),
     ];
 
     return Column(
       children: [
-        DashboardTopBar(
-          userName: dashboard.userName,
-          onRefresh: () => _refresh(context),
-          navItems: navItems,
-        ),
+        DashboardTopBar(userName: dashboard.userName, onRefresh: () => _refresh(context), navItems: navItems),
         Expanded(
           child: Scrollbar(
             controller: _scrollController,
@@ -496,12 +348,9 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
               controller: _scrollController,
               child: Center(
                 child: ConstrainedBox(
-                  constraints:
-                      const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
+                  constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                   child: Padding(
-                    padding: const EdgeInsets.all(
-                      Dimensions.paddingSizeExtraLarge24,
-                    ),
+                    padding: const EdgeInsets.all(Dimensions.paddingSizeExtraLarge24),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -509,15 +358,8 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
                         const SizedBox(height: Dimensions.paddingSizeSmall),
 
                         // Mess section — wide grid.
-                        SectionTitle(
-                          key: _messKey,
-                          title: 'Mess Section',
-                          icon: Icons.groups_rounded,
-                        ),
-                        _StatBoxGrid(
-                          stats: _messStats(context, dashboard),
-                          maxCrossAxisExtent: 230,
-                        ),
+                        SectionTitle(key: _messKey, title: 'Mess Section', icon: Icons.groups_rounded),
+                        _StatBoxGrid(stats: _messStats(context, dashboard), maxCrossAxisExtent: 230),
                         const SizedBox(height: Dimensions.paddingSizeLarge),
 
                         // My section (left) + pinned notice (right).
@@ -529,15 +371,8 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  SectionTitle(
-                                    key: _myKey,
-                                    title: 'My Section',
-                                    icon: Icons.person_rounded,
-                                  ),
-                                  _StatBoxGrid(
-                                    stats: _myStats(context, dashboard),
-                                    maxCrossAxisExtent: 230,
-                                  ),
+                                  SectionTitle(key: _myKey, title: 'My Section', icon: Icons.person_rounded),
+                                  _StatBoxGrid(stats: _myStats(context, dashboard), maxCrossAxisExtent: 230),
                                 ],
                               ),
                             ),
@@ -547,16 +382,8 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  SectionTitle(
-                                    key: _noticeKey,
-                                    title: 'Pinned Notice',
-                                    icon: Icons.push_pin_rounded,
-                                  ),
-                                  AnimatedEntrance(
-                                    child: PinnedNoticeCard(
-                                      notice: dashboard.pinnedNotice,
-                                    ),
-                                  ),
+                                  SectionTitle(key: _noticeKey, title: 'Pinned Notice', icon: Icons.push_pin_rounded),
+                                  AnimatedEntrance(child: PinnedNoticeCard(notice: dashboard.pinnedNotice)),
                                 ],
                               ),
                             ),
@@ -565,16 +392,9 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
 
                         if (dashboard.isManager) ...[
                           const SizedBox(height: Dimensions.paddingSizeLarge),
-                          SectionTitle(
-                            key: _membersKey,
-                            title: 'Members',
-                            icon: Icons.bar_chart_rounded,
-                          ),
+                          SectionTitle(key: _membersKey, title: 'Members', icon: Icons.bar_chart_rounded),
                           AnimatedEntrance(
-                            child: MemberStatsTable(
-                              members: dashboard.members,
-                              mealRate: dashboard.mealRate,
-                            ),
+                            child: MemberStatsTable(members: dashboard.members, mealRate: dashboard.mealRate),
                           ),
                         ],
                         const SizedBox(height: Dimensions.paddingSizeExtraLarge32),
@@ -622,19 +442,9 @@ class _StatBoxGrid extends StatelessWidget {
   }
 }
 
-Widget _statCard(_Stat stat) => StatCard(
-      label: stat.label,
-      value: stat.value,
-      icon: stat.icon,
-      accent: stat.accent,
-    );
+Widget _statCard(_Stat stat) => StatCard(label: stat.label, value: stat.value, icon: stat.icon, accent: stat.accent);
 
-Widget _heroBanner(DashboardEntity d) => DashboardHeroBanner(
-      userName: d.userName,
-      totalBalance: d.totalBalance,
-      mealBalance: d.mealBalance,
-      fundBalance: d.fundBalance,
-    );
+Widget _heroBanner(DashboardEntity d) => DashboardHeroBanner(userName: d.userName, totalBalance: d.totalBalance, mealBalance: d.mealBalance, fundBalance: d.fundBalance);
 
 Future<void> _refresh(BuildContext context) async {
   context.read<HomeBloc>().add(const HomeEvent.refreshDashboard());

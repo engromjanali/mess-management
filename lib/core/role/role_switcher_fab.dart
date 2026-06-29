@@ -26,8 +26,7 @@ class RoleSwitcherOverlay extends StatelessWidget {
             child: BlocBuilder<RoleCubit, UserRole>(
               builder: (context, role) {
                 final isAdmin = role.isAdmin;
-                final color =
-                    isAdmin ? const Color(0xFF7C4DFF) : const Color(0xFF1FA463);
+                final color = isAdmin ? const Color(0xFF7C4DFF) : const Color(0xFF1FA463);
 
                 return FloatingActionButton.extended(
                   heroTag: 'role-switcher-fab',
@@ -41,17 +40,11 @@ class RoleSwitcherOverlay extends StatelessWidget {
                     children: [
                       Text(
                         'Viewing as',
-                        style: AppTextStyles.sfProRoundedMedium.copyWith(
-                          color: Colors.white70,
-                          fontSize: Dimensions.fontSizeExtraSmall,
-                        ),
+                        style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white70, fontSize: Dimensions.fontSizeExtraSmall),
                       ),
                       Text(
                         role.label,
-                        style: AppTextStyles.sfProRoundedBold.copyWith(
-                          color: Colors.white,
-                          fontSize: Dimensions.fontSizeDefault,
-                        ),
+                        style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeDefault),
                       ),
                     ],
                   ),

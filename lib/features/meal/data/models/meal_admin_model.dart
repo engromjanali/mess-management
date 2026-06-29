@@ -22,21 +22,9 @@ class MemberMealModel {
   final double lunch;
   final double dinner;
 
-  const MemberMealModel({
-    required this.memberId,
-    required this.date,
-    this.breakfast = 0,
-    this.lunch = 0,
-    this.dinner = 0,
-  });
+  const MemberMealModel({required this.memberId, required this.date, this.breakfast = 0, this.lunch = 0, this.dinner = 0});
 
-  MemberMealEntity toEntity() => MemberMealEntity(
-        memberId: memberId,
-        date: date,
-        breakfast: breakfast,
-        lunch: lunch,
-        dinner: dinner,
-      );
+  MemberMealEntity toEntity() => MemberMealEntity(memberId: memberId, date: date, breakfast: breakfast, lunch: lunch, dinner: dinner);
 }
 
 /// Data-layer DTO for the full admin meal-management payload.
@@ -45,15 +33,7 @@ class MealAdminModel {
   final double mealRate;
   final List<MemberMealModel> entries;
 
-  const MealAdminModel({
-    required this.members,
-    required this.mealRate,
-    required this.entries,
-  });
+  const MealAdminModel({required this.members, required this.mealRate, required this.entries});
 
-  MealAdminEntity toEntity() => MealAdminEntity(
-        members: members.map((m) => m.toEntity()).toList(),
-        mealRate: mealRate,
-        entries: entries.map((e) => e.toEntity()).toList(),
-      );
+  MealAdminEntity toEntity() => MealAdminEntity(members: members.map((m) => m.toEntity()).toList(), mealRate: mealRate, entries: entries.map((e) => e.toEntity()).toList());
 }

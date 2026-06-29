@@ -14,29 +14,14 @@ class MealRepositoryImpl implements MealRepository {
   MealRepositoryImpl(this._dataSource);
 
   @override
-  ResultFuture<MealOverviewEntity> getMealOverview() =>
-      _guard(() => _dataSource.getMealOverview());
+  ResultFuture<MealOverviewEntity> getMealOverview() => _guard(() => _dataSource.getMealOverview());
 
   @override
-  ResultFuture<MealOverviewEntity> updateMeal({
-    required DateTime date,
-    required double breakfast,
-    required double lunch,
-    required double dinner,
-  }) =>
-      _guard(
-        () => _dataSource.updateMeal(
-          date: date,
-          breakfast: breakfast,
-          lunch: lunch,
-          dinner: dinner,
-        ),
-      );
+  ResultFuture<MealOverviewEntity> updateMeal({required DateTime date, required double breakfast, required double lunch, required double dinner}) =>
+      _guard(() => _dataSource.updateMeal(date: date, breakfast: breakfast, lunch: lunch, dinner: dinner));
 
   /// Shared try/catch that maps data-layer exceptions to domain failures.
-  ResultFuture<MealOverviewEntity> _guard(
-    Future<dynamic> Function() action,
-  ) async {
+  ResultFuture<MealOverviewEntity> _guard(Future<dynamic> Function() action) async {
     try {
       final model = await action();
       return Result.success(data: model.toEntity());
@@ -51,11 +36,7 @@ class MealRepositoryImpl implements MealRepository {
         error: ServerFailure(message: e.message, statusCode: e.statusCode),
       );
     } catch (e) {
-      return Result.failure(
-        error: ServerFailure(
-          message: 'An unexpected error occurred: ${e.toString()}',
-        ),
-      );
+      return Result.failure(error: ServerFailure(message: 'An unexpected error occurred: ${e.toString()}'));
     }
   }
 }
