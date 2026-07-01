@@ -59,6 +59,60 @@ class MockAuthDataSource extends _i1.Mock implements _i3.AuthDataSource {
           as _i4.Future<_i2.UserModel>);
 
   @override
+  _i4.Future<_i2.UserModel> register({
+    required String? fullName,
+    required String? email,
+    required String? password,
+    String? phone,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#register, [], {
+              #fullName: fullName,
+              #email: email,
+              #password: password,
+              #phone: phone,
+            }),
+            returnValue: _i4.Future<_i2.UserModel>.value(
+              _FakeUserModel_0(
+                this,
+                Invocation.method(#register, [], {
+                  #fullName: fullName,
+                  #email: email,
+                  #password: password,
+                  #phone: phone,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.UserModel>);
+
+  @override
+  _i4.Future<void> forgotPassword({required String? email}) =>
+      (super.noSuchMethod(
+            Invocation.method(#forgotPassword, [], {#email: email}),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<void> resetPassword({
+    required String? email,
+    required String? otp,
+    required String? password,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#resetPassword, [], {
+              #email: email,
+              #otp: otp,
+              #password: password,
+            }),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
   _i4.Future<void> logout() =>
       (super.noSuchMethod(
             Invocation.method(#logout, []),

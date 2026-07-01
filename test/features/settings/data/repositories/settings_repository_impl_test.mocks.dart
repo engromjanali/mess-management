@@ -101,6 +101,24 @@ class MockApiClient extends _i1.Mock implements _i6.ApiClient {
           as _i4.Future<void>);
 
   @override
+  _i4.Future<void> updateRefreshToken(String? refreshToken) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateRefreshToken, [refreshToken]),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<void> clearTokens() =>
+      (super.noSuchMethod(
+            Invocation.method(#clearTokens, []),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
   _i4.Future<void> updateGuestUserId(String? guestUserId) =>
       (super.noSuchMethod(
             Invocation.method(#updateGuestUserId, [guestUserId]),

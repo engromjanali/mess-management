@@ -20,6 +20,7 @@ class ApiClient {
   final SharedPreferences _sharedPreferences;
 
   String? _token;
+  String? _refreshToken;
   String? _guestUserId;
   String? _languageCode;
 
@@ -30,6 +31,7 @@ class ApiClient {
   /// Initialize headers from SharedPreferences
   void _initializeHeaders() {
     _token = _sharedPreferences.getString(AppConstants.tokenKey);
+    _refreshToken = _sharedPreferences.getString(AppConstants.refreshTokenKey);
     _guestUserId = _sharedPreferences.getString(AppConstants.guestUserIdKey);
     _languageCode = _sharedPreferences.getString(AppConstants.languageCodeKey) ?? 'en';
 
@@ -74,6 +76,25 @@ class ApiClient {
     if (kDebugMode) {
       print('=====> Token Updated: ${token != null ? 'Set' : 'Removed'}');
     }
+  }
+
+  /// Current refresh token, if any.
+  String? get refreshToken => _refreshToken;
+
+  /// Persist (or clear) the refresh token used to mint new access tokens.
+  Future<void> updateRefreshToken(String? refreshToken) async {
+    _refreshToken = refreshToken;
+    if (refreshToken != null && refreshToken.isNotEmpty) {
+      await _sharedPreferences.setString(AppConstants.refreshTokenKey, refreshToken);
+    } else {
+      await _sharedPreferences.remove(AppConstants.refreshTokenKey);
+    }
+  }
+
+  /// Clear both the access and refresh tokens (e.g. on logout).
+  Future<void> clearTokens() async {
+    await updateToken(null);
+    await updateRefreshToken(null);
   }
 
   /// Update guest user ID

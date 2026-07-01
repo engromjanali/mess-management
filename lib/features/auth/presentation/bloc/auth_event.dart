@@ -9,6 +9,9 @@ class AuthEvent with _$AuthEvent {
   /// Login requested event
   const factory AuthEvent.loginRequested({required String email, required String password}) = LoginRequested;
 
+  /// Register requested event
+  const factory AuthEvent.registerRequested({required String fullName, required String email, required String password, String? phone}) = RegisterRequested;
+
   /// Logout requested event
   const factory AuthEvent.logoutRequested() = LogoutRequested;
 

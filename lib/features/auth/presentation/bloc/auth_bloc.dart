@@ -4,6 +4,7 @@ import 'package:clean_boilerplate/core/usecase/usecase.dart';
 import 'package:clean_boilerplate/features/auth/domain/usecases/get_current_user_usecase.dart';
 import 'package:clean_boilerplate/features/auth/domain/usecases/login_usecase.dart';
 import 'package:clean_boilerplate/features/auth/domain/usecases/logout_usecase.dart';
+import 'package:clean_boilerplate/features/auth/domain/usecases/register_usecase.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_event.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
 
@@ -11,16 +12,22 @@ import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dar
 @injectable
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUseCase _loginUseCase;
+  final RegisterUseCase _registerUseCase;
   final LogoutUseCase _logoutUseCase;
   final GetCurrentUserUseCase _getCurrentUserUseCase;
 
-  AuthBloc(this._loginUseCase, this._logoutUseCase, this._getCurrentUserUseCase) : super(const AuthState.initial()) {
+  AuthBloc(this._loginUseCase, this._registerUseCase, this._logoutUseCase, this._getCurrentUserUseCase) : super(const AuthState.initial()) {
     on<AuthEvent>(_onAuthEvent);
   }
 
   /// Handle all auth events using pattern matching
   Future<void> _onAuthEvent(AuthEvent event, Emitter<AuthState> emit) async {
-    await event.when(loginRequested: (email, password) => _handleLogin(email, password, emit), logoutRequested: () => _handleLogout(emit), checkAuthStatus: () => _handleCheckAuthStatus(emit));
+    await event.when(
+      loginRequested: (email, password) => _handleLogin(email, password, emit),
+      registerRequested: (fullName, email, password, phone) => _handleRegister(fullName, email, password, phone, emit),
+      logoutRequested: () => _handleLogout(emit),
+      checkAuthStatus: () => _handleCheckAuthStatus(emit),
+    );
   }
 
   /// Handle login request
@@ -28,6 +35,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(const AuthState.loading());
 
     final result = await _loginUseCase(LoginParams(email: email, password: password));
+
+    result.when(success: (success) => emit(AuthState.authenticated(success.data)), failure: (failure) => emit(AuthState.error(failure.error.toString())));
+  }
+
+  /// Handle register request (auto-signs the user in on success)
+  Future<void> _handleRegister(String fullName, String email, String password, String? phone, Emitter<AuthState> emit) async {
+    emit(const AuthState.loading());
+
+    final result = await _registerUseCase(RegisterParams(fullName: fullName, email: email, password: password, phone: phone));
 
     result.when(success: (success) => emit(AuthState.authenticated(success.data)), failure: (failure) => emit(AuthState.error(failure.error.toString())));
   }

@@ -8,18 +8,25 @@ class AppConstants {
   static const String appName = 'Clean Boilerplate';
   static const String appVersion = '1.0.0';
 
-  // API constants (Update with your actual API URLs)
-  static const String baseUrl = 'https://efood-admin.6amtech.com';
+  // API constants
+  // Mess Management Django backend. For local development:
+  //   - iOS simulator / macOS / web / desktop: http://localhost:8000
+  //   - Android emulator: use http://10.0.2.2:8000 (loopback to host)
+  //   - Physical device: use your machine's LAN IP, e.g. http://192.168.x.x:8000
+  static const String baseUrl = 'http://localhost:8000';
 
   // API endpoints
   static const String configEndPoint = '/api/v1/config';
-  static const String loginEndpoint = '/auth/login';
-  static const String registerEndpoint = '/auth/register';
-  static const String logoutEndpoint = '/auth/logout';
-  static const String refreshTokenEndpoint = '/auth/refresh';
-  static const String profileEndpoint = '/user/profile';
+  static const String loginEndpoint = '/api/auth/login/';
+  static const String registerEndpoint = '/api/auth/register/';
+  static const String logoutEndpoint = '/api/auth/logout/';
+  static const String refreshTokenEndpoint = '/api/auth/refresh/';
+  static const String profileEndpoint = '/api/auth/me/';
+  static const String forgotPasswordEndpoint = '/api/auth/forgot-password/';
+  static const String resetPasswordEndpoint = '/api/auth/reset-password/';
 
   static const String tokenKey = 'auth_token';
+  static const String refreshTokenKey = 'refresh_token';
   static const String guestUserIdKey = 'guest_user_id';
   static const String languageCodeKey = 'language_code';
 

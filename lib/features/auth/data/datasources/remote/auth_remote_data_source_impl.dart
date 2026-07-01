@@ -16,6 +16,21 @@ class AuthRemoteDataSourceImpl implements AuthDataSource {
   }
 
   @override
+  Future<UserModel> register({required String fullName, required String email, required String password, String? phone}) async {
+    return _apiService.register({'full_name': fullName, 'email': email, 'password': password, if (phone != null && phone.isNotEmpty) 'phone': phone});
+  }
+
+  @override
+  Future<void> forgotPassword({required String email}) async {
+    await _apiService.forgotPassword({'email': email});
+  }
+
+  @override
+  Future<void> resetPassword({required String email, required String otp, required String password}) async {
+    await _apiService.resetPassword({'email': email, 'otp': otp, 'password': password});
+  }
+
+  @override
   Future<void> logout() async {
     await _apiService.logout();
   }

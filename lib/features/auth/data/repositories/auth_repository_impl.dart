@@ -84,4 +84,41 @@ class AuthRepositoryImpl implements AuthRepository {
       return Result.failure(error: ServerFailure(message: 'An unexpected error occurred: ${e.toString()}'));
     }
   }
+
+  @override
+  ResultFuture<UserEntity> register({required String fullName, required String email, required String password, String? phone}) {
+    return _guard(() async {
+      final userModel = await _dataSource.register(fullName: fullName, email: email, password: password, phone: phone);
+      return userModel.toEntity();
+    });
+  }
+
+  @override
+  ResultFuture<void> forgotPassword({required String email}) {
+    return _guard(() => _dataSource.forgotPassword(email: email));
+  }
+
+  @override
+  ResultFuture<void> resetPassword({required String email, required String otp, required String password}) {
+    return _guard(() => _dataSource.resetPassword(email: email, otp: otp, password: password));
+  }
+
+  /// Runs [action], mapping data-layer exceptions onto the failure hierarchy.
+  ResultFuture<T> _guard<T>(Future<T> Function() action) async {
+    try {
+      return Result.success(data: await action());
+    } on UnauthorizedException catch (e) {
+      return Result.failure(error: AuthenticationFailure(message: e.message, statusCode: e.statusCode));
+    } on NoInternetException catch (e) {
+      return Result.failure(error: NetworkFailure(message: e.message));
+    } on RequestTimeoutException catch (e) {
+      return Result.failure(error: NetworkFailure(message: e.message));
+    } on NetworkException catch (e) {
+      return Result.failure(error: NetworkFailure(message: e.message));
+    } on ServerException catch (e) {
+      return Result.failure(error: ServerFailure(message: e.message, statusCode: e.statusCode));
+    } catch (e) {
+      return Result.failure(error: ServerFailure(message: 'An unexpected error occurred: ${e.toString()}'));
+    }
+  }
 }

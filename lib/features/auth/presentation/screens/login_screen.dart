@@ -1,7 +1,10 @@
 import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
+import 'package:clean_boilerplate/core/role/role_cubit.dart';
+import 'package:clean_boilerplate/features/auth/domain/entities/user_entity.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_event.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
 import 'package:clean_boilerplate/features/auth/presentation/widgets/auth_scaffold.dart';
 import 'package:clean_boilerplate/features/auth/presentation/widgets/login_form_widget.dart';
@@ -30,11 +33,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _handleLogin() {
-    // Per redesign spec: tapping login goes straight to the home dashboard,
-    // no authentication required yet. Wire the AuthBloc flow back in here when
-    // real login is implemented.
     if (!_formKey.currentState!.validate()) return;
-    context.go(AppRoutes.home);
+    FocusScope.of(context).unfocus();
+    context.read<AuthBloc>().add(AuthEvent.loginRequested(email: _emailController.text.trim(), password: _passwordController.text));
   }
 
   /// Fills the form with the demo credentials (dev convenience).
@@ -48,7 +49,11 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
-        state.maybeWhen(error: (message) => context.showErrorSnackBar(message), authenticated: (user) => context.showSuccessSnackBar(context.local.welcome(user.name)), orElse: () {});
+        state.maybeWhen(
+          error: (message) => context.showErrorSnackBar(message),
+          authenticated: (user) => _onAuthenticated(user),
+          orElse: () {},
+        );
       },
       builder: (context, state) {
         final isLoading = state.maybeWhen(loading: () => true, orElse: () => false);
@@ -65,10 +70,17 @@ class _LoginScreenState extends State<LoginScreen> {
             passwordController: _passwordController,
             onLogin: _handleLogin,
             isLoading: isLoading,
-            onForgotPassword: () => context.showInfoSnackBar('Password reset is coming soon.'),
+            onForgotPassword: () => context.push(AppRoutes.forgotPassword),
           ),
         );
       },
     );
+  }
+
+  /// On success: sync the previewed role from the backend, greet, and go home.
+  void _onAuthenticated(UserEntity user) {
+    context.read<RoleCubit>().setRole(user.isManager ? UserRole.admin : UserRole.user);
+    context.showSuccessSnackBar(context.local.welcome(user.name));
+    context.go(AppRoutes.home);
   }
 }

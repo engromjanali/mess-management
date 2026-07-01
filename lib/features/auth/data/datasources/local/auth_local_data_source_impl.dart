@@ -30,6 +30,30 @@ class AuthLocalDataSourceImpl implements AuthDataSource {
   }
 
   @override
+  Future<UserModel> register({required String fullName, required String email, required String password, String? phone}) async {
+    throw UnimplementedError(
+      'Local registration is not yet implemented. '
+      'This is a placeholder for future local data source functionality.',
+    );
+  }
+
+  @override
+  Future<void> forgotPassword({required String email}) async {
+    throw UnimplementedError(
+      'Local forgotPassword is not yet implemented. '
+      'This is a placeholder for future local data source functionality.',
+    );
+  }
+
+  @override
+  Future<void> resetPassword({required String email, required String otp, required String password}) async {
+    throw UnimplementedError(
+      'Local resetPassword is not yet implemented. '
+      'This is a placeholder for future local data source functionality.',
+    );
+  }
+
+  @override
   Future<void> logout() async {
     throw UnimplementedError(
       'Local logout is not yet implemented. '

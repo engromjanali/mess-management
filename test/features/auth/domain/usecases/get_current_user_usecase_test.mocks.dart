@@ -56,6 +56,72 @@ class MockAuthRepository extends _i1.Mock implements _i2.AuthRepository {
           as _i3.Future<_i4.Result<_i5.UserEntity>>);
 
   @override
+  _i3.Future<_i4.Result<_i5.UserEntity>> register({
+    required String? fullName,
+    required String? email,
+    required String? password,
+    String? phone,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#register, [], {
+              #fullName: fullName,
+              #email: email,
+              #password: password,
+              #phone: phone,
+            }),
+            returnValue: _i3.Future<_i4.Result<_i5.UserEntity>>.value(
+              _i6.dummyValue<_i4.Result<_i5.UserEntity>>(
+                this,
+                Invocation.method(#register, [], {
+                  #fullName: fullName,
+                  #email: email,
+                  #password: password,
+                  #phone: phone,
+                }),
+              ),
+            ),
+          )
+          as _i3.Future<_i4.Result<_i5.UserEntity>>);
+
+  @override
+  _i3.Future<_i4.Result<void>> forgotPassword({required String? email}) =>
+      (super.noSuchMethod(
+            Invocation.method(#forgotPassword, [], {#email: email}),
+            returnValue: _i3.Future<_i4.Result<void>>.value(
+              _i6.dummyValue<_i4.Result<void>>(
+                this,
+                Invocation.method(#forgotPassword, [], {#email: email}),
+              ),
+            ),
+          )
+          as _i3.Future<_i4.Result<void>>);
+
+  @override
+  _i3.Future<_i4.Result<void>> resetPassword({
+    required String? email,
+    required String? otp,
+    required String? password,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#resetPassword, [], {
+              #email: email,
+              #otp: otp,
+              #password: password,
+            }),
+            returnValue: _i3.Future<_i4.Result<void>>.value(
+              _i6.dummyValue<_i4.Result<void>>(
+                this,
+                Invocation.method(#resetPassword, [], {
+                  #email: email,
+                  #otp: otp,
+                  #password: password,
+                }),
+              ),
+            ),
+          )
+          as _i3.Future<_i4.Result<void>>);
+
+  @override
   _i3.Future<_i4.Result<void>> logout() =>
       (super.noSuchMethod(
             Invocation.method(#logout, []),
