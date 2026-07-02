@@ -23,7 +23,29 @@ class SplashScreen extends StatelessWidget {
         );
       },
       builder: (context, state) {
-        return Scaffold(body: Center(child: CircularProgressIndicator()));
+        return Scaffold(
+          body: Center(
+            child: state.maybeWhen(
+              error: (message) => Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.wifi_off_rounded, size: 48),
+                  const SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: Text(message, textAlign: TextAlign.center),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => context.read<SplashBloc>().add(const SplashEvent.getConfig()),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+              orElse: () => const CircularProgressIndicator(),
+            ),
+          ),
+        );
       },
     );
   }

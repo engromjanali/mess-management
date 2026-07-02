@@ -1,4 +1,3 @@
-import 'package:clean_boilerplate/config/util/result.dart';
 import 'package:clean_boilerplate/features/splash/data/datasources/remote/splash_api_service.dart';
 import 'package:injectable/injectable.dart';
 import 'package:clean_boilerplate/features/splash/data/datasources/interfaces/splash_data_source.dart';
@@ -10,7 +9,7 @@ class SplashRemoteDataSourceImpl implements SplashDataSource {
 
   SplashRemoteDataSourceImpl(this._splashApiService);
   @override
-  ResultFuture<ConfigModel> getConfig() {
+  Future<ConfigModel> getConfig() {
     return _splashApiService.getConfig();
   }
 }

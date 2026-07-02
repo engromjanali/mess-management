@@ -30,7 +30,3 @@ class ValidationFailure extends Failure {
 class AuthenticationFailure extends Failure {
   const AuthenticationFailure({required super.message, super.statusCode});
 }
-
-// Note: Type aliases are now exported from result.dart
-// ResultFuture<T> = Future<Result<T>>
-// ResultVoid = Future<Result<void>>

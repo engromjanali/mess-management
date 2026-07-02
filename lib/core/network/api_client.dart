@@ -7,13 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:clean_boilerplate/core/errors/exceptions.dart';
 
-/// Centralized API client for making HTTP requests
-///
-/// Features:
-/// - Automatic token management
-/// - Centralized error handling
-/// - Request/response logging
-/// - Support for file uploads
 @singleton
 class ApiClient {
   final Dio _dio;
@@ -329,7 +322,6 @@ class ApiClient {
     }
   }
 
-  /// Handle Dio errors and convert them to domain exceptions
   Exception _handleError(DioException error) {
     return error.toAppException();
   }
