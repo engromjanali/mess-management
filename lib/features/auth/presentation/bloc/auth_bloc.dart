@@ -36,7 +36,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     final result = await _loginUseCase(LoginParams(email: email, password: password));
 
-    result.when(success: (success) => emit(AuthState.authenticated(success.data)), failure: (failure) => emit(AuthState.error(failure.error.toString())));
+    result.when(success: (success) => emit(AuthState.authenticated(success.data)), failure: (failure) => emit(AuthState.error(failure.message.toString())));
   }
 
   /// Handle register request (auto-signs the user in on success)
@@ -45,7 +45,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     final result = await _registerUseCase(RegisterParams(fullName: fullName, email: email, password: password, phone: phone));
 
-    result.when(success: (success) => emit(AuthState.authenticated(success.data)), failure: (failure) => emit(AuthState.error(failure.error.toString())));
+    result.when(success: (success) => emit(AuthState.authenticated(success.data)), failure: (failure) => emit(AuthState.error(failure.message.toString())));
   }
 
   /// Handle logout request
@@ -54,7 +54,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     final result = await _logoutUseCase(const NoParams());
 
-    result.when(success: (_) => emit(const AuthState.unauthenticated()), failure: (failure) => emit(AuthState.error(failure.error.toString())));
+    result.when(success: (_) => emit(const AuthState.unauthenticated()), failure: (failure) => emit(AuthState.error(failure.message.toString())));
   }
 
   /// Check authentication status

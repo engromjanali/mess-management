@@ -63,7 +63,7 @@ extension DioExceptionX on DioException {
   }
 
   String _extractErrorMessage(dynamic data) {
-    if (data == null) return 'Server error occurred';
+    if (data == null) return 'Server error occurred!';
 
     if (data is Map) {
       // Try common error message keys
