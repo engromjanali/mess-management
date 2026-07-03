@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:clean_boilerplate/features/settings/domain/entities/language_model.dart';
 
 /// Application-level constants
@@ -8,12 +10,13 @@ class AppConstants {
   static const String appName = 'Clean Boilerplate';
   static const String appVersion = '1.0.0';
 
-  // API constants
-  // Mess Management Django backend. For local development:
-  //   - iOS simulator / macOS / web / desktop: http://localhost:8000
-  //   - Android emulator: use http://10.0.2.2:8000 (loopback to host)
-  //   - Physical device: use your machine's LAN IP, e.g. http://192.168.x.x:8000
-  static const String baseUrl = 'http://localhost:8000';
+  static const int _port = 8000;
+  static String get baseUrl {
+    const override = String.fromEnvironment('BASE_URL');
+    if (override.isNotEmpty) return override;
+    if (!kIsWeb && Platform.isAndroid) return 'http://10.0.2.2:$_port';
+    return 'http://localhost:$_port';
+  }
 
   // API endpoints
   static const String configEndPoint = '/api/v1/config';
