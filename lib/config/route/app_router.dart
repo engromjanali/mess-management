@@ -42,6 +42,8 @@ class AppRoutes {
   static String getSplashRoute() => _splash;
 
   static String getLoginRoute() => _login;
+
+  static String getHomeRoute() => home;
 }
 
 /// Router configuration using go_router

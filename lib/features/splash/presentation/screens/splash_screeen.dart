@@ -1,5 +1,6 @@
 import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
+import 'package:clean_boilerplate/core/helpers/auth_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:clean_boilerplate/features/splash/presentation/bloc/splash_bloc.dart';
@@ -15,7 +16,8 @@ class SplashScreen extends StatelessWidget {
         state.when(
           loading: () {},
           loaded: (config) {
-            context.replace(AppRoutes.getLoginRoute());
+            final isLoggedIn = AuthHelper.isLogin();
+            context.replace(isLoggedIn ? AppRoutes.getHomeRoute() : AppRoutes.getLoginRoute());
           },
           error: (error) {
             context.showErrorSnackBar(error);
