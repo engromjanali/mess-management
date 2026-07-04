@@ -1,20 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
-import 'package:clean_boilerplate/features/settings/domain/entities/theme_mode.dart';
-import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_bloc.dart';
-import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_event.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_formatters.dart';
 
-/// Collapsing hero header for the dashboard.
-///
-/// Pinned + stretchable [SliverAppBar] showing a green gradient, the welcome
-/// greeting, the headline total balance and quick "meal / fund" chips. Hosts
-/// the theme toggle and settings actions.
 class HomeSliverAppBar extends StatelessWidget {
   const HomeSliverAppBar({required this.userName, required this.totalBalance, required this.mealBalance, required this.fundBalance, required this.expandedHeight, super.key});
 
@@ -36,17 +25,6 @@ class HomeSliverAppBar extends StatelessWidget {
       foregroundColor: Colors.white,
       elevation: 0,
       title: Text('Dashboard', style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white)),
-      actions: [
-        IconButton(
-          tooltip: 'Toggle theme',
-          icon: Icon(context.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded),
-          onPressed: () {
-            context.read<ThemeBloc>().add(ThemeEvent.changeThemeMode(context.isDarkMode ? AppThemeMode.light : AppThemeMode.dark));
-          },
-        ),
-        IconButton(tooltip: context.local.settings, icon: const Icon(Icons.settings_rounded), onPressed: () => context.go(AppRoutes.settings)),
-        const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-      ],
       flexibleSpace: FlexibleSpaceBar(
         stretchModes: const [StretchMode.zoomBackground, StretchMode.fadeTitle],
         background: _HeaderBackground(userName: userName, totalBalance: totalBalance, mealBalance: mealBalance, fundBalance: fundBalance),

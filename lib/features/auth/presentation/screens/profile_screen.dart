@@ -46,9 +46,11 @@ class _ProfileBody extends StatelessWidget {
           children: [
             _ProfileHeader(user: user),
             const SizedBox(height: Dimensions.spaceLarge),
-            _ProfileTile(icon: Icons.settings_outlined, title: 'Settings', subtitle: 'Theme, language and preferences', onTap: () => context.push(AppRoutes.settings)),
+            _ProfileTile(icon: Icons.savings_outlined, title: 'Fund', subtitle: 'View and manage funds', onTap: () => context.push(AppRoutes.funds)),
             const SizedBox(height: Dimensions.paddingSizeSmall),
             _ProfileTile(icon: Icons.notifications_outlined, title: 'Notices', subtitle: 'View the notice board', onTap: () => context.push(AppRoutes.notices)),
+            const SizedBox(height: Dimensions.paddingSizeSmall),
+            _ProfileTile(icon: Icons.settings_outlined, title: 'Settings', subtitle: 'Theme, language and preferences', onTap: () => context.push(AppRoutes.settings)),
             const SizedBox(height: Dimensions.spaceLarge),
             const Divider(),
             const SizedBox(height: Dimensions.paddingSizeSmall),

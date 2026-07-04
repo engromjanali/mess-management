@@ -200,10 +200,8 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
       BottomNavItem(icon: Icons.home_outlined, activeIcon: Icons.home_rounded, label: 'Home', onTap: () => _onNavTap(0, _scrollToTop)),
       BottomNavItem(icon: Icons.restaurant_outlined, activeIcon: Icons.restaurant_rounded, label: 'Meals', onTap: () => _onNavTap(1, () => context.go(AppRoutes.meals))),
       BottomNavItem(icon: Icons.account_balance_wallet_outlined, activeIcon: Icons.account_balance_wallet_rounded, label: 'Deposits', onTap: () => _onNavTap(2, () => context.go(AppRoutes.deposits))),
-      BottomNavItem(icon: Icons.savings_outlined, activeIcon: Icons.savings_rounded, label: 'Fund', onTap: () => _onNavTap(3, () => context.go(AppRoutes.funds))),
-      BottomNavItem(icon: Icons.shopping_cart_outlined, activeIcon: Icons.shopping_cart_rounded, label: 'Cost', onTap: () => _onNavTap(4, () => context.go(AppRoutes.costs))),
-      BottomNavItem(icon: Icons.notifications_outlined, activeIcon: Icons.notifications_rounded, label: 'Notice', onTap: () => _onNavTap(5, () => context.go(AppRoutes.notices))),
-      BottomNavItem(icon: Icons.person_outline_rounded, activeIcon: Icons.person_rounded, label: 'Profile', onTap: () => _onNavTap(6, () => context.go(AppRoutes.profile))),
+      BottomNavItem(icon: Icons.shopping_cart_outlined, activeIcon: Icons.shopping_cart_rounded, label: 'Bazar', onTap: () => _onNavTap(3, () => context.go(AppRoutes.costs))),
+      BottomNavItem(icon: Icons.person_outline_rounded, activeIcon: Icons.person_rounded, label: 'Profile', onTap: () => _onNavTap(4, () => context.go(AppRoutes.profile))),
     ];
 
     return Stack(

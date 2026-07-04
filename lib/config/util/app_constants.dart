@@ -20,13 +20,18 @@ class AppConstants {
 
   // API endpoints
   static const String configEndPoint = '/api/v1/config';
-  static const String loginEndpoint = '/api/auth/login/';
-  static const String registerEndpoint = '/api/auth/register/';
-  static const String logoutEndpoint = '/api/auth/logout/';
-  static const String refreshTokenEndpoint = '/api/auth/refresh/';
-  static const String profileEndpoint = '/api/auth/me/';
-  static const String forgotPasswordEndpoint = '/api/auth/forgot-password/';
-  static const String resetPasswordEndpoint = '/api/auth/reset-password/';
+
+  // auth 
+  static const String loginEndpoint = '/api/auth/login';
+  static const String registerEndpoint = '/api/auth/register';
+  static const String logoutEndpoint = '/api/auth/logout';
+  static const String refreshTokenEndpoint = '/api/auth/refresh';
+  static const String profileEndpoint = '/api/auth/me';
+  static const String forgotPasswordEndpoint = '/api/auth/forgot-password';
+  static const String resetPasswordEndpoint = '/api/auth/reset-password';
+
+  // home
+  // xyz
 
   static const String tokenKey = 'auth_token';
   static const String refreshTokenKey = 'refresh_token';
