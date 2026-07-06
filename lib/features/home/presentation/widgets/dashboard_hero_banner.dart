@@ -6,16 +6,16 @@ import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_f
 
 /// Gradient summary banner for the tablet & desktop dashboards.
 ///
-/// Mirrors the phone hero (greeting + headline total balance + meal/fund
+/// Mirrors the phone hero (greeting + headline total balance + meal/deposit
 /// chips) but as a self-contained rounded card. Internally responsive: places
 /// the balance and chips side-by-side when wide, stacked when narrow.
 class DashboardHeroBanner extends StatelessWidget {
-  const DashboardHeroBanner({required this.userName, required this.totalBalance, required this.mealBalance, required this.fundBalance, super.key});
+  const DashboardHeroBanner({required this.userName, required this.totalBalance, required this.mealBalance, required this.depositBalance, super.key});
 
   final String userName;
   final double totalBalance;
   final double mealBalance;
-  final double fundBalance;
+  final double depositBalance;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +34,7 @@ class DashboardHeroBanner extends StatelessWidget {
           final wide = constraints.maxWidth > 640;
           final chips = [
             _HeaderChip(icon: Icons.restaurant_rounded, label: 'Meal', value: DashboardFormatters.taka(mealBalance)),
-            _HeaderChip(icon: Icons.savings_rounded, label: 'Fund', value: DashboardFormatters.taka(fundBalance)),
+            _HeaderChip(icon: Icons.payments_rounded, label: 'Deposit', value: DashboardFormatters.taka(depositBalance)),
           ];
 
           if (wide) {

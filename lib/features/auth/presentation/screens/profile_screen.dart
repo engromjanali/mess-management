@@ -24,8 +24,10 @@ class ProfileScreen extends StatelessWidget {
       body: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           final user = state.maybeWhen(authenticated: (user) => user, orElse: () => null);
-          if (user == null) return const _SignedOutView();
-          return _ProfileBody(user: user);
+          if (user != null) return _ProfileBody(user: user);
+          final isSignedOut = state.maybeWhen(unauthenticated: () => true, error: (_) => true, orElse: () => false);
+          if (isSignedOut) return const _SignedOutView();
+          return const Center(child: CircularProgressIndicator.adaptive());
         },
       ),
     );

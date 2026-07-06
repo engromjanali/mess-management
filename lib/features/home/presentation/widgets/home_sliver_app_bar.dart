@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_formatters.dart';
 
 class HomeSliverAppBar extends StatelessWidget {
-  const HomeSliverAppBar({required this.userName, required this.totalBalance, required this.mealBalance, required this.fundBalance, required this.expandedHeight, super.key});
+  const HomeSliverAppBar({required this.userName, required this.totalBalance, required this.mealBalance, required this.depositBalance, required this.expandedHeight, super.key});
 
   final String userName;
   final double totalBalance;
   final double mealBalance;
-  final double fundBalance;
+  final double depositBalance;
   final double expandedHeight;
 
   @override
@@ -26,6 +28,10 @@ class HomeSliverAppBar extends StatelessWidget {
       backgroundColor: colors.primaryDarkColor,
       foregroundColor: Colors.white,
       elevation: 0,
+      shape: const Border(),
+      actions: [
+        IconButton(tooltip: 'Notifications', onPressed: () => context.go(AppRoutes.notices), icon: const Icon(Icons.notifications_outlined)),
+      ],
       flexibleSpace: LayoutBuilder(
         builder: (context, constraints) {
           final collapsedHeight = topInset + kToolbarHeight;
@@ -35,11 +41,11 @@ class HomeSliverAppBar extends StatelessWidget {
           return Stack(
             fit: StackFit.expand,
             children: [
-              _HeaderBackground(userName: userName, totalBalance: totalBalance, mealBalance: mealBalance, fundBalance: fundBalance, expandedHeight: maximumHeight, contentOpacity: expandedOpacity),
+              _HeaderBackground(userName: userName, totalBalance: totalBalance, mealBalance: mealBalance, depositBalance: depositBalance, expandedHeight: maximumHeight, contentOpacity: expandedOpacity),
               Positioned(
                 top: topInset,
                 left: Dimensions.paddingSizeLarge,
-                right: Dimensions.paddingSizeLarge,
+                right: Dimensions.paddingSizeLarge + kToolbarHeight,
                 height: kToolbarHeight,
                 child: IgnorePointer(
                   ignoring: collapseProgress < 0.55,
@@ -55,12 +61,12 @@ class HomeSliverAppBar extends StatelessWidget {
 }
 
 class _HeaderBackground extends StatelessWidget {
-  const _HeaderBackground({required this.userName, required this.totalBalance, required this.mealBalance, required this.fundBalance, required this.expandedHeight, required this.contentOpacity});
+  const _HeaderBackground({required this.userName, required this.totalBalance, required this.mealBalance, required this.depositBalance, required this.expandedHeight, required this.contentOpacity});
 
   final String userName;
   final double totalBalance;
   final double mealBalance;
-  final double fundBalance;
+  final double depositBalance;
   final double expandedHeight;
   final double contentOpacity;
 
@@ -80,7 +86,7 @@ class _HeaderBackground extends StatelessWidget {
           child: Opacity(
             opacity: contentOpacity,
             child: Padding(
-              padding: EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, MediaQuery.paddingOf(context).top + Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, 0),
+              padding: EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, MediaQuery.paddingOf(context).top + Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge + kToolbarHeight, 0),
               child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -121,7 +127,7 @@ class _HeaderBackground extends StatelessWidget {
               runSpacing: Dimensions.paddingSizeSmall,
               children: [
                 _HeaderChip(icon: Icons.restaurant_rounded, label: 'Meal', value: DashboardFormatters.taka(mealBalance)),
-                _HeaderChip(icon: Icons.savings_rounded, label: 'Fund', value: DashboardFormatters.taka(fundBalance)),
+                _HeaderChip(icon: Icons.payments_rounded, label: 'Deposit', value: DashboardFormatters.taka(depositBalance)),
               ],
             ),
             const SizedBox(height: Dimensions.paddingSizeDefault),

@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:clean_boilerplate/config/route/app_router.dart';
+import 'package:clean_boilerplate/config/util/app_constants.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/assets/assets.gen.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/features/settings/domain/entities/theme_mode.dart';
+import 'package:clean_boilerplate/features/settings/presentation/bloc/localization/localization_bloc.dart';
 import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_bloc.dart';
 import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_event.dart';
 
@@ -20,10 +23,10 @@ class DashboardNavItem {
 }
 
 class DashboardTopBar extends StatelessWidget {
-  const DashboardTopBar({required this.userName, required this.onRefresh, this.navItems = const [], super.key});
+  const DashboardTopBar({required this.userName, required this.onProfileTap, this.navItems = const [], super.key});
 
   final String userName;
-  final VoidCallback onRefresh;
+  final VoidCallback onProfileTap;
   final List<DashboardNavItem> navItems;
 
   static const double height = 72;
@@ -48,15 +51,15 @@ class DashboardTopBar extends StatelessWidget {
                 builder: (context, constraints) {
                   final width = constraints.maxWidth;
                   // Progressive disclosure as the bar widens.
-                  final showNavLabels = width >= 1000;
-                  final showBrandText = width >= 720;
-                  final showProfileText = width >= 880;
+                  const showNavLabels = true;
+                  final showBrandText = width >= 1050;
+                  final showProfileText = width >= 1100;
 
                   return Row(
                     children: [
                       _Brand(showText: showBrandText),
                       if (navItems.isNotEmpty) ...[
-                        SizedBox(width: showNavLabels ? Dimensions.paddingSizeExtraLarge32 : Dimensions.paddingSizeLarge),
+                        const SizedBox(width: Dimensions.paddingSizeExtraLarge32),
                         for (final item in navItems)
                           Padding(
                             padding: const EdgeInsets.only(right: Dimensions.paddingSizeExtraSmall),
@@ -64,15 +67,15 @@ class DashboardTopBar extends StatelessWidget {
                           ),
                       ],
                       const Spacer(),
-                      _ActionIcon(icon: Icons.refresh_rounded, tooltip: 'Refresh', onPressed: onRefresh),
+                      _ActionIcon(icon: Icons.notifications_outlined, tooltip: 'Notifications', onPressed: () => context.go(AppRoutes.notices)),
                       _ActionIcon(
                         icon: context.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
                         tooltip: 'Toggle theme',
                         onPressed: () => context.read<ThemeBloc>().add(ThemeEvent.changeThemeMode(context.isDarkMode ? AppThemeMode.light : AppThemeMode.dark)),
                       ),
-                      _ActionIcon(icon: Icons.settings_outlined, tooltip: context.local.settings, onPressed: () => context.go(AppRoutes.settings)),
+                      const _LocaleMenu(),
                       const SizedBox(width: Dimensions.paddingSizeDefault),
-                      _ProfileChip(userName: userName, showText: showProfileText),
+                      _ProfileChip(userName: userName, showText: showProfileText, onTap: onProfileTap),
                     ],
                   );
                 },
@@ -165,6 +168,65 @@ class _NavButton extends StatelessWidget {
   }
 }
 
+class _LocaleMenu extends StatelessWidget {
+  const _LocaleMenu();
+
+  @override
+  Widget build(BuildContext context) {
+    final locale = context.watch<LocalizationBloc>().state.locale;
+    final currentLanguage = AppConstants.languages.firstWhere((language) => language.code == locale.languageCode, orElse: () => AppConstants.languages.first);
+
+    return PopupMenuButton<String>(
+      tooltip: context.local.selectLanguage,
+      onSelected: (code) => context.read<LocalizationBloc>().add(LocalizationEvent.changeLocale(code)),
+      itemBuilder: (context) => AppConstants.languages
+          .map(
+            (language) => PopupMenuItem<String>(
+              value: language.code,
+              child: Row(
+                children: [
+                  _LocaleFlag(code: language.code),
+                  const SizedBox(width: Dimensions.paddingSizeDefault),
+                  Expanded(child: Text(language.nativeName, maxLines: 1, overflow: TextOverflow.ellipsis)),
+                  if (language.code == locale.languageCode) Icon(Icons.check_rounded, size: Dimensions.iconSizeSmall, color: context.customThemeColors.primaryColor),
+                ],
+              ),
+            ),
+          )
+          .toList(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeDefault),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _LocaleFlag(code: currentLanguage.code),
+            const SizedBox(width: Dimensions.paddingSizeSmall),
+            Text(currentLanguage.nativeName, style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: context.customThemeColors.textPrimaryColor)),
+            const SizedBox(width: Dimensions.paddingSizeSmall),
+            Icon(Icons.keyboard_arrow_down_rounded, color: context.customThemeColors.textPrimaryColor),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LocaleFlag extends StatelessWidget {
+  const _LocaleFlag({required this.code});
+
+  final String code;
+
+  @override
+  Widget build(BuildContext context) {
+    final flag = switch (code) {
+      'ar' => Assets.images.svg.flags.ar,
+      'bn' => Assets.images.svg.flags.bn,
+      _ => Assets.images.svg.flags.en,
+    };
+    return ClipRRect(borderRadius: BorderRadius.circular(2), child: flag.svg(width: 28, height: 20, fit: BoxFit.cover));
+  }
+}
+
 class _ActionIcon extends StatelessWidget {
   const _ActionIcon({required this.icon, required this.tooltip, required this.onPressed});
 
@@ -183,9 +245,10 @@ class _ActionIcon extends StatelessWidget {
 }
 
 class _ProfileChip extends StatelessWidget {
-  const _ProfileChip({required this.userName, required this.showText});
+  const _ProfileChip({required this.userName, required this.showText, required this.onTap});
   final String userName;
   final bool showText;
+  final VoidCallback onTap;
 
   String get _initials {
     final parts = userName.trim().split(RegExp(r'\s+'));
@@ -207,42 +270,41 @@ class _ProfileChip extends StatelessWidget {
       ),
     );
 
-    if (!showText) return avatar;
+    if (!showText) {
+      return IconButton(tooltip: 'Profile menu', onPressed: onTap, icon: avatar);
+    }
 
-    return Container(
-      padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeExtraSmall, Dimensions.paddingSizeExtraSmall, Dimensions.paddingSizeDefault, Dimensions.paddingSizeExtraSmall),
-      decoration: BoxDecoration(
-        color: colors.backgroundColor,
-        borderRadius: BorderRadius.circular(Dimensions.radiusExtra2Large),
-        border: Border.all(color: colors.borderColor),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          avatar,
-          const SizedBox(width: Dimensions.paddingSizeSmall),
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 140),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  userName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
+    final radius = BorderRadius.circular(Dimensions.radiusExtra2Large);
+    return Material(
+      color: colors.backgroundColor,
+      borderRadius: radius,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: radius,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeExtraSmall, Dimensions.paddingSizeExtraSmall, Dimensions.paddingSizeDefault, Dimensions.paddingSizeExtraSmall),
+          decoration: BoxDecoration(borderRadius: radius, border: Border.all(color: colors.borderColor)),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              avatar,
+              const SizedBox(width: Dimensions.paddingSizeSmall),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 140),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(userName, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor)),
+                    Text('Member', style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: colors.textSecondaryColor)),
+                  ],
                 ),
-                Text(
-                  'Member',
-                  style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: colors.textSecondaryColor),
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+              Icon(Icons.keyboard_arrow_left_rounded, size: Dimensions.iconSizeSmall, color: colors.textSecondaryColor),
+            ],
           ),
-          const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-          Icon(Icons.keyboard_arrow_down_rounded, size: Dimensions.iconSizeSmall, color: colors.textSecondaryColor),
-        ],
+        ),
       ),
     );
   }

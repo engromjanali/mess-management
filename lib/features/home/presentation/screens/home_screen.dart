@@ -9,6 +9,7 @@ import 'package:clean_boilerplate/core/di/injection.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
+import 'package:clean_boilerplate/core/widgets/app_footer.dart';
 import 'package:clean_boilerplate/features/home/domain/entities/dashboard_entity.dart';
 import 'package:clean_boilerplate/features/home/presentation/bloc/home_bloc.dart';
 import 'package:clean_boilerplate/features/home/presentation/bloc/home_event.dart';
@@ -24,6 +25,7 @@ import 'package:clean_boilerplate/features/home/presentation/widgets/pinned_noti
 import 'package:clean_boilerplate/features/home/presentation/widgets/pinned_section_header.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/stat_card.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
 
 /// Internal view-model for a single metric card.
 class _Stat {
@@ -79,6 +81,7 @@ class _HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.theme.scaffoldBackgroundColor,
+      endDrawer: ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context) ? const WebProfileDrawer() : null,
       body: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
           return state.when(
@@ -214,7 +217,7 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
-                HomeSliverAppBar(userName: dashboard.userName, totalBalance: dashboard.totalBalance, mealBalance: dashboard.mealBalance, fundBalance: dashboard.fundBalance, expandedHeight: 200),
+                HomeSliverAppBar(userName: dashboard.userName, totalBalance: dashboard.totalBalance, mealBalance: dashboard.mealBalance, depositBalance: dashboard.totalDeposit, expandedHeight: 200),
                 SliverPersistentHeader(
                   pinned: true,
                   delegate: PinnedSectionHeader(title: 'Mess Section', icon: Icons.groups_rounded),
@@ -300,10 +303,6 @@ class _DesktopDashboard extends StatefulWidget {
 
 class _DesktopDashboardState extends State<_DesktopDashboard> {
   final _scrollController = ScrollController();
-  final _messKey = GlobalKey();
-  final _myKey = GlobalKey();
-  final _membersKey = GlobalKey();
-  final _noticeKey = GlobalKey();
 
   @override
   void dispose() {
@@ -311,52 +310,45 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
     super.dispose();
   }
 
-  void _scrollTo(GlobalKey key) {
-    final ctx = key.currentContext;
-    if (ctx == null) return;
-    Scrollable.ensureVisible(ctx, duration: const Duration(milliseconds: 400), curve: Curves.easeInOutCubic, alignment: 0.02);
-  }
-
   @override
   Widget build(BuildContext context) {
     final dashboard = widget.dashboard;
     final navItems = <DashboardNavItem>[
       DashboardNavItem(
-        label: 'Overview',
-        icon: Icons.dashboard_rounded,
+        label: 'Home',
+        icon: Icons.home_rounded,
         active: true,
         onTap: () => _scrollController.animateTo(0, duration: const Duration(milliseconds: 400), curve: Curves.easeInOutCubic),
       ),
-      DashboardNavItem(label: 'Mess', icon: Icons.groups_rounded, onTap: () => _scrollTo(_messKey)),
       DashboardNavItem(label: 'Meals', icon: Icons.restaurant_rounded, onTap: () => context.go(AppRoutes.meals)),
       DashboardNavItem(label: 'Deposits', icon: Icons.account_balance_wallet_rounded, onTap: () => context.go(AppRoutes.deposits)),
-      DashboardNavItem(label: 'Fund', icon: Icons.savings_rounded, onTap: () => context.go(AppRoutes.funds)),
-      DashboardNavItem(label: 'Cost', icon: Icons.shopping_cart_rounded, onTap: () => context.go(AppRoutes.costs)),
-      if (dashboard.isManager) DashboardNavItem(label: 'Members', icon: Icons.bar_chart_rounded, onTap: () => _scrollTo(_membersKey)),
-      DashboardNavItem(label: 'Notice', icon: Icons.push_pin_rounded, onTap: () => context.go(AppRoutes.notices)),
+      DashboardNavItem(label: 'Bazar', icon: Icons.shopping_cart_rounded, onTap: () => context.go(AppRoutes.costs)),
     ];
 
     return Column(
       children: [
-        DashboardTopBar(userName: dashboard.userName, onRefresh: () => _refresh(context), navItems: navItems),
+        DashboardTopBar(userName: dashboard.userName, onProfileTap: () => Scaffold.of(context).openEndDrawer(), navItems: navItems),
         Expanded(
           child: Scrollbar(
             controller: _scrollController,
             child: SingleChildScrollView(
               controller: _scrollController,
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
-                  child: Padding(
-                    padding: const EdgeInsets.all(Dimensions.paddingSizeExtraLarge24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
+                      child: Padding(
+                        padding: const EdgeInsets.all(Dimensions.paddingSizeExtraLarge24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
                         AnimatedEntrance(child: _heroBanner(dashboard)),
                         const SizedBox(height: Dimensions.paddingSizeSmall),
 
                         // Mess section — wide grid.
-                        SectionTitle(key: _messKey, title: 'Mess Section', icon: Icons.groups_rounded),
+                        const SectionTitle(title: 'Mess Section', icon: Icons.groups_rounded),
                         _StatBoxGrid(stats: _messStats(context, dashboard), maxCrossAxisExtent: 230),
                         const SizedBox(height: Dimensions.paddingSizeLarge),
 
@@ -369,7 +361,7 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  SectionTitle(key: _myKey, title: 'My Section', icon: Icons.person_rounded),
+                                  const SectionTitle(title: 'My Section', icon: Icons.person_rounded),
                                   _StatBoxGrid(stats: _myStats(context, dashboard), maxCrossAxisExtent: 230),
                                 ],
                               ),
@@ -380,7 +372,7 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  SectionTitle(key: _noticeKey, title: 'Pinned Notice', icon: Icons.push_pin_rounded),
+                                  const SectionTitle(title: 'Pinned Notice', icon: Icons.push_pin_rounded),
                                   AnimatedEntrance(child: PinnedNoticeCard(notice: dashboard.pinnedNotice)),
                                 ],
                               ),
@@ -390,16 +382,19 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
 
                         if (dashboard.isManager) ...[
                           const SizedBox(height: Dimensions.paddingSizeLarge),
-                          SectionTitle(key: _membersKey, title: 'Members', icon: Icons.bar_chart_rounded),
+                          const SectionTitle(title: 'Members', icon: Icons.bar_chart_rounded),
                           AnimatedEntrance(
                             child: MemberStatsTable(members: dashboard.members, mealRate: dashboard.mealRate),
                           ),
                         ],
-                        const SizedBox(height: Dimensions.paddingSizeExtraLarge32),
-                      ],
+                            const SizedBox(height: Dimensions.paddingSizeExtraLarge32),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                  if (ResponsiveHelper.isDesktop(context)) const AppFooter(),
+                ],
               ),
             ),
           ),
@@ -442,7 +437,7 @@ class _StatBoxGrid extends StatelessWidget {
 
 Widget _statCard(_Stat stat) => StatCard(label: stat.label, value: stat.value, icon: stat.icon, accent: stat.accent);
 
-Widget _heroBanner(DashboardEntity d) => DashboardHeroBanner(userName: d.userName, totalBalance: d.totalBalance, mealBalance: d.mealBalance, fundBalance: d.fundBalance);
+Widget _heroBanner(DashboardEntity d) => DashboardHeroBanner(userName: d.userName, totalBalance: d.totalBalance, mealBalance: d.mealBalance, depositBalance: d.totalDeposit);
 
 Future<void> _refresh(BuildContext context) async {
   context.read<HomeBloc>().add(const HomeEvent.refreshDashboard());

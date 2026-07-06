@@ -6,9 +6,11 @@ import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/theme/app_theme.dart';
 import 'package:clean_boilerplate/core/di/injection.dart';
+import 'package:clean_boilerplate/core/helpers/auth_helper.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
 import 'package:clean_boilerplate/core/role/role_switcher_fab.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_event.dart';
 import 'package:clean_boilerplate/features/settings/presentation/bloc/localization/localization_bloc.dart';
 import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_bloc.dart';
 import 'package:clean_boilerplate/l10n/gen/app_localizations.dart';
@@ -34,7 +36,11 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => getIt<ThemeBloc>()..add(const ThemeEvent.loadThemeMode())),
         BlocProvider(create: (context) => getIt<LocalizationBloc>()..add(const LocalizationEvent.loadLocale())),
         BlocProvider(create: (context) => getIt<SplashBloc>()..add(const SplashEvent.getConfig())),
-        BlocProvider(create: (context) => getIt<AuthBloc>()),
+        BlocProvider(create: (context) {
+          final authBloc = getIt<AuthBloc>();
+          if (AuthHelper.isLogin()) authBloc.add(const AuthEvent.checkAuthStatus());
+          return authBloc;
+        }),
         BlocProvider(create: (context) => RoleCubit()),
       ],
       child: BlocBuilder<LocalizationBloc, LocalizationState>(

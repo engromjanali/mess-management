@@ -29,9 +29,12 @@ ThemeData darkThemeData = ThemeData(
   appBarTheme: const AppBarTheme(
     centerTitle: true,
     elevation: 0,
+    scrolledUnderElevation: 0,
     backgroundColor: Color(0xFF1E1E1E),
     foregroundColor: Colors.white,
+    surfaceTintColor: Colors.transparent,
     iconTheme: IconThemeData(color: Colors.white),
+    shape: Border(bottom: BorderSide(color: Color(0xFF424242))),
   ),
 
   // Card

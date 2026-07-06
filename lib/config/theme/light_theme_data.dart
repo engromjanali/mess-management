@@ -28,9 +28,12 @@ ThemeData lightThemeData = ThemeData(
   appBarTheme: const AppBarTheme(
     centerTitle: true,
     elevation: 0,
-    backgroundColor: Color(0xFF1FA463),
-    foregroundColor: Colors.white,
-    iconTheme: IconThemeData(color: Colors.white),
+    scrolledUnderElevation: 0,
+    backgroundColor: Color(0xFFFFFFFF),
+    foregroundColor: Color(0xFF212121),
+    surfaceTintColor: Colors.transparent,
+    iconTheme: IconThemeData(color: Color(0xFF212121)),
+    shape: Border(bottom: BorderSide(color: Color(0xFFE0E0E0))),
   ),
 
   // Card
