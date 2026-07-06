@@ -275,34 +275,36 @@ class _ProfileChip extends StatelessWidget {
     }
 
     final radius = BorderRadius.circular(Dimensions.radiusExtra2Large);
-    return Material(
-      color: colors.backgroundColor,
-      borderRadius: radius,
-      child: InkWell(
-        onTap: onTap,
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 150),
+      child: Material(
+        color: colors.backgroundColor,
         borderRadius: radius,
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeExtraSmall, Dimensions.paddingSizeExtraSmall, Dimensions.paddingSizeDefault, Dimensions.paddingSizeExtraSmall),
-          decoration: BoxDecoration(borderRadius: radius, border: Border.all(color: colors.borderColor)),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              avatar,
-              const SizedBox(width: Dimensions.paddingSizeSmall),
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 140),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(userName, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor)),
-                    Text('Member', style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: colors.textSecondaryColor)),
-                  ],
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: radius,
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeExtraSmall, Dimensions.paddingSizeExtraSmall, Dimensions.paddingSizeDefault, Dimensions.paddingSizeExtraSmall),
+            decoration: BoxDecoration(borderRadius: radius, border: Border.all(color: colors.borderColor)),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                avatar,
+                const SizedBox(width: Dimensions.paddingSizeSmall),
+                Flexible(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(userName, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor)),
+                      Text('Member', style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: colors.textSecondaryColor)),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-              Icon(Icons.keyboard_arrow_left_rounded, size: Dimensions.iconSizeSmall, color: colors.textSecondaryColor),
-            ],
+                const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                Icon(Icons.keyboard_arrow_left_rounded, size: Dimensions.iconSizeSmall, color: colors.textSecondaryColor),
+              ],
+            ),
           ),
         ),
       ),

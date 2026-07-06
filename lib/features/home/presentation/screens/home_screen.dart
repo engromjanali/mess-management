@@ -10,6 +10,8 @@ import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
 import 'package:clean_boilerplate/core/widgets/app_footer.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
 import 'package:clean_boilerplate/features/home/domain/entities/dashboard_entity.dart';
 import 'package:clean_boilerplate/features/home/presentation/bloc/home_bloc.dart';
 import 'package:clean_boilerplate/features/home/presentation/bloc/home_event.dart';
@@ -89,10 +91,9 @@ class _HomeView extends StatelessWidget {
             loading: _loading,
             error: (message) => _ErrorView(message: message),
             loaded: (dashboard) {
-              // Drive the admin-only sections from the previewed role so the
-              // global role switcher changes what each user type sees.
-              final isAdmin = context.watch<RoleCubit>().state.isAdmin;
-              final scoped = dashboard.copyWith(isManager: isAdmin);
+              final user = context.watch<AuthBloc>().state.maybeWhen(authenticated: (user) => user, orElse: () => null);
+              final previewRole = context.watch<RoleCubit>().state;
+              final scoped = dashboard.copyWith(userName: user?.name, isManager: previewRole.isAdmin);
 
               if (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)) {
                 return _DesktopDashboard(dashboard: scoped);

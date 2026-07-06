@@ -47,7 +47,7 @@ class DashboardEntity extends Equatable {
     this.pinnedNotice,
   });
 
-  DashboardEntity copyWith({bool? isManager}) => DashboardEntity(
+  DashboardEntity copyWith({bool? isManager, String? userName}) => DashboardEntity(
     totalBalance: totalBalance,
     mealBalance: mealBalance,
     fundBalance: fundBalance,
@@ -59,7 +59,7 @@ class DashboardEntity extends Equatable {
     myDeposit: myDeposit,
     myRemaining: myRemaining,
     members: members,
-    userName: userName,
+    userName: userName ?? this.userName,
     isManager: isManager ?? this.isManager,
     pinnedNotice: pinnedNotice,
   );
