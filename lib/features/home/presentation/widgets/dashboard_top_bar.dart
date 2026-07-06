@@ -111,10 +111,6 @@ class _Brand extends StatelessWidget {
                 'Mess Manager',
                 style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
               ),
-              Text(
-                'Dashboard',
-                style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
-              ),
             ],
           ),
         ],

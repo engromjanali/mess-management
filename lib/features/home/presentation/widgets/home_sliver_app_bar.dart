@@ -16,6 +16,8 @@ class HomeSliverAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
+    final topInset = MediaQuery.paddingOf(context).top;
+    final maximumHeight = expandedHeight + topInset;
 
     return SliverAppBar(
       pinned: true,
@@ -24,22 +26,43 @@ class HomeSliverAppBar extends StatelessWidget {
       backgroundColor: colors.primaryDarkColor,
       foregroundColor: Colors.white,
       elevation: 0,
-      title: Text('Dashboard', style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white)),
-      flexibleSpace: FlexibleSpaceBar(
-        stretchModes: const [StretchMode.zoomBackground, StretchMode.fadeTitle],
-        background: _HeaderBackground(userName: userName, totalBalance: totalBalance, mealBalance: mealBalance, fundBalance: fundBalance),
+      flexibleSpace: LayoutBuilder(
+        builder: (context, constraints) {
+          final collapsedHeight = topInset + kToolbarHeight;
+          final collapseProgress = ((maximumHeight - constraints.maxHeight) / (maximumHeight - collapsedHeight)).clamp(0.0, 1.0);
+          final expandedOpacity = (1 - ((collapseProgress - 0.12) / 0.70)).clamp(0.0, 1.0);
+
+          return Stack(
+            fit: StackFit.expand,
+            children: [
+              _HeaderBackground(userName: userName, totalBalance: totalBalance, mealBalance: mealBalance, fundBalance: fundBalance, expandedHeight: maximumHeight, contentOpacity: expandedOpacity),
+              Positioned(
+                top: topInset,
+                left: Dimensions.paddingSizeLarge,
+                right: Dimensions.paddingSizeLarge,
+                height: kToolbarHeight,
+                child: IgnorePointer(
+                  ignoring: collapseProgress < 0.55,
+                  child: Opacity(opacity: ((collapseProgress - 0.55) / 0.55).clamp(0.0, 1.0), child: _CollapsedIdentity(userName: userName)),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 }
 
 class _HeaderBackground extends StatelessWidget {
-  const _HeaderBackground({required this.userName, required this.totalBalance, required this.mealBalance, required this.fundBalance});
+  const _HeaderBackground({required this.userName, required this.totalBalance, required this.mealBalance, required this.fundBalance, required this.expandedHeight, required this.contentOpacity});
 
   final String userName;
   final double totalBalance;
   final double mealBalance;
   final double fundBalance;
+  final double expandedHeight;
+  final double contentOpacity;
 
   @override
   Widget build(BuildContext context) {
@@ -49,46 +72,103 @@ class _HeaderBackground extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [colors.primaryDarkColor, colors.primaryColor, colors.primaryLightColor]),
       ),
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeExtraLarge24, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+      child: ClipRect(
+        child: OverflowBox(
+          alignment: Alignment.topCenter,
+          minHeight: expandedHeight,
+          maxHeight: expandedHeight,
+          child: Opacity(
+            opacity: contentOpacity,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, MediaQuery.paddingOf(context).top + Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, 0),
+              child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               Text(
                 'Welcome back,',
                 style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.85), fontSize: Dimensions.fontSizeDefault),
               ),
               Text(
                 userName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeExtraOverLarge),
               ),
-              const SizedBox(height: Dimensions.paddingSizeLarge),
-              Text(
-                'Total balance',
-                style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.85), fontSize: Dimensions.fontSizeSmall),
-              ),
-              const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: Alignment.centerLeft,
-                child: Text(DashboardFormatters.taka(totalBalance), style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: 34)),
-              ),
-              const SizedBox(height: Dimensions.paddingSizeDefault),
-              Wrap(
-                spacing: Dimensions.paddingSizeSmall,
-                runSpacing: Dimensions.paddingSizeSmall,
-                children: [
-                  _HeaderChip(icon: Icons.restaurant_rounded, label: 'Meal', value: DashboardFormatters.taka(mealBalance)),
-                  _HeaderChip(icon: Icons.savings_rounded, label: 'Fund', value: DashboardFormatters.taka(fundBalance)),
-                ],
-              ),
-            ],
+              ],
+            ),
+            const SizedBox(height: Dimensions.paddingSizeSmall),
+            const Spacer(),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Total balance',
+                  style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.85), fontSize: Dimensions.fontSizeSmall),
+                ),
+                const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(DashboardFormatters.taka(totalBalance), style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: 34)),
+                ),
+              ],
+            ),
+            Wrap(
+              spacing: Dimensions.paddingSizeSmall,
+              runSpacing: Dimensions.paddingSizeSmall,
+              children: [
+                _HeaderChip(icon: Icons.restaurant_rounded, label: 'Meal', value: DashboardFormatters.taka(mealBalance)),
+                _HeaderChip(icon: Icons.savings_rounded, label: 'Fund', value: DashboardFormatters.taka(fundBalance)),
+              ],
+            ),
+            const SizedBox(height: Dimensions.paddingSizeDefault),
+          ]),
+            )
           ),
         ),
       ),
+    );
+  }
+}
+
+class _CollapsedIdentity extends StatelessWidget {
+  const _CollapsedIdentity({required this.userName});
+
+  final String userName;
+
+  String get _initials {
+    final parts = userName.trim().split(RegExp(r'\s+'));
+    if (parts.isEmpty || parts.first.isEmpty) return '?';
+    if (parts.length == 1) return parts.first.characters.first.toUpperCase();
+    return (parts.first.characters.first + parts.last.characters.first).toUpperCase();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 38,
+          height: 38,
+          decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.18), shape: BoxShape.circle, border: Border.all(color: Colors.white.withValues(alpha: 0.35))),
+          alignment: Alignment.center,
+          child: Text(_initials, style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeDefault)),
+        ),
+        const SizedBox(width: Dimensions.paddingSizeSmall),
+        Expanded(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Welcome back', style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.75), fontSize: Dimensions.fontSizeExtraSmall)),
+              Text(userName, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeLarge)),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

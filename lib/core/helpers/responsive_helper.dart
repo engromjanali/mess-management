@@ -9,7 +9,7 @@ class ResponsiveHelper {
   static const double smallMobile = 420;
   static const double mobile = 650;
   static const double smallTab = 850;
-  static const double tab = Dimensions.webMaxWidth - 100;
+  static const double tab = Dimensions.webMaxWidth + 60;
 
   static bool isMobilePhone() => !kIsWeb;
   static bool isWeb() => kIsWeb;

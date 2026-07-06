@@ -214,7 +214,7 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
-                HomeSliverAppBar(userName: dashboard.userName, totalBalance: dashboard.totalBalance, mealBalance: dashboard.mealBalance, fundBalance: dashboard.fundBalance, expandedHeight: 260),
+                HomeSliverAppBar(userName: dashboard.userName, totalBalance: dashboard.totalBalance, mealBalance: dashboard.mealBalance, fundBalance: dashboard.fundBalance, expandedHeight: 200),
                 SliverPersistentHeader(
                   pinned: true,
                   delegate: PinnedSectionHeader(title: 'Mess Section', icon: Icons.groups_rounded),
