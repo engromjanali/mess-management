@@ -11,6 +11,11 @@ import 'package:clean_boilerplate/features/fund/presentation/screens/fund_screen
 import 'package:clean_boilerplate/features/home/presentation/screens/home_screen.dart';
 import 'package:clean_boilerplate/features/meal/presentation/screens/meal_entry_screen.dart';
 import 'package:clean_boilerplate/features/meal/presentation/screens/meal_screen.dart';
+import 'package:clean_boilerplate/features/membership/presentation/screens/manage_membership_screen.dart';
+import 'package:clean_boilerplate/features/membership/presentation/screens/join_mess_screen.dart';
+import 'package:clean_boilerplate/features/membership/presentation/screens/mess_details_screen.dart';
+import 'package:clean_boilerplate/features/membership/presentation/screens/edit_mess_screen.dart';
+import 'package:clean_boilerplate/features/membership/presentation/screens/mess_leadership_screen.dart';
 import 'package:clean_boilerplate/features/notice/presentation/screens/notice_screen.dart';
 import 'package:clean_boilerplate/features/settings/presentation/screens/settings_screen.dart';
 
@@ -35,6 +40,14 @@ class AppRoutes {
   static const String notices = '/notices';
   static const String profile = '/profile';
   static const String settings = '/settings';
+  static const String manageMembership = '/membership/manage';
+  static const String joinMess = '/mess/join';
+  static const String joinMessInvites = '/mess/join/invites';
+  static const String joinMessRequests = '/mess/join/requests';
+  static const String createMess = '/mess/join/create';
+  static const String messDetails = '/mess';
+  static const String editMess = '/mess/edit';
+  static const String messLeadership = '/mess/leadership';
 
   // Helper methods for parameterized routes
   static String getProfileRoute({required String userId}) => '$profile?userId=$userId';
@@ -85,6 +98,22 @@ final router = GoRouter(
 
     // Settings route
     GoRoute(path: AppRoutes.settings, name: 'settings', builder: (context, state) => const SettingsScreen()),
+
+    GoRoute(path: AppRoutes.manageMembership, name: 'manageMembership', builder: (context, state) => const ManageMembershipScreen()),
+
+    GoRoute(path: AppRoutes.joinMess, name: 'joinMess', builder: (context, state) => const JoinMessScreen()),
+
+    GoRoute(path: AppRoutes.joinMessInvites, name: 'joinMessInvites', builder: (context, state) => const JoinMessScreen()),
+
+    GoRoute(path: AppRoutes.joinMessRequests, name: 'joinMessRequests', builder: (context, state) => const JoinMessScreen()),
+
+    GoRoute(path: AppRoutes.createMess, name: 'createMess', builder: (context, state) => const JoinMessScreen()),
+
+    GoRoute(path: AppRoutes.messDetails, name: 'messDetails', builder: (context, state) => const MessDetailsScreen()),
+
+    GoRoute(path: AppRoutes.editMess, name: 'editMess', builder: (context, state) => const EditMessScreen()),
+
+    GoRoute(path: AppRoutes.messLeadership, name: 'messLeadership', builder: (context, state) => const MessLeadershipScreen()),
 
     // Add more routes as your app grows
   ],

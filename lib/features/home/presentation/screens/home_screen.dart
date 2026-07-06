@@ -8,6 +8,7 @@ import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/di/injection.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
+import 'package:clean_boilerplate/core/network/api_client.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
 import 'package:clean_boilerplate/core/widgets/app_footer.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
@@ -28,6 +29,9 @@ import 'package:clean_boilerplate/features/home/presentation/widgets/pinned_sect
 import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/stat_card.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
+import 'package:clean_boilerplate/features/membership/data/membership_api_service.dart';
+import 'package:clean_boilerplate/features/membership/presentation/bloc/membership_cubit.dart';
+import 'package:clean_boilerplate/features/membership/presentation/screens/membership_gate.dart';
 
 /// Internal view-model for a single metric card.
 class _Stat {
@@ -72,7 +76,10 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<HomeBloc>(create: (_) => getIt<HomeBloc>()..add(const HomeEvent.loadDashboard()), child: const _HomeView());
+    return BlocProvider<MembershipCubit>(
+      create: (_) => MembershipCubit(MembershipApiService(getIt<ApiClient>()))..load(),
+      child: MembershipGate(connectedChild: BlocProvider<HomeBloc>(create: (_) => getIt<HomeBloc>()..add(const HomeEvent.loadDashboard()), child: const _HomeView())),
+    );
   }
 }
 

@@ -22,7 +22,7 @@ abstract class NetworkModule {
     );
 
     // Add interceptors
-    dio.interceptors.add(PrettyDioLogger(requestHeader: true, requestBody: true));
+    dio.interceptors.add(PrettyDioLogger(requestHeader: false, requestBody: false, responseBody: false));
 
     return dio;
   }

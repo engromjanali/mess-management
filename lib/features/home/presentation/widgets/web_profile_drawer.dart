@@ -40,6 +40,8 @@ class WebProfileDrawer extends StatelessWidget {
                   _DrawerItem(icon: Icons.savings_rounded, label: 'Fund', onTap: () => _navigate(context, AppRoutes.funds)),
                   _DrawerItem(icon: Icons.shopping_cart_rounded, label: 'Cost', onTap: () => _navigate(context, AppRoutes.costs)),
                   _DrawerItem(icon: Icons.push_pin_rounded, label: 'Notices', onTap: () => _navigate(context, AppRoutes.notices)),
+                  _DrawerItem(icon: Icons.home_work_rounded, label: 'Mess', onTap: () => _navigate(context, AppRoutes.messDetails)),
+                  if (isAdmin) _DrawerItem(icon: Icons.manage_accounts_rounded, label: 'Manage members', onTap: () => _navigate(context, AppRoutes.manageMembership)),
                   const Divider(),
                   _DrawerItem(icon: Icons.person_rounded, label: 'Profile', onTap: () => _navigate(context, AppRoutes.profile)),
                   _DrawerItem(

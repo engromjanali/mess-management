@@ -52,6 +52,12 @@ class _ProfileBody extends StatelessWidget {
             const SizedBox(height: Dimensions.paddingSizeSmall),
             _ProfileTile(icon: Icons.notifications_outlined, title: 'Notices', subtitle: 'View the notice board', onTap: () => context.push(AppRoutes.notices)),
             const SizedBox(height: Dimensions.paddingSizeSmall),
+            _ProfileTile(icon: Icons.home_work_outlined, title: 'Mess', subtitle: 'View mess details and management', onTap: () => context.push(AppRoutes.messDetails)),
+            const SizedBox(height: Dimensions.paddingSizeSmall),
+            if (context.watch<RoleCubit>().state.isAdmin) ...[
+              _ProfileTile(icon: Icons.manage_accounts_rounded, title: 'Manage members', subtitle: 'Invite members and review join requests', onTap: () => context.push(AppRoutes.manageMembership)),
+              const SizedBox(height: Dimensions.paddingSizeSmall),
+            ],
             _ProfileTile(icon: Icons.settings_outlined, title: 'Settings', subtitle: 'Theme, language and preferences', onTap: () => context.push(AppRoutes.settings)),
             const SizedBox(height: Dimensions.spaceLarge),
             const Divider(),
