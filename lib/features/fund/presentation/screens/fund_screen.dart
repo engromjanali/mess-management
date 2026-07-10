@@ -10,7 +10,7 @@ import 'package:clean_boilerplate/core/role/role_cubit.dart';
 import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
-import 'package:clean_boilerplate/features/home/presentation/widgets/stat_card.dart';
+import 'package:clean_boilerplate/core/widgets/stat_card.dart';
 import 'package:clean_boilerplate/features/fund/domain/entities/fund_entity.dart';
 import 'package:clean_boilerplate/features/fund/presentation/bloc/fund_bloc.dart';
 import 'package:clean_boilerplate/features/fund/presentation/bloc/fund_date_filter.dart';

@@ -15,7 +15,7 @@ class GetCostMembersUseCase implements UseCase<List<CostMemberEntity>, NoParams>
   ResultFuture<List<CostMemberEntity>> call(NoParams params) => _repository.getMembers();
 }
 
-/// Loads every bazar/cost entry.
+/// Loads every Cost/cost entry.
 @lazySingleton
 class GetCostsUseCase implements UseCase<List<CostEntity>, NoParams> {
   final CostRepository _repository;
@@ -25,7 +25,7 @@ class GetCostsUseCase implements UseCase<List<CostEntity>, NoParams> {
   ResultFuture<List<CostEntity>> call(NoParams params) => _repository.getCosts();
 }
 
-/// Params for recording a bazar/cost entry.
+/// Params for recording a Cost/cost entry.
 class AddCostParams extends Equatable {
   final String personId;
   final DateTime date;
@@ -37,7 +37,7 @@ class AddCostParams extends Equatable {
   List<Object?> get props => [personId, date, items];
 }
 
-/// Records a bazar/cost entry.
+/// Records a Cost/cost entry.
 @lazySingleton
 class AddCostUseCase implements UseCase<CostEntity, AddCostParams> {
   final CostRepository _repository;
@@ -47,7 +47,7 @@ class AddCostUseCase implements UseCase<CostEntity, AddCostParams> {
   ResultFuture<CostEntity> call(AddCostParams params) => _repository.addCost(personId: params.personId, date: params.date, items: params.items);
 }
 
-/// Params for editing an existing bazar/cost entry.
+/// Params for editing an existing Cost/cost entry.
 class UpdateCostParams extends Equatable {
   final String id;
   final String personId;
@@ -60,7 +60,7 @@ class UpdateCostParams extends Equatable {
   List<Object?> get props => [id, personId, date, items];
 }
 
-/// Edits an existing bazar/cost entry.
+/// Edits an existing Cost/cost entry.
 @lazySingleton
 class UpdateCostUseCase implements UseCase<CostEntity, UpdateCostParams> {
   final CostRepository _repository;
@@ -70,7 +70,7 @@ class UpdateCostUseCase implements UseCase<CostEntity, UpdateCostParams> {
   ResultFuture<CostEntity> call(UpdateCostParams params) => _repository.updateCost(id: params.id, personId: params.personId, date: params.date, items: params.items);
 }
 
-/// Removes a bazar/cost entry by id.
+/// Removes a Cost/cost entry by id.
 @lazySingleton
 class DeleteCostUseCase implements UseCase<void, String> {
   final CostRepository _repository;

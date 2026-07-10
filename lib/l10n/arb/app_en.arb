@@ -36,5 +36,6 @@
   "validation_is_required": "is required",
   "validation_invalid_email": "Please enter a valid email address",
   "validation_password_min_length": "Password must be at least 6 characters long",
-  "validation_invalid_phone": "Please enter a valid phone number"
+  "validation_invalid_phone": "Please enter a valid phone number",
+  "viewAll": "View all"
 }

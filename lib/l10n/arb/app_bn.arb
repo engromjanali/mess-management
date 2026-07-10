@@ -36,5 +36,6 @@
   "validation_is_required": "প্রয়োজন",
   "validation_invalid_email": "একটি বৈধ ইমেইল ঠিকানা লিখুন",
   "validation_password_min_length": "পাসওয়ার্ড অন্তত ৬ অক্ষর দীর্ঘ হতে হবে",
-  "validation_invalid_phone": "একটি বৈধ ফোন নম্বর লিখুন"
+  "validation_invalid_phone": "একটি বৈধ ফোন নম্বর লিখুন",
+  "viewAll": "সব দেখুন"
 }

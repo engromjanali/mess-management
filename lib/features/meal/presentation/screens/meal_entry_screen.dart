@@ -6,10 +6,10 @@ import 'package:clean_boilerplate/core/di/injection.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/screen_matres_extensions.dart';
+import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_formatters.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
-import 'package:clean_boilerplate/features/home/presentation/widgets/stat_card.dart';
 import 'package:clean_boilerplate/features/meal/domain/entities/meal_member_entity.dart';
 import 'package:clean_boilerplate/features/meal/presentation/bloc/meal_admin_bloc.dart';
 import 'package:clean_boilerplate/features/meal/presentation/bloc/meal_admin_event.dart';
@@ -57,10 +57,6 @@ class _MealEntryViewState extends State<_MealEntryView> {
       backgroundColor: context.theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Add Meal'),
-        actions: [
-          TextButton.icon(onPressed: _pickDate, icon: const Icon(Icons.calendar_today_rounded, size: 18), label: Text(MealFormatters.dayLabel(_date))),
-          const SizedBox(width: Dimensions.paddingSizeSmall),
-        ],
       ),
       body: BlocConsumer<MealAdminBloc, MealAdminState>(
         listener: (context, state) {
@@ -70,7 +66,7 @@ class _MealEntryViewState extends State<_MealEntryView> {
           return state.maybeWhen(
             loading: () => const Center(child: CircularProgressIndicator.adaptive()),
             error: (message) => _ErrorView(message: message),
-            loaded: (data, _, _) => _Body(data: data, date: _date),
+            loaded: (data, _, _) => _Body(data: data, date: _date, onPickDate: _pickDate),
             orElse: () => const Center(child: CircularProgressIndicator.adaptive()),
           );
         },
@@ -108,68 +104,81 @@ class _ErrorView extends StatelessWidget {
   }
 }
 
-class _Body extends StatelessWidget {
-  const _Body({required this.data, required this.date});
+class _Body extends StatefulWidget {
+  const _Body({required this.data, required this.date, required this.onPickDate});
   final MealAdminEntity data;
   final DateTime date;
+  final VoidCallback onPickDate;
+
+  @override
+  State<_Body> createState() => _BodyState();
+}
+
+class _BodyState extends State<_Body> {
+  double _breakfast = 0;
+  double _lunch = 1;
+  double _dinner = 1;
+  final Map<String, MemberMealEntity> _drafts = {};
+
+  @override
+  void didUpdateWidget(covariant _Body oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.date.year != widget.date.year || oldWidget.date.month != widget.date.month || oldWidget.date.day != widget.date.day) {
+      _drafts.clear();
+    }
+  }
 
   /// This member's record on [date], or null if none recorded.
   MemberMealEntity? _recordFor(String memberId) {
-    for (final e in data.entries) {
-      if (e.memberId == memberId && e.sameDay(date)) return e;
+    for (final e in widget.data.entries) {
+      if (e.memberId == memberId && e.sameDay(widget.date)) return e;
     }
     return null;
   }
 
-  double get _totalMeals {
-    var sum = 0.0;
-    for (final m in data.members) {
-      sum += _recordFor(m.id)?.total ?? 0;
+  MemberMealEntity? _mealFor(String memberId) => _drafts[memberId] ?? _recordFor(memberId);
+
+  void _applyToAll(BuildContext context) {
+    setState(() {
+      for (final member in widget.data.members) {
+        _drafts[member.id] = MemberMealEntity(memberId: member.id, date: widget.date, breakfast: _breakfast, lunch: _lunch, dinner: _dinner);
+      }
+    });
+    context.showSuccessSnackBar('Meal applied to all members');
+  }
+
+  void _saveAll(BuildContext context) {
+    final bloc = context.read<MealAdminBloc>();
+    for (final member in widget.data.members) {
+      final meal = _mealFor(member.id);
+      if (meal != null) {
+        bloc.add(MealAdminEvent.save(memberId: member.id, date: widget.date, breakfast: meal.breakfast, lunch: meal.lunch, dinner: meal.dinner));
+      }
     }
-    return sum;
-  }
-
-  int get _withMeals => data.members.where((m) => (_recordFor(m.id)?.total ?? 0) > 0).length;
-
-  List<_Stat> _summary(BuildContext context) {
-    final c = context.customThemeColors;
-    return [
-      _Stat('Members', '${data.members.length}', Icons.groups_rounded, c.primaryColor),
-      _Stat('With meals', '$_withMeals', Icons.how_to_reg_rounded, c.successColor),
-      _Stat('Total meals', MealFormatters.count(_totalMeals), Icons.restaurant_rounded, c.secondaryColor),
-      _Stat('Total cost', DashboardFormatters.taka(_totalMeals * data.mealRate), Icons.payments_rounded, c.infoColor),
-    ];
-  }
-
-  void _applyAll(BuildContext context, double b, double l, double d) {
-    context.read<MealAdminBloc>().add(MealAdminEvent.addForAll(date: date, breakfast: b, lunch: l, dinner: d));
-    context.showSuccessSnackBar('Meal applied to all ${data.members.length} members');
+    context.showSuccessSnackBar('Meal saved for all ${widget.data.members.length} members');
   }
 
   Future<void> _edit(BuildContext context, MealMemberEntity member) async {
-    final bloc = context.read<MealAdminBloc>();
-    final result = await showMemberMealForm(context, members: data.members, existing: _recordFor(member.id), presetMemberId: member.id, presetDate: date);
+    final result = await showMemberMealForm(context, members: widget.data.members, existing: _mealFor(member.id), presetMemberId: member.id, presetDate: widget.date, mealOnlyEdit: true);
     if (result != null) {
-      bloc.add(MealAdminEvent.save(memberId: result.memberId, date: result.date, breakfast: result.breakfast, lunch: result.lunch, dinner: result.dinner));
+      setState(() {
+        _drafts[result.memberId] = MemberMealEntity(memberId: result.memberId, date: widget.date, breakfast: result.breakfast, lunch: result.lunch, dinner: result.dinner);
+      });
     }
   }
 
-  Future<void> _delete(BuildContext context, MealMemberEntity member) async {
-    final bloc = context.read<MealAdminBloc>();
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Delete meal'),
-        content: Text("Clear ${member.name}'s meal for ${MealFormatters.dayLabel(date)}?"),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.of(ctx).pop(true), child: const Text('Delete')),
-        ],
-      ),
-    );
-    if (confirmed ?? false) {
-      bloc.add(MealAdminEvent.delete(memberId: member.id, date: date));
-    }
+  void _delete(BuildContext context, MealMemberEntity member) {
+    setState(() {
+      _drafts[member.id] = MemberMealEntity(memberId: member.id, date: widget.date);
+    });
+  }
+
+  void _changeMeal(double breakfast, double lunch, double dinner) {
+    setState(() {
+      _breakfast = breakfast;
+      _lunch = lunch;
+      _dinner = dinner;
+    });
   }
 
   @override
@@ -185,25 +194,25 @@ class _Body extends StatelessWidget {
                 final wide = constraints.maxWidth >= 900;
 
                 final applyCard = AnimatedEntrance(
-                  child: ApplyToAllCard(memberCount: data.members.length, onApply: (b, l, d) => _applyAll(context, b, l, d)),
+                  child: ApplyToAllCard(memberCount: widget.data.members.length, breakfast: _breakfast, lunch: _lunch, dinner: _dinner, dateLabel: MealFormatters.dayLabel(widget.date), onChanged: _changeMeal, onApplyToAll: () => _applyToAll(context)),
                 );
 
                 final membersColumn = Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const SectionTitle(title: 'Members', icon: Icons.people_alt_rounded),
-                    for (var i = 0; i < data.members.length; i++)
+                    for (var i = 0; i < widget.data.members.length; i++)
                       Padding(
                         padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeDefault),
                         child: AnimatedEntrance(
                           delay: Duration(milliseconds: 40 * i),
                           child: _MemberRow(
                             index: i + 1,
-                            name: data.members[i].name,
-                            record: _recordFor(data.members[i].id),
-                            mealRate: data.mealRate,
-                            onEdit: () => _edit(context, data.members[i]),
-                            onDelete: () => _delete(context, data.members[i]),
+                            name: widget.data.members[i].name,
+                            record: _mealFor(widget.data.members[i].id),
+                            mealRate: widget.data.mealRate,
+                            onEdit: () => _edit(context, widget.data.members[i]),
+                            onDelete: () => _delete(context, widget.data.members[i]),
                           ),
                         ),
                       ),
@@ -213,7 +222,7 @@ class _Body extends StatelessWidget {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _SummaryGrid(stats: _summary(context)),
+                    AnimatedEntrance(child: _DateSelectorCard(date: widget.date, onTap: widget.onPickDate)),
                     const SizedBox(height: Dimensions.paddingSizeSmall),
                     if (wide)
                       Row(
@@ -224,7 +233,7 @@ class _Body extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                const SectionTitle(title: 'Bulk entry', icon: Icons.edit_calendar_rounded),
+                                const SectionTitle(title: 'Bulk set', icon: Icons.edit_calendar_rounded),
                                 applyCard,
                               ],
                             ),
@@ -234,11 +243,13 @@ class _Body extends StatelessWidget {
                         ],
                       )
                     else ...[
-                      const SectionTitle(title: 'Bulk entry', icon: Icons.edit_calendar_rounded),
+                      const SectionTitle(title: 'Bulk set', icon: Icons.edit_calendar_rounded),
                       applyCard,
                       const SizedBox(height: Dimensions.paddingSizeSmall),
                       membersColumn,
                     ],
+                    const SizedBox(height: Dimensions.paddingSizeSmall),
+                    _BottomSaveButton(onSave: _drafts.isEmpty ? null : () => _saveAll(context)),
                     SizedBox(height: context.bottomPadding),
                   ],
                 );
@@ -247,6 +258,151 @@ class _Body extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _BottomSaveButton extends StatelessWidget {
+  const _BottomSaveButton({required this.onSave});
+  final VoidCallback? onSave;
+
+  @override
+  Widget build(BuildContext context) {
+    final wide = ResponsiveHelper.isBigTab(context) || ResponsiveHelper.isDesktop(context);
+
+    return Align(
+      alignment: wide ? Alignment.centerRight : Alignment.center,
+      child: SizedBox(
+      width: wide ? 300 : double.infinity,
+      height: Dimensions.buttonHeightLarge,
+      child: ElevatedButton.icon(
+        onPressed: onSave,
+        style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge))),
+        icon: const Icon(Icons.save_rounded),
+        label: Text('Save', style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
+      ),
+      ),
+    );
+  }
+}
+
+class _DateSelectorCard extends StatelessWidget {
+  const _DateSelectorCard({required this.date, required this.onTap});
+  final DateTime date;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+    final now = DateTime.now();
+    final isToday = date.year == now.year && date.month == now.month && date.day == now.day;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 420;
+
+        return Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge),
+            child: Container(
+              padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge),
+                border: Border.all(color: colors.primaryColor.withValues(alpha: 0.25)),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    colors.primaryColor.withValues(alpha: context.isDarkMode ? 0.20 : 0.10),
+                    colors.infoColor.withValues(alpha: context.isDarkMode ? 0.14 : 0.06),
+                  ],
+                ),
+              ),
+              child: compact
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          children: [
+                            _DateIcon(color: colors.primaryColor),
+                            const SizedBox(width: Dimensions.paddingSizeDefault),
+                            Expanded(child: _DateText(isToday: isToday, date: date)),
+                          ],
+                        ),
+                        const SizedBox(height: Dimensions.paddingSizeDefault),
+                        FilledButton.icon(
+                          onPressed: onTap,
+                          icon: const Icon(Icons.edit_calendar_rounded, size: 18),
+                          label: const Text('Change date'),
+                        ),
+                      ],
+                    )
+                  : Row(
+                      children: [
+                        _DateIcon(color: colors.primaryColor),
+                        const SizedBox(width: Dimensions.paddingSizeDefault),
+                        Expanded(child: _DateText(isToday: isToday, date: date)),
+                        const SizedBox(width: Dimensions.paddingSizeSmall),
+                        FilledButton.icon(
+                          onPressed: onTap,
+                          icon: const Icon(Icons.edit_calendar_rounded, size: 18),
+                          label: const Text('Change'),
+                        ),
+                      ],
+                    ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _DateIcon extends StatelessWidget {
+  const _DateIcon({required this.color});
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 54,
+      height: 54,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.16), borderRadius: BorderRadius.circular(Dimensions.radiusLarge)),
+      child: Icon(Icons.calendar_month_rounded, color: color, size: Dimensions.iconSizeLarge),
+    );
+  }
+}
+
+class _DateText extends StatelessWidget {
+  const _DateText({required this.isToday, required this.date});
+  final bool isToday;
+  final DateTime date;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          isToday ? 'Today meal entry' : 'Meal entry date',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          MealFormatters.dayLabel(date),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textSecondaryColor),
+        ),
+      ],
     );
   }
 }
@@ -268,64 +424,142 @@ class _MemberRow extends StatelessWidget {
     final total = record?.total ?? 0;
     final hasMeal = total > 0;
 
-    return Container(
-      padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
-      decoration: BoxDecoration(
-        color: colors.cardBackgroundColor,
-        borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
-        border: Border.all(color: colors.borderColor.withValues(alpha: 0.4)),
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 18,
-            backgroundColor: colors.primaryColor.withValues(alpha: 0.15),
-            child: Text(
-              '$index',
-              style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.primaryColor),
-            ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 520;
+
+        return Container(
+          padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+          decoration: BoxDecoration(
+            color: colors.cardBackgroundColor,
+            borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
+            border: Border.all(color: colors.borderColor.withValues(alpha: 0.4)),
           ),
-          const SizedBox(width: Dimensions.paddingSizeDefault),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
+          child: compact
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      children: [
+                        _MemberIndex(index: index),
+                        const SizedBox(width: Dimensions.paddingSizeDefault),
+                        Expanded(child: _MemberMealText(name: name, total: total, hasMeal: hasMeal)),
+                      ],
+                    ),
+                    const SizedBox(height: Dimensions.paddingSizeDefault),
+                    Wrap(
+                      spacing: Dimensions.paddingSizeExtraSmall,
+                      runSpacing: Dimensions.paddingSizeExtraSmall,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      alignment: WrapAlignment.spaceBetween,
+                      children: [
+                        Wrap(
+                          spacing: 2,
+                          children: [
+                            _Badge(label: 'B', value: record?.breakfast ?? 0, accent: colors.warningColor),
+                            _Badge(label: 'L', value: record?.lunch ?? 0, accent: colors.primaryColor),
+                            _Badge(label: 'D', value: record?.dinner ?? 0, accent: colors.infoColor),
+                          ],
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              tooltip: 'Edit $name',
+                              visualDensity: VisualDensity.compact,
+                              icon: Icon(Icons.edit_rounded, size: Dimensions.iconSizeDefault, color: colors.infoColor),
+                              onPressed: onEdit,
+                            ),
+                            IconButton(
+                              tooltip: 'Clear $name',
+                              visualDensity: VisualDensity.compact,
+                              icon: Icon(Icons.highlight_remove_sharp, size: Dimensions.iconSizeDefault, color: colors.errorColor),
+                              onPressed: hasMeal ? onDelete : null,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                )
+              : Row(
+                  children: [
+                    _MemberIndex(index: index),
+                    const SizedBox(width: Dimensions.paddingSizeDefault),
+                    Expanded(child: _MemberMealText(name: name, total: total, hasMeal: hasMeal,)),
+                    const SizedBox(width: Dimensions.paddingSizeSmall),
+                    _Badge(label: 'B', value: record?.breakfast ?? 0, accent: colors.warningColor),
+                    _Badge(label: 'L', value: record?.lunch ?? 0, accent: colors.primaryColor),
+                    _Badge(label: 'D', value: record?.dinner ?? 0, accent: colors.infoColor),
+                    const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                    IconButton(
+                      tooltip: 'Edit $name',
+                      visualDensity: VisualDensity.compact,
+                      icon: Icon(Icons.edit_rounded, size: Dimensions.iconSizeDefault, color: colors.infoColor),
+                      onPressed: onEdit,
+                    ),
+                    IconButton(
+                      tooltip: 'Clear $name',
+                      visualDensity: VisualDensity.compact,
+                      icon: Icon(Icons.highlight_remove_sharp, size: Dimensions.iconSizeDefault, color: colors.errorColor),
+                      onPressed: hasMeal ? onDelete : null,
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  hasMeal
-                      ? '${MealFormatters.count(total)} meals · '
-                            '${DashboardFormatters.taka(total * mealRate)}'
-                      : 'No meal added',
-                  style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: hasMeal ? colors.textSecondaryColor : colors.textHintColor),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: Dimensions.paddingSizeSmall),
-          _Badge(label: 'B', value: record?.breakfast ?? 0, accent: colors.warningColor),
-          _Badge(label: 'L', value: record?.lunch ?? 0, accent: colors.primaryColor),
-          _Badge(label: 'D', value: record?.dinner ?? 0, accent: colors.infoColor),
-          const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-          IconButton(
-            tooltip: 'Edit $name',
-            visualDensity: VisualDensity.compact,
-            icon: Icon(Icons.edit_rounded, size: Dimensions.iconSizeDefault, color: colors.infoColor),
-            onPressed: onEdit,
-          ),
-          IconButton(
-            tooltip: 'Delete $name',
-            visualDensity: VisualDensity.compact,
-            icon: Icon(Icons.delete_outline_rounded, size: Dimensions.iconSizeDefault, color: colors.errorColor),
-            onPressed: hasMeal ? onDelete : null,
-          ),
-        ],
+        );
+      },
+    );
+  }
+}
+
+class _MemberIndex extends StatelessWidget {
+  const _MemberIndex({required this.index});
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+
+    return CircleAvatar(
+      radius: 18,
+      backgroundColor: colors.primaryColor.withValues(alpha: 0.15),
+      child: Text(
+        '$index',
+        style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.primaryColor),
       ),
+    );
+  }
+}
+
+class _MemberMealText extends StatelessWidget {
+  const _MemberMealText({required this.name, required this.total, required this.hasMeal});
+  final String name;
+  final double total;
+  final bool hasMeal;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          hasMeal
+              ? '${MealFormatters.count(total)} meals'
+              : 'No meal added',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: hasMeal ? colors.textSecondaryColor : colors.textHintColor),
+        ),
+      ],
     );
   }
 }
@@ -362,40 +596,4 @@ class _Badge extends StatelessWidget {
       ),
     );
   }
-}
-
-class _SummaryGrid extends StatelessWidget {
-  const _SummaryGrid({required this.stats});
-  final List<_Stat> stats;
-
-  @override
-  Widget build(BuildContext context) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.zero,
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 220,
-        mainAxisExtent: 140,
-        crossAxisSpacing: Dimensions.paddingSizeDefault,
-        mainAxisSpacing: Dimensions.paddingSizeDefault,
-      ),
-      itemCount: stats.length,
-      itemBuilder: (context, index) {
-        final stat = stats[index];
-        return AnimatedEntrance(
-          delay: Duration(milliseconds: 50 * index),
-          child: StatCard(label: stat.label, value: stat.value, icon: stat.icon, accent: stat.accent),
-        );
-      },
-    );
-  }
-}
-
-class _Stat {
-  const _Stat(this.label, this.value, this.icon, this.accent);
-  final String label;
-  final String value;
-  final IconData icon;
-  final Color accent;
 }

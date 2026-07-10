@@ -1,7 +1,7 @@
 import 'package:clean_boilerplate/features/cost/domain/entities/cost_entity.dart';
 import 'package:clean_boilerplate/features/cost/data/models/cost_model.dart';
 
-/// Contract for any source that can provide & mutate bazar/cost entries.
+/// Contract for any source that can provide & mutate Cost/cost entries.
 abstract class CostDataSource {
   Future<List<CostMemberModel>> getMembers();
 

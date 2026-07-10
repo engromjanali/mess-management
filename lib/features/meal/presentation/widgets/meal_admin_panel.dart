@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/di/injection.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_formatters.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
 import 'package:clean_boilerplate/features/meal/domain/entities/meal_member_entity.dart';
@@ -19,23 +22,33 @@ import 'package:clean_boilerplate/features/meal/presentation/widgets/member_meal
 /// specific date, with member and date filters over the full record list.
 /// Provides its own [MealAdminBloc] so it is self-contained inside the screen.
 class MealAdminPanel extends StatelessWidget {
-  const MealAdminPanel({super.key});
+  const MealAdminPanel({this.showViewAll = true, super.key});
+
+  final bool showViewAll;
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<MealAdminBloc>(create: (_) => getIt<MealAdminBloc>()..add(const MealAdminEvent.load()), child: const _MealAdminView());
+    return BlocProvider<MealAdminBloc>(create: (_) => getIt<MealAdminBloc>()..add(const MealAdminEvent.load()), child: _MealAdminView(showViewAll: showViewAll));
   }
 }
 
 class _MealAdminView extends StatelessWidget {
-  const _MealAdminView();
+  const _MealAdminView({required this.showViewAll});
+
+  final bool showViewAll;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const SectionTitle(title: 'Manage meals', icon: Icons.manage_accounts_rounded),
+        SectionTitle(
+          title: 'Manage meals',
+          icon: Icons.manage_accounts_rounded,
+          showViewAll: showViewAll,
+          toolTipsLabel: 'See all members',
+          viewAllAction: showViewAll ? () => context.push(AppRoutes.mealList) : null,
+        ),
         BlocBuilder<MealAdminBloc, MealAdminState>(
           builder: (context, state) {
             return state.when(
@@ -124,6 +137,21 @@ class _ManageCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
     final entries = data.filtered(memberId: selectedMemberId, date: selectedDate);
+    final compactActions = ResponsiveHelper.isMobile(context) || ResponsiveHelper.isSmallTab(context);
+    final recordCount = Text(
+      '${entries.length} '
+      '${entries.length == 1 ? 'record' : 'records'}',
+      style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
+    );
+    final actionButtons = Wrap(
+      spacing: Dimensions.paddingSizeSmall,
+      runSpacing: Dimensions.paddingSizeSmall,
+      alignment: WrapAlignment.end,
+      children: [
+        FilledButton.icon(onPressed: () => context.go(AppRoutes.addMeal), icon: const Icon(Icons.playlist_add_rounded, size: 20), label: const Text('Add meal for all')),
+        FilledButton.icon(onPressed: () => _add(context), icon: const Icon(Icons.add_rounded, size: 20), label: const Text('Add meal')),
+      ],
+    );
 
     return _Card(
       padding: EdgeInsets.zero,
@@ -135,18 +163,23 @@ class _ManageCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        '${entries.length} '
-                        '${entries.length == 1 ? 'record' : 'records'}',
-                        style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
-                      ),
-                    ),
-                    FilledButton.icon(onPressed: () => _add(context), icon: const Icon(Icons.add_rounded, size: 20), label: const Text('Add meal')),
-                  ],
-                ),
+                if (compactActions)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      recordCount,
+                      const SizedBox(height: Dimensions.paddingSizeDefault),
+                      actionButtons,
+                    ],
+                  )
+                else
+                  Row(
+                    children: [
+                      Expanded(child: recordCount),
+                      const SizedBox(width: Dimensions.paddingSizeSmall),
+                      actionButtons,
+                    ],
+                  ),
                 const SizedBox(height: Dimensions.paddingSizeDefault),
                 _Filters(members: data.members, selectedMemberId: selectedMemberId, selectedDate: selectedDate),
               ],
@@ -288,6 +321,7 @@ class _EntryRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
+    final showActionMenu = ResponsiveHelper.isMobile(context) || ResponsiveHelper.isSmallTab(context);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault),
@@ -345,23 +379,50 @@ class _EntryRow extends StatelessWidget {
             ),
           ),
           // Edit / delete actions.
-          IconButton(
-            tooltip: 'Edit',
-            visualDensity: VisualDensity.compact,
-            onPressed: onEdit,
-            icon: Icon(Icons.edit_rounded, size: Dimensions.iconSizeDefault, color: colors.primaryColor),
-          ),
-          IconButton(
-            tooltip: 'Delete',
-            visualDensity: VisualDensity.compact,
-            onPressed: onDelete,
-            icon: Icon(Icons.delete_outline_rounded, size: Dimensions.iconSizeDefault, color: colors.errorColor),
-          ),
+          if (showActionMenu)
+            PopupMenuButton<_MealAction>(
+              tooltip: 'Options',
+              icon: Icon(Icons.more_vert_rounded, color: colors.textSecondaryColor),
+              onSelected: (action) {
+                switch (action) {
+                  case _MealAction.edit:
+                    onEdit();
+                  case _MealAction.delete:
+                    onDelete();
+                }
+              },
+              itemBuilder: (context) => const [
+                PopupMenuItem(
+                  value: _MealAction.edit,
+                  child: ListTile(dense: true, contentPadding: EdgeInsets.zero, leading: Icon(Icons.edit_rounded), title: Text('Edit')),
+                ),
+                PopupMenuItem(
+                  value: _MealAction.delete,
+                  child: ListTile(dense: true, contentPadding: EdgeInsets.zero, leading: Icon(Icons.delete_outline_rounded), title: Text('Delete')),
+                ),
+              ],
+            )
+          else ...[
+            IconButton(
+              tooltip: 'Edit',
+              visualDensity: VisualDensity.compact,
+              onPressed: onEdit,
+              icon: Icon(Icons.edit_rounded, size: Dimensions.iconSizeDefault, color: colors.primaryColor),
+            ),
+            IconButton(
+              tooltip: 'Delete',
+              visualDensity: VisualDensity.compact,
+              onPressed: onDelete,
+              icon: Icon(Icons.delete_outline_rounded, size: Dimensions.iconSizeDefault, color: colors.errorColor),
+            ),
+          ],
         ],
       ),
     );
   }
 }
+
+enum _MealAction { edit, delete }
 
 class _EmptyState extends StatelessWidget {
   const _EmptyState({required this.filtered});

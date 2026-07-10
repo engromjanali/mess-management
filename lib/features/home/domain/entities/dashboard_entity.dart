@@ -14,6 +14,11 @@ class DashboardEntity extends Equatable {
   final double bazerCost;
   final double totalMeal;
   final double mealRate;
+  final String managerEmail;
+  final String managerPhone;
+  final String actingManagerEmail;
+  final String actingManagerPhone;
+  final String messAddress;
 
   // My section
   final double myTotalMeal;
@@ -38,6 +43,11 @@ class DashboardEntity extends Equatable {
     required this.bazerCost,
     required this.totalMeal,
     required this.mealRate,
+    required this.managerEmail,
+    required this.managerPhone,
+    required this.actingManagerEmail,
+    required this.actingManagerPhone,
+    required this.messAddress,
     required this.myTotalMeal,
     required this.myDeposit,
     required this.myRemaining,
@@ -55,6 +65,11 @@ class DashboardEntity extends Equatable {
     bazerCost: bazerCost,
     totalMeal: totalMeal,
     mealRate: mealRate,
+    managerEmail: managerEmail,
+    managerPhone: managerPhone,
+    actingManagerEmail: actingManagerEmail,
+    actingManagerPhone: actingManagerPhone,
+    messAddress: messAddress,
     myTotalMeal: myTotalMeal,
     myDeposit: myDeposit,
     myRemaining: myRemaining,
@@ -65,7 +80,7 @@ class DashboardEntity extends Equatable {
   );
 
   @override
-  List<Object?> get props => [totalBalance, mealBalance, fundBalance, totalDeposit, bazerCost, totalMeal, mealRate, myTotalMeal, myDeposit, myRemaining, members, pinnedNotice, isManager, userName];
+  List<Object?> get props => [totalBalance, mealBalance, fundBalance, totalDeposit, bazerCost, totalMeal, mealRate, managerEmail, managerPhone, actingManagerEmail, actingManagerPhone, messAddress, myTotalMeal, myDeposit, myRemaining, members, pinnedNotice, isManager, userName];
 }
 
 /// Per-member statistics rendered in the manager member table.

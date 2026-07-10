@@ -7,12 +7,16 @@ import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/di/injection.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/screen_matres_extensions.dart';
+import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
+import 'package:clean_boilerplate/core/widgets/app_footer.dart';
 import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
+import 'package:clean_boilerplate/core/widgets/stat_card.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_formatters.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_top_bar.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
-import 'package:clean_boilerplate/features/home/presentation/widgets/stat_card.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
 import 'package:clean_boilerplate/features/meal/domain/entities/meal_entity.dart';
 import 'package:clean_boilerplate/features/meal/presentation/bloc/meal_bloc.dart';
 import 'package:clean_boilerplate/features/meal/presentation/bloc/meal_event.dart';
@@ -42,19 +46,14 @@ class _MealView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final showWebAppBar = ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context);
+
     return Scaffold(
       backgroundColor: context.theme.scaffoldBackgroundColor,
-      appBar: AppBar(
+      endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
+      appBar: showWebAppBar ? null : AppBar(
         leading: const HomeBackButton(),
         title: const Text('Meals'),
-        actions: [
-          // Admins get a shortcut to the bulk "add meal for all" page.
-          BlocBuilder<RoleCubit, UserRole>(
-            builder: (context, role) =>
-                role.isAdmin ? IconButton(tooltip: 'Add meal for all', icon: const Icon(Icons.playlist_add_rounded), onPressed: () => context.push(AppRoutes.addMeal)) : const SizedBox.shrink(),
-          ),
-          IconButton(tooltip: 'Refresh', icon: const Icon(Icons.refresh_rounded), onPressed: () => context.read<MealBloc>().add(const MealEvent.refresh())),
-        ],
       ),
       body: BlocBuilder<MealBloc, MealState>(
         builder: (context, state) {
@@ -62,7 +61,25 @@ class _MealView extends StatelessWidget {
             initial: _loading,
             loading: _loading,
             error: (message) => _ErrorView(message: message),
-            loaded: (overview) => _MealBody(overview: overview),
+            loaded: (overview) => showWebAppBar
+                ? Builder(
+                    builder: (context) => Column(
+                      children: [
+                        DashboardTopBar(
+                          userName: overview.userName,
+                          onProfileTap: () => Scaffold.of(context).openEndDrawer(),
+                          navItems: [
+                            DashboardNavItem(label: 'Home', icon: Icons.home_rounded, onTap: () => context.go(AppRoutes.home)),
+                            DashboardNavItem(label: 'Meals', icon: Icons.restaurant_rounded, active: true, onTap: () {}),
+                            DashboardNavItem(label: 'Deposits', icon: Icons.account_balance_wallet_rounded, onTap: () => context.go(AppRoutes.deposits)),
+                            DashboardNavItem(label: 'Cost', icon: Icons.shopping_cart_rounded, onTap: () => context.go(AppRoutes.costs)),
+                          ],
+                        ),
+                        Expanded(child: _MealBody(overview: overview)),
+                      ],
+                    ),
+                  )
+                : _MealBody(overview: overview),
           );
         },
       ),
@@ -150,13 +167,16 @@ class _MealBody extends StatelessWidget {
       },
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
-            child: Padding(
-              padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
+                child: Padding(
+                  padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
                   final wide = constraints.maxWidth >= 900;
 
                   return Column(
@@ -207,10 +227,13 @@ class _MealBody extends StatelessWidget {
                       SizedBox(height: context.bottomPadding),
                     ],
                   );
-                },
+                    },
+                  ),
+                ),
               ),
             ),
-          ),
+            if (ResponsiveHelper.isDesktop(context)) const AppFooter(),
+          ],
         ),
       ),
     );

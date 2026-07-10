@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-/// A single line item within a bazar/cost entry — one product and its price.
+/// A single line item within a Cost/cost entry — one product and its price.
 class CostItemEntity extends Equatable {
   final String product;
   final double price;
@@ -11,7 +11,7 @@ class CostItemEntity extends Equatable {
   List<Object?> get props => [product, price];
 }
 
-/// A member a bazar/cost entry can be recorded against.
+/// A member a Cost/cost entry can be recorded against.
 class CostMemberEntity extends Equatable {
   final String id;
   final String name;
@@ -22,7 +22,7 @@ class CostMemberEntity extends Equatable {
   List<Object?> get props => [id, name];
 }
 
-/// One bazar/cost entry: who did the shopping, when, and the list of products
+/// One Cost/cost entry: who did the shopping, when, and the list of products
 /// bought with their prices. The [total] is the sum of every line item.
 class CostEntity extends Equatable {
   final String id;

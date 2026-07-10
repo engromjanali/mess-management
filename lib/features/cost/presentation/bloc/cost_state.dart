@@ -3,7 +3,7 @@ import 'package:clean_boilerplate/features/cost/domain/entities/cost_entity.dart
 
 part 'cost_state.freezed.dart';
 
-/// Cost (bazar) states. Runtime-only, so no JSON serialization.
+/// Cost (Cost) states. Runtime-only, so no JSON serialization.
 @Freezed(toJson: false, fromJson: false)
 class CostState with _$CostState {
   /// Before the first load.

@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/di/injection.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/screen_matres_extensions.dart';
+import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
+import 'package:clean_boilerplate/core/widgets/app_footer.dart';
 import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_top_bar.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
-import 'package:clean_boilerplate/features/home/presentation/widgets/stat_card.dart';
+import 'package:clean_boilerplate/core/widgets/stat_card.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
 import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_entity.dart';
 import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_bloc.dart';
 import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_event.dart';
@@ -45,13 +53,16 @@ class _DepositView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final showWebAppBar = ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context);
+
     // Re-load when the global role switcher flips between user / admin.
     return BlocListener<RoleCubit, UserRole>(
       listenWhen: (prev, curr) => prev != curr,
       listener: (context, role) => context.read<DepositBloc>().add(DepositEvent.started(isAdmin: role.isAdmin)),
       child: Scaffold(
         backgroundColor: context.theme.scaffoldBackgroundColor,
-        appBar: AppBar(leading: const HomeBackButton(), title: const Text('Deposits')),
+        endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
+        appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: const Text('Deposits')),
         floatingActionButton: BlocBuilder<DepositBloc, DepositState>(
           builder: (context, state) {
             final canAdd = state.maybeWhen(loaded: (_, _, _, _, _, isAdmin, _, _, _) => isAdmin, orElse: () => false);
@@ -67,17 +78,36 @@ class _DepositView extends StatelessWidget {
             return state.maybeWhen(
               loading: () => const Center(child: CircularProgressIndicator.adaptive()),
               error: (message) => _ErrorView(message: message),
-              loaded: (mode, deposits, members, dateFilter, selectedDate, isAdmin, selectedMember, selectedRange, saving) => _DepositBody(
-                mode: mode,
-                deposits: deposits,
-                members: members,
-                dateFilter: dateFilter,
-                selectedDate: selectedDate,
-                isAdmin: isAdmin,
-                selectedMember: selectedMember,
-                selectedRange: selectedRange,
-                saving: saving,
-              ),
+              loaded: (mode, deposits, members, dateFilter, selectedDate, isAdmin, selectedMember, selectedRange, saving) {
+                final body = _DepositBody(
+                  mode: mode,
+                  deposits: deposits,
+                  members: members,
+                  dateFilter: dateFilter,
+                  selectedDate: selectedDate,
+                  isAdmin: isAdmin,
+                  selectedMember: selectedMember,
+                  selectedRange: selectedRange,
+                  saving: saving,
+                );
+                if (!showWebAppBar) return body;
+                final user = context.watch<AuthBloc>().state.maybeWhen(authenticated: (user) => user, orElse: () => null);
+                return Column(
+                  children: [
+                    DashboardTopBar(
+                      userName: user?.name ?? 'User',
+                      onProfileTap: () => Scaffold.of(context).openEndDrawer(),
+                      navItems: [
+                        DashboardNavItem(label: 'Home', icon: Icons.home_rounded, onTap: () => context.go(AppRoutes.home)),
+                        DashboardNavItem(label: 'Meals', icon: Icons.restaurant_rounded, onTap: () => context.go(AppRoutes.meals)),
+                        DashboardNavItem(label: 'Deposits', icon: Icons.account_balance_wallet_rounded, active: true, onTap: () {}),
+                        DashboardNavItem(label: 'Cost', icon: Icons.shopping_cart_rounded, onTap: () => context.go(AppRoutes.costs)),
+                      ],
+                    ),
+                    Expanded(child: body),
+                  ],
+                );
+              },
               orElse: () => const Center(child: CircularProgressIndicator.adaptive()),
             );
           },
@@ -204,13 +234,20 @@ class _DepositBody extends StatelessWidget {
 
     return Stack(
       children: [
-        SingleChildScrollView(
-          child: Center(
+        LayoutBuilder(
+          builder: (context, viewportConstraints) => SingleChildScrollView(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
-              child: Padding(
-                padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
-                child: Column(
+              constraints: BoxConstraints(minHeight: viewportConstraints.maxHeight),
+              child: Column(
+                mainAxisAlignment: ResponsiveHelper.isDesktop(context) ? MainAxisAlignment.spaceBetween : MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
+                      child: Padding(
+                        padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+                        child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _SummaryGrid(stats: _summary(context)),
@@ -226,7 +263,12 @@ class _DepositBody extends StatelessWidget {
                       _DepositList(deposits: deposits, showMember: showMember, isAdmin: isAdmin, onEdit: (d) => _onEdit(context, d), onDelete: (d) => _onDelete(context, d)),
                     SizedBox(height: context.bottomPadding + 72),
                   ],
-                ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (ResponsiveHelper.isDesktop(context)) const AppFooter(),
+                ],
               ),
             ),
           ),

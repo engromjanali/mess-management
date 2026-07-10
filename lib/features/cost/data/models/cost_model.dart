@@ -22,7 +22,7 @@ class CostMemberModel {
   CostMemberEntity toEntity() => CostMemberEntity(id: id, name: name);
 }
 
-/// Data-layer DTO for a bazar/cost entry.
+/// Data-layer DTO for a Cost/cost entry.
 class CostModel {
   final String id;
   final String personId;

@@ -44,6 +44,7 @@ class AppFooter extends StatelessWidget {
                               _FooterLink(label: 'Home', route: AppRoutes.home),
                               _FooterLink(label: 'Meals', route: AppRoutes.meals),
                               _FooterLink(label: 'Deposits', route: AppRoutes.deposits),
+                              _FooterLink(label: 'Anonymous opinions', route: AppRoutes.opinions),
                             ],
                           ),
                         ),

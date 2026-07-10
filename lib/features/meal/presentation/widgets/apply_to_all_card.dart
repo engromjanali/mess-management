@@ -10,23 +10,22 @@ import 'package:clean_boilerplate/features/meal/presentation/widgets/meal_steppe
 /// day in one action — the core business rule (add meal for all members at a
 /// time, not one by one).
 class ApplyToAllCard extends StatefulWidget {
-  const ApplyToAllCard({required this.memberCount, required this.onApply, super.key});
+  const ApplyToAllCard({required this.memberCount, required this.breakfast, required this.lunch, required this.dinner, required this.onChanged, required this.onApplyToAll, this.dateLabel, super.key});
 
   final int memberCount;
-  final void Function(double breakfast, double lunch, double dinner) onApply;
+  final double breakfast;
+  final double lunch;
+  final double dinner;
+  final String? dateLabel;
+  final void Function(double breakfast, double lunch, double dinner) onChanged;
+  final VoidCallback onApplyToAll;
 
   @override
   State<ApplyToAllCard> createState() => _ApplyToAllCardState();
 }
 
 class _ApplyToAllCardState extends State<ApplyToAllCard> {
-  double _breakfast = 0;
-  double _lunch = 1;
-  double _dinner = 1;
-
-  double get _total => _breakfast + _lunch + _dinner;
-
-  String _fmt(double v) => v == v.roundToDouble() ? v.toStringAsFixed(0) : v.toString();
+  double get _total => widget.breakfast + widget.lunch + widget.dinner;
 
   @override
   Widget build(BuildContext context) {
@@ -62,11 +61,11 @@ class _ApplyToAllCardState extends State<ApplyToAllCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Add meal for everyone',
+                      'Set meal for everyone',
                       style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
                     ),
                     Text(
-                      'Applies to all ${widget.memberCount} members at once',
+                      widget.dateLabel == null ? 'Save one grouped meal entry for all ${widget.memberCount} members' : 'Save one grouped meal entry for ${widget.dateLabel}',
                       style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
                     ),
                   ],
@@ -75,19 +74,20 @@ class _ApplyToAllCardState extends State<ApplyToAllCard> {
             ],
           ),
           const SizedBox(height: Dimensions.paddingSizeLarge),
-          _StepRow(icon: Icons.free_breakfast_rounded, label: 'Breakfast', accent: colors.warningColor, value: _breakfast, onChanged: (v) => setState(() => _breakfast = v)),
+          _StepRow(icon: Icons.free_breakfast_rounded, label: 'Breakfast', accent: colors.warningColor, value: widget.breakfast, onChanged: (v) => widget.onChanged(v, widget.lunch, widget.dinner)),
           const SizedBox(height: Dimensions.paddingSizeSmall),
-          _StepRow(icon: Icons.lunch_dining_rounded, label: 'Lunch', accent: colors.primaryColor, value: _lunch, onChanged: (v) => setState(() => _lunch = v)),
+          _StepRow(icon: Icons.lunch_dining_rounded, label: 'Lunch', accent: colors.primaryColor, value: widget.lunch, onChanged: (v) => widget.onChanged(widget.breakfast, v, widget.dinner)),
           const SizedBox(height: Dimensions.paddingSizeSmall),
-          _StepRow(icon: Icons.dinner_dining_rounded, label: 'Dinner', accent: colors.infoColor, value: _dinner, onChanged: (v) => setState(() => _dinner = v)),
+          _StepRow(icon: Icons.dinner_dining_rounded, label: 'Dinner', accent: colors.infoColor, value: widget.dinner, onChanged: (v) => widget.onChanged(widget.breakfast, widget.lunch, v)),
           const SizedBox(height: Dimensions.paddingSizeLarge),
           SizedBox(
+            width: double.infinity,
             height: Dimensions.buttonHeightLarge,
-            child: ElevatedButton.icon(
-              onPressed: _total == 0 ? null : () => widget.onApply(_breakfast, _lunch, _dinner),
-              style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge))),
+            child: OutlinedButton.icon(
+              onPressed: _total == 0 ? null : widget.onApplyToAll,
+              style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge))),
               icon: const Icon(Icons.done_all_rounded),
-              label: Text('Apply ${_fmt(_total)} meals to all', style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
+              label: Text('Apply to all', style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
             ),
           ),
         ],

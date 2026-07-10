@@ -98,10 +98,43 @@ class _MessDetailsScreenState extends State<MessDetailsScreen> {
                               const SizedBox(height: Dimensions.spaceLarge),
                               _MessInfo(label: 'Current season', value: mess['season_name'] as String? ?? 'Not available'),
                               _MessInfo(label: 'Members', value: '${mess['member_count'] ?? 0}'),
-                              _MessInfo(label: 'Manager', value: mess['manager_name'] as String? ?? 'Not assigned'),
-                              _MessInfo(label: 'Acting manager', value: mess['act_manager_name'] as String? ?? 'Not assigned'),
                               _MessInfo(label: 'Email', value: (mess['email'] as String? ?? '').isEmpty ? 'Not provided' : mess['email'] as String),
                               _MessInfo(label: 'Phone', value: (mess['phone'] as String? ?? '').isEmpty ? 'Not provided' : mess['phone'] as String),
+                              const SizedBox(height: Dimensions.paddingSizeDefault),
+                              LayoutBuilder(
+                                builder: (context, constraints) {
+                                  final wide = constraints.maxWidth >= 700;
+                                  final width = wide ? (constraints.maxWidth - Dimensions.paddingSizeDefault) / 2 : constraints.maxWidth;
+                                  return Wrap(
+                                    spacing: Dimensions.paddingSizeDefault,
+                                    runSpacing: Dimensions.paddingSizeDefault,
+                                    children: [
+                                      SizedBox(
+                                        width: width,
+                                        child: _LeadershipCard(
+                                          title: 'Manager',
+                                          name: mess['manager_name'] as String? ?? 'Not assigned',
+                                          email: mess['manager_email'] as String? ?? '',
+                                          phone: mess['manager_phone'] as String? ?? '',
+                                          icon: Icons.admin_panel_settings_outlined,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: width,
+                                        child: _LeadershipCard(
+                                          title: 'Acting manager',
+                                          name: mess['act_manager_name'] as String? ?? 'Not assigned',
+                                          email: mess['act_manager_email'] as String? ?? '',
+                                          phone: mess['act_manager_phone'] as String? ?? '',
+                                          icon: Icons.supervisor_account_outlined,
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              ),
+                              const SizedBox(height: Dimensions.paddingSizeDefault),
+                              _MessLocationCard(address: mess['address'] as String? ?? ''),
                               if (mess['can_edit'] == true) ...[
                                 const SizedBox(height: Dimensions.paddingSizeDefault),
                                 FilledButton.icon(onPressed: () async { await context.push(AppRoutes.editMess); if (context.mounted) await _load(); }, icon: const Icon(Icons.edit_outlined), label: const Text('Edit mess details')),
@@ -119,6 +152,123 @@ class _MessDetailsScreenState extends State<MessDetailsScreen> {
                     ],
                   ),
                 ),
+    );
+  }
+}
+
+class _MessLocationCard extends StatelessWidget {
+  const _MessLocationCard({required this.address});
+
+  final String address;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+    return Container(
+      padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+      decoration: BoxDecoration(color: colors.surfaceColor, borderRadius: BorderRadius.circular(Dimensions.radiusLarge), border: Border.all(color: colors.borderColor)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+                decoration: BoxDecoration(color: colors.primaryColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
+                child: Icon(Icons.location_on_outlined, color: colors.primaryColor),
+              ),
+              const SizedBox(width: Dimensions.paddingSizeDefault),
+              Expanded(child: Text('Mess location', style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge))),
+            ],
+          ),
+          const SizedBox(height: Dimensions.paddingSizeDefault),
+          Text(address.isEmpty ? 'Address not provided' : address, style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor, height: 1.4)),
+          const SizedBox(height: Dimensions.paddingSizeDefault),
+          Container(
+            height: 180,
+            decoration: BoxDecoration(color: colors.primaryColor.withValues(alpha: 0.06), borderRadius: BorderRadius.circular(Dimensions.radiusDefault), border: Border.all(color: colors.borderColor)),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.map_outlined, size: 48, color: colors.primaryColor),
+                const SizedBox(height: Dimensions.paddingSizeSmall),
+                Text('Google Maps preview', style: AppTextStyles.sfProRoundedSemiBold.copyWith(color: colors.textPrimaryColor)),
+                const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                Text('Map integration is not implemented yet', textAlign: TextAlign.center, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor)),
+              ],
+            ),
+          ),
+          const SizedBox(height: Dimensions.paddingSizeDefault),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: FilledButton.icon(
+              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Google Maps location is not implemented yet.'))),
+              icon: const Icon(Icons.map_rounded),
+              label: const Text('View on Google Maps'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LeadershipCard extends StatelessWidget {
+  const _LeadershipCard({required this.title, required this.name, required this.email, required this.phone, required this.icon});
+
+  final String title;
+  final String name;
+  final String email;
+  final String phone;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+    return Container(
+      padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+      decoration: BoxDecoration(color: colors.surfaceColor, borderRadius: BorderRadius.circular(Dimensions.radiusLarge), border: Border.all(color: colors.borderColor)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+                decoration: BoxDecoration(color: colors.primaryColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
+                child: Icon(icon, color: colors.primaryColor),
+              ),
+              const SizedBox(width: Dimensions.paddingSizeDefault),
+              Expanded(child: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge))),
+            ],
+          ),
+          const SizedBox(height: Dimensions.paddingSizeDefault),
+          Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedSemiBold),
+          const SizedBox(height: Dimensions.paddingSizeSmall),
+          _LeadershipLine(icon: Icons.email_outlined, value: email.isEmpty ? 'Email not provided' : email),
+          const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+          _LeadershipLine(icon: Icons.phone_outlined, value: phone.isEmpty ? 'Phone not provided' : phone),
+        ],
+      ),
+    );
+  }
+}
+
+class _LeadershipLine extends StatelessWidget {
+  const _LeadershipLine({required this.icon, required this.value});
+
+  final IconData icon;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+    return Row(
+      children: [
+        Icon(icon, size: Dimensions.iconSizeSmall, color: colors.textSecondaryColor),
+        const SizedBox(width: Dimensions.paddingSizeSmall),
+        Expanded(child: Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))),
+      ],
     );
   }
 }

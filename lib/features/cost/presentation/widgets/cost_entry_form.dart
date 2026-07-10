@@ -7,7 +7,7 @@ import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
 import 'package:clean_boilerplate/features/cost/domain/entities/cost_entity.dart';
 import 'package:clean_boilerplate/features/cost/presentation/widgets/cost_formatters.dart';
 
-/// Reusable bazar entry form — used both in the "Bazar Entry" tab (add) and in
+/// Reusable Cost entry form — used both in the "Cost Entry" tab (add) and in
 /// a bottom sheet (edit). Collects a person, a date + time, and a dynamic list
 /// of product / price rows, showing a live running total.
 class CostEntryForm extends StatefulWidget {
@@ -131,11 +131,11 @@ class _CostEntryFormState extends State<CostEntryForm> {
           Row(
             children: [
               Expanded(
-                child: _PickerField(label: 'Bazar Date', icon: Icons.calendar_today_rounded, value: CostFormatters.date(_date), onTap: _pickDate),
+                child: _PickerField(label: 'Cost Date', icon: Icons.calendar_today_rounded, value: CostFormatters.date(_date), onTap: _pickDate),
               ),
               const SizedBox(width: Dimensions.paddingSizeDefault),
               Expanded(
-                child: _PickerField(label: 'Bazar Time', icon: Icons.access_time_rounded, value: CostFormatters.time(_date), onTap: _pickTime),
+                child: _PickerField(label: 'Cost Time', icon: Icons.access_time_rounded, value: CostFormatters.time(_date), onTap: _pickTime),
               ),
             ],
           ),
@@ -213,7 +213,7 @@ class _CostEntryFormState extends State<CostEntryForm> {
             child: ElevatedButton.icon(
               onPressed: _submit,
               icon: Icon(_isEdit ? Icons.save_rounded : Icons.check_rounded),
-              label: Text(_isEdit ? 'Save changes' : 'Save bazar entry'),
+              label: Text(_isEdit ? 'Save changes' : 'Save Cost entry'),
               style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge))),
             ),
           ),

@@ -10,6 +10,7 @@ import 'package:clean_boilerplate/features/deposit/presentation/screens/deposit_
 import 'package:clean_boilerplate/features/fund/presentation/screens/fund_screen.dart';
 import 'package:clean_boilerplate/features/home/presentation/screens/home_screen.dart';
 import 'package:clean_boilerplate/features/meal/presentation/screens/meal_entry_screen.dart';
+import 'package:clean_boilerplate/features/meal/presentation/screens/meal_list_screen.dart';
 import 'package:clean_boilerplate/features/meal/presentation/screens/meal_screen.dart';
 import 'package:clean_boilerplate/features/membership/presentation/screens/manage_membership_screen.dart';
 import 'package:clean_boilerplate/features/membership/presentation/screens/join_mess_screen.dart';
@@ -17,6 +18,7 @@ import 'package:clean_boilerplate/features/membership/presentation/screens/mess_
 import 'package:clean_boilerplate/features/membership/presentation/screens/edit_mess_screen.dart';
 import 'package:clean_boilerplate/features/membership/presentation/screens/mess_leadership_screen.dart';
 import 'package:clean_boilerplate/features/notice/presentation/screens/notice_screen.dart';
+import 'package:clean_boilerplate/features/opinion/presentation/screens/opinion_screen.dart';
 import 'package:clean_boilerplate/features/settings/presentation/screens/settings_screen.dart';
 
 /// App route constants
@@ -34,10 +36,12 @@ class AppRoutes {
   static const String home = '/';
   static const String meals = '/meals';
   static const String addMeal = '/meals/add';
+  static const String mealList = '/meals/list';
   static const String deposits = '/deposits';
   static const String funds = '/funds';
   static const String costs = '/costs';
   static const String notices = '/notices';
+  static const String opinions = '/opinions';
   static const String profile = '/profile';
   static const String settings = '/settings';
   static const String manageMembership = '/membership/manage';
@@ -81,17 +85,21 @@ final router = GoRouter(
     // Admin: add meal for all members
     GoRoute(path: AppRoutes.addMeal, name: 'addMeal', builder: (context, state) => const MealEntryScreen()),
 
+    GoRoute(path: AppRoutes.mealList, name: 'mealList', builder: (context, state) => const MealListScreen()),
+
     // Deposit route (role-aware: admin manages, user views own list)
     GoRoute(path: AppRoutes.deposits, name: 'deposits', builder: (context, state) => const DepositScreen()),
 
     // Fund route (role-aware: admin manages, user views the list)
     GoRoute(path: AppRoutes.funds, name: 'funds', builder: (context, state) => const FundScreen()),
 
-    // Cost / bazar route (role-aware: admin manages, user views the list)
+    // Cost / Cost route (role-aware: admin manages, user views the list)
     GoRoute(path: AppRoutes.costs, name: 'costs', builder: (context, state) => const CostScreen()),
 
     // Notice route (role-aware: admin manages, user views the list)
     GoRoute(path: AppRoutes.notices, name: 'notices', builder: (context, state) => const NoticeScreen()),
+
+    GoRoute(path: AppRoutes.opinions, name: 'opinions', builder: (context, state) => const OpinionScreen()),
 
     // Profile route
     GoRoute(path: AppRoutes.profile, name: 'profile', builder: (context, state) => const ProfileScreen()),

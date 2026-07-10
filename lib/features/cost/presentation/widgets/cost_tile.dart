@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
 import 'package:clean_boilerplate/features/cost/domain/entities/cost_entity.dart';
 import 'package:clean_boilerplate/features/cost/presentation/widgets/cost_formatters.dart';
 
-/// One bazar entry card — an index badge, the timestamp + person, the total
+/// One Cost entry card — an index badge, the timestamp + person, the total
 /// (maskable), a 3-dot menu (admin), and an expandable product breakdown.
 class CostTile extends StatefulWidget {
   const CostTile({required this.cost, required this.index, required this.maskCost, required this.showActions, this.onEdit, this.onDelete, super.key});
@@ -35,6 +36,7 @@ class _CostTileState extends State<CostTile> {
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
     final cost = widget.cost;
+    final showActionMenu = ResponsiveHelper.isMobile(context) || ResponsiveHelper.isSmallTab(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -76,7 +78,7 @@ class _CostTileState extends State<CostTile> {
                     style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
                   ),
                   Icon(_expanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: colors.textHintColor),
-                  if (widget.showActions)
+                  if (widget.showActions && showActionMenu)
                     PopupMenuButton<_CostAction>(
                       tooltip: 'Options',
                       icon: Icon(Icons.more_vert_rounded, color: colors.textSecondaryColor),
@@ -99,6 +101,10 @@ class _CostTileState extends State<CostTile> {
                         ),
                       ],
                     ),
+                  if (widget.showActions && !showActionMenu) ...[
+                    IconButton(tooltip: 'Edit', onPressed: widget.onEdit, icon: Icon(Icons.edit_rounded, color: colors.primaryColor)),
+                    IconButton(tooltip: 'Delete', onPressed: widget.onDelete, icon: Icon(Icons.delete_outline_rounded, color: colors.errorColor)),
+                  ],
                 ],
               ),
             ),
@@ -161,10 +167,10 @@ class _Details extends StatelessWidget {
             child: Column(
               children: [
                 Text('His/Her Id: ${cost.id}', style: meta),
-                Text('Bazar Time: ${CostFormatters.time(cost.date)}', style: meta),
-                Text('Bazar Date: ${CostFormatters.date(cost.date)}', style: meta),
+                Text('Cost Time: ${CostFormatters.time(cost.date)}', style: meta),
+                Text('Cost Date: ${CostFormatters.date(cost.date)}', style: meta),
                 const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-                Text('The details list of bazar below:', style: meta),
+                Text('The details list of Cost below:', style: meta),
               ],
             ),
           ),

@@ -4,9 +4,9 @@ import 'package:clean_boilerplate/features/cost/domain/entities/cost_entity.dart
 import 'package:clean_boilerplate/features/cost/data/models/cost_model.dart';
 import 'package:clean_boilerplate/features/cost/data/datasources/interfaces/cost_data_source.dart';
 
-/// In-memory mock for the bazar/cost feature.
+/// In-memory mock for the Cost/cost feature.
 ///
-/// Holds a fixed roster of members and a flat list of bazar entries, each with
+/// Holds a fixed roster of members and a flat list of Cost entries, each with
 /// its own line items. Swap this binding for a remote implementation later —
 /// the repository and presentation layers won't change.
 @LazySingleton(as: CostDataSource)
@@ -22,7 +22,7 @@ class CostLocalDataSourceImpl implements CostDataSource {
     (id: '7', name: 'Nayeem Islam'),
   ];
 
-  /// Session-mutable store of bazar entries, seeded with a few records.
+  /// Session-mutable store of Cost entries, seeded with a few records.
   final List<CostModel> _costs = [
     CostModel(
       id: 'c1',

@@ -13,6 +13,11 @@ class DashboardModel {
   final double bazerCost;
   final double totalMeal;
   final double mealRate;
+  final String managerEmail;
+  final String managerPhone;
+  final String actingManagerEmail;
+  final String actingManagerPhone;
+  final String messAddress;
   final double myTotalMeal;
   final double myDeposit;
   final double myRemaining;
@@ -29,6 +34,11 @@ class DashboardModel {
     required this.bazerCost,
     required this.totalMeal,
     required this.mealRate,
+    required this.managerEmail,
+    required this.managerPhone,
+    required this.actingManagerEmail,
+    required this.actingManagerPhone,
+    required this.messAddress,
     required this.myTotalMeal,
     required this.myDeposit,
     required this.myRemaining,
@@ -46,6 +56,11 @@ class DashboardModel {
     bazerCost: bazerCost,
     totalMeal: totalMeal,
     mealRate: mealRate,
+    managerEmail: managerEmail,
+    managerPhone: managerPhone,
+    actingManagerEmail: actingManagerEmail,
+    actingManagerPhone: actingManagerPhone,
+    messAddress: messAddress,
     myTotalMeal: myTotalMeal,
     myDeposit: myDeposit,
     myRemaining: myRemaining,

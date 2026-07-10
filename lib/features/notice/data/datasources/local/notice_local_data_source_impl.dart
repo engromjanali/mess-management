@@ -22,9 +22,9 @@ class NoticeLocalDataSourceImpl implements NoticeDataSource {
     ),
     NoticeModel(
       id: 'n2',
-      title: 'Bazar duty roster',
+      title: 'Cost duty roster',
       description:
-          'The new bazar duty roster is posted on the board. Check your '
+          'The new Cost duty roster is posted on the board. Check your '
           'assigned days and swap early if needed.',
       createdAt: DateTime(2026, 6, 18, 20, 15),
     ),

@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/di/injection.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/screen_matres_extensions.dart';
+import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
+import 'package:clean_boilerplate/core/widgets/app_footer.dart';
 import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_top_bar.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
-import 'package:clean_boilerplate/features/home/presentation/widgets/stat_card.dart';
+import 'package:clean_boilerplate/core/widgets/stat_card.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
 import 'package:clean_boilerplate/features/cost/domain/entities/cost_entity.dart';
 import 'package:clean_boilerplate/features/cost/presentation/bloc/cost_bloc.dart';
 import 'package:clean_boilerplate/features/cost/presentation/bloc/cost_event.dart';
@@ -19,13 +27,12 @@ import 'package:clean_boilerplate/features/cost/presentation/widgets/cost_entry_
 import 'package:clean_boilerplate/features/cost/presentation/widgets/cost_formatters.dart';
 import 'package:clean_boilerplate/features/cost/presentation/widgets/cost_tile.dart';
 
-/// Cost (bazar) screen.
+/// Cost (Cost) screen.
 ///
-/// * **Admin** — two tabs: *Bazar List* (browse, edit, delete) and
-///   *Bazar Entry* (record a new bazar with multiple products).
-/// * **User** — the read-only *Bazar List* only.
+/// * **Admin** — two tabs: *Cost List* (browse, edit, delete) and
+///   *Cost Entry* (record a new Cost with multiple products).
+/// * **User** — the read-only *Cost List* only.
 ///
-/// A "tap to see cost" banner masks every total until revealed.
 class CostScreen extends StatelessWidget {
   const CostScreen({super.key});
 
@@ -50,10 +57,11 @@ class _CostView extends StatefulWidget {
 
 class _CostViewState extends State<_CostView> {
   _CostTab _tab = _CostTab.list;
-  bool _showCost = false;
 
   @override
   Widget build(BuildContext context) {
+    final showWebAppBar = ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context);
+
     return BlocListener<RoleCubit, UserRole>(
       listenWhen: (prev, curr) => prev != curr,
       listener: (context, role) {
@@ -62,7 +70,8 @@ class _CostViewState extends State<_CostView> {
       },
       child: Scaffold(
         backgroundColor: context.theme.scaffoldBackgroundColor,
-        appBar: AppBar(
+        endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
+        appBar: showWebAppBar ? null : AppBar(
           leading: const HomeBackButton(),
           title: const Text('Cost'),
           actions: [IconButton(tooltip: 'Refresh', icon: const Icon(Icons.refresh_rounded), onPressed: () => context.read<CostBloc>().add(const CostEvent.refresh()))],
@@ -73,7 +82,7 @@ class _CostViewState extends State<_CostView> {
               loaded: (costs, members, isAdmin, saving, justSaved) {
                 if (justSaved) {
                   setState(() => _tab = _CostTab.list);
-                  context.showSuccessSnackBar('Bazar entry saved');
+                  context.showSuccessSnackBar('Cost entry saved');
                 }
               },
               error: (message) => context.showErrorSnackBar(message),
@@ -86,28 +95,45 @@ class _CostViewState extends State<_CostView> {
               error: (message) => _ErrorView(message: message),
               loaded: (costs, members, isAdmin, saving, _) {
                 final tab = isAdmin ? _tab : _CostTab.list;
-                return Stack(
+                final body = Stack(
                   children: [
-                    Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
-                        child: Column(
+                    Column(
                           children: [
                             if (isAdmin)
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, 0),
-                                child: _TabSwitch(tab: tab, onChanged: (t) => setState(() => _tab = t)),
+                              Center(
+                                child: ConstrainedBox(
+                                  constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
+                                  child: Padding(
+                                    padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, 0),
+                                    child: _TabSwitch(tab: tab, onChanged: (t) => setState(() => _tab = t)),
+                                  ),
+                                ),
                               ),
                             Expanded(
                               child: tab == _CostTab.list
-                                  ? _ListTab(costs: costs, isAdmin: isAdmin, members: members, showCost: _showCost, onToggleCost: () => setState(() => _showCost = !_showCost))
+                                  ? _ListTab(costs: costs, isAdmin: isAdmin, members: members)
                                   : _EntryTab(members: members),
                             ),
                           ],
-                        ),
-                      ),
                     ),
                     if (saving) const Positioned(top: 0, left: 0, right: 0, child: LinearProgressIndicator(minHeight: 2)),
+                  ],
+                );
+                if (!showWebAppBar) return body;
+                final user = context.watch<AuthBloc>().state.maybeWhen(authenticated: (user) => user, orElse: () => null);
+                return Column(
+                  children: [
+                    DashboardTopBar(
+                      userName: user?.name ?? 'User',
+                      onProfileTap: () => Scaffold.of(context).openEndDrawer(),
+                      navItems: [
+                        DashboardNavItem(label: 'Home', icon: Icons.home_rounded, onTap: () => context.go(AppRoutes.home)),
+                        DashboardNavItem(label: 'Meals', icon: Icons.restaurant_rounded, onTap: () => context.go(AppRoutes.meals)),
+                        DashboardNavItem(label: 'Deposits', icon: Icons.account_balance_wallet_rounded, onTap: () => context.go(AppRoutes.deposits)),
+                        DashboardNavItem(label: 'Cost', icon: Icons.shopping_cart_rounded, active: true, onTap: () {}),
+                      ],
+                    ),
+                    Expanded(child: body),
                   ],
                 );
               },
@@ -120,7 +146,7 @@ class _CostViewState extends State<_CostView> {
   }
 }
 
-/// Segmented `Bazar List / Bazar Entry` switch.
+/// Segmented `Cost List / Cost Entry` switch.
 class _TabSwitch extends StatelessWidget {
   const _TabSwitch({required this.tab, required this.onChanged});
   final _CostTab tab;
@@ -130,8 +156,8 @@ class _TabSwitch extends StatelessWidget {
   Widget build(BuildContext context) {
     return SegmentedButton<_CostTab>(
       segments: const [
-        ButtonSegment(value: _CostTab.list, icon: Icon(Icons.format_list_numbered_rounded), label: Text('Bazar List')),
-        ButtonSegment(value: _CostTab.entry, icon: Icon(Icons.edit_rounded), label: Text('Bazar Entry')),
+        ButtonSegment(value: _CostTab.list, icon: Icon(Icons.format_list_numbered_rounded), label: Text('Cost List')),
+        ButtonSegment(value: _CostTab.entry, icon: Icon(Icons.edit_rounded), label: Text('Cost Entry')),
       ],
       selected: {tab},
       showSelectedIcon: false,
@@ -145,24 +171,20 @@ class _TabSwitch extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────
 
 class _ListTab extends StatelessWidget {
-  const _ListTab({required this.costs, required this.isAdmin, required this.members, required this.showCost, required this.onToggleCost});
+  const _ListTab({required this.costs, required this.isAdmin, required this.members});
 
   final List<CostEntity> costs;
   final bool isAdmin;
   final List<CostMemberEntity> members;
-  final bool showCost;
-  final VoidCallback onToggleCost;
-
-  String _mask(double v) => showCost ? CostFormatters.taka(v) : '৳ ••••';
 
   List<_Stat> _summary(BuildContext context) {
     final c = context.customThemeColors;
     final avg = costs.isEmpty ? 0.0 : costs.grandTotal / costs.length;
     return [
-      _Stat('Total Cost', _mask(costs.grandTotal), Icons.shopping_cart_rounded, c.primaryColor),
+      _Stat('Total Cost', CostFormatters.taka(costs.grandTotal), Icons.shopping_cart_rounded, c.primaryColor),
       _Stat('Entries', '${costs.length}', Icons.receipt_long_rounded, c.infoColor),
       _Stat('Products', '${costs.totalItems}', Icons.inventory_2_rounded, c.secondaryColor),
-      _Stat('Avg / Entry', _mask(avg), Icons.trending_up_rounded, c.successColor),
+      _Stat('Avg / Entry', CostFormatters.taka(avg), Icons.trending_up_rounded, c.successColor),
     ];
   }
 
@@ -181,9 +203,9 @@ class _ListTab extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete bazar entry'),
+        title: const Text('Delete Cost entry'),
         content: Text(
-          'Delete ${cost.personName}\'s bazar of '
+          'Delete ${cost.personName}\'s Cost of '
           '${CostFormatters.taka(cost.total)} '
           '(${cost.itemCount} item${cost.itemCount == 1 ? '' : 's'})?',
         ),
@@ -205,15 +227,12 @@ class _ListTab extends StatelessWidget {
         context.read<CostBloc>().add(const CostEvent.refresh());
         await Future<void>.delayed(const Duration(milliseconds: 600));
       },
-      child: SingleChildScrollView(
+      child: _CostTabScroll(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _SummaryGrid(stats: _summary(context)),
-            const SizedBox(height: Dimensions.paddingSizeLarge),
-            _CostBanner(showCost: showCost, onTap: onToggleCost),
             const SizedBox(height: Dimensions.paddingSizeLarge),
             if (costs.isEmpty)
               const _EmptyView()
@@ -223,45 +242,11 @@ class _ListTab extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeDefault),
                   child: AnimatedEntrance(
                     delay: Duration(milliseconds: 30 * i),
-                    child: CostTile(cost: costs[i], index: i, maskCost: !showCost, showActions: isAdmin, onEdit: () => _onEdit(context, costs[i]), onDelete: () => _onDelete(context, costs[i])),
+                    child: CostTile(cost: costs[i], index: i, maskCost: false, showActions: isAdmin, onEdit: () => _onEdit(context, costs[i]), onDelete: () => _onDelete(context, costs[i])),
                   ),
                 ),
             SizedBox(height: context.bottomPadding),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-/// The "tap to see cost" reveal banner.
-class _CostBanner extends StatelessWidget {
-  const _CostBanner({required this.showCost, required this.onTap});
-  final bool showCost;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.customThemeColors;
-    return Material(
-      color: colors.primaryColor,
-      borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault + 2),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  showCost ? 'tap to hide Cost' : 'tap to see Cost',
-                  style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: Colors.white),
-                ),
-              ),
-              Icon(showCost ? Icons.visibility_rounded : Icons.visibility_off_rounded, color: Colors.white),
-            ],
-          ),
         ),
       ),
     );
@@ -279,12 +264,11 @@ class _EntryTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<CostBloc>();
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+    return _CostTabScroll(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SectionTitle(title: 'New bazar', icon: Icons.add_shopping_cart_rounded),
+          const SectionTitle(title: 'New Cost', icon: Icons.add_shopping_cart_rounded),
           CostEntryForm(
             key: const ValueKey('cost-entry-form'),
             members: members,
@@ -310,7 +294,7 @@ Future<void> showCostEditSheet({
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'Edit bazar entry',
+          'Edit Cost entry',
           style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: context.customThemeColors.textPrimaryColor),
         ),
         const SizedBox(height: Dimensions.paddingSizeLarge),
@@ -330,6 +314,38 @@ Future<void> showCostEditSheet({
 // ─────────────────────────────────────────────────────────────────────────
 // Shared
 // ─────────────────────────────────────────────────────────────────────────
+
+class _CostTabScroll extends StatelessWidget {
+  const _CostTabScroll({required this.child, this.physics});
+
+  final Widget child;
+  final ScrollPhysics? physics;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, viewportConstraints) => SingleChildScrollView(
+        physics: physics,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: viewportConstraints.maxHeight),
+          child: Column(
+            mainAxisAlignment: ResponsiveHelper.isDesktop(context) ? MainAxisAlignment.spaceBetween : MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
+                  child: Padding(padding: const EdgeInsets.all(Dimensions.paddingSizeLarge), child: child),
+                ),
+              ),
+              if (ResponsiveHelper.isDesktop(context)) const AppFooter(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class _ErrorView extends StatelessWidget {
   const _ErrorView({required this.message});
@@ -377,7 +393,7 @@ class _EmptyView extends StatelessWidget {
         children: [
           Icon(Icons.shopping_cart_outlined, size: Dimensions.iconSizeExtraLarge, color: colors.textHintColor),
           const SizedBox(height: Dimensions.paddingSizeDefault),
-          Text('No bazar entries yet', style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor)),
+          Text('No Cost entries yet', style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor)),
         ],
       ),
     );

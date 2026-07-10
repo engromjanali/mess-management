@@ -7,7 +7,7 @@ import 'package:clean_boilerplate/features/cost/domain/usecases/cost_usecases.da
 import 'package:clean_boilerplate/features/cost/presentation/bloc/cost_event.dart';
 import 'package:clean_boilerplate/features/cost/presentation/bloc/cost_state.dart';
 
-/// Cost (bazar) BLoC — loads the entry list and applies add / update / delete
+/// Cost (Cost) BLoC — loads the entry list and applies add / update / delete
 /// mutations, reloading the list afterwards.
 @injectable
 class CostBloc extends Bloc<CostEvent, CostState> {

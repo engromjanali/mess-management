@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 
-/// Formatting helpers for the cost (bazar) screen.
+/// Formatting helpers for the cost (Cost) screen.
 class CostFormatters {
   const CostFormatters._();
 

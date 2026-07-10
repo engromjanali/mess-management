@@ -23,19 +23,20 @@ class MemberMealFormResult {
 ///
 /// When [existing] is provided the form is in edit mode: the member and date
 /// are locked (they identify the record) and only the counts can change.
-Future<MemberMealFormResult?> showMemberMealForm(BuildContext context, {required List<MealMemberEntity> members, MemberMealEntity? existing, String? presetMemberId, DateTime? presetDate}) {
+Future<MemberMealFormResult?> showMemberMealForm(BuildContext context, {required List<MealMemberEntity> members, MemberMealEntity? existing, String? presetMemberId, DateTime? presetDate, bool mealOnlyEdit = false}) {
   return context.showAdaptiveSheet<MemberMealFormResult>(
-    child: _MemberMealFormSheet(members: members, existing: existing, presetMemberId: presetMemberId, presetDate: presetDate),
+    child: _MemberMealFormSheet(members: members, existing: existing, presetMemberId: presetMemberId, presetDate: presetDate, mealOnlyEdit: mealOnlyEdit),
   );
 }
 
 class _MemberMealFormSheet extends StatefulWidget {
-  const _MemberMealFormSheet({required this.members, this.existing, this.presetMemberId, this.presetDate});
+  const _MemberMealFormSheet({required this.members, this.existing, this.presetMemberId, this.presetDate, this.mealOnlyEdit = false});
 
   final List<MealMemberEntity> members;
   final MemberMealEntity? existing;
   final String? presetMemberId;
   final DateTime? presetDate;
+  final bool mealOnlyEdit;
 
   @override
   State<_MemberMealFormSheet> createState() => _MemberMealFormSheetState();
@@ -65,6 +66,13 @@ class _MemberMealFormSheetState extends State<_MemberMealFormSheet> {
 
   double get _total => _breakfast + _lunch + _dinner;
 
+  String get _memberName {
+    for (final member in widget.members) {
+      if (member.id == _memberId) return member.name;
+    }
+    return 'Member';
+  }
+
   Future<void> _pickDate() async {
     final now = DateTime.now();
     final picked = await showDatePicker(context: context, initialDate: _date, firstDate: DateTime(now.year - 1), lastDate: DateTime(now.year + 1, now.month, now.day));
@@ -86,18 +94,20 @@ class _MemberMealFormSheetState extends State<_MemberMealFormSheet> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          _isEdit ? 'Edit meal' : 'Add meal',
+          widget.mealOnlyEdit && _isEdit ? 'Edit $_memberName meal' : _isEdit ? 'Edit meal' : 'Add meal',
           style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
         ),
         const SizedBox(height: Dimensions.paddingSizeLarge),
-        _FieldLabel(label: 'Member'),
-        const SizedBox(height: Dimensions.paddingSizeSmall),
-        _MemberField(members: widget.members, memberId: _memberId, enabled: !_isEdit, onChanged: (id) => setState(() => _memberId = id)),
-        const SizedBox(height: Dimensions.paddingSizeLarge),
-        _FieldLabel(label: 'Date'),
-        const SizedBox(height: Dimensions.paddingSizeSmall),
-        _DateField(date: _date, enabled: !_isEdit, onTap: _pickDate),
-        const SizedBox(height: Dimensions.paddingSizeLarge),
+        if (!widget.mealOnlyEdit) ...[
+          _FieldLabel(label: 'Member'),
+          const SizedBox(height: Dimensions.paddingSizeSmall),
+          _MemberField(members: widget.members, memberId: _memberId, enabled: !_isEdit, onChanged: (id) => setState(() => _memberId = id)),
+          const SizedBox(height: Dimensions.paddingSizeLarge),
+          _FieldLabel(label: 'Date'),
+          const SizedBox(height: Dimensions.paddingSizeSmall),
+          _DateField(date: _date, enabled: !_isEdit, onTap: _pickDate),
+          const SizedBox(height: Dimensions.paddingSizeLarge),
+        ],
         _StepperRow(icon: Icons.free_breakfast_rounded, label: 'Breakfast', accent: colors.warningColor, value: _breakfast, onChanged: (v) => setState(() => _breakfast = v)),
         const Divider(height: Dimensions.paddingSizeLarge),
         _StepperRow(icon: Icons.lunch_dining_rounded, label: 'Lunch', accent: colors.primaryColor, value: _lunch, onChanged: (v) => setState(() => _lunch = v)),

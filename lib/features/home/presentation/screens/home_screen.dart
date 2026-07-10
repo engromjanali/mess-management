@@ -11,6 +11,7 @@ import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
 import 'package:clean_boilerplate/core/network/api_client.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
 import 'package:clean_boilerplate/core/widgets/app_footer.dart';
+import 'package:clean_boilerplate/core/widgets/stat_card.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
 import 'package:clean_boilerplate/features/home/domain/entities/dashboard_entity.dart';
@@ -27,7 +28,6 @@ import 'package:clean_boilerplate/features/home/presentation/widgets/member_stat
 import 'package:clean_boilerplate/features/home/presentation/widgets/pinned_notice_card.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/pinned_section_header.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
-import 'package:clean_boilerplate/features/home/presentation/widgets/stat_card.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
 import 'package:clean_boilerplate/features/membership/data/membership_api_service.dart';
 import 'package:clean_boilerplate/features/membership/presentation/bloc/membership_cubit.dart';
@@ -50,7 +50,7 @@ List<_Stat> _messStats(BuildContext context, DashboardEntity d) {
     _Stat('Meal Balance', DashboardFormatters.taka(d.mealBalance), Icons.restaurant_rounded, c.secondaryColor),
     _Stat('Fund Balance', DashboardFormatters.taka(d.fundBalance), Icons.savings_rounded, c.infoColor),
     _Stat('Total Deposit', DashboardFormatters.taka(d.totalDeposit), Icons.payments_rounded, c.successColor),
-    _Stat('Bazar Cost', DashboardFormatters.taka(d.bazerCost), Icons.shopping_cart_rounded, c.warningColor),
+    _Stat('Cost Cost', DashboardFormatters.taka(d.bazerCost), Icons.shopping_cart_rounded, c.warningColor),
     _Stat('Total Meal', DashboardFormatters.number(d.totalMeal), Icons.set_meal_rounded, c.infoColor),
     _Stat('Meal Rate', DashboardFormatters.taka(d.mealRate), Icons.sell_rounded, c.secondaryColor),
   ];
@@ -211,7 +211,7 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
       BottomNavItem(icon: Icons.home_outlined, activeIcon: Icons.home_rounded, label: 'Home', onTap: () => _onNavTap(0, _scrollToTop)),
       BottomNavItem(icon: Icons.restaurant_outlined, activeIcon: Icons.restaurant_rounded, label: 'Meals', onTap: () => _onNavTap(1, () => context.go(AppRoutes.meals))),
       BottomNavItem(icon: Icons.account_balance_wallet_outlined, activeIcon: Icons.account_balance_wallet_rounded, label: 'Deposits', onTap: () => _onNavTap(2, () => context.go(AppRoutes.deposits))),
-      BottomNavItem(icon: Icons.shopping_cart_outlined, activeIcon: Icons.shopping_cart_rounded, label: 'Bazar', onTap: () => _onNavTap(3, () => context.go(AppRoutes.costs))),
+      BottomNavItem(icon: Icons.shopping_cart_outlined, activeIcon: Icons.shopping_cart_rounded, label: 'Cost', onTap: () => _onNavTap(3, () => context.go(AppRoutes.costs))),
       BottomNavItem(icon: Icons.person_outline_rounded, activeIcon: Icons.person_rounded, label: 'Profile', onTap: () => _onNavTap(4, () => context.go(AppRoutes.profile))),
     ];
 
@@ -231,6 +231,10 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
                   delegate: PinnedSectionHeader(title: 'Mess Section', icon: Icons.groups_rounded),
                 ),
                 _StatSliverGrid(stats: _messStats(context, dashboard)),
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge),
+                  sliver: SliverToBoxAdapter(child: AnimatedEntrance(child: _MessDetailsCard(dashboard: dashboard))),
+                ),
                 SliverToBoxAdapter(child: SizedBox(key: _statsAnchor, height: 0)),
                 SliverPersistentHeader(
                   pinned: true,
@@ -330,7 +334,7 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
       ),
       DashboardNavItem(label: 'Meals', icon: Icons.restaurant_rounded, onTap: () => context.go(AppRoutes.meals)),
       DashboardNavItem(label: 'Deposits', icon: Icons.account_balance_wallet_rounded, onTap: () => context.go(AppRoutes.deposits)),
-      DashboardNavItem(label: 'Bazar', icon: Icons.shopping_cart_rounded, onTap: () => context.go(AppRoutes.costs)),
+      DashboardNavItem(label: 'Cost', icon: Icons.shopping_cart_rounded, onTap: () => context.go(AppRoutes.costs)),
     ];
 
     return Column(
@@ -358,6 +362,8 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
                         // Mess section — wide grid.
                         const SectionTitle(title: 'Mess Section', icon: Icons.groups_rounded),
                         _StatBoxGrid(stats: _messStats(context, dashboard), maxCrossAxisExtent: 230),
+                        const SizedBox(height: Dimensions.paddingSizeDefault),
+                        AnimatedEntrance(child: _MessDetailsCard(dashboard: dashboard)),
                         const SizedBox(height: Dimensions.paddingSizeLarge),
 
                         // My section (left) + pinned notice (right).
@@ -415,6 +421,112 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
 // ─────────────────────────────────────────────────────────────────────────
 // Shared helpers.
 // ─────────────────────────────────────────────────────────────────────────
+
+class _MessDetailsCard extends StatelessWidget {
+  const _MessDetailsCard({required this.dashboard});
+
+  final DashboardEntity dashboard;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+
+    return Container(
+      padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+      decoration: BoxDecoration(
+        color: colors.cardBackgroundColor,
+        borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
+        border: Border.all(color: colors.borderColor.withValues(alpha: 0.5)),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final wide = constraints.maxWidth >= 700;
+          final contactWidth = wide ? (constraints.maxWidth - Dimensions.paddingSizeLarge) / 2 : constraints.maxWidth;
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Wrap(
+                spacing: Dimensions.paddingSizeLarge,
+                runSpacing: Dimensions.paddingSizeLarge,
+                children: [
+                  SizedBox(width: contactWidth, child: _MessContact(title: 'Manager', email: dashboard.managerEmail, phone: dashboard.managerPhone)),
+                  SizedBox(width: contactWidth, child: _MessContact(title: 'Acting manager', email: dashboard.actingManagerEmail, phone: dashboard.actingManagerPhone)),
+                ],
+              ),
+              const SizedBox(height: Dimensions.paddingSizeLarge),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.location_on_outlined, color: colors.primaryColor),
+                  const SizedBox(width: Dimensions.paddingSizeSmall),
+                  Expanded(child: Text(dashboard.messAddress, maxLines: 3, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textPrimaryColor))),
+                ],
+              ),
+              const SizedBox(height: Dimensions.paddingSizeDefault),
+              Wrap(
+                spacing: Dimensions.paddingSizeSmall,
+                runSpacing: Dimensions.paddingSizeSmall,
+                children: [
+                  FilledButton.icon(
+                    onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Google Maps location is not implemented yet.'))),
+                    icon: const Icon(Icons.map_outlined),
+                    label: const Text('Show on Google Maps'),
+                  ),
+                  OutlinedButton.icon(onPressed: () => context.go(AppRoutes.opinions), icon: const Icon(Icons.forum_outlined), label: const Text('Anonymous opinions')),
+                ],
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _MessContact extends StatelessWidget {
+  const _MessContact({required this.title, required this.email, required this.phone});
+
+  final String title;
+  final String email;
+  final String phone;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor)),
+        const SizedBox(height: Dimensions.paddingSizeSmall),
+        _MessContactLine(icon: Icons.email_outlined, value: email),
+        const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+        _MessContactLine(icon: Icons.phone_outlined, value: phone),
+      ],
+    );
+  }
+}
+
+class _MessContactLine extends StatelessWidget {
+  const _MessContactLine({required this.icon, required this.value});
+
+  final IconData icon;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+
+    return Row(
+      children: [
+        Icon(icon, size: Dimensions.iconSizeSmall, color: colors.textSecondaryColor),
+        const SizedBox(width: Dimensions.paddingSizeSmall),
+        Expanded(child: Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))),
+      ],
+    );
+  }
+}
 
 /// Non-sliver, self-sizing metric grid for the tablet & desktop bodies.
 class _StatBoxGrid extends StatelessWidget {
