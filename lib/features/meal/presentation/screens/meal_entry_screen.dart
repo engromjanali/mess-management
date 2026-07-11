@@ -8,7 +8,6 @@ import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/screen_matres_extensions.dart';
 import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
-import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_formatters.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
 import 'package:clean_boilerplate/features/meal/domain/entities/meal_member_entity.dart';
 import 'package:clean_boilerplate/features/meal/presentation/bloc/meal_admin_bloc.dart';
@@ -38,6 +37,7 @@ class _MealEntryView extends StatefulWidget {
 
 class _MealEntryViewState extends State<_MealEntryView> {
   DateTime _date = _today();
+  MealMutationEntity? _lastMutation;
 
   static DateTime _today() {
     final n = DateTime.now();
@@ -60,7 +60,17 @@ class _MealEntryViewState extends State<_MealEntryView> {
       ),
       body: BlocConsumer<MealAdminBloc, MealAdminState>(
         listener: (context, state) {
-          state.maybeWhen(error: (message) => context.showErrorSnackBar(message), orElse: () {});
+          state.maybeWhen(
+            loaded: (data, _, _) {
+              final mutation = data.mutation;
+              if (mutation != null && !identical(_lastMutation, mutation)) {
+                _lastMutation = mutation;
+                context.showSuccessSnackBar(_mutationMessage(mutation));
+              }
+            },
+            error: (message) => context.showErrorSnackBar(message),
+            orElse: () {},
+          );
         },
         builder: (context, state) {
           return state.maybeWhen(
@@ -72,6 +82,12 @@ class _MealEntryViewState extends State<_MealEntryView> {
         },
       ),
     );
+  }
+
+  String _mutationMessage(MealMutationEntity mutation) {
+    if (mutation.createdCount > 0 && mutation.updatedCount > 0) return 'Meal saved for ${mutation.createdCount} and updated for ${mutation.updatedCount} members';
+    if (mutation.updatedCount > 0) return 'Meal updated for ${mutation.updatedCount} members';
+    return 'Meal saved for ${mutation.createdCount} members';
   }
 }
 
@@ -149,13 +165,28 @@ class _BodyState extends State<_Body> {
 
   void _saveAll(BuildContext context) {
     final bloc = context.read<MealAdminBloc>();
-    for (final member in widget.data.members) {
-      final meal = _mealFor(member.id);
-      if (meal != null) {
-        bloc.add(MealAdminEvent.save(memberId: member.id, date: widget.date, breakfast: meal.breakfast, lunch: meal.lunch, dinner: meal.dinner));
+    final bulk = _canSaveAsBulk;
+    if (bulk) {
+      bloc.add(MealAdminEvent.addForAll(date: widget.date, breakfast: _breakfast, lunch: _lunch, dinner: _dinner));
+    } else {
+      for (final meal in _drafts.values) {
+        if (_recordFor(meal.memberId) == null) {
+          bloc.add(MealAdminEvent.save(memberId: meal.memberId, date: widget.date, breakfast: meal.breakfast, lunch: meal.lunch, dinner: meal.dinner));
+        } else {
+          bloc.add(MealAdminEvent.update(memberId: meal.memberId, date: widget.date, breakfast: meal.breakfast, lunch: meal.lunch, dinner: meal.dinner));
+        }
       }
     }
-    context.showSuccessSnackBar('Meal saved for all ${widget.data.members.length} members');
+  }
+
+  bool get _canSaveAsBulk {
+    if (_drafts.length != widget.data.members.length) return false;
+    for (final member in widget.data.members) {
+      final meal = _drafts[member.id];
+      if (meal == null) return false;
+      if (meal.breakfast != _breakfast || meal.lunch != _lunch || meal.dinner != _dinner) return false;
+    }
+    return true;
   }
 
   Future<void> _edit(BuildContext context, MealMemberEntity member) async {

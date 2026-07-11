@@ -39,8 +39,9 @@ class MealAdminEntity extends Equatable {
   final List<MealMemberEntity> members;
   final double mealRate;
   final List<MemberMealEntity> entries;
+  final MealMutationEntity? mutation;
 
-  const MealAdminEntity({required this.members, required this.mealRate, required this.entries});
+  const MealAdminEntity({required this.members, required this.mealRate, required this.entries, this.mutation});
 
   /// Display name for [memberId], or `Unknown` if it isn't on the roster.
   String memberName(String memberId) => members
@@ -62,5 +63,16 @@ class MealAdminEntity extends Equatable {
   }
 
   @override
-  List<Object?> get props => [members, mealRate, entries];
+  List<Object?> get props => [members, mealRate, entries, mutation];
+}
+
+class MealMutationEntity extends Equatable {
+  final String action;
+  final int createdCount;
+  final int updatedCount;
+
+  const MealMutationEntity({required this.action, required this.createdCount, required this.updatedCount});
+
+  @override
+  List<Object?> get props => [action, createdCount, updatedCount];
 }

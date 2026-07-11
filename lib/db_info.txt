@@ -1,0 +1,235 @@
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
+
+CREATE TABLE public.users (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  full_name text NOT NULL,
+  phone text,
+  email text UNIQUE,
+  photo_url text,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  user_no integer NOT NULL UNIQUE,
+  password_hash text,
+  CONSTRAINT users_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.messes (
+  id bigint NOT NULL DEFAULT nextval('messes_id_seq'::regclass),
+  name text NOT NULL,
+  address text,
+  manager_id uuid,
+  created_at timestamp with time zone DEFAULT now(),
+  act_manager_id uuid,
+  updated_at timestamp with time zone DEFAULT now(),
+  email text,
+  phone text CHECK (length(phone) <= 20),
+  CONSTRAINT messes_pkey PRIMARY KEY (id),
+  CONSTRAINT messes_manager_id_fkey FOREIGN KEY (manager_id) REFERENCES public.users(id),
+  CONSTRAINT messes_act_manager_id_fkey FOREIGN KEY (act_manager_id) REFERENCES public.users(id)
+);
+CREATE TABLE public.seasons (
+  id bigint NOT NULL DEFAULT nextval('seasons_id_seq'::regclass),
+  mess_id bigint NOT NULL,
+  name text NOT NULL,
+  start_date date NOT NULL,
+  end_date date,
+  status text NOT NULL DEFAULT 'active'::text CHECK (status = ANY (ARRAY['active'::text, 'completed'::text])),
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT seasons_pkey PRIMARY KEY (id),
+  CONSTRAINT seasons_mess_id_fkey FOREIGN KEY (mess_id) REFERENCES public.messes(id)
+);
+CREATE TABLE public.memberships (
+  id bigint NOT NULL DEFAULT nextval('memberships_id_seq'::regclass),
+  season_id bigint NOT NULL,
+  user_id uuid NOT NULL,
+  role text DEFAULT 'member'::text CHECK (role = ANY (ARRAY['member'::text, 'manager'::text])),
+  joined_at timestamp with time zone DEFAULT now(),
+  left_at timestamp with time zone,
+  status text DEFAULT 'active'::text CHECK (status = ANY (ARRAY['active'::text, 'left'::text])),
+  updated_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT memberships_pkey PRIMARY KEY (id),
+  CONSTRAINT memberships_season_id_fkey FOREIGN KEY (season_id) REFERENCES public.seasons(id),
+  CONSTRAINT memberships_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
+);
+CREATE TABLE public.deposits (
+  id bigint NOT NULL DEFAULT nextval('deposits_id_seq'::regclass),
+  membership_id bigint,
+  season_id bigint,
+  amount numeric NOT NULL,
+  payment_method text NOT NULL DEFAULT 'cash'::text,
+  note text,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT deposits_pkey PRIMARY KEY (id),
+  CONSTRAINT deposits_membership_id_fkey FOREIGN KEY (membership_id) REFERENCES public.memberships(id),
+  CONSTRAINT deposits_season_id_fkey FOREIGN KEY (season_id) REFERENCES public.seasons(id)
+);
+CREATE TABLE public.meals (
+  id bigint NOT NULL DEFAULT nextval('meals_id_seq'::regclass),
+  membership_id bigint,
+  season_id bigint,
+  meal_date date NOT NULL,
+  breakfast numeric DEFAULT 0,
+  lunch numeric DEFAULT 0,
+  dinner numeric DEFAULT 0,
+  total_meal numeric DEFAULT ((breakfast + lunch) + dinner),
+  CONSTRAINT meals_pkey PRIMARY KEY (id),
+  CONSTRAINT meals_membership_id_fkey FOREIGN KEY (membership_id) REFERENCES public.memberships(id),
+  CONSTRAINT meals_season_id_fkey FOREIGN KEY (season_id) REFERENCES public.seasons(id)
+);
+CREATE TABLE public.bazaars (
+  id bigint NOT NULL DEFAULT nextval('bazaars_id_seq'::regclass),
+  season_id bigint,
+  created_by bigint,
+  amount numeric NOT NULL,
+  purchase_date date DEFAULT CURRENT_DATE,
+  note text,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT bazaars_pkey PRIMARY KEY (id),
+  CONSTRAINT bazaars_season_id_fkey FOREIGN KEY (season_id) REFERENCES public.seasons(id),
+  CONSTRAINT bazaars_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.memberships(id)
+);
+CREATE TABLE public.bazaar_items (
+  id bigint NOT NULL DEFAULT nextval('bazaar_items_id_seq'::regclass),
+  bazaar_id bigint,
+  item_name text NOT NULL,
+  quantity numeric,
+  unit_price numeric,
+  total_price numeric,
+  CONSTRAINT bazaar_items_pkey PRIMARY KEY (id),
+  CONSTRAINT bazaar_items_bazaar_id_fkey FOREIGN KEY (bazaar_id) REFERENCES public.bazaars(id)
+);
+CREATE TABLE public.fund_transactions (
+  id bigint NOT NULL DEFAULT nextval('fund_transactions_id_seq'::regclass),
+  season_id bigint,
+  type text CHECK (type = ANY (ARRAY['credit'::text, 'debit'::text])),
+  amount numeric,
+  description text,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT fund_transactions_pkey PRIMARY KEY (id),
+  CONSTRAINT fund_transactions_season_id_fkey FOREIGN KEY (season_id) REFERENCES public.seasons(id)
+);
+CREATE TABLE public.notices (
+  id bigint NOT NULL DEFAULT nextval('notices_id_seq'::regclass),
+  title text NOT NULL,
+  description text,
+  created_by bigint,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT notices_pkey PRIMARY KEY (id),
+  CONSTRAINT notices_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.memberships(id)
+);
+CREATE TABLE public.join_requests (
+  id bigint NOT NULL DEFAULT nextval('join_requests_id_seq'::regclass),
+  mess_id bigint,
+  user_id uuid,
+  status text DEFAULT 'pending'::text CHECK (status = ANY (ARRAY['pending'::text, 'accepted'::text, 'rejected'::text])),
+  requested_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT join_requests_pkey PRIMARY KEY (id),
+  CONSTRAINT join_requests_mess_id_fkey FOREIGN KEY (mess_id) REFERENCES public.messes(id),
+  CONSTRAINT join_requests_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
+);
+CREATE TABLE public.invites (
+  id bigint NOT NULL DEFAULT nextval('invites_id_seq'::regclass),
+  mess_id bigint,
+  invite_code text UNIQUE,
+  expire_at timestamp with time zone,
+  invited_user_id uuid NOT NULL,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT invites_pkey PRIMARY KEY (id),
+  CONSTRAINT invites_mess_id_fkey FOREIGN KEY (mess_id) REFERENCES public.messes(id),
+  CONSTRAINT invites_invited_user_id_fkey FOREIGN KEY (invited_user_id) REFERENCES public.users(id)
+);
+CREATE TABLE public.django_migrations (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  app character varying NOT NULL,
+  name character varying NOT NULL,
+  applied timestamp with time zone NOT NULL,
+  CONSTRAINT django_migrations_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.django_content_type (
+  id integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  app_label character varying NOT NULL,
+  model character varying NOT NULL,
+  CONSTRAINT django_content_type_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.auth_permission (
+  id integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  name character varying NOT NULL,
+  content_type_id integer NOT NULL,
+  codename character varying NOT NULL,
+  CONSTRAINT auth_permission_pkey PRIMARY KEY (id),
+  CONSTRAINT auth_permission_content_type_id_2f476e4b_fk_django_co FOREIGN KEY (content_type_id) REFERENCES public.django_content_type(id)
+);
+CREATE TABLE public.auth_group (
+  id integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  name character varying NOT NULL UNIQUE,
+  CONSTRAINT auth_group_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.auth_group_permissions (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  group_id integer NOT NULL,
+  permission_id integer NOT NULL,
+  CONSTRAINT auth_group_permissions_pkey PRIMARY KEY (id),
+  CONSTRAINT auth_group_permissions_group_id_b120cbf9_fk_auth_group_id FOREIGN KEY (group_id) REFERENCES public.auth_group(id),
+  CONSTRAINT auth_group_permissio_permission_id_84c5c92e_fk_auth_perm FOREIGN KEY (permission_id) REFERENCES public.auth_permission(id)
+);
+CREATE TABLE public.auth_user (
+  id integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  password character varying NOT NULL,
+  last_login timestamp with time zone,
+  is_superuser boolean NOT NULL,
+  username character varying NOT NULL UNIQUE,
+  first_name character varying NOT NULL,
+  last_name character varying NOT NULL,
+  email character varying NOT NULL,
+  is_staff boolean NOT NULL,
+  is_active boolean NOT NULL,
+  date_joined timestamp with time zone NOT NULL,
+  CONSTRAINT auth_user_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.auth_user_groups (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  user_id integer NOT NULL,
+  group_id integer NOT NULL,
+  CONSTRAINT auth_user_groups_pkey PRIMARY KEY (id),
+  CONSTRAINT auth_user_groups_user_id_6a12ed8b_fk_auth_user_id FOREIGN KEY (user_id) REFERENCES public.auth_user(id),
+  CONSTRAINT auth_user_groups_group_id_97559544_fk_auth_group_id FOREIGN KEY (group_id) REFERENCES public.auth_group(id)
+);
+CREATE TABLE public.auth_user_user_permissions (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  user_id integer NOT NULL,
+  permission_id integer NOT NULL,
+  CONSTRAINT auth_user_user_permissions_pkey PRIMARY KEY (id),
+  CONSTRAINT auth_user_user_permissions_user_id_a95ead1b_fk_auth_user_id FOREIGN KEY (user_id) REFERENCES public.auth_user(id),
+  CONSTRAINT auth_user_user_permi_permission_id_1fbb5f2c_fk_auth_perm FOREIGN KEY (permission_id) REFERENCES public.auth_permission(id)
+);
+CREATE TABLE public.django_admin_log (
+  id integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  action_time timestamp with time zone NOT NULL,
+  object_id text,
+  object_repr character varying NOT NULL,
+  action_flag smallint NOT NULL CHECK (action_flag >= 0),
+  change_message text NOT NULL,
+  content_type_id integer,
+  user_id integer NOT NULL,
+  CONSTRAINT django_admin_log_pkey PRIMARY KEY (id),
+  CONSTRAINT django_admin_log_content_type_id_c4bce8eb_fk_django_co FOREIGN KEY (content_type_id) REFERENCES public.django_content_type(id),
+  CONSTRAINT django_admin_log_user_id_c564eba6_fk_auth_user_id FOREIGN KEY (user_id) REFERENCES public.auth_user(id)
+);
+CREATE TABLE public.django_session (
+  session_key character varying NOT NULL,
+  session_data text NOT NULL,
+  expire_date timestamp with time zone NOT NULL,
+  CONSTRAINT django_session_pkey PRIMARY KEY (session_key)
+);
+CREATE TABLE public.password_reset_otps (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  email text NOT NULL,
+  otp text NOT NULL,
+  expires_at timestamp with time zone NOT NULL,
+  used boolean NOT NULL DEFAULT false,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT password_reset_otps_pkey PRIMARY KEY (id)
+);

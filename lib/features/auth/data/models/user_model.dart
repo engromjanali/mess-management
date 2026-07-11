@@ -15,6 +15,7 @@ abstract class UserModel with _$UserModel {
     required String name,
     String? phone,
     @JsonKey(name: 'photo_url') String? photoUrl,
+    @JsonKey(name: 'current_season') CurrentSeasonModel? currentSeason,
     @Default('member') String role,
   }) = _UserModel;
 
@@ -23,11 +24,36 @@ abstract class UserModel with _$UserModel {
 
   /// Convert model to entity
   UserEntity toEntity() {
-    return UserEntity(id: id, email: email, name: name, phone: phone, photoUrl: photoUrl, role: role);
+    return UserEntity(id: id, email: email, name: name, phone: phone, photoUrl: photoUrl, currentSeason: currentSeason?.toEntity(), role: role);
   }
 
   /// Create model from entity
   factory UserModel.fromEntity(UserEntity entity) {
-    return UserModel(id: entity.id, email: entity.email, name: entity.name, phone: entity.phone, photoUrl: entity.photoUrl, role: entity.role);
+    return UserModel(id: entity.id, email: entity.email, name: entity.name, phone: entity.phone, photoUrl: entity.photoUrl, currentSeason: entity.currentSeason == null ? null : CurrentSeasonModel.fromEntity(entity.currentSeason!), role: entity.role);
+  }
+}
+
+@freezed
+abstract class CurrentSeasonModel with _$CurrentSeasonModel {
+  const CurrentSeasonModel._();
+
+  const factory CurrentSeasonModel({
+    required int id,
+    required String name,
+    @JsonKey(name: 'mess_id') required int messId,
+    @JsonKey(name: 'mess_name') required String messName,
+    required String status,
+    @JsonKey(name: 'start_date') String? startDate,
+    @JsonKey(name: 'end_date') String? endDate,
+  }) = _CurrentSeasonModel;
+
+  factory CurrentSeasonModel.fromJson(Map<String, dynamic> json) => _$CurrentSeasonModelFromJson(json);
+
+  CurrentSeasonEntity toEntity() {
+    return CurrentSeasonEntity(id: id, name: name, messId: messId, messName: messName, status: status, startDate: startDate, endDate: endDate);
+  }
+
+  factory CurrentSeasonModel.fromEntity(CurrentSeasonEntity entity) {
+    return CurrentSeasonModel(id: entity.id, name: entity.name, messId: entity.messId, messName: entity.messName, status: entity.status, startDate: entity.startDate, endDate: entity.endDate);
   }
 }

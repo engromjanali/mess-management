@@ -1,4 +1,3 @@
-import 'package:injectable/injectable.dart';
 import 'package:clean_boilerplate/features/meal/data/models/meal_admin_model.dart';
 import 'package:clean_boilerplate/features/meal/data/datasources/interfaces/meal_admin_data_source.dart';
 
@@ -9,7 +8,6 @@ import 'package:clean_boilerplate/features/meal/data/datasources/interfaces/meal
 /// add/edit/delete mutations in memory for the session. Swap this binding for
 /// a remote implementation later — the repository and presentation layers
 /// won't change.
-@LazySingleton(as: MealAdminDataSource)
 class MealAdminLocalDataSourceImpl implements MealAdminDataSource {
   static const double _mealRate = 62.5;
 
@@ -78,7 +76,18 @@ class MealAdminLocalDataSourceImpl implements MealAdminDataSource {
 
     if (index == -1) {
       _entries.add(record);
-    } else {
+    }
+
+    return _payload();
+  }
+
+  @override
+  Future<MealAdminModel> updateMemberMeal({required String memberId, required DateTime date, required double breakfast, required double lunch, required double dinner}) async {
+    final key = DateTime(date.year, date.month, date.day);
+    final index = _indexOf(memberId, key);
+    final record = MemberMealModel(memberId: memberId, date: key, breakfast: breakfast, lunch: lunch, dinner: dinner);
+
+    if (index != -1) {
       _entries[index] = record;
     }
 

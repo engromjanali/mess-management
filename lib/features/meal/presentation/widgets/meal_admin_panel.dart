@@ -108,7 +108,7 @@ class _ManageCard extends StatelessWidget {
   Future<void> _edit(BuildContext context, MemberMealEntity entry) async {
     final result = await showMemberMealForm(context, members: data.members, existing: entry);
     if (result != null && context.mounted) {
-      context.read<MealAdminBloc>().add(MealAdminEvent.save(memberId: result.memberId, date: result.date, breakfast: result.breakfast, lunch: result.lunch, dinner: result.dinner));
+      context.read<MealAdminBloc>().add(MealAdminEvent.update(memberId: result.memberId, date: result.date, breakfast: result.breakfast, lunch: result.lunch, dinner: result.dinner));
     }
   }
 

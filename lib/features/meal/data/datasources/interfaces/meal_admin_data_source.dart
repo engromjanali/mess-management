@@ -9,5 +9,7 @@ abstract class MealAdminDataSource {
 
   Future<MealAdminModel> saveMemberMeal({required String memberId, required DateTime date, required double breakfast, required double lunch, required double dinner});
 
+  Future<MealAdminModel> updateMemberMeal({required String memberId, required DateTime date, required double breakfast, required double lunch, required double dinner});
+
   Future<MealAdminModel> deleteMemberMeal({required String memberId, required DateTime date});
 }

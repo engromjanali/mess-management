@@ -12,9 +12,13 @@ abstract class MealAdminRepository {
   /// (bulk entry), returning the refreshed admin data.
   ResultFuture<MealAdminEntity> addMealForAll({required DateTime date, required double breakfast, required double lunch, required double dinner});
 
-  /// Adds or overwrites the meal counts for [memberId] on [date], returning
+  /// Adds the meal counts for [memberId] on [date], returning
   /// the refreshed admin data.
   ResultFuture<MealAdminEntity> saveMemberMeal({required String memberId, required DateTime date, required double breakfast, required double lunch, required double dinner});
+
+  /// Updates the existing meal counts for [memberId] on [date], returning
+  /// the refreshed admin data.
+  ResultFuture<MealAdminEntity> updateMemberMeal({required String memberId, required DateTime date, required double breakfast, required double lunch, required double dinner});
 
   /// Removes the record for [memberId] on [date], returning refreshed data.
   ResultFuture<MealAdminEntity> deleteMemberMeal({required String memberId, required DateTime date});

@@ -44,6 +44,9 @@ class AppConstants {
   static const String managerMembersEndpoint = '/api/v1/membership/members';
   static const String messDetailsEndpoint = '/api/v1/membership/mess';
   static const String messLeadershipEndpoint = '/api/v1/membership/mess/leadership';
+  static const String mealAdminDataEndpoint = '/api/v1/meals/admin-data';
+  static const String addMealBulkEndpoint = '/api/v1/meals/add-meal-bulk';
+  static const String addMealEndpoint = '/api/v1/meals/add-meal';
 
   // keys
   static const String tokenKey = 'auth_token';

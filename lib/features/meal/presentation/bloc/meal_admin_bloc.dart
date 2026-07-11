@@ -6,6 +6,7 @@ import 'package:clean_boilerplate/features/meal/domain/usecases/add_meal_for_all
 import 'package:clean_boilerplate/features/meal/domain/usecases/delete_member_meal_usecase.dart';
 import 'package:clean_boilerplate/features/meal/domain/usecases/get_meal_admin_data_usecase.dart';
 import 'package:clean_boilerplate/features/meal/domain/usecases/save_member_meal_usecase.dart';
+import 'package:clean_boilerplate/features/meal/domain/usecases/update_member_meal_usecase.dart';
 import 'package:clean_boilerplate/features/meal/presentation/bloc/meal_admin_event.dart';
 import 'package:clean_boilerplate/features/meal/presentation/bloc/meal_admin_state.dart';
 
@@ -19,13 +20,14 @@ class MealAdminBloc extends Bloc<MealAdminEvent, MealAdminState> {
   final GetMealAdminDataUseCase _getAdminData;
   final AddMealForAllUseCase _addMealForAll;
   final SaveMemberMealUseCase _saveMemberMeal;
+  final UpdateMemberMealUseCase _updateMemberMeal;
   final DeleteMemberMealUseCase _deleteMemberMeal;
 
   MealAdminEntity? _data;
   String? _selectedMemberId;
   DateTime? _selectedDate;
 
-  MealAdminBloc(this._getAdminData, this._addMealForAll, this._saveMemberMeal, this._deleteMemberMeal) : super(const MealAdminState.initial()) {
+  MealAdminBloc(this._getAdminData, this._addMealForAll, this._saveMemberMeal, this._updateMemberMeal, this._deleteMemberMeal) : super(const MealAdminState.initial()) {
     on<MealAdminEvent>(_onEvent);
   }
 
@@ -43,6 +45,7 @@ class MealAdminBloc extends Bloc<MealAdminEvent, MealAdminState> {
       },
       addForAll: (date, breakfast, lunch, dinner) => _addForAllMembers(emit, date: date, breakfast: breakfast, lunch: lunch, dinner: dinner),
       save: (memberId, date, breakfast, lunch, dinner) => _save(emit, memberId: memberId, date: date, breakfast: breakfast, lunch: lunch, dinner: dinner),
+      update: (memberId, date, breakfast, lunch, dinner) => _update(emit, memberId: memberId, date: date, breakfast: breakfast, lunch: lunch, dinner: dinner),
       delete: (memberId, date) => _delete(emit, memberId: memberId, date: date),
     );
   }
@@ -77,6 +80,18 @@ class MealAdminBloc extends Bloc<MealAdminEvent, MealAdminState> {
 
   Future<void> _save(Emitter<MealAdminState> emit, {required String memberId, required DateTime date, required double breakfast, required double lunch, required double dinner}) async {
     final result = await _saveMemberMeal(SaveMemberMealParams(memberId: memberId, date: date, breakfast: breakfast, lunch: lunch, dinner: dinner));
+
+    result.when(
+      success: (success) {
+        _data = success.data;
+        _emitLoaded(emit);
+      },
+      failure: (failure) => emit(MealAdminState.error(failure.error.toString())),
+    );
+  }
+
+  Future<void> _update(Emitter<MealAdminState> emit, {required String memberId, required DateTime date, required double breakfast, required double lunch, required double dinner}) async {
+    final result = await _updateMemberMeal(UpdateMemberMealParams(memberId: memberId, date: date, breakfast: breakfast, lunch: lunch, dinner: dinner));
 
     result.when(
       success: (success) {

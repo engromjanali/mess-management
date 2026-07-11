@@ -25,6 +25,10 @@ class MealAdminRepositoryImpl implements MealAdminRepository {
       _guard(() => _dataSource.saveMemberMeal(memberId: memberId, date: date, breakfast: breakfast, lunch: lunch, dinner: dinner));
 
   @override
+  ResultFuture<MealAdminEntity> updateMemberMeal({required String memberId, required DateTime date, required double breakfast, required double lunch, required double dinner}) =>
+      _guard(() => _dataSource.updateMemberMeal(memberId: memberId, date: date, breakfast: breakfast, lunch: lunch, dinner: dinner));
+
+  @override
   ResultFuture<MealAdminEntity> deleteMemberMeal({required String memberId, required DateTime date}) => _guard(() => _dataSource.deleteMemberMeal(memberId: memberId, date: date));
 
   /// Shared try/catch that maps data-layer exceptions to domain failures.
