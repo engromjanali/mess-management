@@ -19,6 +19,7 @@ import 'package:clean_boilerplate/features/membership/presentation/screens/edit_
 import 'package:clean_boilerplate/features/membership/presentation/screens/mess_leadership_screen.dart';
 import 'package:clean_boilerplate/features/notice/presentation/screens/notice_screen.dart';
 import 'package:clean_boilerplate/features/opinion/presentation/screens/opinion_screen.dart';
+import 'package:clean_boilerplate/features/settings/presentation/screens/privacy_policy_screen.dart';
 import 'package:clean_boilerplate/features/settings/presentation/screens/settings_screen.dart';
 
 /// App route constants
@@ -44,6 +45,7 @@ class AppRoutes {
   static const String opinions = '/opinions';
   static const String profile = '/profile';
   static const String settings = '/settings';
+  static const String privacyPolicy = '/privacy-policy';
   static const String manageMembership = '/membership/manage';
   static const String joinMess = '/mess/join';
   static const String joinMessInvites = '/mess/join/invites';
@@ -106,6 +108,8 @@ final router = GoRouter(
 
     // Settings route
     GoRoute(path: AppRoutes.settings, name: 'settings', builder: (context, state) => const SettingsScreen()),
+
+    GoRoute(path: AppRoutes.privacyPolicy, name: 'privacyPolicy', builder: (context, state) => const PrivacyPolicyScreen()),
 
     GoRoute(path: AppRoutes.manageMembership, name: 'manageMembership', builder: (context, state) => const ManageMembershipScreen()),
 

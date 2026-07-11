@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
@@ -11,6 +12,7 @@ import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/them
 import 'package:clean_boilerplate/features/settings/presentation/widgets/language_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 /// Settings screen with theme and language toggles
 class SettingsScreen extends StatelessWidget {
@@ -67,6 +69,18 @@ class SettingsScreen extends StatelessWidget {
                       },
                     );
                   },
+                ),
+                const SizedBox(height: Dimensions.spaceLarge),
+                const Divider(),
+                const SizedBox(height: Dimensions.spaceLarge),
+                Text('Privacy', style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge)),
+                const SizedBox(height: Dimensions.spaceDefault),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text('Privacy Policy', style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault)),
+                  subtitle: Text('How your account and mess data are handled', style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
+                  trailing: const Icon(Icons.privacy_tip_outlined),
+                  onTap: () => context.push(AppRoutes.privacyPolicy),
                 ),
               ],
             ),
