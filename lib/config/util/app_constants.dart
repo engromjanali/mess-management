@@ -15,20 +15,23 @@ class AppConstants {
     const override = String.fromEnvironment('BASE_URL');
     if (override.isNotEmpty) return override;
     if (!kIsWeb && Platform.isAndroid) return 'http://10.0.2.2:$_port';
-    return 'http://localhost:$_port';
+    return 'https://mm-backend-kappa.vercel.app';
   }
 
   // API endpoints
-  static const String configEndPoint = '/api/v1/config';
+  static const String configEndPoint = '/api/v1/auth/config';
+  static const String authTestEndpoint = '/api/v1/auth/test';
 
   // auth 
-  static const String loginEndpoint = '/api/auth/login';
-  static const String registerEndpoint = '/api/auth/register';
-  static const String logoutEndpoint = '/api/auth/logout';
+  static const String loginEndpoint = '/api/v1/auth/sign-in';
+  static const String registerEndpoint = '/api/v1/auth/sign-up';
+  static const String logoutEndpoint = '/api/v1/auth/logout';
+
   static const String refreshTokenEndpoint = '/api/auth/refresh';
-  static const String profileEndpoint = '/api/auth/me';
-  static const String forgotPasswordEndpoint = '/api/auth/forgot-password';
-  static const String resetPasswordEndpoint = '/api/auth/reset-password';
+  static const String profileEndpoint = '/api/v1/auth/update-profile';
+  static const String forgotPasswordEndpoint = '/api/v1/auth/forgot-password';
+  static const String forgetPasswordEndpoint = '/api/v1/auth/forget-password';
+  static const String resetPasswordEndpoint = '/api/v1/auth/change-password';
 
   // membership
   static const String membershipStatusEndpoint = '/api/v1/membership/status';
