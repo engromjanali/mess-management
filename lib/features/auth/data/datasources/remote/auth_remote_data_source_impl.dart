@@ -12,7 +12,9 @@ class AuthRemoteDataSourceImpl implements AuthDataSource {
 
   @override
   Future<UserModel> login({required String email, required String password}) async {
-    return _apiService.login({'email': email, 'password': password});
+    // `email` carries either an email or a phone number (with dial code).
+    final type = email.contains('@') ? 'email' : 'phone';
+    return _apiService.login({'type': type, type: email, 'password': password});
   }
 
   @override
@@ -22,7 +24,8 @@ class AuthRemoteDataSourceImpl implements AuthDataSource {
 
   @override
   Future<void> forgotPassword({required String email}) async {
-    await _apiService.forgotPassword({'email': email});
+    final type = email.contains('@') ? 'email' : 'phone';
+    await _apiService.forgotPassword({'type': type, type: email});
   }
 
   @override

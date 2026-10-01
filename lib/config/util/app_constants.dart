@@ -10,14 +10,9 @@ class AppConstants {
   static const String appName = 'Clean Boilerplate';
   static const String appVersion = '1.0.0';
 
-  static const int _port = 8000;
-  static String get baseUrl {
-    const override = String.fromEnvironment('BASE_URL');
-    if (override.isNotEmpty) return override;
-    if (!kIsWeb && Platform.isAndroid) return 'http://10.0.2.2:$_port';
-    return 'https://mm-backend-kappa.vercel.app';
-  }
-
+  static const String baseUrl = 'http://127.0.0.1:8000';
+  // static const String baseUrl = 'https://mm-backend-kappa.vercel.app';
+  
   // API endpoints
   static const String configEndPoint = '/api/v1/auth/config';
   static const String authTestEndpoint = '/api/v1/auth/test';

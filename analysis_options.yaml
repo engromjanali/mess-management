@@ -68,6 +68,10 @@ analyzer:
     - "**/*.freezed.dart"
     - "**/*.config.dart"
     - "**/gen/**"
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
   
   errors:
     invalid_annotation_target: ignore

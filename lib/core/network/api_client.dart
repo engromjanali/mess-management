@@ -127,7 +127,7 @@ class ApiClient {
       return response;
     } on DioException catch (e) {
       if (kDebugMode) {
-        print('=====> Error: ${e.type} - ${e.message}');
+        print('=====> Error: ${e.type} - ${e.message ?? e.error}');
       }
       throw _handleError(e);
     }
@@ -166,7 +166,7 @@ class ApiClient {
       return response;
     } on DioException catch (e) {
       if (kDebugMode) {
-        print('=====> Error: ${e.type} - ${e.message}');
+        print('=====> Error: ${e.type} - ${e.message ?? e.error}');
       }
       throw _handleError(e);
     }
@@ -205,7 +205,7 @@ class ApiClient {
       return response;
     } on DioException catch (e) {
       if (kDebugMode) {
-        print('=====> Error: ${e.type} - ${e.message}');
+        print('=====> Error: ${e.type} - ${e.message ?? e.error}');
       }
       throw _handleError(e);
     }
@@ -244,7 +244,7 @@ class ApiClient {
       return response;
     } on DioException catch (e) {
       if (kDebugMode) {
-        print('=====> Error: ${e.type} - ${e.message}');
+        print('=====> Error: ${e.type} - ${e.message ?? e.error}');
       }
       throw _handleError(e);
     }
@@ -266,7 +266,7 @@ class ApiClient {
       return response;
     } on DioException catch (e) {
       if (kDebugMode) {
-        print('=====> Error: ${e.type} - ${e.message}');
+        print('=====> Error: ${e.type} - ${e.message ?? e.error}');
       }
       throw _handleError(e);
     }
@@ -316,7 +316,7 @@ class ApiClient {
       return response;
     } on DioException catch (e) {
       if (kDebugMode) {
-        print('=====> Error: ${e.type} - ${e.message}');
+        print('=====> Error: ${e.type} - ${e.message ?? e.error}');
       }
       throw _handleError(e);
     }

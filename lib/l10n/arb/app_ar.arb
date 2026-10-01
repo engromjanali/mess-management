@@ -37,5 +37,6 @@
   "validation_invalid_email": "يرجى إدخال عنوان بريد إلكتروني صالح",
   "validation_password_min_length": "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل",
   "validation_invalid_phone": "يرجى إدخال رقم هاتف صالح",
-  "viewAll": "عرض الكل"
+  "viewAll": "عرض الكل",
+  "emailOrPhone": "البريد الإلكتروني أو الهاتف"
 }

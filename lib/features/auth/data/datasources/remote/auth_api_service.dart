@@ -46,8 +46,8 @@ class AuthApiService {
 
   /// Stores the tokens from an auth response and returns the embedded user.
   Future<UserModel> _handleAuthResponse(Map<String, dynamic> data) async {
-    await _apiClient.updateToken(data['access'] as String?);
-    await _apiClient.updateRefreshToken(data['refresh'] as String?);
+    await _apiClient.updateToken(data['access_token'] as String?);
+    await _apiClient.updateRefreshToken(data['refresh_token'] as String?);
     return UserModel.fromJson(data['user'] as Map<String, dynamic>);
   }
 }

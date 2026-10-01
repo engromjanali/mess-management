@@ -39,6 +39,7 @@ class CommonLabeledInputItemWidget extends StatefulWidget {
   final Color? fillColor;
   final TextInputAction? textInputAction;
   final ValueChanged<String>? onFieldSubmitted;
+  final bool? isPhoneField;
 
   const CommonLabeledInputItemWidget({
     required this.hintText,
@@ -73,6 +74,7 @@ class CommonLabeledInputItemWidget extends StatefulWidget {
     this.fillColor,
     this.textInputAction,
     this.onFieldSubmitted,
+    this.isPhoneField,
   });
 
   @override
@@ -85,6 +87,8 @@ class _CommonLabeledInputItemWidgetState extends State<CommonLabeledInputItemWid
   AutovalidateMode _autovalidateMode = AutovalidateMode.disabled;
   late FocusNode _focusNode;
   bool _isInternalFocusNode = false;
+
+  bool get _isPhoneField => widget.isPhoneField ?? widget.keyboardType == TextInputType.phone;
 
   bool get _isPasswordField => widget.keyboardType == TextInputType.visiblePassword || (widget.label ?? "").toLowerCase().contains('password') || widget.hintText.toLowerCase().contains('password');
 
@@ -147,7 +151,7 @@ class _CommonLabeledInputItemWidgetState extends State<CommonLabeledInputItemWid
       return '${widget.label} ${context.local.validation_is_required}';
     }
 
-    if (widget.keyboardType == TextInputType.emailAddress) {
+    if (widget.keyboardType == TextInputType.emailAddress && !_isPhoneField) {
       if (value.isNotEmpty && !(value.isValidEmail)) {
         return context.local.validation_invalid_email;
       }
@@ -159,7 +163,7 @@ class _CommonLabeledInputItemWidgetState extends State<CommonLabeledInputItemWid
       }
     }
 
-    if (widget.keyboardType == TextInputType.phone) {
+    if (_isPhoneField) {
       if ((value.isNotEmpty && value.length < 10) || int.tryParse(widget.controller.text) == null) {
         return context.local.validation_invalid_phone;
       }
@@ -216,7 +220,7 @@ class _CommonLabeledInputItemWidgetState extends State<CommonLabeledInputItemWid
           readOnly: widget.readOnly ?? false,
           autovalidateMode: _autovalidateMode,
           onTapOutside: (_) {
-            if (widget.keyboardType == TextInputType.phone) {
+            if (_isPhoneField) {
               final num = int.tryParse(widget.controller.text);
               widget.controller.text = num?.toString() ?? widget.controller.text;
             }
@@ -237,8 +241,8 @@ class _CommonLabeledInputItemWidgetState extends State<CommonLabeledInputItemWid
             //   horizontal: Dimensions.paddingSizeDefault,
             // ),
             contentPadding: widget.contentPadding ?? EdgeInsets.zero,
-            prefix: Padding(padding: EdgeInsets.only(left: widget.keyboardType == TextInputType.phone ? 0 : Dimensions.paddingSizeDefault)),
-            prefixIcon: widget.keyboardType == TextInputType.phone
+            prefix: Padding(padding: EdgeInsets.only(left: _isPhoneField ? 0 : Dimensions.paddingSizeDefault)),
+            prefixIcon: _isPhoneField
                 ? Padding(
                     padding: EdgeInsets.only(left: Dimensions.paddingSizeDefault),
                     child: CodePickerWidget(

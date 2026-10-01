@@ -1,4 +1,5 @@
 import 'package:clean_boilerplate/features/splash/presentation/screens/splash_screeen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:clean_boilerplate/features/auth/presentation/screens/forgot_password_screen.dart';
@@ -68,6 +69,8 @@ class AppRoutes {
 /// Router configuration using go_router
 final router = GoRouter(
   initialLocation: AppRoutes._splash,
+  // On web, route focus before the first layout triggers view focus traversal on an unlaid Overlay.
+  requestFocus: !kIsWeb,
   routes: [
     GoRoute(path: AppRoutes._splash, name: 'splash', builder: (context, state) => const SplashScreen()),
 

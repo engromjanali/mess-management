@@ -24,6 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  String _dialCode = '+880';
 
   @override
   void dispose() {
@@ -35,7 +36,11 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleLogin() {
     if (!_formKey.currentState!.validate()) return;
     FocusScope.of(context).unfocus();
-    context.read<AuthBloc>().add(AuthEvent.loginRequested(email: _emailController.text.trim(), password: _passwordController.text));
+    final identifier = _emailController.text.trim();
+    // Digits-only input is a phone number: drop the trunk zero and prepend the dial code.
+    final isPhone = RegExp(r'^\d+$').hasMatch(identifier);
+    final loginId = isPhone ? '$_dialCode${identifier.replaceFirst(RegExp(r'^0+'), '')}' : identifier;
+    context.read<AuthBloc>().add(AuthEvent.loginRequested(email: loginId, password: _passwordController.text));
   }
 
   /// Fills the form with the demo credentials (dev convenience).
@@ -70,6 +75,8 @@ class _LoginScreenState extends State<LoginScreen> {
             passwordController: _passwordController,
             onLogin: _handleLogin,
             isLoading: isLoading,
+            countryDialCode: _dialCode,
+            onCountryChanged: (code) => _dialCode = code.dialCode ?? _dialCode,
             onForgotPassword: () => context.push(AppRoutes.forgotPassword),
           ),
         );

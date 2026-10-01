@@ -58,7 +58,7 @@ extension DioExceptionX on DioException {
       case DioExceptionType.connectionError:
         return NoInternetException(message: 'No internet connection. Please check your network.');
       default:
-        return ServerException(message: message ?? 'An unexpected error occurred');
+        return ServerException(message: message ?? error?.toString() ?? 'An unexpected error occurred');
     }
   }
 
@@ -79,6 +79,11 @@ extension DioExceptionX on DioException {
             return errors.values.first.toString();
           }
         }
+      }
+      // Django REST framework errors: {"detail": "..."}, {"non_field_errors": [...]}, {"field": [...]}
+      if (data['detail'] != null) return data['detail'].toString();
+      for (final value in [data['non_field_errors'], ...data.values]) {
+        if (value is List && value.isNotEmpty) return value.first.toString();
       }
     }
 

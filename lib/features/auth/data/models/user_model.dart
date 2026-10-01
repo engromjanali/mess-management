@@ -10,11 +10,11 @@ abstract class UserModel with _$UserModel {
   const UserModel._();
 
   const factory UserModel({
-    required String id,
+    @JsonKey(fromJson: _idFromJson) required String id,
     required String email,
-    required String name,
+    @JsonKey(name: 'full_name') required String name,
     String? phone,
-    @JsonKey(name: 'photo_url') String? photoUrl,
+    @JsonKey(name: 'photo') String? photoUrl,
     @JsonKey(name: 'current_season') CurrentSeasonModel? currentSeason,
     @Default('member') String role,
   }) = _UserModel;
@@ -32,6 +32,9 @@ abstract class UserModel with _$UserModel {
     return UserModel(id: entity.id, email: entity.email, name: entity.name, phone: entity.phone, photoUrl: entity.photoUrl, currentSeason: entity.currentSeason == null ? null : CurrentSeasonModel.fromEntity(entity.currentSeason!), role: entity.role);
   }
 }
+
+/// Backend sends `id` as an int; the app keeps it as a String.
+String _idFromJson(Object? id) => id.toString();
 
 @freezed
 abstract class CurrentSeasonModel with _$CurrentSeasonModel {

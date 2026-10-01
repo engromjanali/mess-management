@@ -80,6 +80,7 @@ flutter:
     - assets/images/
     - assets/images/svg/
     - assets/images/svg/flags/
+    - shorebird.yaml
 
 
   fonts:
