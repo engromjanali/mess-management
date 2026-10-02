@@ -6,8 +6,8 @@ abstract class CostRepository {
   /// The roster of members a cost entry can be recorded for.
   ResultFuture<List<CostMemberEntity>> getMembers();
 
-  /// Every Cost/cost entry (newest first).
-  ResultFuture<List<CostEntity>> getCosts();
+  /// The active season and its cost entries (newest first).
+  ResultFuture<CostSeasonEntity> getCosts();
 
   /// Records a Cost/cost entry for one member.
   ResultFuture<CostEntity> addCost({required String personId, required DateTime date, required List<CostItemEntity> items});

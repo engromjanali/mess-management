@@ -1,15 +1,13 @@
-import 'package:injectable/injectable.dart';
 import 'package:clean_boilerplate/core/errors/exceptions.dart';
 import 'package:clean_boilerplate/features/cost/domain/entities/cost_entity.dart';
 import 'package:clean_boilerplate/features/cost/data/models/cost_model.dart';
 import 'package:clean_boilerplate/features/cost/data/datasources/interfaces/cost_data_source.dart';
 
-/// In-memory mock for the Cost/cost feature.
+/// In-memory mock for the Cost/cost feature (not registered for DI; the app
+/// uses `CostRemoteDataSourceImpl`). Handy for offline demos and tests.
 ///
 /// Holds a fixed roster of members and a flat list of Cost entries, each with
-/// its own line items. Swap this binding for a remote implementation later —
-/// the repository and presentation layers won't change.
-@LazySingleton(as: CostDataSource)
+/// its own line items.
 class CostLocalDataSourceImpl implements CostDataSource {
   /// Fixed roster (mirrors the dashboard / meal-entry members).
   static const List<({String id, String name})> _roster = [
@@ -77,9 +75,9 @@ class CostLocalDataSourceImpl implements CostDataSource {
   }
 
   @override
-  Future<List<CostModel>> getCosts() async {
+  Future<CostSeasonModel> getCosts() async {
     await Future<void>.delayed(const Duration(milliseconds: 400));
-    return _sorted(_costs);
+    return CostSeasonModel(seasonName: 'June 2026', costs: _sorted(_costs));
   }
 
   @override

@@ -42,6 +42,17 @@ class CostEntity extends Equatable {
   List<Object?> get props => [id, personId, personName, date, items];
 }
 
+/// The cost entries of one season (the active season), newest first.
+class CostSeasonEntity extends Equatable {
+  final String seasonName;
+  final List<CostEntity> costs;
+
+  const CostSeasonEntity({required this.seasonName, required this.costs});
+
+  @override
+  List<Object?> get props => [seasonName, costs];
+}
+
 /// Aggregate helpers over a list of cost entries (used for summary cards).
 extension CostListX on List<CostEntity> {
   /// Grand total across every entry.

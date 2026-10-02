@@ -65,6 +65,12 @@ class AppConstants {
   // Funds — admin
   static const String adminFundsEndpoint = '/api/v1/admin/funds';
 
+  // Costs — user
+  static const String costsEndpoint = '/api/v1/user/costs';
+
+  // Costs — admin
+  static const String adminCostsEndpoint = '/api/v1/admin/costs';
+
   // ───────────────────────── Storage keys ─────────────────────────
   static const String tokenKey = 'auth_token';
   static const String refreshTokenKey = 'refresh_token';

@@ -15,14 +15,14 @@ class GetCostMembersUseCase implements UseCase<List<CostMemberEntity>, NoParams>
   ResultFuture<List<CostMemberEntity>> call(NoParams params) => _repository.getMembers();
 }
 
-/// Loads every Cost/cost entry.
+/// Loads the active season and its cost entries.
 @lazySingleton
-class GetCostsUseCase implements UseCase<List<CostEntity>, NoParams> {
+class GetCostsUseCase implements UseCase<CostSeasonEntity, NoParams> {
   final CostRepository _repository;
   GetCostsUseCase(this._repository);
 
   @override
-  ResultFuture<List<CostEntity>> call(NoParams params) => _repository.getCosts();
+  ResultFuture<CostSeasonEntity> call(NoParams params) => _repository.getCosts();
 }
 
 /// Params for recording a Cost/cost entry.

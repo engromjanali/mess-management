@@ -80,7 +80,7 @@ class _CostTileState extends State<CostTile> {
                   Icon(_expanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded, color: colors.textHintColor),
                   if (widget.showActions && showActionMenu)
                     PopupMenuButton<_CostAction>(
-                      tooltip: 'Options',
+                      tooltip: context.local.options,
                       icon: Icon(Icons.more_vert_rounded, color: colors.textSecondaryColor),
                       onSelected: (a) {
                         switch (a) {
@@ -91,19 +91,19 @@ class _CostTileState extends State<CostTile> {
                         }
                       },
                       itemBuilder: (context) => [
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: _CostAction.edit,
-                          child: ListTile(dense: true, contentPadding: EdgeInsets.zero, leading: Icon(Icons.edit_rounded), title: Text('Edit')),
+                          child: ListTile(dense: true, contentPadding: EdgeInsets.zero, leading: const Icon(Icons.edit_rounded), title: Text(context.local.edit)),
                         ),
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: _CostAction.delete,
-                          child: ListTile(dense: true, contentPadding: EdgeInsets.zero, leading: Icon(Icons.delete_outline_rounded), title: Text('Delete')),
+                          child: ListTile(dense: true, contentPadding: EdgeInsets.zero, leading: const Icon(Icons.delete_outline_rounded), title: Text(context.local.delete)),
                         ),
                       ],
                     ),
                   if (widget.showActions && !showActionMenu) ...[
-                    IconButton(tooltip: 'Edit', onPressed: widget.onEdit, icon: Icon(Icons.edit_rounded, color: colors.primaryColor)),
-                    IconButton(tooltip: 'Delete', onPressed: widget.onDelete, icon: Icon(Icons.delete_outline_rounded, color: colors.errorColor)),
+                    IconButton(tooltip: context.local.edit, onPressed: widget.onEdit, icon: Icon(Icons.edit_rounded, color: colors.primaryColor)),
+                    IconButton(tooltip: context.local.delete, onPressed: widget.onDelete, icon: Icon(Icons.delete_outline_rounded, color: colors.errorColor)),
                   ],
                 ],
               ),
@@ -154,8 +154,6 @@ class _Details extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
 
-    final meta = AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textSecondaryColor);
-
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeDefault, 0, Dimensions.paddingSizeDefault, Dimensions.paddingSizeDefault),
@@ -163,20 +161,24 @@ class _Details extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Divider(color: colors.borderColor, height: Dimensions.paddingSizeLarge),
-          Center(
-            child: Column(
-              children: [
-                Text('His/Her Id: ${cost.id}', style: meta),
-                Text('Cost Time: ${CostFormatters.time(cost.date)}', style: meta),
-                Text('Cost Date: ${CostFormatters.date(cost.date)}', style: meta),
-                const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-                Text('The details list of Cost below:', style: meta),
-              ],
-            ),
+          // Meta data — compact chips that wrap on narrow screens.
+          Wrap(
+            spacing: Dimensions.paddingSizeSmall,
+            runSpacing: Dimensions.paddingSizeSmall,
+            children: [
+              _MetaChip(icon: Icons.tag_rounded, text: context.local.costEntryId(cost.id)),
+              _MetaChip(icon: Icons.calendar_today_rounded, text: context.local.costDateValue(CostFormatters.date(cost.date))),
+              _MetaChip(icon: Icons.access_time_rounded, text: context.local.costTimeValue(CostFormatters.time(cost.date))),
+            ],
+          ),
+          const SizedBox(height: Dimensions.paddingSizeDefault),
+          Text(
+            context.local.productsBought,
+            style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
           ),
           const SizedBox(height: Dimensions.paddingSizeSmall),
           // Table header.
-          _Row(sl: 'SL No', product: 'Product', price: 'Price', bold: true, color: colors.textPrimaryColor),
+          _Row(sl: context.local.serialNo, product: context.local.product, price: context.local.price, bold: true, color: colors.textPrimaryColor),
           const SizedBox(height: Dimensions.paddingSizeExtraSmall),
           for (var i = 0; i < cost.items.length; i++)
             Container(
@@ -186,7 +188,32 @@ class _Details extends StatelessWidget {
             ),
           const SizedBox(height: Dimensions.paddingSizeSmall),
           // Total row.
-          _Row(sl: '', product: 'Total', price: maskCost ? '••••' : CostFormatters.number(cost.total), bold: true, color: colors.primaryColor),
+          _Row(sl: '', product: context.local.total, price: maskCost ? '••••' : CostFormatters.number(cost.total), bold: true, color: colors.primaryColor),
+        ],
+      ),
+    );
+  }
+}
+
+/// One meta-data item (icon + text) in a soft, rounded chip.
+class _MetaChip extends StatelessWidget {
+  const _MetaChip({required this.icon, required this.text});
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall + 2, vertical: Dimensions.paddingSizeExtraSmall + 2),
+      decoration: BoxDecoration(color: colors.primaryColor.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(Dimensions.radiusExtra2Large)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: Dimensions.iconSizeSmall - 2, color: colors.primaryColor),
+          const SizedBox(width: Dimensions.paddingSizeExtraSmall + 2),
+          Text(text, style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textPrimaryColor)),
         ],
       ),
     );

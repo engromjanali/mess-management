@@ -20,9 +20,9 @@ class CostRepositoryImpl implements CostRepository {
   });
 
   @override
-  ResultFuture<List<CostEntity>> getCosts() => _guard(() async {
-    final models = await _dataSource.getCosts();
-    return models.map((m) => m.toEntity()).toList();
+  ResultFuture<CostSeasonEntity> getCosts() => _guard(() async {
+    final model = await _dataSource.getCosts();
+    return model.toEntity();
   });
 
   @override

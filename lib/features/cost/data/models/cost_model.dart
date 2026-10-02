@@ -38,3 +38,13 @@ class CostModel {
 
   CostEntity toEntity() => CostEntity(id: id, personId: personId, personName: personName, date: date, items: items.map((i) => i.toEntity()).toList());
 }
+
+/// Data-layer DTO for one season's cost entries.
+class CostSeasonModel {
+  final String seasonName;
+  final List<CostModel> costs;
+
+  const CostSeasonModel({required this.seasonName, required this.costs});
+
+  CostSeasonEntity toEntity() => CostSeasonEntity(seasonName: seasonName, costs: costs.map((c) => c.toEntity()).toList());
+}

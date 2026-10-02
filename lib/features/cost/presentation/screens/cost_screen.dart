@@ -27,12 +27,11 @@ import 'package:clean_boilerplate/features/cost/presentation/widgets/cost_entry_
 import 'package:clean_boilerplate/features/cost/presentation/widgets/cost_formatters.dart';
 import 'package:clean_boilerplate/features/cost/presentation/widgets/cost_tile.dart';
 
-/// Cost (Cost) screen.
+/// Cost (bazar) screen — the active season's shopping entries.
 ///
 /// * **Admin** — two tabs: *Cost List* (browse, edit, delete) and
 ///   *Cost Entry* (record a new Cost with multiple products).
 /// * **User** — the read-only *Cost List* only.
-///
 class CostScreen extends StatelessWidget {
   const CostScreen({super.key});
 
@@ -73,75 +72,83 @@ class _CostViewState extends State<_CostView> {
         endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
         appBar: showWebAppBar ? null : AppBar(
           leading: const HomeBackButton(),
-          title: const Text('Cost'),
-          actions: [IconButton(tooltip: 'Refresh', icon: const Icon(Icons.refresh_rounded), onPressed: () => context.read<CostBloc>().add(const CostEvent.refresh()))],
+          title: Text(context.local.cost),
+          actions: [IconButton(tooltip: context.local.refresh, icon: const Icon(Icons.refresh_rounded), onPressed: () => context.read<CostBloc>().add(const CostEvent.refresh()))],
         ),
-        body: BlocConsumer<CostBloc, CostState>(
-          listener: (context, state) {
-            state.maybeWhen(
-              loaded: (costs, members, isAdmin, saving, justSaved) {
-                if (justSaved) {
-                  setState(() => _tab = _CostTab.list);
-                  context.showSuccessSnackBar('Cost entry saved');
-                }
-              },
-              error: (message) => context.showErrorSnackBar(message),
-              orElse: () {},
-            );
-          },
-          builder: (context, state) {
-            return state.maybeWhen(
-              loading: () => const Center(child: CircularProgressIndicator.adaptive()),
-              error: (message) => _ErrorView(message: message),
-              loaded: (costs, members, isAdmin, saving, _) {
-                final tab = isAdmin ? _tab : _CostTab.list;
-                final body = Stack(
-                  children: [
-                    Column(
-                          children: [
-                            if (isAdmin)
-                              Center(
-                                child: ConstrainedBox(
-                                  constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
-                                  child: Padding(
-                                    padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, 0),
-                                    child: _TabSwitch(tab: tab, onChanged: (t) => setState(() => _tab = t)),
-                                  ),
-                                ),
-                              ),
-                            Expanded(
-                              child: tab == _CostTab.list
-                                  ? _ListTab(costs: costs, isAdmin: isAdmin, members: members)
-                                  : _EntryTab(members: members),
-                            ),
-                          ],
-                    ),
-                    if (saving) const Positioned(top: 0, left: 0, right: 0, child: LinearProgressIndicator(minHeight: 2)),
-                  ],
-                );
-                if (!showWebAppBar) return body;
-                final user = context.watch<AuthBloc>().state.maybeWhen(authenticated: (user) => user, orElse: () => null);
-                return Column(
-                  children: [
-                    DashboardTopBar(
-                      userName: user?.name ?? 'User',
-                      onProfileTap: () => Scaffold.of(context).openEndDrawer(),
-                      navItems: [
-                        DashboardNavItem(label: 'Home', icon: Icons.home_rounded, onTap: () => context.go(AppRoutes.home)),
-                        DashboardNavItem(label: 'Meals', icon: Icons.restaurant_rounded, onTap: () => context.go(AppRoutes.meals)),
-                        DashboardNavItem(label: 'Deposits', icon: Icons.account_balance_wallet_rounded, onTap: () => context.go(AppRoutes.deposits)),
-                        DashboardNavItem(label: 'Cost', icon: Icons.shopping_cart_rounded, active: true, onTap: () {}),
-                      ],
-                    ),
-                    Expanded(child: body),
-                  ],
-                );
-              },
-              orElse: () => const Center(child: CircularProgressIndicator.adaptive()),
-            );
-          },
-        ),
+        body: showWebAppBar ? Column(children: [const _CostTopBar(), Expanded(child: _content())]) : _content(),
       ),
+    );
+  }
+
+  /// The list / entry tabs for the current state (no top bar).
+  Widget _content() {
+    return BlocConsumer<CostBloc, CostState>(
+      listener: (context, state) {
+        state.maybeWhen(
+          loaded: (costs, seasonName, members, isAdmin, saving, justSaved) {
+            if (justSaved) {
+              setState(() => _tab = _CostTab.list);
+              context.showSuccessSnackBar(context.local.costSaved);
+            }
+          },
+          error: (message) => context.showErrorSnackBar(message),
+          orElse: () {},
+        );
+      },
+      builder: (context, state) {
+        return state.maybeWhen(
+          loading: () => const Center(child: CircularProgressIndicator.adaptive()),
+          error: (message) => _ErrorView(message: message),
+          loaded: (costs, seasonName, members, isAdmin, saving, _) {
+            final tab = isAdmin ? _tab : _CostTab.list;
+            return Stack(
+              children: [
+                Column(
+                  children: [
+                    if (isAdmin)
+                      Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, 0),
+                            child: _TabSwitch(tab: tab, onChanged: (t) => setState(() => _tab = t)),
+                          ),
+                        ),
+                      ),
+                    Expanded(
+                      child: tab == _CostTab.list
+                          ? _ListTab(costs: costs, seasonName: seasonName, isAdmin: isAdmin, members: members)
+                          : _EntryTab(members: members),
+                    ),
+                  ],
+                ),
+                if (saving) const Positioned(top: 0, left: 0, right: 0, child: LinearProgressIndicator(minHeight: 2)),
+              ],
+            );
+          },
+          orElse: () => const Center(child: CircularProgressIndicator.adaptive()),
+        );
+      },
+    );
+  }
+}
+
+/// Desktop / big-tablet app bar, shown in every state (loading, error, loaded).
+class _CostTopBar extends StatelessWidget {
+  const _CostTopBar();
+
+  @override
+  Widget build(BuildContext context) {
+    final user = context.watch<AuthBloc>().state.maybeWhen(authenticated: (user) => user, orElse: () => null);
+    return DashboardTopBar(
+      userName: user?.name ?? context.local.roleUser,
+      onProfileTap: () => Scaffold.of(context).openEndDrawer(),
+      navItems: [
+        DashboardNavItem(label: context.local.home, icon: Icons.home_rounded, onTap: () => context.go(AppRoutes.home)),
+        DashboardNavItem(label: context.local.meals, icon: Icons.restaurant_rounded, onTap: () => context.go(AppRoutes.meals)),
+        DashboardNavItem(label: context.local.deposits, icon: Icons.account_balance_wallet_rounded, onTap: () => context.go(AppRoutes.deposits)),
+        DashboardNavItem(label: context.local.cost, icon: Icons.shopping_cart_rounded, active: true, onTap: () {}),
+      ],
     );
   }
 }
@@ -155,9 +162,9 @@ class _TabSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SegmentedButton<_CostTab>(
-      segments: const [
-        ButtonSegment(value: _CostTab.list, icon: Icon(Icons.format_list_numbered_rounded), label: Text('Cost List')),
-        ButtonSegment(value: _CostTab.entry, icon: Icon(Icons.edit_rounded), label: Text('Cost Entry')),
+      segments: [
+        ButtonSegment(value: _CostTab.list, icon: const Icon(Icons.format_list_numbered_rounded), label: Text(context.local.costList)),
+        ButtonSegment(value: _CostTab.entry, icon: const Icon(Icons.edit_rounded), label: Text(context.local.costEntry)),
       ],
       selected: {tab},
       showSelectedIcon: false,
@@ -171,9 +178,10 @@ class _TabSwitch extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────
 
 class _ListTab extends StatelessWidget {
-  const _ListTab({required this.costs, required this.isAdmin, required this.members});
+  const _ListTab({required this.costs, required this.seasonName, required this.isAdmin, required this.members});
 
   final List<CostEntity> costs;
+  final String seasonName;
   final bool isAdmin;
   final List<CostMemberEntity> members;
 
@@ -181,10 +189,10 @@ class _ListTab extends StatelessWidget {
     final c = context.customThemeColors;
     final avg = costs.isEmpty ? 0.0 : costs.grandTotal / costs.length;
     return [
-      _Stat('Total Cost', CostFormatters.taka(costs.grandTotal), Icons.shopping_cart_rounded, c.primaryColor),
-      _Stat('Entries', '${costs.length}', Icons.receipt_long_rounded, c.infoColor),
-      _Stat('Products', '${costs.totalItems}', Icons.inventory_2_rounded, c.secondaryColor),
-      _Stat('Avg / Entry', CostFormatters.taka(avg), Icons.trending_up_rounded, c.successColor),
+      _Stat(context.local.totalCost, CostFormatters.taka(costs.grandTotal), Icons.shopping_cart_rounded, c.primaryColor),
+      _Stat(context.local.entries, '${costs.length}', Icons.receipt_long_rounded, c.infoColor),
+      _Stat(context.local.products, '${costs.totalItems}', Icons.inventory_2_rounded, c.secondaryColor),
+      _Stat(context.local.avgPerEntry, CostFormatters.taka(avg), Icons.trending_up_rounded, c.successColor),
     ];
   }
 
@@ -203,15 +211,11 @@ class _ListTab extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Cost entry'),
-        content: Text(
-          'Delete ${cost.personName}\'s Cost of '
-          '${CostFormatters.taka(cost.total)} '
-          '(${cost.itemCount} item${cost.itemCount == 1 ? '' : 's'})?',
-        ),
+        title: Text(context.local.deleteCost),
+        content: Text(context.local.deleteCostConfirm(cost.personName, CostFormatters.taka(cost.total), cost.itemCount)),
         actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.of(ctx).pop(true), child: const Text('Delete')),
+          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: Text(context.local.cancel)),
+          FilledButton(onPressed: () => Navigator.of(ctx).pop(true), child: Text(context.local.delete)),
         ],
       ),
     );
@@ -232,6 +236,7 @@ class _ListTab extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            if (seasonName.isNotEmpty) SectionTitle(title: context.local.seasonName(seasonName), icon: Icons.event_note_rounded),
             _SummaryGrid(stats: _summary(context)),
             const SizedBox(height: Dimensions.paddingSizeLarge),
             if (costs.isEmpty)
@@ -268,7 +273,7 @@ class _EntryTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SectionTitle(title: 'New Cost', icon: Icons.add_shopping_cart_rounded),
+          SectionTitle(title: context.local.newCost, icon: Icons.add_shopping_cart_rounded),
           CostEntryForm(
             key: const ValueKey('cost-entry-form'),
             members: members,
@@ -294,7 +299,7 @@ Future<void> showCostEditSheet({
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'Edit Cost entry',
+          context.local.editCost,
           style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: context.customThemeColors.textPrimaryColor),
         ),
         const SizedBox(height: Dimensions.paddingSizeLarge),
@@ -372,7 +377,7 @@ class _ErrorView extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: () => context.read<CostBloc>().add(CostEvent.started(isAdmin: isAdmin)),
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Retry'),
+              label: Text(context.local.tryAgain),
             ),
           ],
         ),
@@ -393,7 +398,7 @@ class _EmptyView extends StatelessWidget {
         children: [
           Icon(Icons.shopping_cart_outlined, size: Dimensions.iconSizeExtraLarge, color: colors.textHintColor),
           const SizedBox(height: Dimensions.paddingSizeDefault),
-          Text('No Cost entries yet', style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor)),
+          Text(context.local.noCostEntries, style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor)),
         ],
       ),
     );

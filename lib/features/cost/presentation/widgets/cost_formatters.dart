@@ -15,6 +15,12 @@ class CostFormatters {
   /// Plain number, e.g. `1,500`.
   static String number(double value) => _money.format(value);
 
+  /// Price for an editable field — no grouping so it parses back, e.g. `1500`, `99.5`.
+  static String plainAmount(double value) {
+    final abs = value.abs();
+    return abs == abs.truncateToDouble() ? abs.toStringAsFixed(0) : abs.toStringAsFixed(2).replaceFirst(RegExp(r'0$'), '');
+  }
+
   /// Header stamp, e.g. `04:32 PM 21-08-2025`.
   static String stamp(DateTime value) => _stamp.format(value);
 

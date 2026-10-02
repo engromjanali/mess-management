@@ -130,5 +130,84 @@
       }
     }
   },
-  "noFundEntries": "No fund entries yet"
+  "noFundEntries": "No fund entries yet",
+  "refresh": "Refresh",
+  "costSaved": "Cost entry saved",
+  "costList": "Cost List",
+  "costEntry": "Cost Entry",
+  "newCost": "New Cost",
+  "editCost": "Edit cost entry",
+  "deleteCost": "Delete cost entry",
+  "deleteCostConfirm": "Delete {name}'s cost of {amount} ({count, plural, =1{1 product} other{{count} products}})?",
+  "@deleteCostConfirm": {
+    "description": "Delete confirmation for a cost entry",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alice"
+      },
+      "amount": {
+        "type": "String",
+        "example": "৳920"
+      },
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "noCostEntries": "No cost entries yet",
+  "seasonName": "Season: {name}",
+  "@seasonName": {
+    "description": "Name of the season a list belongs to",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "July 2026"
+      }
+    }
+  },
+  "totalCost": "Total Cost",
+  "products": "Products",
+  "avgPerEntry": "Avg / Entry",
+  "member": "Member",
+  "selectMember": "Select a member",
+  "addProductWithPrice": "Add at least one product with a price",
+  "costDate": "Cost Date",
+  "costTime": "Cost Time",
+  "addProduct": "Add product",
+  "product": "Product",
+  "price": "Price",
+  "remove": "Remove",
+  "total": "Total",
+  "options": "Options",
+  "costEntryId": "Entry ID: {id}",
+  "@costEntryId": {
+    "placeholders": {
+      "id": {
+        "type": "String",
+        "example": "12"
+      }
+    }
+  },
+  "costTimeValue": "Cost time: {time}",
+  "@costTimeValue": {
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "4:31 PM"
+      }
+    }
+  },
+  "costDateValue": "Cost date: {date}",
+  "@costDateValue": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "21/08/2026"
+      }
+    }
+  },
+  "productsBought": "Products bought:",
+  "serialNo": "SL No"
 }

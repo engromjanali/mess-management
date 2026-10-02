@@ -34,7 +34,14 @@ class CostBloc extends Bloc<CostEvent, CostState> {
 
     if (_isAdmin) {
       final membersResult = await _getMembers(const NoParams());
-      membersResult.when(success: (s) => _members = s.data, failure: (_) => _members = const []);
+      // Show why the member picker is empty instead of hiding the failure.
+      membersResult.when(
+        success: (s) => _members = s.data,
+        failure: (f) {
+          _members = const [];
+          emit(CostState.error(f.error.toString()));
+        },
+      );
     } else {
       _members = const [];
     }
@@ -81,14 +88,18 @@ class CostBloc extends Bloc<CostEvent, CostState> {
     }
   }
 
-  /// On a failed mutation surface the error; otherwise reload the list.
+  /// On a failed mutation surface the error (the screen shows it as a snack
+  /// bar) and keep the current list visible; otherwise reload the list.
   Future<void> _afterMutation(Emitter<CostState> emit, Result<dynamic> result, {bool flagSaved = false}) async {
     if (result.isFailure) {
+      final current = state;
       emit(CostState.error(result.error.toString()));
+      if (current is CostLoaded) emit(current.copyWith(saving: false));
       return;
     }
     await _reload(emit, justSaved: flagSaved);
   }
 
-  CostState _loaded(List<CostEntity> costs, {bool justSaved = false}) => CostState.loaded(costs: costs, members: _members, isAdmin: _isAdmin, justSaved: justSaved);
+  CostState _loaded(CostSeasonEntity season, {bool justSaved = false}) =>
+      CostState.loaded(costs: season.costs, seasonName: season.seasonName, members: _members, isAdmin: _isAdmin, justSaved: justSaved);
 }

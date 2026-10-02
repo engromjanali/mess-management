@@ -5,7 +5,8 @@ import 'package:clean_boilerplate/features/cost/data/models/cost_model.dart';
 abstract class CostDataSource {
   Future<List<CostMemberModel>> getMembers();
 
-  Future<List<CostModel>> getCosts();
+  /// The active season's cost entries.
+  Future<CostSeasonModel> getCosts();
 
   Future<CostModel> addCost({required String personId, required DateTime date, required List<CostItemEntity> items});
 
