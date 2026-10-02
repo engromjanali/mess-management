@@ -1,5 +1,3 @@
-import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:clean_boilerplate/features/settings/domain/entities/language_model.dart';
 
 /// Application-level constants
@@ -12,12 +10,16 @@ class AppConstants {
 
   static const String baseUrl = 'http://127.0.0.1:8000';
   // static const String baseUrl = 'https://mm-backend-kappa.vercel.app';
-  
-  // API endpoints
+
+  // ───────────────────────── API endpoints ─────────────────────────
+  // Grouped by feature; inside a feature, user (`/api/v1/user`) routes come
+  // before manager (`/api/v1/admin`) routes.
+
+  // Config
   static const String configEndPoint = '/api/v1/auth/config';
   static const String authTestEndpoint = '/api/v1/auth/test';
 
-  // auth 
+  // Auth
   static const String loginEndpoint = '/api/v1/auth/sign-in';
   static const String registerEndpoint = '/api/v1/auth/sign-up';
   static const String logoutEndpoint = '/api/v1/auth/logout';
@@ -27,29 +29,37 @@ class AppConstants {
   static const String forgetPasswordEndpoint = '/api/v1/auth/forget-password';
   static const String resetPasswordEndpoint = '/api/v1/auth/change-password';
 
-  // membership
+  // Membership — user
   static const String membershipStatusEndpoint = '/api/v1/user/membership/status';
-  static const String joinInviteEndpoint = '/api/v1/user/invites/accept';
-  static const String joinRequestEndpoint = '/api/v1/user/join-requests';
-  static const String leaveMessEndpoint = '/api/v1/user/membership/leave';
   static const String availableMessesEndpoint = '/api/v1/user/messes';
   static const String createMessEndpoint = '/api/v1/user/messes/create';
+  static const String joinRequestEndpoint = '/api/v1/user/join-requests';
+  static const String joinInviteEndpoint = '/api/v1/user/invites/accept';
+  static const String leaveMessEndpoint = '/api/v1/user/membership/leave';
+
+  // Membership — admin
+  static const String managerMembersEndpoint = '/api/v1/admin/members';
+  static const String memberLookupEndpoint = '/api/v1/admin/member-lookup';
   static const String createInviteEndpoint = '/api/v1/admin/invites';
   static const String managerJoinRequestsEndpoint = '/api/v1/admin/join-requests';
   static const String joinRequestDecisionEndpoint = '/api/v1/admin/join-requests/decision';
-  static const String memberLookupEndpoint = '/api/v1/admin/member-lookup';
-  static const String managerMembersEndpoint = '/api/v1/admin/members';
+
+  // Mess — admin (not on the backend yet)
   static const String messDetailsEndpoint = '/api/v1/membership/mess';
   static const String messLeadershipEndpoint = '/api/v1/membership/mess/leadership';
-  static const String mealAdminDataEndpoint = '/api/v1/meals/admin-data';
-  static const String addMealBulkEndpoint = '/api/v1/meals/add-meal-bulk';
 
-  // meals
+  // Meals
   static const String addMealEndpoint = '/api/v1/meals/add-meal';
+  static const String addMealBulkEndpoint = '/api/v1/meals/add-meal-bulk';
+  static const String mealAdminDataEndpoint = '/api/v1/meals/admin-data';
+
+  // Deposits — user
   static const String myDepositsEndpoint = '/api/v1/user/deposits';
+
+  // Deposits — admin
   static const String adminDepositsEndpoint = '/api/v1/admin/deposits';
 
-  // keys
+  // ───────────────────────── Storage keys ─────────────────────────
   static const String tokenKey = 'auth_token';
   static const String refreshTokenKey = 'refresh_token';
   static const String guestUserIdKey = 'guest_user_id';
