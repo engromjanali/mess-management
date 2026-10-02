@@ -65,5 +65,20 @@
   "cancel": "إلغاء",
   "notSignedIn": "لم تقم بتسجيل الدخول",
   "roleAdmin": "مسؤول",
-  "roleUser": "مستخدم"
+  "roleUser": "مستخدم",
+  "messOverview": "نظرة عامة على السكن",
+  "totalCredit": "إجمالي الإيداع",
+  "totalDebit": "إجمالي السحب",
+  "netBalance": "الرصيد الصافي",
+  "entries": "القيود",
+  "members": "الأعضاء",
+  "avgPerMember": "المتوسط لكل عضو",
+  "memberBalances": "أرصدة الأعضاء",
+  "credit": "إيداع",
+  "debit": "سحب",
+  "net": "الصافي",
+  "filteredSummary": "ملخص التصفية",
+  "noMembers": "لا يوجد أعضاء بعد",
+  "mine": "الخاصة بي",
+  "myDeposits": "إيداعاتي"
 }

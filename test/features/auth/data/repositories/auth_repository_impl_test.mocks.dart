@@ -135,6 +135,8 @@ class MockAuthDataSource extends _i1.Mock implements _i3.AuthDataSource {
     required String? email,
     required String? phone,
     String? address,
+    List<int>? photoBytes,
+    String? photoName,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#updateProfile, [], {
@@ -142,6 +144,8 @@ class MockAuthDataSource extends _i1.Mock implements _i3.AuthDataSource {
               #email: email,
               #phone: phone,
               #address: address,
+              #photoBytes: photoBytes,
+              #photoName: photoName,
             }),
             returnValue: _i4.Future<_i2.UserModel>.value(
               _FakeUserModel_0(
@@ -151,6 +155,8 @@ class MockAuthDataSource extends _i1.Mock implements _i3.AuthDataSource {
                   #email: email,
                   #phone: phone,
                   #address: address,
+                  #photoBytes: photoBytes,
+                  #photoName: photoName,
                 }),
               ),
             ),

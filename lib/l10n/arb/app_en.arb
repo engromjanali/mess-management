@@ -65,5 +65,20 @@
   "cancel": "Cancel",
   "notSignedIn": "You are not logged in",
   "roleAdmin": "Admin",
-  "roleUser": "User"
+  "roleUser": "User",
+  "messOverview": "Mess overview",
+  "totalCredit": "Total credit",
+  "totalDebit": "Total debit",
+  "netBalance": "Net balance",
+  "entries": "Entries",
+  "members": "Members",
+  "avgPerMember": "Avg per member",
+  "memberBalances": "Member balances",
+  "credit": "Credit",
+  "debit": "Debit",
+  "net": "Net",
+  "filteredSummary": "Filtered summary",
+  "noMembers": "No members yet",
+  "mine": "Mine",
+  "myDeposits": "My deposits"
 }

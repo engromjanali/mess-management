@@ -4,6 +4,7 @@ import 'package:injectable/injectable.dart';
 import 'package:clean_boilerplate/config/util/result.dart';
 import 'package:clean_boilerplate/core/usecase/usecase.dart';
 import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_entity.dart';
+import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_mess_summary_entity.dart';
 import 'package:clean_boilerplate/features/deposit/domain/usecases/deposit_usecases.dart';
 import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_event.dart';
 import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_state.dart';
@@ -31,6 +32,7 @@ class DepositBloc extends Bloc<DepositEvent, DepositState> {
   DepositDateFilter _dateFilter = DepositDateFilter.allTime;
   DateTime _selectedDate = DateTime.now();
   DateTimeRange? _selectedRange;
+  DepositMessSummaryEntity? _messSummary;
 
   DepositBloc(
     this._getMembers,
@@ -74,7 +76,8 @@ class DepositBloc extends Bloc<DepositEvent, DepositState> {
   }
 
   Future<void> _onChangeMode(DepositChangeMode event, Emitter<DepositState> emit) async {
-    if (!_isAdmin || event.mode == DepositViewMode.mine) return;
+    // Admins can switch to every mode, including their own deposits (a manager is also a member).
+    if (!_isAdmin) return;
     _mode = event.mode;
     emit(const DepositState.loading());
     await _reload(emit);
@@ -153,7 +156,24 @@ class DepositBloc extends Bloc<DepositEvent, DepositState> {
         result = await _getMyDeposits(const NoParams());
     }
 
+    await _reloadMessSummary(result);
+
     result.when(success: (s) => emit(_loaded(s.data)), failure: (f) => emit(DepositState.error(f.error.toString())));
+  }
+
+  /// Admin-only mess overview over every deposit, so it ignores the list filter.
+  /// Reuses [listResult] when it already holds every deposit (all members / all time).
+  Future<void> _reloadMessSummary(Result<List<DepositEntity>> listResult) async {
+    if (!_isAdmin) {
+      _messSummary = null;
+      return;
+    }
+    final listIsAll = (_mode == DepositViewMode.byMember && _selectedMember == null) || (_mode == DepositViewMode.byDate && (_dateFilter == DepositDateFilter.allTime || (_dateFilter == DepositDateFilter.range && _selectedRange == null)));
+    final allResult = listIsAll ? listResult : await _getAllDeposits(const NoParams());
+    // A manager is also a member, so the overview always carries their own totals.
+    final myResult = _mode == DepositViewMode.mine ? listResult : await _getMyDeposits(const NoParams());
+    final myDeposits = myResult.when(success: (s) => s.data, failure: (_) => null);
+    allResult.when(success: (s) => _messSummary = DepositMessSummaryEntity.fromDeposits(s.data, _members, myDeposits: myDeposits), failure: (_) => _messSummary = null);
   }
 
   /// Keeps current data visible while a mutation is in flight.
@@ -182,5 +202,6 @@ class DepositBloc extends Bloc<DepositEvent, DepositState> {
     isAdmin: _isAdmin,
     selectedMember: _selectedMember,
     selectedRange: _selectedRange,
+    messSummary: _messSummary,
   );
 }

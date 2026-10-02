@@ -46,6 +46,8 @@ class AppConstants {
 
   // meals
   static const String addMealEndpoint = '/api/v1/meals/add-meal';
+  static const String myDepositsEndpoint = '/api/v1/user/deposits';
+  static const String adminDepositsEndpoint = '/api/v1/admin/deposits';
 
   // keys
   static const String tokenKey = 'auth_token';

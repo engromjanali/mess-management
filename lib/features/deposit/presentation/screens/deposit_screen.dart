@@ -25,7 +25,9 @@ import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_eve
 import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_state.dart';
 import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_view_mode.dart';
 import 'package:clean_boilerplate/features/deposit/presentation/widgets/deposit_filter_bar.dart';
+import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_mess_summary_entity.dart';
 import 'package:clean_boilerplate/features/deposit/presentation/widgets/deposit_form_sheet.dart';
+import 'package:clean_boilerplate/features/deposit/presentation/widgets/deposit_mess_overview.dart';
 import 'package:clean_boilerplate/features/deposit/presentation/widgets/deposit_formatters.dart';
 import 'package:clean_boilerplate/features/deposit/presentation/widgets/deposit_tile.dart';
 
@@ -65,7 +67,7 @@ class _DepositView extends StatelessWidget {
         appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: const Text('Deposits')),
         floatingActionButton: BlocBuilder<DepositBloc, DepositState>(
           builder: (context, state) {
-            final canAdd = state.maybeWhen(loaded: (_, _, _, _, _, isAdmin, _, _, _) => isAdmin, orElse: () => false);
+            final canAdd = state.maybeWhen(loaded: (_, _, _, _, _, isAdmin, _, _, _, _) => isAdmin, orElse: () => false);
             if (!canAdd) return const SizedBox.shrink();
             return FloatingActionButton.extended(onPressed: () => _openAdd(context, state), icon: const Icon(Icons.add_rounded), label: const Text('Add deposit'));
           },
@@ -78,7 +80,7 @@ class _DepositView extends StatelessWidget {
             return state.maybeWhen(
               loading: () => const Center(child: CircularProgressIndicator.adaptive()),
               error: (message) => _ErrorView(message: message),
-              loaded: (mode, deposits, members, dateFilter, selectedDate, isAdmin, selectedMember, selectedRange, saving) {
+              loaded: (mode, deposits, members, dateFilter, selectedDate, isAdmin, selectedMember, selectedRange, saving, messSummary) {
                 final body = _DepositBody(
                   mode: mode,
                   deposits: deposits,
@@ -89,6 +91,7 @@ class _DepositView extends StatelessWidget {
                   selectedMember: selectedMember,
                   selectedRange: selectedRange,
                   saving: saving,
+                  messSummary: messSummary,
                 );
                 if (!showWebAppBar) return body;
                 final user = context.watch<AuthBloc>().state.maybeWhen(authenticated: (user) => user, orElse: () => null);
@@ -117,7 +120,7 @@ class _DepositView extends StatelessWidget {
   }
 
   void _openAdd(BuildContext context, DepositState state) {
-    final members = state.maybeWhen(loaded: (_, _, members, _, _, _, _, _, _) => members, orElse: () => const <DepositMemberEntity>[]);
+    final members = state.maybeWhen(loaded: (_, _, members, _, _, _, _, _, _, _) => members, orElse: () => const <DepositMemberEntity>[]);
     final bloc = context.read<DepositBloc>();
     showDepositFormSheet(
       context: context,
@@ -172,6 +175,7 @@ class _DepositBody extends StatelessWidget {
     required this.selectedMember,
     required this.selectedRange,
     required this.saving,
+    this.messSummary,
   });
 
   final DepositViewMode mode;
@@ -183,6 +187,7 @@ class _DepositBody extends StatelessWidget {
   final DepositMemberEntity? selectedMember;
   final DateTimeRange? selectedRange;
   final bool saving;
+  final DepositMessSummaryEntity? messSummary;
 
   List<_Stat> _summary(BuildContext context) {
     final c = context.customThemeColors;
@@ -250,6 +255,11 @@ class _DepositBody extends StatelessWidget {
                         child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    if (isAdmin && messSummary != null) ...[
+                      DepositMessOverview(summary: messSummary!),
+                      const SizedBox(height: Dimensions.paddingSizeLarge),
+                      SectionTitle(title: context.local.filteredSummary, icon: Icons.filter_alt_outlined),
+                    ],
                     _SummaryGrid(stats: _summary(context)),
                     const SizedBox(height: Dimensions.paddingSizeLarge),
                     if (isAdmin) ...[

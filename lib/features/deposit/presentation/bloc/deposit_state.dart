@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' show DateTimeRange;
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_entity.dart';
+import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_mess_summary_entity.dart';
 import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_view_mode.dart';
 
 part 'deposit_state.freezed.dart';
@@ -20,6 +21,7 @@ class DepositState with _$DepositState {
   /// what that filter currently points at. [members] backs the add/edit picker
   /// and the by-member filter (empty for non-admins). [saving] flags an
   /// in-flight add/update/delete so the UI can show subtle progress.
+  /// [messSummary] is the admin-only, filter-independent mess overview.
   const factory DepositState.loaded({
     required DepositViewMode mode,
     required List<DepositEntity> deposits,
@@ -30,6 +32,7 @@ class DepositState with _$DepositState {
     DepositMemberEntity? selectedMember,
     DateTimeRange? selectedRange,
     @Default(false) bool saving,
+    DepositMessSummaryEntity? messSummary,
   }) = DepositLoaded;
 
   /// Loading failed.

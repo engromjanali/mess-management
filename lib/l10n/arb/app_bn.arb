@@ -65,5 +65,20 @@
   "cancel": "বাতিল",
   "notSignedIn": "আপনি লগইন করেননি",
   "roleAdmin": "অ্যাডমিন",
-  "roleUser": "ব্যবহারকারী"
+  "roleUser": "ব্যবহারকারী",
+  "messOverview": "মেসের সারসংক্ষেপ",
+  "totalCredit": "মোট জমা",
+  "totalDebit": "মোট উত্তোলন",
+  "netBalance": "নিট ব্যালেন্স",
+  "entries": "এন্ট্রি",
+  "members": "সদস্য",
+  "avgPerMember": "সদস্যপ্রতি গড়",
+  "memberBalances": "সদস্যদের ব্যালেন্স",
+  "credit": "জমা",
+  "debit": "উত্তোলন",
+  "net": "নিট",
+  "filteredSummary": "ফিল্টার করা সারসংক্ষেপ",
+  "noMembers": "এখনও কোনো সদস্য নেই",
+  "mine": "আমার",
+  "myDeposits": "আমার জমা"
 }

@@ -1,4 +1,3 @@
-import 'package:injectable/injectable.dart';
 import 'package:clean_boilerplate/core/errors/exceptions.dart';
 import 'package:clean_boilerplate/features/deposit/data/models/deposit_model.dart';
 import 'package:clean_boilerplate/features/deposit/data/datasources/interfaces/deposit_data_source.dart';
@@ -7,9 +6,8 @@ import 'package:clean_boilerplate/features/deposit/data/datasources/interfaces/d
 ///
 /// Holds a fixed roster of members and a flat list of deposit records.
 /// Deposits are recorded one member at a time and keep their sign
-/// (positive → credit, negative → debit). Swap this binding for a remote
-/// implementation later — the repository and presentation layers won't change.
-@LazySingleton(as: DepositDataSource)
+/// (positive → credit, negative → debit). Not registered for DI anymore — the
+/// app uses `DepositRemoteDataSourceImpl`; kept for offline previews and tests.
 class DepositLocalDataSourceImpl implements DepositDataSource {
   /// The member whose deposits a non-admin "user" is allowed to see.
   static const String _currentUserId = '1';

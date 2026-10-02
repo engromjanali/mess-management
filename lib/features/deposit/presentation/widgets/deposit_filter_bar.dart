@@ -45,6 +45,7 @@ class DepositFilterBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final byMember = mode == DepositViewMode.byMember;
+    final byDate = mode == DepositViewMode.byDate;
 
     return Wrap(
       spacing: Dimensions.paddingSizeSmall,
@@ -53,15 +54,17 @@ class DepositFilterBar extends StatelessWidget {
       children: [
         // Mode selector.
         _SelectChip(label: 'By member', icon: Icons.person_rounded, selected: byMember, onTap: () => _bloc(context).add(const DepositEvent.changeMode(DepositViewMode.byMember))),
-        _SelectChip(label: 'By date', icon: Icons.calendar_today_rounded, selected: !byMember, onTap: () => _bloc(context).add(const DepositEvent.changeMode(DepositViewMode.byDate))),
+        _SelectChip(label: 'By date', icon: Icons.calendar_today_rounded, selected: byDate, onTap: () => _bloc(context).add(const DepositEvent.changeMode(DepositViewMode.byDate))),
+        // A manager is also a member — let them list only their own deposits.
+        _SelectChip(label: context.local.mine, icon: Icons.account_circle_outlined, selected: mode == DepositViewMode.mine, onTap: () => _bloc(context).add(const DepositEvent.changeMode(DepositViewMode.mine))),
 
         // A subtle divider between mode and its sub-filters.
-        const _ChipDivider(),
+        if (byMember || byDate) const _ChipDivider(),
 
         // Contextual sub-filter.
         if (byMember)
           _MemberMenuChip(members: members, selectedMember: selectedMember, onSelected: (id) => _bloc(context).add(DepositEvent.selectMember(id)))
-        else ...[
+        else if (byDate) ...[
           _SelectChip(label: 'All time', selected: dateFilter == DepositDateFilter.allTime, onTap: () => _bloc(context).add(const DepositEvent.changeDateFilter(DepositDateFilter.allTime))),
           _SelectChip(
             label: dateFilter == DepositDateFilter.day ? DepositFormatters.shortDate(selectedDate) : 'Day',
@@ -131,20 +134,23 @@ class _MemberMenuChip extends StatelessWidget {
   final DepositMemberEntity? selectedMember;
   final ValueChanged<String?> onSelected;
 
+  /// Sentinel for "all members". A `null` item value can't be used: PopupMenuButton
+  /// treats a null result as a dismissed menu and never calls `onSelected`.
+  static const String _allMembers = '__all_members__';
+
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
     final label = selectedMember?.name ?? 'All members';
 
-    return PopupMenuButton<String?>(
+    return PopupMenuButton<String>(
       tooltip: 'Filter by member',
-      onSelected: onSelected,
+      onSelected: (value) => onSelected(value == _allMembers ? null : value),
       position: PopupMenuPosition.under,
       itemBuilder: (context) => [
-        // value defaults to null → the "all members" selection.
-        const PopupMenuItem<String?>(child: Text('All members')),
+        const PopupMenuItem<String>(value: _allMembers, child: Text('All members')),
         const PopupMenuDivider(),
-        for (final m in members) PopupMenuItem<String?>(value: m.id, child: Text(m.name)),
+        for (final m in members) PopupMenuItem<String>(value: m.id, child: Text(m.name)),
       ],
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeSmall),

@@ -153,6 +153,8 @@ class MockAuthRepository extends _i1.Mock implements _i2.AuthRepository {
     required String? email,
     required String? phone,
     String? address,
+    List<int>? photoBytes,
+    String? photoName,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#updateProfile, [], {
@@ -160,6 +162,8 @@ class MockAuthRepository extends _i1.Mock implements _i2.AuthRepository {
               #email: email,
               #phone: phone,
               #address: address,
+              #photoBytes: photoBytes,
+              #photoName: photoName,
             }),
             returnValue: _i3.Future<_i4.Result<_i5.UserEntity>>.value(
               _i6.dummyValue<_i4.Result<_i5.UserEntity>>(
@@ -169,6 +173,8 @@ class MockAuthRepository extends _i1.Mock implements _i2.AuthRepository {
                   #email: email,
                   #phone: phone,
                   #address: address,
+                  #photoBytes: photoBytes,
+                  #photoName: photoName,
                 }),
               ),
             ),
