@@ -11,6 +11,13 @@ class FundFormatters {
   /// Bangladeshi Taka, magnitude only, e.g. `৳1,500`.
   static String taka(double value) => '৳${_money.format(value.abs())}';
 
+  /// Magnitude without currency or thousands separators, e.g. `1500` or
+  /// `1500.5` — for pre-filling an amount field that must parse back.
+  static String plainAmount(double value) {
+    final abs = value.abs();
+    return abs == abs.truncateToDouble() ? abs.toStringAsFixed(0) : abs.toStringAsFixed(2).replaceFirst(RegExp(r'0$'), '');
+  }
+
   /// Signed Taka with an explicit sign, e.g. `+৳1,500` or `-৳300`.
   static String signedTaka(double value) {
     final sign = value < 0 ? '-' : '+';

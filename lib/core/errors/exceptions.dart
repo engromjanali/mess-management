@@ -84,6 +84,7 @@ extension DioExceptionX on DioException {
       if (data['detail'] != null) return data['detail'].toString();
       for (final value in [data['non_field_errors'], ...data.values]) {
         if (value is List && value.isNotEmpty) return value.first.toString();
+        if (value is String && value.isNotEmpty) return value;
       }
     }
 

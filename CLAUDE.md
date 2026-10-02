@@ -47,3 +47,29 @@ The app supports English, Bengali and Arabic (`lib/l10n/arb/app_en.arb`, `app_bn
 
 - Keep button text short (1–2 words) and meaningful so it fits in English, Bengali and Arabic — e.g. "Save", not "Save changes".
 - Put longer explanations in titles, subtitles or dialog text, not on the button.
+
+## Roles: the manager is also a member
+
+A mess manager / acting manager (admin role) is also a regular member: they eat meals, deposit money and have their own balance.
+
+- Every admin view must also show the manager's **own** data (my meals, my deposits, my balance), not only mess-wide or other members' data.
+- On screens with admin and user branches (deposits, meals, costs, funds, home), never replace the personal "mine" view with the admin view — show both (e.g. admin overview + a "My …" section, or a "Mine" filter for admins).
+
+## Error handling
+
+Every error shown to the user must state the **specific** reason (e.g. "A user with this phone already exists.", "This mess has no active season."). A generic message ("Something went wrong") is only acceptable when the cause really can't be known (no response, unknown exception).
+
+- Let the backend message flow through `DioExceptionX.toAppException` → `Failure.message` → UI (snack bar / error view). Don't replace it with hard-coded text in blocs or cubits; use a fallback only when the failure has no message.
+- Don't swallow errors with `catch (_)` and show fixed text — show the real message.
+- Form field errors from the backend go to the matching form field, not a generic toast.
+- If a specific message needs a backend change, change the backend too (`mm_backend` is usually in the same workspace). If it isn't available, say exactly what the backend must change (endpoint, field, message) instead of hiding it in the app.
+
+## Code organization
+
+Keep every file organized; put new code where it belongs, never just appended to the nearest or last section.
+
+- `AppConstants` endpoints: one commented section per feature (Config, Auth, Membership, Mess, Meals, Deposits, Funds, …); inside a feature, `— user` (`/api/v1/user`) before `— admin` (`/api/v1/admin`).
+- `app_router.dart`: `AppRoutes` constants and `GoRoute`s grouped by feature.
+- Feature files go in the matching layer: `data/datasources/{interfaces,remote,local}`, `data/models`, `domain/{entities,repositories,usecases}`, `presentation/{bloc,screens,widgets}`. One main widget/class per file, private helpers below it.
+- In classes: fields → constructor → public methods → private helpers. No dead or duplicated code.
+- When a file you touch is already disorganized, tidy the part related to your change and point out the rest.

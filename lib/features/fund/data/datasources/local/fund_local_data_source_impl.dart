@@ -1,4 +1,3 @@
-import 'package:injectable/injectable.dart';
 import 'package:clean_boilerplate/core/errors/exceptions.dart';
 import 'package:clean_boilerplate/features/fund/data/models/fund_model.dart';
 import 'package:clean_boilerplate/features/fund/data/datasources/interfaces/fund_data_source.dart';
@@ -7,9 +6,8 @@ import 'package:clean_boilerplate/features/fund/data/datasources/interfaces/fund
 ///
 /// Holds a flat list of shared fund records (no member). Entries keep their
 /// sign (positive → credit, negative → debit) and carry an optional note.
-/// Swap this binding for a remote implementation later — the repository and
-/// presentation layers won't change.
-@LazySingleton(as: FundDataSource)
+/// Not registered for DI anymore — the app uses `FundRemoteDataSourceImpl`;
+/// kept for offline previews and tests.
 class FundLocalDataSourceImpl implements FundDataSource {
   /// Session-mutable store of funds, seeded with a few sample records.
   final List<FundModel> _funds = [

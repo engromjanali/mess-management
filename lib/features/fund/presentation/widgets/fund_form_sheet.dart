@@ -44,7 +44,7 @@ class _FundFormSheetState extends State<_FundFormSheet> {
     final existing = widget.existing;
     _type = existing?.type ?? FundType.credit;
     _date = existing?.date ?? DateTime.now();
-    _amountController = TextEditingController(text: existing != null ? FundFormatters.taka(existing.absoluteAmount).replaceAll('৳', '') : '');
+    _amountController = TextEditingController(text: existing != null ? FundFormatters.plainAmount(existing.absoluteAmount) : '');
     _noteController = TextEditingController(text: existing?.note ?? '');
   }
 
@@ -80,22 +80,22 @@ class _FundFormSheetState extends State<_FundFormSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            _isEdit ? 'Edit fund' : 'Add fund',
+            _isEdit ? context.local.editFund : context.local.addFund,
             style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
           ),
           Text(
-            'Shared mess fund entry',
+            context.local.fundEntryHint,
             style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
           ),
           const SizedBox(height: Dimensions.paddingSizeLarge),
 
           // Credit / debit toggle.
-          _Label('Type'),
+          _Label(context.local.type),
           _TypeToggle(type: _type, onChanged: (t) => setState(() => _type = t)),
           const SizedBox(height: Dimensions.paddingSizeDefault),
 
           // Amount (magnitude — the sign comes from the type toggle).
-          _Label('Amount (৳)'),
+          _Label(context.local.amountTaka),
           TextFormField(
             controller: _amountController,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -104,7 +104,7 @@ class _FundFormSheetState extends State<_FundFormSheet> {
             validator: (v) {
               final value = double.tryParse((v ?? '').trim());
               if (value == null || value <= 0) {
-                return 'Enter an amount greater than 0';
+                return context.local.amountMustBePositive;
               }
               return null;
             },
@@ -112,7 +112,7 @@ class _FundFormSheetState extends State<_FundFormSheet> {
           const SizedBox(height: Dimensions.paddingSizeDefault),
 
           // Date.
-          _Label('Date'),
+          _Label(context.local.date),
           InkWell(
             onTap: _pickDate,
             borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
@@ -133,12 +133,12 @@ class _FundFormSheetState extends State<_FundFormSheet> {
           const SizedBox(height: Dimensions.paddingSizeDefault),
 
           // Note (optional).
-          _Label('Note (optional)'),
+          _Label(context.local.noteOptional),
           TextFormField(
             controller: _noteController,
             textCapitalization: TextCapitalization.sentences,
             textInputAction: TextInputAction.done,
-            decoration: _fieldDecoration(context, hint: 'e.g. Monthly contribution'),
+            decoration: _fieldDecoration(context, hint: context.local.fundNoteHint),
           ),
           const SizedBox(height: Dimensions.paddingSizeExtraLarge),
 
@@ -148,7 +148,7 @@ class _FundFormSheetState extends State<_FundFormSheet> {
                 child: OutlinedButton(
                   onPressed: () => Navigator.of(context).pop(),
                   style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeightDefault)),
-                  child: const Text('Cancel'),
+                  child: Text(context.local.cancel),
                 ),
               ),
               const SizedBox(width: Dimensions.paddingSizeDefault),
@@ -156,7 +156,7 @@ class _FundFormSheetState extends State<_FundFormSheet> {
                 child: ElevatedButton(
                   onPressed: _submit,
                   style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeightDefault)),
-                  child: Text(_isEdit ? 'Save' : 'Add'),
+                  child: Text(_isEdit ? context.local.save : context.local.add),
                 ),
               ),
             ],
@@ -215,11 +215,11 @@ class _TypeToggle extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: _Segment(label: 'Credit', icon: Icons.south_west_rounded, selected: type == FundType.credit, accent: colors.successColor, onTap: () => onChanged(FundType.credit)),
+          child: _Segment(label: context.local.credit, icon: Icons.south_west_rounded, selected: type == FundType.credit, accent: colors.successColor, onTap: () => onChanged(FundType.credit)),
         ),
         const SizedBox(width: Dimensions.paddingSizeSmall),
         Expanded(
-          child: _Segment(label: 'Debit', icon: Icons.north_east_rounded, selected: type == FundType.debit, accent: colors.errorColor, onTap: () => onChanged(FundType.debit)),
+          child: _Segment(label: context.local.debit, icon: Icons.north_east_rounded, selected: type == FundType.debit, accent: colors.errorColor, onTap: () => onChanged(FundType.debit)),
         ),
       ],
     );

@@ -104,10 +104,13 @@ class FundBloc extends Bloc<FundEvent, FundState> {
     }
   }
 
-  /// On a failed mutation surface the error; otherwise reload the active list.
+  /// On a failed mutation surface the error (the screen shows it as a snack
+  /// bar) and keep the current list visible; otherwise reload the active list.
   Future<void> _afterMutation(Emitter<FundState> emit, Result<dynamic> result) async {
     if (result.isFailure) {
+      final current = state;
       emit(FundState.error(result.error.toString()));
+      if (current is FundLoaded) emit(current.copyWith(saving: false));
       return;
     }
     await _reload(emit);

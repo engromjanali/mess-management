@@ -56,7 +56,7 @@ class FundTile extends StatelessWidget {
                 const SizedBox(height: 2),
                 Row(
                   children: [
-                    _StatusBadge(label: fund.type.label, accent: accent),
+                    _StatusBadge(label: isCredit ? context.local.credit : context.local.debit, accent: accent),
                     if (fund.note?.isNotEmpty ?? false) ...[
                       const SizedBox(width: Dimensions.paddingSizeSmall),
                       Flexible(
@@ -82,13 +82,13 @@ class FundTile extends StatelessWidget {
           if (showActions) ...[
             const SizedBox(width: Dimensions.paddingSizeExtraSmall),
             IconButton(
-              tooltip: 'Edit',
+              tooltip: context.local.edit,
               visualDensity: VisualDensity.compact,
               icon: Icon(Icons.edit_rounded, size: Dimensions.iconSizeDefault, color: colors.infoColor),
               onPressed: onEdit,
             ),
             IconButton(
-              tooltip: 'Delete',
+              tooltip: context.local.delete,
               visualDensity: VisualDensity.compact,
               icon: Icon(Icons.delete_outline_rounded, size: Dimensions.iconSizeDefault, color: colors.errorColor),
               onPressed: onDelete,

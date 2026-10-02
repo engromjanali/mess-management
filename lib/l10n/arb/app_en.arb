@@ -80,5 +80,55 @@
   "filteredSummary": "Filtered summary",
   "noMembers": "No members yet",
   "mine": "Mine",
-  "myDeposits": "My deposits"
+  "myDeposits": "My deposits",
+  "home": "Home",
+  "meals": "Meals",
+  "deposits": "Deposits",
+  "cost": "Cost",
+  "add": "Add",
+  "edit": "Edit",
+  "delete": "Delete",
+  "type": "Type",
+  "date": "Date",
+  "amountTaka": "Amount (৳)",
+  "noteOptional": "Note (optional)",
+  "amountMustBePositive": "Enter an amount greater than 0",
+  "allTime": "All time",
+  "day": "Day",
+  "range": "Range",
+  "addFund": "Add fund",
+  "editFund": "Edit fund",
+  "deleteFund": "Delete fund",
+  "deleteFundConfirm": "Delete this {type} of {amount} on {date}?",
+  "@deleteFundConfirm": {
+    "description": "Confirm deleting a fund entry",
+    "placeholders": {
+      "type": {
+        "type": "String",
+        "example": "credit"
+      },
+      "amount": {
+        "type": "String",
+        "example": "৳1,500"
+      },
+      "date": {
+        "type": "String",
+        "example": "01 Jun 2026"
+      }
+    }
+  },
+  "fundEntryHint": "Shared mess fund entry",
+  "fundNoteHint": "e.g. Gas bill reserve",
+  "allFunds": "All funds",
+  "fundsInPeriod": "Funds · {period}",
+  "@fundsInPeriod": {
+    "description": "Fund list title for a day or date range",
+    "placeholders": {
+      "period": {
+        "type": "String",
+        "example": "01 Jun – 10 Jun"
+      }
+    }
+  },
+  "noFundEntries": "No fund entries yet"
 }

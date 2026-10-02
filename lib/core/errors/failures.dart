@@ -4,6 +4,10 @@ abstract class Failure {
   final int? statusCode;
 
   const Failure({required this.message, this.statusCode});
+
+  /// The user-facing message, so `'$failure'` / `failure.toString()` shows it.
+  @override
+  String toString() => message;
 }
 
 /// Server failure
