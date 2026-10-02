@@ -23,7 +23,7 @@ class EditProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = context.select<AuthBloc, UserEntity?>((bloc) => bloc.state.maybeWhen(authenticated: (user) => user, orElse: () => null));
     return Scaffold(
-      appBar: AppBar(title: const Text('Edit profile')),
+      appBar: AppBar(title: Text(context.local.editProfile)),
       body: user == null ? const Center(child: CircularProgressIndicator.adaptive()) : _EditProfileForm(user: user),
     );
   }
@@ -62,7 +62,7 @@ class _EditProfileFormState extends State<_EditProfileForm> {
 
   String? _validatePhone(String? value) {
     final phone = (value ?? '').trim();
-    if (phone.isEmpty) return 'Phone ${context.local.validation_is_required}';
+    if (phone.isEmpty) return '${context.local.phone} ${context.local.validation_is_required}';
     return _phonePattern.hasMatch(phone) ? null : context.local.validation_invalid_phone;
   }
 
@@ -79,7 +79,7 @@ class _EditProfileFormState extends State<_EditProfileForm> {
         _photoName = file.name;
       });
     } catch (_) {
-      if (mounted) context.showErrorSnackBar('Could not open your photos. Please allow photo access and try again.');
+      if (mounted) context.showErrorSnackBar(context.local.photoAccessError);
     }
   }
 
@@ -97,7 +97,7 @@ class _EditProfileFormState extends State<_EditProfileForm> {
     result.when(
       success: (success) {
         context.read<AuthBloc>().add(AuthEvent.userUpdated(success.data));
-        context.showSuccessSnackBar('Profile updated');
+        context.showSuccessSnackBar(context.local.profileUpdated);
         context.pop();
       },
       failure: (failure) => context.showErrorSnackBar(failure.message.toString()),
@@ -117,8 +117,8 @@ class _EditProfileFormState extends State<_EditProfileForm> {
               Center(child: _PhotoPicker(photoUrl: widget.user.photoUrl, pickedBytes: _photoBytes, onTap: _saving ? null : _pickPhoto)),
               const SizedBox(height: Dimensions.spaceLarge),
               CommonLabeledInputItemWidget(
-                label: 'Full name',
-                hintText: 'Full name',
+                label: context.local.fullName,
+                hintText: context.local.fullName,
                 controller: _nameController,
                 textInputAction: TextInputAction.next,
                 prefixIcon: const Icon(Icons.person_outline_rounded),
@@ -141,8 +141,8 @@ class _EditProfileFormState extends State<_EditProfileForm> {
               const SizedBox(height: Dimensions.spaceDefault),
               // Stored numbers may already include a country code, so no picker here.
               CommonLabeledInputItemWidget(
-                label: 'Phone',
-                hintText: 'Phone number',
+                label: context.local.phone,
+                hintText: context.local.phoneNumber,
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
                 isPhoneField: false,
@@ -155,8 +155,8 @@ class _EditProfileFormState extends State<_EditProfileForm> {
               ),
               const SizedBox(height: Dimensions.spaceDefault),
               CommonLabeledInputItemWidget(
-                label: 'Address',
-                hintText: 'Address (optional)',
+                label: context.local.address,
+                hintText: context.local.addressOptional,
                 controller: _addressController,
                 keyboardType: TextInputType.streetAddress,
                 maxLines: 3,
@@ -173,7 +173,7 @@ class _EditProfileFormState extends State<_EditProfileForm> {
                   style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge))),
                   child: _saving
                       ? const SizedBox(height: Dimensions.iconSizeDefault, width: Dimensions.iconSizeDefault, child: CircularProgressIndicator(strokeWidth: 2.4, color: Colors.white))
-                      : Text('Save changes', style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
+                      : Text(context.local.save, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
                 ),
               ),
             ],
@@ -197,7 +197,7 @@ class _PhotoPicker extends StatelessWidget {
     final image = pickedBytes != null ? MemoryImage(pickedBytes!) as ImageProvider : (photoUrl?.isNotEmpty ?? false) ? NetworkImage(photoUrl!) : null;
     return Semantics(
       button: true,
-      label: 'Change profile photo',
+      label: context.local.changeProfilePhoto,
       child: InkWell(
         onTap: onTap,
         customBorder: const CircleBorder(),

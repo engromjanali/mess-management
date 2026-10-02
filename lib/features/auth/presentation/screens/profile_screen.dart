@@ -20,7 +20,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(leading: const HomeBackButton(), title: const Text('Profile')),
+      appBar: AppBar(leading: const HomeBackButton(), title: Text(context.local.profile)),
       body: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           final user = state.maybeWhen(authenticated: (user) => user, orElse: () => null);
@@ -48,23 +48,23 @@ class _ProfileBody extends StatelessWidget {
           children: [
             _ProfileHeader(user: user),
             const SizedBox(height: Dimensions.spaceLarge),
-            _ProfileTile(icon: Icons.edit_outlined, title: 'Edit profile', subtitle: 'Update your name, email, phone and address', onTap: () => context.push(AppRoutes.editProfile)),
+            _ProfileTile(icon: Icons.edit_outlined, title: context.local.editProfile, subtitle: context.local.editProfileSubtitle, onTap: () => context.push(AppRoutes.editProfile)),
             const SizedBox(height: Dimensions.paddingSizeSmall),
-            _ProfileTile(icon: Icons.savings_outlined, title: 'Fund', subtitle: 'View and manage funds', onTap: () => context.push(AppRoutes.funds)),
+            _ProfileTile(icon: Icons.savings_outlined, title: context.local.fund, subtitle: context.local.fundSubtitle, onTap: () => context.push(AppRoutes.funds)),
             const SizedBox(height: Dimensions.paddingSizeSmall),
-            _ProfileTile(icon: Icons.notifications_outlined, title: 'Notices', subtitle: 'View the notice board', onTap: () => context.push(AppRoutes.notices)),
+            _ProfileTile(icon: Icons.notifications_outlined, title: context.local.notices, subtitle: context.local.noticesSubtitle, onTap: () => context.push(AppRoutes.notices)),
             const SizedBox(height: Dimensions.paddingSizeSmall),
-            _ProfileTile(icon: Icons.home_work_outlined, title: 'Mess', subtitle: 'View mess details and management', onTap: () => context.push(AppRoutes.messDetails)),
+            _ProfileTile(icon: Icons.home_work_outlined, title: context.local.mess, subtitle: context.local.messSubtitle, onTap: () => context.push(AppRoutes.messDetails)),
             const SizedBox(height: Dimensions.paddingSizeSmall),
             if (context.watch<RoleCubit>().state.isAdmin) ...[
-              _ProfileTile(icon: Icons.manage_accounts_rounded, title: 'Manage members', subtitle: 'Invite members and review join requests', onTap: () => context.push(AppRoutes.manageMembership)),
+              _ProfileTile(icon: Icons.manage_accounts_rounded, title: context.local.manageMembers, subtitle: context.local.manageMembersSubtitle, onTap: () => context.push(AppRoutes.manageMembership)),
               const SizedBox(height: Dimensions.paddingSizeSmall),
             ],
-            _ProfileTile(icon: Icons.settings_outlined, title: 'Settings', subtitle: 'Theme, language and preferences', onTap: () => context.push(AppRoutes.settings)),
+            _ProfileTile(icon: Icons.settings_outlined, title: context.local.settings, subtitle: context.local.settingsSubtitle, onTap: () => context.push(AppRoutes.settings)),
             const SizedBox(height: Dimensions.spaceLarge),
             const Divider(),
             const SizedBox(height: Dimensions.paddingSizeSmall),
-            _ProfileTile(icon: Icons.logout_rounded, title: 'Sign out', subtitle: 'Log out of your account', danger: true, onTap: () => _confirmSignOut(context)),
+            _ProfileTile(icon: Icons.logout_rounded, title: context.local.logout, subtitle: context.local.logoutSubtitle, danger: true, onTap: () => _confirmSignOut(context)),
           ],
         ),
       ),
@@ -76,11 +76,11 @@ class _ProfileBody extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Sign out'),
-        content: const Text('Are you sure you want to sign out?'),
+        title: Text(context.local.logout),
+        content: Text(context.local.logoutConfirm),
         actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.of(ctx).pop(true), child: const Text('Sign out')),
+          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: Text(context.local.cancel)),
+          FilledButton(onPressed: () => Navigator.of(ctx).pop(true), child: Text(context.local.logout)),
         ],
       ),
     );
@@ -137,12 +137,16 @@ class _ProfileHeader extends StatelessWidget {
           Text(
             user.name,
             textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
           ),
           const SizedBox(height: Dimensions.paddingSizeExtraSmall),
           Text(
             user.email,
             textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textSecondaryColor),
           ),
           const SizedBox(height: Dimensions.paddingSizeDefault),
@@ -170,7 +174,7 @@ class _RoleBadge extends StatelessWidget {
           Icon(role.icon, size: Dimensions.iconSizeSmall, color: colors.primaryColor),
           const SizedBox(width: Dimensions.paddingSizeExtraSmall),
           Text(
-            role.label,
+            role.isAdmin ? context.local.roleAdmin : context.local.roleUser,
             style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.primaryColor),
           ),
         ],
@@ -220,11 +224,15 @@ class _ProfileTile extends StatelessWidget {
                   children: [
                     Text(
                       title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: danger ? tint : colors.textPrimaryColor),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
                     ),
                   ],
@@ -254,9 +262,9 @@ class _SignedOutView extends StatelessWidget {
           children: [
             Icon(Icons.person_off_outlined, size: Dimensions.iconSizeExtraLarge, color: colors.textHintColor),
             const SizedBox(height: Dimensions.paddingSizeDefault),
-            Text('You are not signed in', style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor)),
+            Text(context.local.notSignedIn, textAlign: TextAlign.center, style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor)),
             const SizedBox(height: Dimensions.spaceLarge),
-            ElevatedButton.icon(onPressed: () => context.go(AppRoutes.getLoginRoute()), icon: const Icon(Icons.login_rounded), label: const Text('Sign in')),
+            ElevatedButton.icon(onPressed: () => context.go(AppRoutes.getLoginRoute()), icon: const Icon(Icons.login_rounded), label: Text(context.local.login)),
           ],
         ),
       ),
