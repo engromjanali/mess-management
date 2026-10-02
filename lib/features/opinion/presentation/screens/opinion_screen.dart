@@ -9,6 +9,7 @@ import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
 import 'package:clean_boilerplate/core/widgets/app_footer.dart';
 import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
+import 'package:clean_boilerplate/core/widgets/web_page_title_bar.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_top_bar.dart';
@@ -69,6 +70,7 @@ class _OpinionScreenState extends State<OpinionScreen> {
                       DashboardNavItem(label: 'Bazar', icon: Icons.shopping_cart_rounded, onTap: () => context.go(AppRoutes.costs)),
                     ],
                   ),
+                  const WebPageTitleBar(title: 'Anonymous opinions'),
                   Expanded(child: content),
                 ],
               ),

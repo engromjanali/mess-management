@@ -12,6 +12,7 @@ import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
 import 'package:clean_boilerplate/core/widgets/app_footer.dart';
 import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
+import 'package:clean_boilerplate/core/widgets/web_page_title_bar.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
@@ -55,6 +56,21 @@ class _FundView extends StatelessWidget {
   Widget build(BuildContext context) {
     final showWebAppBar = ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context);
 
+    final content = BlocConsumer<FundBloc, FundState>(
+      listener: (context, state) {
+        state.maybeWhen(error: (message) => context.showErrorSnackBar(message), orElse: () {});
+      },
+      builder: (context, state) {
+        return state.maybeWhen(
+          loading: () => const Center(child: CircularProgressIndicator.adaptive()),
+          error: (message) => _ErrorView(message: message),
+          loaded: (funds, dateFilter, selectedDate, isAdmin, selectedRange, saving) =>
+              _FundBody(funds: funds, dateFilter: dateFilter, selectedDate: selectedDate, isAdmin: isAdmin, selectedRange: selectedRange, saving: saving),
+          orElse: () => const Center(child: CircularProgressIndicator.adaptive()),
+        );
+      },
+    );
+
     // Re-load when the global role switcher flips between user / admin.
     return BlocListener<RoleCubit, UserRole>(
       listenWhen: (prev, curr) => prev != curr,
@@ -70,38 +86,7 @@ class _FundView extends StatelessWidget {
             return FloatingActionButton.extended(onPressed: () => _openAdd(context), icon: const Icon(Icons.add_rounded), label: Text(context.local.addFund));
           },
         ),
-        body: BlocConsumer<FundBloc, FundState>(
-          listener: (context, state) {
-            state.maybeWhen(error: (message) => context.showErrorSnackBar(message), orElse: () {});
-          },
-          builder: (context, state) {
-            return state.maybeWhen(
-              loading: () => const Center(child: CircularProgressIndicator.adaptive()),
-              error: (message) => _ErrorView(message: message),
-              loaded: (funds, dateFilter, selectedDate, isAdmin, selectedRange, saving) {
-                final body = _FundBody(funds: funds, dateFilter: dateFilter, selectedDate: selectedDate, isAdmin: isAdmin, selectedRange: selectedRange, saving: saving);
-                if (!showWebAppBar) return body;
-                final user = context.watch<AuthBloc>().state.maybeWhen(authenticated: (user) => user, orElse: () => null);
-                return Column(
-                  children: [
-                    DashboardTopBar(
-                      userName: user?.name ?? context.local.roleUser,
-                      onProfileTap: () => Scaffold.of(context).openEndDrawer(),
-                      navItems: [
-                        DashboardNavItem(label: context.local.home, icon: Icons.home_rounded, onTap: () => context.go(AppRoutes.home)),
-                        DashboardNavItem(label: context.local.meals, icon: Icons.restaurant_rounded, onTap: () => context.go(AppRoutes.meals)),
-                        DashboardNavItem(label: context.local.deposits, icon: Icons.account_balance_wallet_rounded, onTap: () => context.go(AppRoutes.deposits)),
-                        DashboardNavItem(label: context.local.cost, icon: Icons.shopping_cart_rounded, onTap: () => context.go(AppRoutes.costs)),
-                      ],
-                    ),
-                    Expanded(child: body),
-                  ],
-                );
-              },
-              orElse: () => const Center(child: CircularProgressIndicator.adaptive()),
-            );
-          },
-        ),
+        body: showWebAppBar ? Column(children: [const _FundTopBar(), WebPageTitleBar(title: context.local.fund), Expanded(child: content)]) : content,
       ),
     );
   }
@@ -111,6 +96,26 @@ class _FundView extends StatelessWidget {
     showFundFormSheet(
       context: context,
       onSave: ({required amount, required date, note}) => bloc.add(FundEvent.add(amount: amount, date: date, note: note)),
+    );
+  }
+}
+
+/// Desktop / big-tablet app bar, shown in every state (loading, error, loaded).
+class _FundTopBar extends StatelessWidget {
+  const _FundTopBar();
+
+  @override
+  Widget build(BuildContext context) {
+    final user = context.watch<AuthBloc>().state.maybeWhen(authenticated: (user) => user, orElse: () => null);
+    return DashboardTopBar(
+      userName: user?.name ?? context.local.roleUser,
+      onProfileTap: () => Scaffold.of(context).openEndDrawer(),
+      navItems: [
+        DashboardNavItem(label: context.local.home, icon: Icons.home_rounded, onTap: () => context.go(AppRoutes.home)),
+        DashboardNavItem(label: context.local.meals, icon: Icons.restaurant_rounded, onTap: () => context.go(AppRoutes.meals)),
+        DashboardNavItem(label: context.local.deposits, icon: Icons.account_balance_wallet_rounded, onTap: () => context.go(AppRoutes.deposits)),
+        DashboardNavItem(label: context.local.cost, icon: Icons.shopping_cart_rounded, onTap: () => context.go(AppRoutes.costs)),
+      ],
     );
   }
 }

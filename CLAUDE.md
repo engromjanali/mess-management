@@ -9,6 +9,7 @@ Every screen must have a desktop view app bar.
 - On desktop / big tablet (`ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)`), show the shared `DashboardTopBar` (`lib/features/home/presentation/widgets/dashboard_top_bar.dart`) at the top of the body instead of the Material `AppBar`, and set `endDrawer: const WebProfileDrawer()`.
 - On phone / small tablet keep the normal `AppBar`.
 - Pass `navItems` with the main sections (Home, Meals, Deposits, Cost) and mark the current one `active: true`.
+- A screen with no menu entry in the `DashboardTopBar` (e.g. Funds, Opinions) also keeps its title bar on desktop: put `WebPageTitleBar(title: ...)` (`lib/core/widgets/web_page_title_bar.dart`: common primary-colored bar, centered title, no back button) right under the `DashboardTopBar`, using the same title as the mobile `AppBar`. Show both bars in every state (loading, error, loaded), not only once data has loaded.
 - Reference implementation: `lib/features/cost/presentation/screens/cost_screen.dart`:
 
 ```dart
