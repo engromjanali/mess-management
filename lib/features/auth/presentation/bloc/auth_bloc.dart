@@ -27,6 +27,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       registerRequested: (fullName, email, password, phone) => _handleRegister(fullName, email, password, phone, emit),
       logoutRequested: () => _handleLogout(emit),
       checkAuthStatus: () => _handleCheckAuthStatus(emit),
+      userUpdated: (user) async => emit(AuthState.authenticated(user)),
     );
   }
 

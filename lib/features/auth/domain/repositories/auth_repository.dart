@@ -14,4 +14,6 @@ abstract class AuthRepository {
   ResultFuture<void> logout();
 
   ResultFuture<UserEntity?> getCurrentUser();
+
+  ResultFuture<UserEntity> updateProfile({required String fullName, required String email, required String phone, String? address, List<int>? photoBytes, String? photoName});
 }

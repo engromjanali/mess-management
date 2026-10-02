@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:clean_boilerplate/config/util/app_constants.dart';
 import 'package:clean_boilerplate/core/methods/printer.dart';
 import 'package:dio/dio.dart';
@@ -16,6 +18,9 @@ class ApiClient {
   String? _refreshToken;
   String? _guestUserId;
   String? _languageCode;
+
+  /// Called once when an authenticated request gets a 401, after the tokens are cleared.
+  VoidCallback? onUnauthorized;
 
   ApiClient({required Dio dio, required SharedPreferences sharedPreferences}) : _dio = dio, _sharedPreferences = sharedPreferences {
     _initializeHeaders();
@@ -323,6 +328,11 @@ class ApiClient {
   }
 
   Exception _handleError(DioException error) {
+    // `_token` guard: parallel 401s trigger the logout/redirect only once.
+    if (error.response?.statusCode == 401 && _token != null) {
+      unawaited(clearTokens());
+      onUnauthorized?.call();
+    }
     return error.toAppException();
   }
 }

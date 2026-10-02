@@ -68,4 +68,12 @@ class AuthLocalDataSourceImpl implements AuthDataSource {
       'This is a placeholder for future local data source functionality.',
     );
   }
+
+  @override
+  Future<UserModel> updateProfile({required String fullName, required String email, required String phone, String? address, List<int>? photoBytes, String? photoName}) async {
+    throw UnimplementedError(
+      'Local updateProfile is not yet implemented. '
+      'This is a placeholder for future local data source functionality.',
+    );
+  }
 }

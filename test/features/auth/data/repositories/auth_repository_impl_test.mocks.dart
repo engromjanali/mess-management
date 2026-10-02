@@ -128,4 +128,32 @@ class MockAuthDataSource extends _i1.Mock implements _i3.AuthDataSource {
             returnValue: _i4.Future<_i2.UserModel?>.value(),
           )
           as _i4.Future<_i2.UserModel?>);
+
+  @override
+  _i4.Future<_i2.UserModel> updateProfile({
+    required String? fullName,
+    required String? email,
+    required String? phone,
+    String? address,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateProfile, [], {
+              #fullName: fullName,
+              #email: email,
+              #phone: phone,
+              #address: address,
+            }),
+            returnValue: _i4.Future<_i2.UserModel>.value(
+              _FakeUserModel_0(
+                this,
+                Invocation.method(#updateProfile, [], {
+                  #fullName: fullName,
+                  #email: email,
+                  #phone: phone,
+                  #address: address,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.UserModel>);
 }

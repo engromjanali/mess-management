@@ -44,6 +44,12 @@ class AuthApiService {
     return UserModel.fromJson(response.data as Map<String, dynamic>);
   }
 
+  /// PATCHes the profile (JSON map or multipart `FormData`); the backend replies `{ message, user }`.
+  Future<UserModel> updateProfile(Object body) async {
+    final response = await _apiClient.patch(AppConstants.profileEndpoint, data: body);
+    return UserModel.fromJson((response.data as Map<String, dynamic>)['user'] as Map<String, dynamic>);
+  }
+
   /// Stores the tokens from an auth response and returns the embedded user.
   Future<UserModel> _handleAuthResponse(Map<String, dynamic> data) async {
     await _apiClient.updateToken(data['access_token'] as String?);

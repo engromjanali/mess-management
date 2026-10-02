@@ -24,4 +24,7 @@ abstract class AuthDataSource {
 
   /// Get the currently authenticated user
   Future<UserModel?> getCurrentUser();
+
+  /// Update the signed-in user's profile (optionally with a new photo) and return the saved user
+  Future<UserModel> updateProfile({required String fullName, required String email, required String phone, String? address, List<int>? photoBytes, String? photoName});
 }

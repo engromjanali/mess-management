@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/features/auth/domain/entities/user_entity.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'auth_event.freezed.dart';
@@ -17,4 +18,7 @@ class AuthEvent with _$AuthEvent {
 
   /// Check auth status event
   const factory AuthEvent.checkAuthStatus() = CheckAuthStatus;
+
+  /// The signed-in user changed (e.g. profile saved) — replaces the user without a loading state
+  const factory AuthEvent.userUpdated(UserEntity user) = UserUpdated;
 }

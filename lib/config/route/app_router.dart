@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:clean_boilerplate/features/auth/presentation/screens/forgot_password_screen.dart';
 import 'package:clean_boilerplate/features/auth/presentation/screens/login_screen.dart';
+import 'package:clean_boilerplate/features/auth/presentation/screens/edit_profile_screen.dart';
 import 'package:clean_boilerplate/features/auth/presentation/screens/profile_screen.dart';
 import 'package:clean_boilerplate/features/auth/presentation/screens/register_screen.dart';
 import 'package:clean_boilerplate/features/cost/presentation/screens/cost_screen.dart';
@@ -45,6 +46,7 @@ class AppRoutes {
   static const String notices = '/notices';
   static const String opinions = '/opinions';
   static const String profile = '/profile';
+  static const String editProfile = '/profile/edit';
   static const String settings = '/settings';
   static const String privacyPolicy = '/privacy-policy';
   static const String manageMembership = '/membership/manage';
@@ -108,6 +110,7 @@ final router = GoRouter(
 
     // Profile route
     GoRoute(path: AppRoutes.profile, name: 'profile', builder: (context, state) => const ProfileScreen()),
+    GoRoute(path: AppRoutes.editProfile, name: 'editProfile', builder: (context, state) => const EditProfileScreen()),
 
     // Settings route
     GoRoute(path: AppRoutes.settings, name: 'settings', builder: (context, state) => const SettingsScreen()),

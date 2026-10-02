@@ -21,7 +21,6 @@ class AppConstants {
   static const String loginEndpoint = '/api/v1/auth/sign-in';
   static const String registerEndpoint = '/api/v1/auth/sign-up';
   static const String logoutEndpoint = '/api/v1/auth/logout';
-
   static const String refreshTokenEndpoint = '/api/auth/refresh';
   static const String profileEndpoint = '/api/v1/auth/update-profile';
   static const String forgotPasswordEndpoint = '/api/v1/auth/forgot-password';
@@ -29,21 +28,23 @@ class AppConstants {
   static const String resetPasswordEndpoint = '/api/v1/auth/change-password';
 
   // membership
-  static const String membershipStatusEndpoint = '/api/v1/membership/status';
-  static const String joinInviteEndpoint = '/api/v1/membership/join-invite';
-  static const String joinRequestEndpoint = '/api/v1/membership/join-request';
-  static const String leaveMessEndpoint = '/api/v1/membership/leave';
-  static const String availableMessesEndpoint = '/api/v1/messes';
-  static const String createMessEndpoint = '/api/v1/membership/create-mess';
-  static const String createInviteEndpoint = '/api/v1/membership/invites';
-  static const String managerJoinRequestsEndpoint = '/api/v1/membership/requests';
-  static const String joinRequestDecisionEndpoint = '/api/v1/membership/requests/decision';
-  static const String memberLookupEndpoint = '/api/v1/membership/member-lookup';
-  static const String managerMembersEndpoint = '/api/v1/membership/members';
+  static const String membershipStatusEndpoint = '/api/v1/user/membership/status';
+  static const String joinInviteEndpoint = '/api/v1/user/invites/accept';
+  static const String joinRequestEndpoint = '/api/v1/user/join-requests';
+  static const String leaveMessEndpoint = '/api/v1/user/membership/leave';
+  static const String availableMessesEndpoint = '/api/v1/user/messes';
+  static const String createMessEndpoint = '/api/v1/user/messes/create';
+  static const String createInviteEndpoint = '/api/v1/admin/invites';
+  static const String managerJoinRequestsEndpoint = '/api/v1/admin/join-requests';
+  static const String joinRequestDecisionEndpoint = '/api/v1/admin/join-requests/decision';
+  static const String memberLookupEndpoint = '/api/v1/admin/member-lookup';
+  static const String managerMembersEndpoint = '/api/v1/admin/members';
   static const String messDetailsEndpoint = '/api/v1/membership/mess';
   static const String messLeadershipEndpoint = '/api/v1/membership/mess/leadership';
   static const String mealAdminDataEndpoint = '/api/v1/meals/admin-data';
   static const String addMealBulkEndpoint = '/api/v1/meals/add-meal-bulk';
+
+  // meals
   static const String addMealEndpoint = '/api/v1/meals/add-meal';
 
   // keys

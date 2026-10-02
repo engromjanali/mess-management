@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:clean_boilerplate/features/auth/data/models/user_model.dart';
 import 'package:clean_boilerplate/features/auth/data/datasources/interfaces/auth_data_source.dart';
@@ -41,5 +42,13 @@ class AuthRemoteDataSourceImpl implements AuthDataSource {
   @override
   Future<UserModel?> getCurrentUser() async {
     return _apiService.getCurrentUser();
+  }
+
+  @override
+  Future<UserModel> updateProfile({required String fullName, required String email, required String phone, String? address, List<int>? photoBytes, String? photoName}) async {
+    final body = <String, dynamic>{'full_name': fullName, 'email': email, 'phone': phone, 'address': address ?? ''};
+    if (photoBytes == null) return _apiService.updateProfile(body);
+    // A new photo is sent as multipart; the backend stores it in Cloudinary.
+    return _apiService.updateProfile(FormData.fromMap({...body, 'photo': MultipartFile.fromBytes(photoBytes, filename: photoName ?? 'profile.jpg')}));
   }
 }

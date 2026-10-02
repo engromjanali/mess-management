@@ -4,6 +4,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i4;
+import 'dart:ui' as _i7;
 
 import 'package:clean_boilerplate/core/network/api_client.dart' as _i6;
 import 'package:clean_boilerplate/features/settings/data/datasources/interfaces/settings_data_source.dart'
@@ -90,6 +91,12 @@ class MockApiClient extends _i1.Mock implements _i6.ApiClient {
   MockApiClient() {
     _i1.throwOnMissingStub(this);
   }
+
+  @override
+  set onUnauthorized(_i7.VoidCallback? value) => super.noSuchMethod(
+    Invocation.setter(#onUnauthorized, value),
+    returnValueForMissingStub: null,
+  );
 
   @override
   _i4.Future<void> updateToken(String? token) =>

@@ -146,4 +146,32 @@ class MockAuthRepository extends _i1.Mock implements _i2.AuthRepository {
             ),
           )
           as _i3.Future<_i4.Result<_i5.UserEntity?>>);
+
+  @override
+  _i3.Future<_i4.Result<_i5.UserEntity>> updateProfile({
+    required String? fullName,
+    required String? email,
+    required String? phone,
+    String? address,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#updateProfile, [], {
+              #fullName: fullName,
+              #email: email,
+              #phone: phone,
+              #address: address,
+            }),
+            returnValue: _i3.Future<_i4.Result<_i5.UserEntity>>.value(
+              _i6.dummyValue<_i4.Result<_i5.UserEntity>>(
+                this,
+                Invocation.method(#updateProfile, [], {
+                  #fullName: fullName,
+                  #email: email,
+                  #phone: phone,
+                  #address: address,
+                }),
+              ),
+            ),
+          )
+          as _i3.Future<_i4.Result<_i5.UserEntity>>);
 }

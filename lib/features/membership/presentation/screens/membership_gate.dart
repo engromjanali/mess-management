@@ -17,21 +17,26 @@ class MembershipGate extends StatelessWidget {
 
   final Widget connectedChild;
 
+  /// A user without an active mess must join or create one first. `status.current` is resolved by the
+  /// same backend rule as the user's `activeMessId`, but stays fresh after joining, creating or leaving.
+  bool _hasMess(BuildContext context, MembershipStatusEntity status) => status.current != null;
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<MembershipCubit, MembershipState>(
       listener: (context, state) {
         if (state is! MembershipLoaded) return;
         final location = GoRouterState.of(context).uri.path;
-        if (state.status.current == null && !location.startsWith(AppRoutes.joinMess)) context.go(AppRoutes.joinMessRequests);
-        if (state.status.current != null && location.startsWith(AppRoutes.joinMess)) context.go(AppRoutes.home);
+        final hasMess = _hasMess(context, state.status);
+        if (!hasMess && !location.startsWith(AppRoutes.joinMess)) context.go(AppRoutes.joinMessRequests);
+        if (hasMess && location.startsWith(AppRoutes.joinMess)) context.go(AppRoutes.home);
       },
       child: BlocBuilder<MembershipCubit, MembershipState>(
         builder: (context, state) {
           return switch (state) {
             MembershipLoading() => const Scaffold(body: Center(child: CircularProgressIndicator.adaptive())),
             MembershipError(:final message) => _MembershipError(message: message),
-            MembershipLoaded(:final status) => status.current != null ? connectedChild : _NoCurrentMess(status: status),
+            MembershipLoaded(:final status) => _hasMess(context, status) ? connectedChild : _NoCurrentMess(status: status),
           };
         },
       ),

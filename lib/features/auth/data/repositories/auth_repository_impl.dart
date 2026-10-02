@@ -33,4 +33,8 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   ResultFuture<void> resetPassword({required String email, required String otp, required String password}) =>
       guardResult(() => _dataSource.resetPassword(email: email, otp: otp, password: password));
+
+  @override
+  ResultFuture<UserEntity> updateProfile({required String fullName, required String email, required String phone, String? address, List<int>? photoBytes, String? photoName}) =>
+      guardResult(() async => (await _dataSource.updateProfile(fullName: fullName, email: email, phone: phone, address: address, photoBytes: photoBytes, photoName: photoName)).toEntity());
 }

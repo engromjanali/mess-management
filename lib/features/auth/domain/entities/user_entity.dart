@@ -12,13 +12,18 @@ class UserEntity extends Equatable {
   /// Backend role: 'manager' or 'member'. The app maps this to admin/user.
   final String role;
 
-  const UserEntity({required this.id, required this.email, required this.name, this.phone, this.photoUrl, this.currentSeason, this.role = 'member'});
+  /// Mess the user is currently active in; null means they must join or create one.
+  final int? activeMessId;
+
+  final String? address;
+
+  const UserEntity({required this.id, required this.email, required this.name, this.phone, this.photoUrl, this.currentSeason, this.role = 'member', this.activeMessId, this.address});
 
   /// Whether this user manages a mess (maps to the admin experience).
   bool get isManager => role == 'manager';
 
   @override
-  List<Object?> get props => [id, email, name, phone, photoUrl, currentSeason, role];
+  List<Object?> get props => [id, email, name, phone, photoUrl, currentSeason, role, activeMessId, address];
 }
 
 class CurrentSeasonEntity extends Equatable {

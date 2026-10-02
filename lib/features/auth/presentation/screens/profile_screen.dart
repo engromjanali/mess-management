@@ -48,6 +48,8 @@ class _ProfileBody extends StatelessWidget {
           children: [
             _ProfileHeader(user: user),
             const SizedBox(height: Dimensions.spaceLarge),
+            _ProfileTile(icon: Icons.edit_outlined, title: 'Edit profile', subtitle: 'Update your name, email, phone and address', onTap: () => context.push(AppRoutes.editProfile)),
+            const SizedBox(height: Dimensions.paddingSizeSmall),
             _ProfileTile(icon: Icons.savings_outlined, title: 'Fund', subtitle: 'View and manage funds', onTap: () => context.push(AppRoutes.funds)),
             const SizedBox(height: Dimensions.paddingSizeSmall),
             _ProfileTile(icon: Icons.notifications_outlined, title: 'Notices', subtitle: 'View the notice board', onTap: () => context.push(AppRoutes.notices)),
