@@ -5,7 +5,8 @@ import 'package:clean_boilerplate/core/network/api_client.dart';
 import 'package:clean_boilerplate/features/fund/data/models/fund_model.dart';
 import 'package:clean_boilerplate/features/fund/data/datasources/interfaces/fund_data_source.dart';
 
-/// Fund data source backed by the Django API (active season only).
+/// Fund data source backed by the Django API. The fund belongs to the mess
+/// (every season), not to the active season.
 ///
 /// Every member (the manager included) reads the shared fund through the user
 /// endpoint; add / edit / delete go through the manager-only admin endpoint.

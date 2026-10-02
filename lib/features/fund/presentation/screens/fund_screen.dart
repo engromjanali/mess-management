@@ -29,7 +29,7 @@ import 'package:clean_boilerplate/features/fund/presentation/widgets/fund_form_s
 import 'package:clean_boilerplate/features/fund/presentation/widgets/fund_formatters.dart';
 import 'package:clean_boilerplate/features/fund/presentation/widgets/fund_tile.dart';
 
-/// Fund screen — the shared mess fund of the active season.
+/// Fund screen — the shared mess fund (all seasons of the mess).
 ///
 /// * **Admin** (manager / acting manager) — add / edit / delete fund entries.
 /// * **User** — a read-only list of the same entries.
