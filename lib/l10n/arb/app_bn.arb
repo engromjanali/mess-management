@@ -243,5 +243,13 @@
   "statusApproved": "অনুমোদিত",
   "statusRejected": "নামঞ্জুর",
   "statusActive": "সক্রিয়",
-  "noMatchingRecords": "এই ফিল্টারে কিছু পাওয়া যায়নি।"
+  "noMatchingRecords": "এই ফিল্টারে কিছু পাওয়া যায়নি।",
+  "reject": "প্রত্যাখ্যান",
+  "searchInvitations": "আমন্ত্রণ খুঁজুন",
+  "sortBy": "সাজান",
+  "sortNewest": "নতুন আগে",
+  "sortOldest": "পুরনো আগে",
+  "sortName": "নাম",
+  "noMessInvitationsYet": "এই মেস এখনো কোনো আমন্ত্রণ পাঠায়নি।",
+  "noMessJoinRequestsYet": "এখনো কেউ এই মেসে যোগ দিতে অনুরোধ করেনি।"
 }

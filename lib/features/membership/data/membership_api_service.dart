@@ -99,7 +99,8 @@ class MembershipApiService {
   }
 
   /// Active members of the current season; with [includeDisabled] also the
-  /// members a manager disabled (each has a `disabled` flag).
+  /// members a manager disabled, with [includeLeft] also the members who left.
+  /// Each has a `state`: `active`, `disabled` or `left`.
   Future<List<Map<String, dynamic>>> getManagerMembers({bool includeDisabled = false, bool includeLeft = false}) async {
     final response = await _apiClient.get<List<dynamic>>(AppConstants.managerMembersEndpoint, queryParameters: {if (includeDisabled) 'include_disabled': true, if (includeLeft) 'include_left': true});
     return (response.data ?? []).cast<Map<String, dynamic>>();

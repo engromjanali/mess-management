@@ -5,12 +5,12 @@ import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/features/membership/presentation/widgets/mess_avatar.dart';
 
 /// A mess row (invitation received, join request sent): avatar, name,
-/// [subtitle] and [actions]. [busy] replaces the actions with a spinner.
+/// optional [subtitle] and [actions]. [busy] replaces the actions with a spinner.
 class MessItemTile extends StatelessWidget {
-  const MessItemTile({required this.messName, required this.subtitle, required this.actions, this.busy = false, super.key});
+  const MessItemTile({required this.messName, required this.actions, this.subtitle, this.busy = false, super.key});
 
   final String messName;
-  final String subtitle;
+  final String? subtitle;
   final List<Widget> actions;
   final bool busy;
 
@@ -28,7 +28,7 @@ class MessItemTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(messName, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor)),
-                Text(subtitle, maxLines: 2, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textHintColor)),
+                if (subtitle != null) Text(subtitle!, maxLines: 2, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textHintColor)),
               ],
             ),
           ),

@@ -503,5 +503,13 @@
   "statusApproved": "Approved",
   "statusRejected": "Rejected",
   "statusActive": "Active",
-  "noMatchingRecords": "Nothing matches these filters."
+  "noMatchingRecords": "Nothing matches these filters.",
+  "reject": "Reject",
+  "searchInvitations": "Search invitations",
+  "sortBy": "Sort by",
+  "sortNewest": "Newest",
+  "sortOldest": "Oldest",
+  "sortName": "Name",
+  "noMessInvitationsYet": "This mess hasn't sent any invitations yet.",
+  "noMessJoinRequestsYet": "No one has asked to join this mess yet."
 }

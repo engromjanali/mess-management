@@ -80,7 +80,7 @@ class ManagedMemberTile extends StatelessWidget {
                     if (isMe) _Badge(label: context.local.you, color: colors.successColor),
                     if (role != 'member') _Badge(label: MessFormatters.role(context, role), color: accent),
                     if (disabled) _Badge(label: context.local.disabled, color: colors.errorColor),
-                    if (left) _Badge(label: context.local.membershipLeft, color: colors.textHintColor),
+                    if (left) _Badge(label: context.local.membershipLeft, color: colors.textSecondaryColor),
                   ],
                 ),
               ],

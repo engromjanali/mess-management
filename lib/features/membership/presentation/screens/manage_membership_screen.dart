@@ -491,7 +491,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                             for (final request in _status!.joinRequests.where((request) => _matchesFilter(_ManagementSection.requests, request.status)))
                               MessItemTile(
                                 messName: request.messName,
-                                subtitle: request.status == 'pending' ? context.local.waitingForApproval : _statusLabel(context, request.status),
+                                subtitle: request.status == 'pending' ? context.local.waitingForApproval : null,
                                 busy: _busyItem == 'request:${request.id}',
                                 actions: request.status == 'pending'
                                     ? [TextButton(onPressed: idle ? () => _cancelRequest(request) : null, child: Text(context.local.cancel))]
@@ -538,12 +538,17 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                       children: [
                         LayoutBuilder(
                           builder: (context, constraints) {
-                            final search = TextField(controller: _searchController, decoration: const InputDecoration(prefixIcon: Icon(Icons.search_rounded), labelText: 'Search invitations'));
+                            final search = TextField(controller: _searchController, decoration: InputDecoration(prefixIcon: const Icon(Icons.search_rounded), labelText: context.local.searchInvitations));
                             final status = _filterField(_ManagementSection.messInvitations);
                             final sort = DropdownButtonFormField<String>(
                               initialValue: _sort,
-                              decoration: const InputDecoration(labelText: 'Sort by'),
-                              items: const [DropdownMenuItem(value: 'newest', child: Text('Newest')), DropdownMenuItem(value: 'oldest', child: Text('Oldest')), DropdownMenuItem(value: 'name', child: Text('Name'))],
+                              isExpanded: true,
+                              decoration: InputDecoration(labelText: context.local.sortBy),
+                              items: [
+                                DropdownMenuItem(value: 'newest', child: Text(context.local.sortNewest, maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                DropdownMenuItem(value: 'oldest', child: Text(context.local.sortOldest, maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                DropdownMenuItem(value: 'name', child: Text(context.local.sortName, maxLines: 1, overflow: TextOverflow.ellipsis)),
+                              ],
                               onChanged: (value) => setState(() => _sort = value ?? 'newest'),
                             );
                             if (constraints.maxWidth >= 680) return Row(children: [Expanded(flex: 2, child: search), const SizedBox(width: Dimensions.paddingSizeDefault), Expanded(child: status), const SizedBox(width: Dimensions.paddingSizeDefault), Expanded(child: sort)]);
@@ -553,6 +558,8 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                         const SizedBox(height: Dimensions.paddingSizeLarge),
                         if (_loading)
                           const Center(child: CircularProgressIndicator.adaptive())
+                        else if (_invitations.isEmpty)
+                          Text(context.local.noMessInvitationsYet, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
                         else if (_visibleInvitations.isEmpty)
                           Text(context.local.noMatchingRecords, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
                         else
@@ -571,20 +578,22 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                           const SizedBox(height: Dimensions.paddingSizeLarge),
                           if (_loading)
                             const Center(child: CircularProgressIndicator.adaptive())
+                          else if (_requests.isEmpty)
+                            Text(context.local.noMessJoinRequestsYet, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
                           else if (!_requests.any((request) => _matchesFilter(_ManagementSection.messRequests, request['status'] as String?)))
                             Text(context.local.noMatchingRecords, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
                           else
                             for (final request in _requests.where((request) => _matchesFilter(_ManagementSection.messRequests, request['status'] as String?)))
                               ListTile(
                                 contentPadding: EdgeInsets.zero,
-                                title: Text(request['user_name'] as String? ?? 'Member', maxLines: 1, overflow: TextOverflow.ellipsis),
+                                title: Text(request['user_name'] as String? ?? context.local.member, maxLines: 1, overflow: TextOverflow.ellipsis),
                                 subtitle: Text(request['user_email'] as String? ?? '', maxLines: 1, overflow: TextOverflow.ellipsis),
                                 trailing: request['status'] == 'pending'
                                     ? Wrap(
                                         spacing: Dimensions.paddingSizeExtraSmall,
                                         children: [
-                                          IconButton(tooltip: 'Reject', onPressed: () => _decide(request['id'] as int, false), icon: Icon(Icons.close_rounded, color: colors.errorColor)),
-                                          IconButton(tooltip: 'Accept', onPressed: () => _decide(request['id'] as int, true), icon: Icon(Icons.check_rounded, color: colors.successColor)),
+                                          IconButton(tooltip: context.local.reject, onPressed: () => _decide(request['id'] as int, false), icon: Icon(Icons.close_rounded, color: colors.errorColor)),
+                                          IconButton(tooltip: context.local.accept, onPressed: () => _decide(request['id'] as int, true), icon: Icon(Icons.check_rounded, color: colors.successColor)),
                                         ],
                                       )
                                     : _StatusChip(status: request['status'] as String? ?? ''),
@@ -594,7 +603,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                     )
                   else
                     _ManagePanel(
-                      title: 'Existing members',
+                      title: context.local.members,
                       icon: Icons.groups_rounded,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -846,7 +855,7 @@ Color _statusColor(BuildContext context, String status) {
   return switch (status) {
     'accepted' || 'approved' || 'active' => colors.successColor,
     'pending' => colors.warningColor,
-    'left' || 'cancelled' || 'revoked' => colors.textHintColor,
+    'left' || 'cancelled' || 'revoked' => colors.textSecondaryColor,
     _ => colors.errorColor,
   };
 }

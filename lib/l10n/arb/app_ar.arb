@@ -243,5 +243,13 @@
   "statusApproved": "موافق عليه",
   "statusRejected": "مرفوض",
   "statusActive": "نشط",
-  "noMatchingRecords": "لا يوجد ما يطابق هذه الفلاتر."
+  "noMatchingRecords": "لا يوجد ما يطابق هذه الفلاتر.",
+  "reject": "رفض",
+  "searchInvitations": "البحث في الدعوات",
+  "sortBy": "ترتيب حسب",
+  "sortNewest": "الأحدث",
+  "sortOldest": "الأقدم",
+  "sortName": "الاسم",
+  "noMessInvitationsYet": "لم يرسل هذا السكن أي دعوات بعد.",
+  "noMessJoinRequestsYet": "لم يطلب أحد الانضمام إلى هذا السكن بعد."
 }
