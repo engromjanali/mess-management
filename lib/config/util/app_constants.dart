@@ -48,6 +48,12 @@ class AppConstants {
   static const String messDetailsEndpoint = '/api/v1/membership/mess';
   static const String messLeadershipEndpoint = '/api/v1/membership/mess/leadership';
 
+  // Notices — user
+  static const String noticesEndpoint = '/api/v1/user/notices';
+
+  // Notices — admin
+  static const String adminNoticesEndpoint = '/api/v1/admin/notices';
+
   // Meals — user
   static const String myMealsEndpoint = '/api/v1/user/meals';
 

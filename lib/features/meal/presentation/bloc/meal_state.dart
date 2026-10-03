@@ -12,8 +12,8 @@ class MealState with _$MealState {
   /// Overview is loading for the first time.
   const factory MealState.loading() = MealLoading;
 
-  /// Overview loaded successfully.
-  const factory MealState.loaded(MealOverviewEntity overview) = MealLoaded;
+  /// Overview loaded. [refreshing] is true while it reloads in the background.
+  const factory MealState.loaded(MealOverviewEntity overview, {@Default(false) bool refreshing}) = MealLoaded;
 
   /// Loading failed.
   const factory MealState.error(String message) = MealError;

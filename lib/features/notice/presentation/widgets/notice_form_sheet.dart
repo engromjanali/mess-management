@@ -1,25 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/errors/failures.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
 import 'package:clean_boilerplate/features/notice/domain/entities/notice_entity.dart';
 
-/// Opens the add / edit notice bottom sheet.
+/// Saves the form; completes with null on success or the [Failure].
+typedef NoticeSubmit = Future<Failure?> Function({required String title, required String description});
+
+/// Same limits as the backend, so they're caught while typing.
+const int _titleMaxLength = 200;
+const int _descriptionMaxLength = 2000;
+
+/// Opens the publish / edit notice sheet; completes with `true` once saved.
 ///
-/// When [existing] is null this publishes a new notice; otherwise it edits
-/// that notice in place.
-Future<void> showNoticeFormSheet({required BuildContext context, required void Function({required String title, required String description}) onSave, NoticeEntity? existing}) {
-  return context.showAdaptiveSheet<void>(
-    child: _NoticeFormSheet(existing: existing, onSave: onSave),
+/// The sheet stays open while saving (locked, with a spinner) and shows the
+/// backend's errors — field errors under their field, others above the
+/// buttons — so nothing typed is lost on failure. When [existing] is null this
+/// publishes a new notice; otherwise it edits that notice.
+Future<bool?> showNoticeFormSheet({required BuildContext context, required NoticeSubmit onSubmit, NoticeEntity? existing}) {
+  return context.showAdaptiveSheet<bool>(
+    child: _NoticeFormSheet(existing: existing, onSubmit: onSubmit),
   );
 }
 
 class _NoticeFormSheet extends StatefulWidget {
-  const _NoticeFormSheet({required this.existing, required this.onSave});
+  const _NoticeFormSheet({required this.existing, required this.onSubmit});
 
   final NoticeEntity? existing;
-  final void Function({required String title, required String description}) onSave;
+  final NoticeSubmit onSubmit;
 
   @override
   State<_NoticeFormSheet> createState() => _NoticeFormSheetState();
@@ -29,6 +39,10 @@ class _NoticeFormSheetState extends State<_NoticeFormSheet> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _titleController;
   late final TextEditingController _descriptionController;
+
+  bool _submitting = false;
+  Map<String, String> _fieldErrors = const {};
+  String? _error;
 
   bool get _isEdit => widget.existing != null;
 
@@ -46,69 +60,116 @@ class _NoticeFormSheetState extends State<_NoticeFormSheet> {
     super.dispose();
   }
 
-  void _submit() {
+  Future<void> _submit() async {
+    setState(() {
+      _fieldErrors = const {};
+      _error = null;
+    });
     if (!(_formKey.currentState?.validate() ?? false)) return;
-    widget.onSave(title: _titleController.text.trim(), description: _descriptionController.text.trim());
-    Navigator.of(context).pop();
+
+    setState(() => _submitting = true);
+    final failure = await widget.onSubmit(title: _titleController.text.trim(), description: _descriptionController.text.trim());
+    if (!mounted) return;
+
+    if (failure == null) {
+      Navigator.of(context).pop(true);
+      return;
+    }
+    final fieldErrors = failure is ServerFailure ? failure.fieldErrors : const <String, String>{};
+    setState(() {
+      _submitting = false;
+      _fieldErrors = fieldErrors;
+      // Field errors show under their field; anything else shows here.
+      _error = fieldErrors.containsKey('title') || fieldErrors.containsKey('description') ? null : failure.message;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
 
-    return Form(
-      key: _formKey,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            _isEdit ? 'Edit notice' : 'Publish notice',
-            style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
-          ),
-          const SizedBox(height: Dimensions.paddingSizeLarge),
+    // Block back / outside-tap dismissal while saving.
+    return PopScope(
+      canPop: !_submitting,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              _isEdit ? context.local.editNotice : context.local.publishNotice,
+              style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
+            ),
+            const SizedBox(height: Dimensions.paddingSizeLarge),
 
-          _Label('Title'),
-          TextFormField(
-            controller: _titleController,
-            textCapitalization: TextCapitalization.sentences,
-            textInputAction: TextInputAction.next,
-            decoration: _decoration(context, hint: 'e.g. Meal rate updated'),
-            validator: (v) => (v ?? '').trim().isEmpty ? 'Enter a title' : null,
-          ),
-          const SizedBox(height: Dimensions.paddingSizeDefault),
+            _Label(context.local.noticeTitle),
+            TextFormField(
+              controller: _titleController,
+              enabled: !_submitting,
+              maxLength: _titleMaxLength,
+              textCapitalization: TextCapitalization.sentences,
+              textInputAction: TextInputAction.next,
+              decoration: _decoration(context, hint: context.local.noticeTitleHint),
+              forceErrorText: _fieldErrors['title'],
+              validator: (v) => (v ?? '').trim().isEmpty ? context.local.enterNoticeTitle : null,
+            ),
+            const SizedBox(height: Dimensions.paddingSizeSmall),
 
-          _Label('Description'),
-          TextFormField(
-            controller: _descriptionController,
-            textCapitalization: TextCapitalization.sentences,
-            minLines: 3,
-            maxLines: 6,
-            decoration: _decoration(context, hint: 'Write the notice details…'),
-            validator: (v) => (v ?? '').trim().isEmpty ? 'Enter a description' : null,
-          ),
-          const SizedBox(height: Dimensions.paddingSizeExtraLarge),
+            _Label(context.local.noticeDescription),
+            TextFormField(
+              controller: _descriptionController,
+              enabled: !_submitting,
+              maxLength: _descriptionMaxLength,
+              textCapitalization: TextCapitalization.sentences,
+              minLines: 3,
+              maxLines: 6,
+              decoration: _decoration(context, hint: context.local.noticeDescriptionHint),
+              forceErrorText: _fieldErrors['description'],
+              validator: (v) => (v ?? '').trim().isEmpty ? context.local.enterNoticeDescription : null,
+            ),
 
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeightDefault)),
-                  child: const Text('Cancel'),
-                ),
-              ),
-              const SizedBox(width: Dimensions.paddingSizeDefault),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: _submit,
-                  style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeightDefault)),
-                  child: Text(_isEdit ? 'Save' : 'Publish'),
-                ),
+            if (_error != null) ...[
+              const SizedBox(height: Dimensions.paddingSizeSmall),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.error_outline_rounded, size: Dimensions.iconSizeSmall, color: colors.errorColor),
+                  const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                  Expanded(
+                    child: Text(
+                      _error!,
+                      style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.errorColor),
+                    ),
+                  ),
+                ],
               ),
             ],
-          ),
-        ],
+            const SizedBox(height: Dimensions.paddingSizeExtraLarge),
+
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: _submitting ? null : () => Navigator.of(context).pop(),
+                    style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeightDefault)),
+                    child: Text(context.local.cancel, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  ),
+                ),
+                const SizedBox(width: Dimensions.paddingSizeDefault),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _submitting ? null : _submit,
+                    style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeightDefault)),
+                    child: _submitting
+                        ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                        : Text(_isEdit ? context.local.save : context.local.publish, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

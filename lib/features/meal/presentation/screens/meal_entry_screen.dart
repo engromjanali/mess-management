@@ -59,13 +59,11 @@ class _MealEntryViewState extends State<_MealEntryView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: Text(context.local.addMeal),
-      ),
+      appBar: AppBar(title: Text(context.local.addMeal)),
       body: BlocConsumer<MealAdminBloc, MealAdminState>(
         listener: (context, state) {
           state.maybeWhen(
-            loaded: (data, _, _) {
+            loaded: (data, _, _, _) {
               final mutation = data.mutation;
               if (mutation != null && !identical(_lastMutation, mutation)) {
                 _lastMutation = mutation;
@@ -82,7 +80,12 @@ class _MealEntryViewState extends State<_MealEntryView> {
           return state.maybeWhen(
             loading: () => const Center(child: CircularProgressIndicator.adaptive()),
             error: (message) => _ErrorView(message: message),
-            loaded: (data, _, _) => _Body(data: data, date: _date, onPickDate: _pickDate),
+            loaded: (data, _, _, busy) => Stack(
+              children: [
+                _Body(data: data, date: _date, onPickDate: _pickDate, saving: busy),
+                if (busy) const Positioned(top: 0, left: 0, right: 0, child: LinearProgressIndicator(minHeight: 2)),
+              ],
+            ),
             orElse: () => const Center(child: CircularProgressIndicator.adaptive()),
           );
         },
@@ -121,10 +124,13 @@ class _ErrorView extends StatelessWidget {
 }
 
 class _Body extends StatefulWidget {
-  const _Body({required this.data, required this.date, required this.onPickDate});
+  const _Body({required this.data, required this.date, required this.onPickDate, required this.saving});
   final MealAdminEntity data;
   final DateTime date;
   final VoidCallback onPickDate;
+
+  /// The day's meals are being saved: the form is locked until it finishes.
+  final bool saving;
 
   @override
   State<_Body> createState() => _BodyState();
@@ -206,81 +212,92 @@ class _BodyState extends State<_Body> {
     // Members who left keep their history but can't get new meals.
     final members = widget.data.activeMembers;
 
-    return SingleChildScrollView(
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
-          child: Padding(
-            padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final wide = constraints.maxWidth >= 900;
+    // While saving, taps are blocked so the day can't be changed or re-sent.
+    return AbsorbPointer(
+      absorbing: widget.saving,
+      child: SingleChildScrollView(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
+            child: Padding(
+              padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final wide = constraints.maxWidth >= 900;
 
-                final applyCard = AnimatedEntrance(
-                  child: ApplyToAllCard(memberCount: members.length, breakfast: _breakfast, lunch: _lunch, dinner: _dinner, dateLabel: MealFormatters.dayLabel(widget.date), onChanged: _changeMeal, onApplyToAll: () => _applyToAll(context)),
-                );
+                  final applyCard = AnimatedEntrance(
+                    child: ApplyToAllCard(
+                      memberCount: members.length,
+                      breakfast: _breakfast,
+                      lunch: _lunch,
+                      dinner: _dinner,
+                      dateLabel: MealFormatters.dayLabel(widget.date),
+                      onChanged: _changeMeal,
+                      onApplyToAll: () => _applyToAll(context),
+                    ),
+                  );
 
-                final membersColumn = Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const SectionTitle(title: 'Members', icon: Icons.people_alt_rounded),
-                    for (var i = 0; i < members.length; i++)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeDefault),
-                        child: AnimatedEntrance(
-                          delay: Duration(milliseconds: 40 * i),
-                          child: _MemberRow(
-                            index: i + 1,
-                            name: members[i].name,
-                            record: _mealFor(members[i].id),
-                            mealRate: widget.data.mealRate,
-                            onEdit: () => _edit(context, members[i]),
-                            onDelete: () => _delete(context, members[i]),
-                          ),
-                        ),
-                      ),
-                  ],
-                );
-
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    AnimatedEntrance(child: _DateSelectorCard(date: widget.date, onTap: widget.onPickDate)),
-                    if (_dayHasMeals) ...[
-                      const SizedBox(height: Dimensions.paddingSizeDefault),
-                      _AlreadyAddedNotice(message: context.local.mealsAlreadyAdded(MealFormatters.dayLabel(widget.date))),
-                    ],
-                    const SizedBox(height: Dimensions.paddingSizeSmall),
-                    if (wide)
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                const SectionTitle(title: 'Bulk set', icon: Icons.edit_calendar_rounded),
-                                applyCard,
-                              ],
+                  final membersColumn = Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SectionTitle(title: 'Members', icon: Icons.people_alt_rounded),
+                      for (var i = 0; i < members.length; i++)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeDefault),
+                          child: AnimatedEntrance(
+                            delay: Duration(milliseconds: 40 * i),
+                            child: _MemberRow(
+                              index: i + 1,
+                              name: members[i].name,
+                              record: _mealFor(members[i].id),
+                              mealRate: widget.data.mealRate,
+                              onEdit: () => _edit(context, members[i]),
+                              onDelete: () => _delete(context, members[i]),
                             ),
                           ),
-                          const SizedBox(width: Dimensions.paddingSizeLarge),
-                          Expanded(flex: 3, child: membersColumn),
-                        ],
-                      )
-                    else ...[
-                      const SectionTitle(title: 'Bulk set', icon: Icons.edit_calendar_rounded),
-                      applyCard,
-                      const SizedBox(height: Dimensions.paddingSizeSmall),
-                      membersColumn,
+                        ),
                     ],
-                    const SizedBox(height: Dimensions.paddingSizeSmall),
-                    _BottomSaveButton(onSave: _hasMealsToSave ? () => _saveAll(context) : null),
-                    SizedBox(height: context.bottomPadding),
-                  ],
-                );
-              },
+                  );
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      AnimatedEntrance(
+                        child: _DateSelectorCard(date: widget.date, onTap: widget.onPickDate),
+                      ),
+                      if (_dayHasMeals) ...[const SizedBox(height: Dimensions.paddingSizeDefault), _AlreadyAddedNotice(message: context.local.mealsAlreadyAdded(MealFormatters.dayLabel(widget.date)))],
+                      const SizedBox(height: Dimensions.paddingSizeSmall),
+                      if (wide)
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  const SectionTitle(title: 'Bulk set', icon: Icons.edit_calendar_rounded),
+                                  applyCard,
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: Dimensions.paddingSizeLarge),
+                            Expanded(flex: 3, child: membersColumn),
+                          ],
+                        )
+                      else ...[
+                        const SectionTitle(title: 'Bulk set', icon: Icons.edit_calendar_rounded),
+                        applyCard,
+                        const SizedBox(height: Dimensions.paddingSizeSmall),
+                        membersColumn,
+                      ],
+                      const SizedBox(height: Dimensions.paddingSizeSmall),
+                      _BottomSaveButton(saving: widget.saving, onSave: _hasMealsToSave ? () => _saveAll(context) : null),
+                      SizedBox(height: context.bottomPadding),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
         ),
@@ -290,7 +307,8 @@ class _BodyState extends State<_Body> {
 }
 
 class _BottomSaveButton extends StatelessWidget {
-  const _BottomSaveButton({required this.onSave});
+  const _BottomSaveButton({required this.saving, required this.onSave});
+  final bool saving;
   final VoidCallback? onSave;
 
   @override
@@ -300,14 +318,14 @@ class _BottomSaveButton extends StatelessWidget {
     return Align(
       alignment: wide ? Alignment.centerRight : Alignment.center,
       child: SizedBox(
-      width: wide ? 300 : double.infinity,
-      height: Dimensions.buttonHeightLarge,
-      child: ElevatedButton.icon(
-        onPressed: onSave,
-        style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge))),
-        icon: const Icon(Icons.save_rounded),
-        label: Text(context.local.save, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
-      ),
+        width: wide ? 300 : double.infinity,
+        height: Dimensions.buttonHeightLarge,
+        child: ElevatedButton.icon(
+          onPressed: saving ? null : onSave,
+          style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge))),
+          icon: saving ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.save_rounded),
+          label: Text(context.local.save, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
+        ),
       ),
     );
   }
@@ -334,7 +352,10 @@ class _AlreadyAddedNotice extends StatelessWidget {
           Icon(Icons.error_outline_rounded, color: colors.errorColor),
           const SizedBox(width: Dimensions.paddingSizeDefault),
           Expanded(
-            child: Text(message, style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.errorColor)),
+            child: Text(
+              message,
+              style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.errorColor),
+            ),
           ),
         ],
       ),
@@ -385,28 +406,24 @@ class _DateSelectorCard extends StatelessWidget {
                           children: [
                             _DateIcon(color: colors.primaryColor),
                             const SizedBox(width: Dimensions.paddingSizeDefault),
-                            Expanded(child: _DateText(isToday: isToday, date: date)),
+                            Expanded(
+                              child: _DateText(isToday: isToday, date: date),
+                            ),
                           ],
                         ),
                         const SizedBox(height: Dimensions.paddingSizeDefault),
-                        FilledButton.icon(
-                          onPressed: onTap,
-                          icon: const Icon(Icons.edit_calendar_rounded, size: 18),
-                          label: const Text('Change date'),
-                        ),
+                        FilledButton.icon(onPressed: onTap, icon: const Icon(Icons.edit_calendar_rounded, size: 18), label: const Text('Change date')),
                       ],
                     )
                   : Row(
                       children: [
                         _DateIcon(color: colors.primaryColor),
                         const SizedBox(width: Dimensions.paddingSizeDefault),
-                        Expanded(child: _DateText(isToday: isToday, date: date)),
-                        const SizedBox(width: Dimensions.paddingSizeSmall),
-                        FilledButton.icon(
-                          onPressed: onTap,
-                          icon: const Icon(Icons.edit_calendar_rounded, size: 18),
-                          label: const Text('Change'),
+                        Expanded(
+                          child: _DateText(isToday: isToday, date: date),
                         ),
+                        const SizedBox(width: Dimensions.paddingSizeSmall),
+                        FilledButton.icon(onPressed: onTap, icon: const Icon(Icons.edit_calendar_rounded, size: 18), label: const Text('Change')),
                       ],
                     ),
             ),
@@ -499,7 +516,9 @@ class _MemberRow extends StatelessWidget {
                       children: [
                         _MemberIndex(index: index),
                         const SizedBox(width: Dimensions.paddingSizeDefault),
-                        Expanded(child: _MemberMealText(name: name, total: total, hasMeal: hasMeal)),
+                        Expanded(
+                          child: _MemberMealText(name: name, total: total, hasMeal: hasMeal),
+                        ),
                       ],
                     ),
                     const SizedBox(height: Dimensions.paddingSizeDefault),
@@ -542,7 +561,9 @@ class _MemberRow extends StatelessWidget {
                   children: [
                     _MemberIndex(index: index),
                     const SizedBox(width: Dimensions.paddingSizeDefault),
-                    Expanded(child: _MemberMealText(name: name, total: total, hasMeal: hasMeal,)),
+                    Expanded(
+                      child: _MemberMealText(name: name, total: total, hasMeal: hasMeal),
+                    ),
                     const SizedBox(width: Dimensions.paddingSizeSmall),
                     _Badge(label: 'B', value: record?.breakfast ?? 0, accent: colors.warningColor),
                     _Badge(label: 'L', value: record?.lunch ?? 0, accent: colors.primaryColor),
@@ -608,9 +629,7 @@ class _MemberMealText extends StatelessWidget {
         ),
         const SizedBox(height: 2),
         Text(
-          hasMeal
-              ? '${MealFormatters.count(total)} meals'
-              : 'No meal added',
+          hasMeal ? '${MealFormatters.count(total)} meals' : 'No meal added',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: hasMeal ? colors.textSecondaryColor : colors.textHintColor),

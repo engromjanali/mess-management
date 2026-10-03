@@ -10,6 +10,17 @@ class NoticeModel {
 
   const NoticeModel({required this.id, required this.title, required this.description, required this.createdAt, this.pinned = false});
 
+  factory NoticeModel.fromJson(Map<String, dynamic> json) {
+    return NoticeModel(
+      id: '${json['id']}',
+      title: json['title'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+      // Sent in UTC; shown in the device's time zone.
+      createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
+      pinned: json['pinned'] as bool? ?? false,
+    );
+  }
+
   NoticeModel copyWith({String? title, String? description, bool? pinned}) {
     return NoticeModel(id: id, title: title ?? this.title, description: description ?? this.description, createdAt: createdAt, pinned: pinned ?? this.pinned);
   }

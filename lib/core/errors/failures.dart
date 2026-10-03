@@ -12,7 +12,10 @@ abstract class Failure {
 
 /// Server failure
 class ServerFailure extends Failure {
-  const ServerFailure({required super.message, super.statusCode});
+  /// Per-field validation messages (see `ServerException.fieldErrors`).
+  final Map<String, String> fieldErrors;
+
+  const ServerFailure({required super.message, super.statusCode, this.fieldErrors = const {}});
 }
 
 /// Cache failure

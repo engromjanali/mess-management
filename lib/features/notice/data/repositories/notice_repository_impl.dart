@@ -48,9 +48,13 @@ class NoticeRepositoryImpl implements NoticeRepository {
       return Result.failure(error: NetworkFailure(message: e.message));
     } on NetworkException catch (e) {
       return Result.failure(error: NetworkFailure(message: e.message));
+    } on UnauthorizedException catch (e) {
+      return Result.failure(
+        error: AuthenticationFailure(message: e.message, statusCode: e.statusCode),
+      );
     } on ServerException catch (e) {
       return Result.failure(
-        error: ServerFailure(message: e.message, statusCode: e.statusCode),
+        error: ServerFailure(message: e.message, statusCode: e.statusCode, fieldErrors: e.fieldErrors),
       );
     } catch (e) {
       return Result.failure(error: ServerFailure(message: 'An unexpected error occurred: ${e.toString()}'));

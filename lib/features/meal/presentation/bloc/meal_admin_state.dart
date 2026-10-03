@@ -12,9 +12,10 @@ class MealAdminState with _$MealAdminState {
   /// Data is loading for the first time.
   const factory MealAdminState.loading() = MealAdminLoading;
 
-  /// Data loaded successfully, with the active member/date filters.
-  const factory MealAdminState.loaded({required MealAdminEntity data, String? selectedMemberId, DateTime? selectedDate}) = MealAdminLoaded;
+  /// Data loaded, with the active member/date filters. [busy] is true while a
+  /// refresh or add/edit/delete runs — the data stays shown with progress.
+  const factory MealAdminState.loaded({required MealAdminEntity data, String? selectedMemberId, DateTime? selectedDate, @Default(false) bool busy}) = MealAdminLoaded;
 
-  /// Loading or a mutation failed.
+  /// Loading or an action failed (after an action, the loaded state follows).
   const factory MealAdminState.error(String message) = MealAdminError;
 }

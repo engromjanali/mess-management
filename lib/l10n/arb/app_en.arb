@@ -231,5 +231,35 @@
       }
     }
   },
-  "noMealsYet": "No meals recorded yet."
+  "noMealsYet": "No meals recorded yet.",
+  "newNotice": "New notice",
+  "publishNotice": "Publish notice",
+  "editNotice": "Edit notice",
+  "noticeTitle": "Title",
+  "noticeTitleHint": "e.g. Meal rate updated",
+  "noticeDescription": "Description",
+  "noticeDescriptionHint": "Write the notice details…",
+  "enterNoticeTitle": "Enter a title",
+  "enterNoticeDescription": "Enter a description",
+  "publish": "Publish",
+  "deleteNotice": "Delete notice",
+  "deleteNoticeConfirm": "Delete \"{title}\"? Members will no longer see it.",
+  "@deleteNoticeConfirm": {
+    "description": "Confirmation before deleting a notice",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Water off"
+      }
+    }
+  },
+  "pinned": "Pinned",
+  "pin": "Pin",
+  "unpin": "Unpin",
+  "noNoticesYet": "No notices yet",
+  "noticePublished": "Notice published",
+  "noticeUpdated": "Notice updated",
+  "noticePinned": "Notice pinned to the top",
+  "noticeUnpinned": "Notice unpinned",
+  "noticeDeleted": "Notice deleted"
 }

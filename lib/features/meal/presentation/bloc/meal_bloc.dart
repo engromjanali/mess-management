@@ -15,14 +15,19 @@ class MealBloc extends Bloc<MealEvent, MealState> {
   }
 
   Future<void> _onMealEvent(MealEvent event, Emitter<MealState> emit) async {
-    await event.when(
-      load: () => _load(emit, showLoading: true),
-      refresh: () => _load(emit, showLoading: false),
-    );
+    await event.when(load: () => _load(emit, showLoading: true), refresh: () => _load(emit, showLoading: false));
   }
 
+  /// Full-screen loading the first time; a refresh keeps the overview shown
+  /// with `refreshing` so the screen shows progress instead of going blank.
   Future<void> _load(Emitter<MealState> emit, {required bool showLoading}) async {
-    if (showLoading) emit(const MealState.loading());
+    final current = state;
+    if (showLoading || current is! MealLoaded) {
+      emit(const MealState.loading());
+    } else {
+      if (current.refreshing) return;
+      emit(current.copyWith(refreshing: true));
+    }
 
     final result = await _getMealOverviewUseCase(const NoParams());
 

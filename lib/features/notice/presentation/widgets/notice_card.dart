@@ -5,6 +5,8 @@ import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/features/notice/domain/entities/notice_entity.dart';
 import 'package:clean_boilerplate/features/notice/presentation/widgets/notice_formatters.dart';
 
+/// One notice: title, description, time and — for the manager — pin, edit
+/// and delete actions.
 class NoticeCard extends StatelessWidget {
   const NoticeCard({required this.notice, required this.showActions, this.onEdit, this.onDelete, this.onTogglePin, super.key});
 
@@ -12,6 +14,7 @@ class NoticeCard extends StatelessWidget {
 
   final bool showActions;
 
+  /// Null callbacks disable their button (e.g. while another action runs).
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
   final VoidCallback? onTogglePin;
@@ -43,7 +46,7 @@ class NoticeCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (pinned) ...[_PinnedBadge(), const SizedBox(height: Dimensions.paddingSizeSmall)],
+          if (pinned) ...[const _PinnedBadge(), const SizedBox(height: Dimensions.paddingSizeSmall)],
           Row(
             children: [
               Icon(Icons.campaign_rounded, size: Dimensions.iconSizeDefault, color: colors.primaryColor),
@@ -72,11 +75,17 @@ class NoticeCard extends StatelessWidget {
               ),
               if (showActions) ...[
                 const Spacer(),
-                _NoticeActionButton(icon: pinned ? Icons.push_pin_outlined : Icons.push_pin_rounded, tooltip: pinned ? 'Unpin' : 'Pin', color: colors.primaryColor, active: pinned, onTap: onTogglePin),
+                _NoticeActionButton(
+                  icon: pinned ? Icons.push_pin_outlined : Icons.push_pin_rounded,
+                  tooltip: pinned ? context.local.unpin : context.local.pin,
+                  color: colors.primaryColor,
+                  active: pinned,
+                  onTap: onTogglePin,
+                ),
                 const SizedBox(width: Dimensions.paddingSizeSmall),
-                _NoticeActionButton(icon: Icons.edit_rounded, tooltip: 'Edit', color: colors.secondaryColor, onTap: onEdit),
+                _NoticeActionButton(icon: Icons.edit_rounded, tooltip: context.local.edit, color: colors.secondaryColor, onTap: onEdit),
                 const SizedBox(width: Dimensions.paddingSizeSmall),
-                _NoticeActionButton(icon: Icons.delete_outline_rounded, tooltip: 'Delete', color: Colors.redAccent, onTap: onDelete),
+                _NoticeActionButton(icon: Icons.delete_outline_rounded, tooltip: context.local.delete, color: colors.errorColor, onTap: onDelete),
               ],
             ],
           ),
@@ -96,6 +105,8 @@ class _NoticeActionButton extends StatelessWidget {
 
   /// When true the button is filled with [color] (e.g. a pinned notice).
   final bool active;
+
+  /// Null disables the button, which is then dimmed.
   final VoidCallback? onTap;
 
   @override
@@ -103,15 +114,18 @@ class _NoticeActionButton extends StatelessWidget {
     final radius = BorderRadius.circular(Dimensions.radiusDefault);
     return Tooltip(
       message: tooltip,
-      child: Material(
-        color: color.withValues(alpha: active ? 1 : 0.12),
-        borderRadius: radius,
-        child: InkWell(
-          onTap: onTap,
+      child: Opacity(
+        opacity: onTap == null ? 0.4 : 1,
+        child: Material(
+          color: color.withValues(alpha: active ? 1 : 0.12),
           borderRadius: radius,
-          child: Padding(
-            padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
-            child: Icon(icon, size: Dimensions.iconSizeSmall, color: active ? Colors.white : color),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: radius,
+            child: Padding(
+              padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
+              child: Icon(icon, size: Dimensions.iconSizeSmall, color: active ? Colors.white : color),
+            ),
           ),
         ),
       ),
@@ -121,6 +135,8 @@ class _NoticeActionButton extends StatelessWidget {
 
 /// Small "Pinned" indicator chip shown at the top of the pinned notice.
 class _PinnedBadge extends StatelessWidget {
+  const _PinnedBadge();
+
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
@@ -133,7 +149,7 @@ class _PinnedBadge extends StatelessWidget {
           const Icon(Icons.push_pin_rounded, size: Dimensions.fontSizeDefault, color: Colors.white),
           const SizedBox(width: Dimensions.paddingSizeExtraSmall),
           Text(
-            'Pinned',
+            context.local.pinned,
             style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Colors.white),
           ),
         ],

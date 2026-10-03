@@ -12,10 +12,11 @@ class NoticeState with _$NoticeState {
   /// The list is loading for the first time.
   const factory NoticeState.loading() = NoticeLoading;
 
-  /// Notices loaded (or just mutated). [isAdmin] gates add / edit / delete.
-  /// [saving] flags an in-flight mutation.
-  const factory NoticeState.loaded({required List<NoticeEntity> notices, required bool isAdmin, @Default(false) bool saving}) = NoticeLoaded;
+  /// Notices loaded. [isAdmin] gates publish / edit / pin / delete. [busy] is
+  /// true while a refresh or change runs — the list stays shown with progress
+  /// and the actions are disabled.
+  const factory NoticeState.loaded({required List<NoticeEntity> notices, required bool isAdmin, @Default(false) bool busy}) = NoticeLoaded;
 
-  /// Loading failed.
+  /// The first load failed (nothing to show yet).
   const factory NoticeState.error(String message) = NoticeError;
 }

@@ -26,7 +26,6 @@ Failure mapErrorToFailure(Object error) {
   return ServerFailure(message: 'An unexpected error occurred: $error');
 }
 
-
 ResultFuture<T> guardResult<T>(Future<T> Function() action) async {
   try {
     return Result.success(data: await action());

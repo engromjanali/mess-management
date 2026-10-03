@@ -29,7 +29,10 @@ class MealAdminPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<MealAdminBloc>(create: (_) => getIt<MealAdminBloc>()..add(const MealAdminEvent.load()), child: _MealAdminView(showViewAll: showViewAll));
+    return BlocProvider<MealAdminBloc>(
+      create: (_) => getIt<MealAdminBloc>()..add(const MealAdminEvent.load()),
+      child: _MealAdminView(showViewAll: showViewAll),
+    );
   }
 }
 
@@ -60,7 +63,7 @@ class _MealAdminView extends StatelessWidget {
               initial: _loading,
               loading: _loading,
               error: (message) => _ErrorCard(message: message),
-              loaded: (data, memberId, date) => _ManageCard(data: data, selectedMemberId: memberId, selectedDate: date),
+              loaded: (data, memberId, date, busy) => _ManageCard(data: data, selectedMemberId: memberId, selectedDate: date, busy: busy),
             );
           },
         ),
@@ -97,11 +100,14 @@ class _ErrorCard extends StatelessWidget {
 }
 
 class _ManageCard extends StatelessWidget {
-  const _ManageCard({required this.data, required this.selectedMemberId, required this.selectedDate});
+  const _ManageCard({required this.data, required this.selectedMemberId, required this.selectedDate, required this.busy});
 
   final MealAdminEntity data;
   final String? selectedMemberId;
   final DateTime? selectedDate;
+
+  /// A refresh or edit/delete is running: show progress and block actions.
+  final bool busy;
 
   /// Opens the day entry screen, then reloads so the new records show here.
   Future<void> _add(BuildContext context) async {
@@ -148,13 +154,15 @@ class _ManageCard extends StatelessWidget {
       '${entries.length == 1 ? 'record' : 'records'}',
       style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
     );
-    final addButton = FilledButton.icon(onPressed: () => _add(context), icon: const Icon(Icons.add_rounded, size: 20), label: Text(context.local.addMeal));
+    final addButton = FilledButton.icon(onPressed: busy ? null : () => _add(context), icon: const Icon(Icons.add_rounded, size: 20), label: Text(context.local.addMeal));
 
     return _Card(
       padding: EdgeInsets.zero,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Same height either way so the card doesn't jump.
+          if (busy) const LinearProgressIndicator(minHeight: 2) else const SizedBox(height: 2),
           Padding(
             padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
             child: Column(
@@ -193,8 +201,8 @@ class _ManageCard extends StatelessWidget {
                 memberName: data.memberName(entries[i].memberId),
                 mealRate: data.mealRate,
                 showMember: selectedMemberId == null,
-                onEdit: () => _edit(context, entries[i]),
-                onDelete: () => _confirmDelete(context, entries[i]),
+                onEdit: busy ? null : () => _edit(context, entries[i]),
+                onDelete: busy ? null : () => _confirmDelete(context, entries[i]),
               ),
             ],
         ],
@@ -312,8 +320,10 @@ class _EntryRow extends StatelessWidget {
   final String memberName;
   final double mealRate;
   final bool showMember;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
+
+  /// Null while another action runs, which disables the buttons.
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -379,13 +389,14 @@ class _EntryRow extends StatelessWidget {
           if (showActionMenu)
             PopupMenuButton<_MealAction>(
               tooltip: 'Options',
+              enabled: onEdit != null,
               icon: Icon(Icons.more_vert_rounded, color: colors.textSecondaryColor),
               onSelected: (action) {
                 switch (action) {
                   case _MealAction.edit:
-                    onEdit();
+                    onEdit?.call();
                   case _MealAction.delete:
-                    onDelete();
+                    onDelete?.call();
                 }
               },
               itemBuilder: (context) => const [
@@ -404,13 +415,13 @@ class _EntryRow extends StatelessWidget {
               tooltip: 'Edit',
               visualDensity: VisualDensity.compact,
               onPressed: onEdit,
-              icon: Icon(Icons.edit_rounded, size: Dimensions.iconSizeDefault, color: colors.primaryColor),
+              icon: Icon(Icons.edit_rounded, size: Dimensions.iconSizeDefault, color: onEdit == null ? colors.textHintColor : colors.primaryColor),
             ),
             IconButton(
               tooltip: 'Delete',
               visualDensity: VisualDensity.compact,
               onPressed: onDelete,
-              icon: Icon(Icons.delete_outline_rounded, size: Dimensions.iconSizeDefault, color: colors.errorColor),
+              icon: Icon(Icons.delete_outline_rounded, size: Dimensions.iconSizeDefault, color: onDelete == null ? colors.textHintColor : colors.errorColor),
             ),
           ],
         ],
@@ -495,6 +506,8 @@ class _Card extends StatelessWidget {
         borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge),
         border: Border.all(color: colors.borderColor.withValues(alpha: 0.4)),
       ),
+      // Keeps the top progress bar inside the rounded corners.
+      clipBehavior: Clip.antiAlias,
       child: child,
     );
   }

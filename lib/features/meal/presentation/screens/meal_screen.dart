@@ -185,7 +185,13 @@ class _MineTab extends StatelessWidget {
           initial: _loading,
           loading: _loading,
           error: (message) => _ErrorView(message: message),
-          loaded: (overview) => _MealBody(overview: overview),
+          loaded: (overview, refreshing) => Stack(
+            children: [
+              _MealBody(overview: overview),
+              // Background reload (tab switch / pull-to-refresh) keeps the data shown.
+              if (refreshing) const Positioned(top: 0, left: 0, right: 0, child: LinearProgressIndicator(minHeight: 2)),
+            ],
+          ),
         );
       },
     );
@@ -259,8 +265,9 @@ class _MealBody extends StatelessWidget {
 
     return RefreshIndicator(
       onRefresh: () async {
-        context.read<MealBloc>().add(const MealEvent.refresh());
-        await Future<void>.delayed(const Duration(milliseconds: 700));
+        final bloc = context.read<MealBloc>()..add(const MealEvent.refresh());
+        // Keep the pull-to-refresh spinner until the reload actually finishes.
+        await bloc.stream.firstWhere((state) => state is! MealLoaded || !state.refreshing);
       },
       child: _MealTabScroll(
         physics: const AlwaysScrollableScrollPhysics(),

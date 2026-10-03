@@ -1,13 +1,12 @@
-import 'package:injectable/injectable.dart';
 import 'package:clean_boilerplate/core/errors/exceptions.dart';
 import 'package:clean_boilerplate/features/notice/data/models/notice_model.dart';
 import 'package:clean_boilerplate/features/notice/data/datasources/interfaces/notice_data_source.dart';
 
 /// In-memory mock for the notice feature.
 ///
-/// Holds a flat list of notices, newest first. Swap this binding for a remote
-/// implementation later — the repository and presentation layers won't change.
-@LazySingleton(as: NoticeDataSource)
+/// Holds a flat list of notices, newest first. Not bound: the app uses
+/// `NoticeRemoteDataSourceImpl`. Move its `@LazySingleton(as: NoticeDataSource)`
+/// here to preview offline.
 class NoticeLocalDataSourceImpl implements NoticeDataSource {
   /// Session-mutable store of notices, seeded with a few records.
   final List<NoticeModel> _notices = [

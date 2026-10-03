@@ -5,7 +5,11 @@ class ServerException implements Exception {
   final String message;
   final int? statusCode;
 
-  ServerException({required this.message, this.statusCode});
+  /// Per-field messages from a DRF validation error (`{"title": ["..."]}`),
+  /// so a form can show each one under its own field.
+  final Map<String, String> fieldErrors;
+
+  ServerException({required this.message, this.statusCode, this.fieldErrors = const {}});
 }
 
 class CacheException implements Exception {
@@ -52,7 +56,7 @@ extension DioExceptionX on DioException {
         if (statusCode == 401) {
           return UnauthorizedException(message: response?.data['message'] ?? 'Unauthorized access', statusCode: statusCode!);
         }
-        return ServerException(message: _extractErrorMessage(response?.data), statusCode: statusCode);
+        return ServerException(message: _extractErrorMessage(response?.data), statusCode: statusCode, fieldErrors: _extractFieldErrors(response?.data));
       case DioExceptionType.cancel:
         return ServerException(message: 'Request was cancelled');
       case DioExceptionType.connectionError:
@@ -89,6 +93,19 @@ extension DioExceptionX on DioException {
     }
 
     return 'Server error occurred';
+  }
+
+  /// First message of each field in a DRF error body, skipping the general keys.
+  Map<String, String> _extractFieldErrors(dynamic data) {
+    if (data is! Map) return const {};
+    const generalKeys = {'detail', 'message', 'error', 'errors', 'non_field_errors'};
+    final result = <String, String>{};
+    data.forEach((key, value) {
+      if (generalKeys.contains(key)) return;
+      if (value is List && value.isNotEmpty && value.first is String) result['$key'] = value.first as String;
+      if (value is String && value.isNotEmpty) result['$key'] = value;
+    });
+    return result;
   }
 
   /// Legacy method for backward compatibility
