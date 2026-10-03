@@ -1,13 +1,15 @@
+import 'package:clean_boilerplate/core/errors/exceptions.dart';
 import 'package:clean_boilerplate/features/meal/data/models/meal_admin_model.dart';
 import 'package:clean_boilerplate/features/meal/data/datasources/interfaces/meal_admin_data_source.dart';
+import 'package:clean_boilerplate/features/meal/domain/entities/meal_member_entity.dart';
 
 /// Local, in-memory mock admin meal source.
 ///
 /// Seeds a small roster of members with a few days of records each so the
 /// admin management view is fully previewable without a backend, and keeps
-/// add/edit/delete mutations in memory for the session. Swap this binding for
-/// a remote implementation later — the repository and presentation layers
-/// won't change.
+/// add/edit/delete mutations in memory for the session. Not bound: the app
+/// uses `MealAdminRemoteDataSourceImpl`. Move its
+/// `@LazySingleton(as: MealAdminDataSource)` here to preview offline.
 class MealAdminLocalDataSourceImpl implements MealAdminDataSource {
   static const double _mealRate = 62.5;
 
@@ -53,44 +55,28 @@ class MealAdminLocalDataSourceImpl implements MealAdminDataSource {
   }
 
   @override
-  Future<MealAdminModel> addMealForAll({required DateTime date, required double breakfast, required double lunch, required double dinner}) async {
+  Future<MealAdminModel> addMealsForDay({required DateTime date, required List<MemberMealEntity> meals}) async {
     final key = DateTime(date.year, date.month, date.day);
-    // One write per member — overwriting any existing record for that day.
-    for (final member in _members) {
-      final index = _indexOf(member.id, key);
-      final record = MemberMealModel(memberId: member.id, date: key, breakfast: breakfast, lunch: lunch, dinner: dinner);
-      if (index == -1) {
-        _entries.add(record);
-      } else {
-        _entries[index] = record;
-      }
-    }
-    return _payload();
-  }
-
-  @override
-  Future<MealAdminModel> saveMemberMeal({required String memberId, required DateTime date, required double breakfast, required double lunch, required double dinner}) async {
-    final key = DateTime(date.year, date.month, date.day);
-    final index = _indexOf(memberId, key);
-    final record = MemberMealModel(memberId: memberId, date: key, breakfast: breakfast, lunch: lunch, dinner: dinner);
-
-    if (index == -1) {
-      _entries.add(record);
+    // Add-only, like the backend: a day that already has meals is edited per record.
+    if (_entries.any((e) => e.date.year == key.year && e.date.month == key.month && e.date.day == key.day)) {
+      throw ServerException(message: 'Meals for ${_date(key)} are already added. Edit them from Manage meals.', statusCode: 409);
     }
 
-    return _payload();
+    for (final meal in meals) {
+      _entries.add(MemberMealModel(memberId: meal.memberId, date: key, breakfast: meal.breakfast, lunch: meal.lunch, dinner: meal.dinner));
+    }
+    return _payload(mutation: MealMutationModel(action: 'add', createdCount: meals.length, updatedCount: 0));
   }
 
   @override
   Future<MealAdminModel> updateMemberMeal({required String memberId, required DateTime date, required double breakfast, required double lunch, required double dinner}) async {
     final key = DateTime(date.year, date.month, date.day);
     final index = _indexOf(memberId, key);
-    final record = MemberMealModel(memberId: memberId, date: key, breakfast: breakfast, lunch: lunch, dinner: dinner);
-
-    if (index != -1) {
-      _entries[index] = record;
+    if (index == -1) {
+      throw ServerException(message: '${_memberName(memberId)} has no meal on ${_date(key)} to update.', statusCode: 404);
     }
 
+    _entries[index] = MemberMealModel(memberId: memberId, date: key, breakfast: breakfast, lunch: lunch, dinner: dinner);
     return _payload();
   }
 
@@ -101,5 +87,9 @@ class MealAdminLocalDataSourceImpl implements MealAdminDataSource {
     return _payload();
   }
 
-  MealAdminModel _payload() => MealAdminModel(members: _members, mealRate: _mealRate, entries: List<MemberMealModel>.unmodifiable(_entries));
+  String _memberName(String memberId) => _members.firstWhere((m) => m.id == memberId, orElse: () => MealMemberModel(id: memberId, name: 'This member')).name;
+
+  String _date(DateTime date) => '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+
+  MealAdminModel _payload({MealMutationModel? mutation}) => MealAdminModel(members: _members, mealRate: _mealRate, entries: List<MemberMealModel>.unmodifiable(_entries), mutation: mutation);
 }

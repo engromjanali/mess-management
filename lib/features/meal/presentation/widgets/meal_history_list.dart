@@ -7,7 +7,8 @@ import 'package:clean_boilerplate/features/meal/domain/entities/meal_entity.dart
 import 'package:clean_boilerplate/features/meal/presentation/widgets/meal_formatters.dart';
 
 /// Scrollable-free meal history card: one row per day with the B/L/D breakdown,
-/// the day's meal total and its cost. Designed to sit inside an outer scroll.
+/// the day's meal total and its cost, or a message when there are no meals.
+/// Designed to sit inside an outer scroll.
 class MealHistoryList extends StatelessWidget {
   const MealHistoryList({required this.days, required this.mealRate, super.key});
 
@@ -29,6 +30,21 @@ class MealHistoryList extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: Column(
         children: [
+          if (days.isEmpty)
+            Padding(
+              padding: const EdgeInsets.all(Dimensions.paddingSizeExtraLarge24),
+              child: Column(
+                children: [
+                  Icon(Icons.no_meals_rounded, size: Dimensions.iconSizeLarge, color: colors.textHintColor),
+                  const SizedBox(height: Dimensions.paddingSizeDefault),
+                  Text(
+                    context.local.noMealsYet,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textSecondaryColor),
+                  ),
+                ],
+              ),
+            ),
           for (var i = 0; i < days.length; i++) ...[
             if (i > 0) Divider(height: 1, color: colors.dividerColor.withValues(alpha: 0.3)),
             _HistoryRow(day: days[i], mealRate: mealRate, isToday: days[i].date.year == now.year && days[i].date.month == now.month && days[i].date.day == now.day),

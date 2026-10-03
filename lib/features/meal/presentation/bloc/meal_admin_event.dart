@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:clean_boilerplate/features/meal/domain/entities/meal_member_entity.dart';
 
 part 'meal_admin_event.freezed.dart';
 
@@ -17,11 +18,8 @@ class MealAdminEvent with _$MealAdminEvent {
   /// Filter the records by date. `null` shows every date.
   const factory MealAdminEvent.selectDate(DateTime? date) = MealAdminSelectDate;
 
-  /// Record the same B/L/D for every member on [date] at once (bulk entry).
-  const factory MealAdminEvent.addForAll({required DateTime date, required double breakfast, required double lunch, required double dinner}) = MealAdminAddForAll;
-
-  /// Add a member's meal for a date.
-  const factory MealAdminEvent.save({required String memberId, required DateTime date, required double breakfast, required double lunch, required double dinner}) = MealAdminSave;
+  /// Add [meals] (one per member) for a day with no meals yet, all or none.
+  const factory MealAdminEvent.addForDay({required DateTime date, required List<MemberMealEntity> meals}) = MealAdminAddForDay;
 
   /// Update an existing member's meal for a date.
   const factory MealAdminEvent.update({required String memberId, required DateTime date, required double breakfast, required double lunch, required double dinner}) = MealAdminUpdate;

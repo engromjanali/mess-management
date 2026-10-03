@@ -6,6 +6,7 @@ import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/di/injection.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
 import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_formatters.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
@@ -43,13 +44,17 @@ class _MealAdminView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SectionTitle(
-          title: 'Manage meals',
+          title: context.local.manageMeals,
           icon: Icons.manage_accounts_rounded,
           showViewAll: showViewAll,
           toolTipsLabel: 'See all members',
           viewAllAction: showViewAll ? () => context.push(AppRoutes.mealList) : null,
         ),
-        BlocBuilder<MealAdminBloc, MealAdminState>(
+        BlocConsumer<MealAdminBloc, MealAdminState>(
+          // A failed edit/delete keeps the list and reports the reason here;
+          // a failed first load shows the error card instead.
+          listenWhen: (previous, current) => previous is MealAdminLoaded && current is MealAdminError,
+          listener: (context, state) => state.whenOrNull(error: (message) => context.showErrorSnackBar(message)),
           builder: (context, state) {
             return state.when(
               initial: _loading,
@@ -98,11 +103,11 @@ class _ManageCard extends StatelessWidget {
   final String? selectedMemberId;
   final DateTime? selectedDate;
 
+  /// Opens the day entry screen, then reloads so the new records show here.
   Future<void> _add(BuildContext context) async {
-    final result = await showMemberMealForm(context, members: data.members, presetMemberId: selectedMemberId, presetDate: selectedDate);
-    if (result != null && context.mounted) {
-      context.read<MealAdminBloc>().add(MealAdminEvent.save(memberId: result.memberId, date: result.date, breakfast: result.breakfast, lunch: result.lunch, dinner: result.dinner));
-    }
+    final bloc = context.read<MealAdminBloc>();
+    await context.push(AppRoutes.addMeal);
+    bloc.add(const MealAdminEvent.refresh());
   }
 
   Future<void> _edit(BuildContext context, MemberMealEntity entry) async {
@@ -143,15 +148,7 @@ class _ManageCard extends StatelessWidget {
       '${entries.length == 1 ? 'record' : 'records'}',
       style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
     );
-    final actionButtons = Wrap(
-      spacing: Dimensions.paddingSizeSmall,
-      runSpacing: Dimensions.paddingSizeSmall,
-      alignment: WrapAlignment.end,
-      children: [
-        FilledButton.icon(onPressed: () => context.go(AppRoutes.addMeal), icon: const Icon(Icons.playlist_add_rounded, size: 20), label: const Text('Add meal for all')),
-        FilledButton.icon(onPressed: () => _add(context), icon: const Icon(Icons.add_rounded, size: 20), label: const Text('Add meal')),
-      ],
-    );
+    final addButton = FilledButton.icon(onPressed: () => _add(context), icon: const Icon(Icons.add_rounded, size: 20), label: Text(context.local.addMeal));
 
     return _Card(
       padding: EdgeInsets.zero,
@@ -169,7 +166,7 @@ class _ManageCard extends StatelessWidget {
                     children: [
                       recordCount,
                       const SizedBox(height: Dimensions.paddingSizeDefault),
-                      actionButtons,
+                      addButton,
                     ],
                   )
                 else
@@ -177,7 +174,7 @@ class _ManageCard extends StatelessWidget {
                     children: [
                       Expanded(child: recordCount),
                       const SizedBox(width: Dimensions.paddingSizeSmall),
-                      actionButtons,
+                      addButton,
                     ],
                   ),
                 const SizedBox(height: Dimensions.paddingSizeDefault),

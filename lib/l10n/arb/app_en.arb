@@ -209,5 +209,27 @@
     }
   },
   "productsBought": "Products bought:",
-  "serialNo": "SL No"
+  "serialNo": "SL No",
+  "manageMeals": "Manage meals",
+  "addMeal": "Add meal",
+  "mealsAlreadyAdded": "Meals for {date} are already added. Edit them from Manage meals.",
+  "@mealsAlreadyAdded": {
+    "description": "Error when adding meals for a day that already has meals",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Sat, 3 Oct"
+      }
+    }
+  },
+  "mealAddedForMembers": "{count, plural, =1{Meal added for 1 member} other{Meal added for {count} members}}",
+  "@mealAddedForMembers": {
+    "description": "Success message after adding meals for a day",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noMealsYet": "No meals recorded yet."
 }

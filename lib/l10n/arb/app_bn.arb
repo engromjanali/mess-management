@@ -133,5 +133,10 @@
   "costTimeValue": "খরচের সময়: {time}",
   "costDateValue": "খরচের তারিখ: {date}",
   "productsBought": "কেনা পণ্যসমূহ:",
-  "serialNo": "ক্রমিক"
+  "serialNo": "ক্রমিক",
+  "manageMeals": "মিল পরিচালনা",
+  "addMeal": "মিল যোগ",
+  "mealsAlreadyAdded": "{date} তারিখের মিল আগেই যোগ করা হয়েছে। মিল পরিচালনা থেকে সম্পাদনা করুন।",
+  "mealAddedForMembers": "{count, plural, =1{১ জন সদস্যের মিল যোগ হয়েছে} other{{count} জন সদস্যের মিল যোগ হয়েছে}}",
+  "noMealsYet": "এখনো কোনো মিল যোগ হয়নি।"
 }

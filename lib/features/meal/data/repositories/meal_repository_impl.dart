@@ -16,10 +16,6 @@ class MealRepositoryImpl implements MealRepository {
   @override
   ResultFuture<MealOverviewEntity> getMealOverview() => _guard(() => _dataSource.getMealOverview());
 
-  @override
-  ResultFuture<MealOverviewEntity> updateMeal({required DateTime date, required double breakfast, required double lunch, required double dinner}) =>
-      _guard(() => _dataSource.updateMeal(date: date, breakfast: breakfast, lunch: lunch, dinner: dinner));
-
   /// Shared try/catch that maps data-layer exceptions to domain failures.
   ResultFuture<MealOverviewEntity> _guard(Future<dynamic> Function() action) async {
     try {

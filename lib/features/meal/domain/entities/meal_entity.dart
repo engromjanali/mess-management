@@ -12,9 +12,7 @@ class MealEntity extends Equatable {
 
   double get total => breakfast + lunch + dinner;
 
-  MealEntity copyWith({double? breakfast, double? lunch, double? dinner}) {
-    return MealEntity(date: date, breakfast: breakfast ?? this.breakfast, lunch: lunch ?? this.lunch, dinner: dinner ?? this.dinner);
-  }
+  bool sameDay(DateTime other) => date.year == other.year && date.month == other.month && date.day == other.day;
 
   @override
   List<Object?> get props => [date, breakfast, lunch, dinner];
@@ -37,10 +35,10 @@ class MealOverviewEntity extends Equatable {
 
   double get averagePerDay => days.isEmpty ? 0 : totalMeals / days.length;
 
-  /// Today's entry, or an empty (zeroed) entry for today if none exists yet.
-  MealEntity todayFor(DateTime now) {
-    final key = DateTime(now.year, now.month, now.day);
-    return days.firstWhere((d) => d.date.year == key.year && d.date.month == key.month && d.date.day == key.day, orElse: () => MealEntity(date: key));
+  /// The entry for [date]'s day, or an empty (zeroed) one if none was recorded.
+  MealEntity dayFor(DateTime date) {
+    final key = DateTime(date.year, date.month, date.day);
+    return days.firstWhere((d) => d.sameDay(key), orElse: () => MealEntity(date: key));
   }
 
   /// Most-recent-first day list (for the history view).
@@ -49,11 +47,10 @@ class MealOverviewEntity extends Equatable {
     return sorted;
   }
 
-  /// Oldest-to-newest last seven days (for the week chart).
-  List<MealEntity> get lastSevenDays {
-    final sorted = [...days]..sort((a, b) => a.date.compareTo(b.date));
-    if (sorted.length <= 7) return sorted;
-    return sorted.sublist(sorted.length - 7);
+  /// The seven calendar days ending on [now], oldest first, with an empty
+  /// entry for any day without meals (for the week chart).
+  List<MealEntity> weekEndingOn(DateTime now) {
+    return [for (var back = 6; back >= 0; back--) dayFor(DateTime(now.year, now.month, now.day - back))];
   }
 
   @override

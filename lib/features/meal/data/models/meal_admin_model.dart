@@ -1,21 +1,18 @@
 import 'package:clean_boilerplate/features/meal/domain/entities/meal_member_entity.dart';
 
 /// Data-layer DTO for a mess member.
-///
-/// Plain DTO (no JSON codegen) while served from a local mock source. Add
-/// `fromJson`/`toJson` here when a real API is wired up — the domain and
-/// presentation layers won't change.
 class MealMemberModel {
   final String id;
   final String name;
+  final bool active;
 
-  const MealMemberModel({required this.id, required this.name});
+  const MealMemberModel({required this.id, required this.name, this.active = true});
 
   factory MealMemberModel.fromJson(Map<String, dynamic> json) {
-    return MealMemberModel(id: '${json['id']}', name: json['name'] as String? ?? '');
+    return MealMemberModel(id: '${json['id']}', name: json['name'] as String? ?? '', active: json['active'] as bool? ?? true);
   }
 
-  MealMemberEntity toEntity() => MealMemberEntity(id: id, name: name);
+  MealMemberEntity toEntity() => MealMemberEntity(id: id, name: name, active: active);
 }
 
 /// Data-layer DTO for one member's single-day meal record.

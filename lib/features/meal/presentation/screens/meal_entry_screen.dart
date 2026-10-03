@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/di/injection.dart';
@@ -17,8 +18,10 @@ import 'package:clean_boilerplate/features/meal/presentation/widgets/apply_to_al
 import 'package:clean_boilerplate/features/meal/presentation/widgets/meal_formatters.dart';
 import 'package:clean_boilerplate/features/meal/presentation/widgets/member_meal_form_sheet.dart';
 
-/// Admin page to add a meal for every member at once for a chosen day, with
-/// per-member edit / delete. Responsive across phone / tablet / desktop.
+/// Admin page to add meals for a chosen day: one B/L/D for every member at
+/// once, adjusted per member before saving. Add-only — a day that already has
+/// meals shows an error and is edited from the Manage meals list instead.
+/// Responsive across phone / tablet / desktop.
 class MealEntryScreen extends StatelessWidget {
   const MealEntryScreen({super.key});
 
@@ -45,7 +48,8 @@ class _MealEntryViewState extends State<_MealEntryView> {
   }
 
   Future<void> _pickDate() async {
-    final picked = await showDatePicker(context: context, initialDate: _date, firstDate: DateTime(_date.year - 1), lastDate: DateTime(_date.year + 1));
+    // Meals can't be added for a future date (the backend rejects it too).
+    final picked = await showDatePicker(context: context, initialDate: _date, firstDate: DateTime(_date.year - 1), lastDate: _today());
     if (picked != null) {
       setState(() => _date = DateTime(picked.year, picked.month, picked.day));
     }
@@ -56,7 +60,7 @@ class _MealEntryViewState extends State<_MealEntryView> {
     return Scaffold(
       backgroundColor: context.theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Add Meal'),
+        title: Text(context.local.addMeal),
       ),
       body: BlocConsumer<MealAdminBloc, MealAdminState>(
         listener: (context, state) {
@@ -65,7 +69,9 @@ class _MealEntryViewState extends State<_MealEntryView> {
               final mutation = data.mutation;
               if (mutation != null && !identical(_lastMutation, mutation)) {
                 _lastMutation = mutation;
-                context.showSuccessSnackBar(_mutationMessage(mutation));
+                context.showSuccessSnackBar(context.local.mealAddedForMembers(mutation.createdCount));
+                // Back to the Manage meals list, which reloads on return.
+                if (context.canPop()) context.pop();
               }
             },
             error: (message) => context.showErrorSnackBar(message),
@@ -82,12 +88,6 @@ class _MealEntryViewState extends State<_MealEntryView> {
         },
       ),
     );
-  }
-
-  String _mutationMessage(MealMutationEntity mutation) {
-    if (mutation.createdCount > 0 && mutation.updatedCount > 0) return 'Meal saved for ${mutation.createdCount} and updated for ${mutation.updatedCount} members';
-    if (mutation.updatedCount > 0) return 'Meal updated for ${mutation.updatedCount} members';
-    return 'Meal saved for ${mutation.createdCount} members';
   }
 }
 
@@ -112,7 +112,7 @@ class _ErrorView extends StatelessWidget {
               style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor),
             ),
             const SizedBox(height: Dimensions.paddingSizeLarge),
-            ElevatedButton.icon(onPressed: () => context.read<MealAdminBloc>().add(const MealAdminEvent.load()), icon: const Icon(Icons.refresh_rounded), label: const Text('Retry')),
+            ElevatedButton.icon(onPressed: () => context.read<MealAdminBloc>().add(const MealAdminEvent.load()), icon: const Icon(Icons.refresh_rounded), label: Text(context.local.tryAgain)),
           ],
         ),
       ),
@@ -154,9 +154,15 @@ class _BodyState extends State<_Body> {
 
   MemberMealEntity? _mealFor(String memberId) => _drafts[memberId] ?? _recordFor(memberId);
 
+  /// Whether any member already has a meal on the selected day.
+  bool get _dayHasMeals => widget.data.entries.any((e) => e.sameDay(widget.date));
+
+  /// Save is enabled once at least one member has a non-zero draft.
+  bool get _hasMealsToSave => _drafts.values.any((meal) => meal.total > 0);
+
   void _applyToAll(BuildContext context) {
     setState(() {
-      for (final member in widget.data.members) {
+      for (final member in widget.data.activeMembers) {
         _drafts[member.id] = MemberMealEntity(memberId: member.id, date: widget.date, breakfast: _breakfast, lunch: _lunch, dinner: _dinner);
       }
     });
@@ -164,33 +170,16 @@ class _BodyState extends State<_Body> {
   }
 
   void _saveAll(BuildContext context) {
-    final bloc = context.read<MealAdminBloc>();
-    final bulk = _canSaveAsBulk;
-    if (bulk) {
-      bloc.add(MealAdminEvent.addForAll(date: widget.date, breakfast: _breakfast, lunch: _lunch, dinner: _dinner));
-    } else {
-      for (final meal in _drafts.values) {
-        if (_recordFor(meal.memberId) == null) {
-          bloc.add(MealAdminEvent.save(memberId: meal.memberId, date: widget.date, breakfast: meal.breakfast, lunch: meal.lunch, dinner: meal.dinner));
-        } else {
-          bloc.add(MealAdminEvent.update(memberId: meal.memberId, date: widget.date, breakfast: meal.breakfast, lunch: meal.lunch, dinner: meal.dinner));
-        }
-      }
+    if (_dayHasMeals) {
+      context.showErrorSnackBar(context.local.mealsAlreadyAdded(MealFormatters.dayLabel(widget.date)));
+      return;
     }
-  }
 
-  bool get _canSaveAsBulk {
-    if (_drafts.length != widget.data.members.length) return false;
-    for (final member in widget.data.members) {
-      final meal = _drafts[member.id];
-      if (meal == null) return false;
-      if (meal.breakfast != _breakfast || meal.lunch != _lunch || meal.dinner != _dinner) return false;
-    }
-    return true;
+    context.read<MealAdminBloc>().add(MealAdminEvent.addForDay(date: widget.date, meals: _drafts.values.where((meal) => meal.total > 0).toList()));
   }
 
   Future<void> _edit(BuildContext context, MealMemberEntity member) async {
-    final result = await showMemberMealForm(context, members: widget.data.members, existing: _mealFor(member.id), presetMemberId: member.id, presetDate: widget.date, mealOnlyEdit: true);
+    final result = await showMemberMealForm(context, members: widget.data.activeMembers, existing: _mealFor(member.id), presetMemberId: member.id, presetDate: widget.date, mealOnlyEdit: true);
     if (result != null) {
       setState(() {
         _drafts[result.memberId] = MemberMealEntity(memberId: result.memberId, date: widget.date, breakfast: result.breakfast, lunch: result.lunch, dinner: result.dinner);
@@ -214,6 +203,9 @@ class _BodyState extends State<_Body> {
 
   @override
   Widget build(BuildContext context) {
+    // Members who left keep their history but can't get new meals.
+    final members = widget.data.activeMembers;
+
     return SingleChildScrollView(
       child: Center(
         child: ConstrainedBox(
@@ -225,25 +217,25 @@ class _BodyState extends State<_Body> {
                 final wide = constraints.maxWidth >= 900;
 
                 final applyCard = AnimatedEntrance(
-                  child: ApplyToAllCard(memberCount: widget.data.members.length, breakfast: _breakfast, lunch: _lunch, dinner: _dinner, dateLabel: MealFormatters.dayLabel(widget.date), onChanged: _changeMeal, onApplyToAll: () => _applyToAll(context)),
+                  child: ApplyToAllCard(memberCount: members.length, breakfast: _breakfast, lunch: _lunch, dinner: _dinner, dateLabel: MealFormatters.dayLabel(widget.date), onChanged: _changeMeal, onApplyToAll: () => _applyToAll(context)),
                 );
 
                 final membersColumn = Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const SectionTitle(title: 'Members', icon: Icons.people_alt_rounded),
-                    for (var i = 0; i < widget.data.members.length; i++)
+                    for (var i = 0; i < members.length; i++)
                       Padding(
                         padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeDefault),
                         child: AnimatedEntrance(
                           delay: Duration(milliseconds: 40 * i),
                           child: _MemberRow(
                             index: i + 1,
-                            name: widget.data.members[i].name,
-                            record: _mealFor(widget.data.members[i].id),
+                            name: members[i].name,
+                            record: _mealFor(members[i].id),
                             mealRate: widget.data.mealRate,
-                            onEdit: () => _edit(context, widget.data.members[i]),
-                            onDelete: () => _delete(context, widget.data.members[i]),
+                            onEdit: () => _edit(context, members[i]),
+                            onDelete: () => _delete(context, members[i]),
                           ),
                         ),
                       ),
@@ -254,6 +246,10 @@ class _BodyState extends State<_Body> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     AnimatedEntrance(child: _DateSelectorCard(date: widget.date, onTap: widget.onPickDate)),
+                    if (_dayHasMeals) ...[
+                      const SizedBox(height: Dimensions.paddingSizeDefault),
+                      _AlreadyAddedNotice(message: context.local.mealsAlreadyAdded(MealFormatters.dayLabel(widget.date))),
+                    ],
                     const SizedBox(height: Dimensions.paddingSizeSmall),
                     if (wide)
                       Row(
@@ -280,7 +276,7 @@ class _BodyState extends State<_Body> {
                       membersColumn,
                     ],
                     const SizedBox(height: Dimensions.paddingSizeSmall),
-                    _BottomSaveButton(onSave: _drafts.isEmpty ? null : () => _saveAll(context)),
+                    _BottomSaveButton(onSave: _hasMealsToSave ? () => _saveAll(context) : null),
                     SizedBox(height: context.bottomPadding),
                   ],
                 );
@@ -310,8 +306,37 @@ class _BottomSaveButton extends StatelessWidget {
         onPressed: onSave,
         style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge))),
         icon: const Icon(Icons.save_rounded),
-        label: Text('Save', style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
+        label: Text(context.local.save, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
       ),
+      ),
+    );
+  }
+}
+
+/// Inline error under the date card when the selected day already has meals.
+class _AlreadyAddedNotice extends StatelessWidget {
+  const _AlreadyAddedNotice({required this.message});
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+
+    return Container(
+      padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+      decoration: BoxDecoration(
+        color: colors.errorColor.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
+        border: Border.all(color: colors.errorColor.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.error_outline_rounded, color: colors.errorColor),
+          const SizedBox(width: Dimensions.paddingSizeDefault),
+          Expanded(
+            child: Text(message, style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.errorColor)),
+          ),
+        ],
       ),
     );
   }

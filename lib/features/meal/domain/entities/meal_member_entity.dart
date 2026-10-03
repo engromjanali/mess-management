@@ -1,14 +1,18 @@
 import 'package:equatable/equatable.dart';
 
-/// A single mess member that meals can be recorded against.
+/// A member of the season that meals can be recorded against.
+///
+/// [active] is false for someone who left but still has meals this season:
+/// their records stay listed, but new meals can't be added for them.
 class MealMemberEntity extends Equatable {
   final String id;
   final String name;
+  final bool active;
 
-  const MealMemberEntity({required this.id, required this.name});
+  const MealMemberEntity({required this.id, required this.name, this.active = true});
 
   @override
-  List<Object?> get props => [id, name];
+  List<Object?> get props => [id, name, active];
 }
 
 /// One member's meal record for a single day (breakfast / lunch / dinner).
@@ -42,6 +46,9 @@ class MealAdminEntity extends Equatable {
   final MealMutationEntity? mutation;
 
   const MealAdminEntity({required this.members, required this.mealRate, required this.entries, this.mutation});
+
+  /// Members new meals can be added for.
+  List<MealMemberEntity> get activeMembers => members.where((m) => m.active).toList();
 
   /// Display name for [memberId], or `Unknown` if it isn't on the roster.
   String memberName(String memberId) => members
