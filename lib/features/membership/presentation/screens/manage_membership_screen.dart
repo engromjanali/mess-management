@@ -39,7 +39,8 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
   List<Map<String, dynamic>> _requests = [];
   List<Map<String, dynamic>> _invitations = [];
   List<Map<String, dynamic>> _members = [];
-  String _statusFilter = 'all';
+  /// Status filter per section (`all` when unset).
+  final _statusFilters = <_ManagementSection, String>{};
   String _sort = 'newest';
   _ManagementSection _section = _ManagementSection.memberships;
   bool _loading = true;
@@ -89,7 +90,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
       final status = await _service.getStatus();
       final manage = const {'manager', 'acting_manager'}.contains(status.current?.role);
       // Only the current mess's manager can read the mess side.
-      final admin = manage ? await Future.wait([_service.getManagerRequests(), _service.getManagerInvites(), _service.getManagerMembers(includeDisabled: true)]) : null;
+      final admin = manage ? await Future.wait([_service.getManagerRequests(), _service.getManagerInvites(), _service.getManagerMembers(includeDisabled: true, includeLeft: true)]) : null;
       if (mounted) {
         setState(() {
           _status = status;
@@ -207,10 +208,25 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
     if (mounted) setState(() {});
   }
 
+  String _filterOf(_ManagementSection section) => _statusFilters[section] ?? 'all';
+
+  bool _matchesFilter(_ManagementSection section, String? status) {
+    final filter = _filterOf(section);
+    return filter == 'all' || status == filter;
+  }
+
+  Widget _filterField(_ManagementSection section) => _StatusFilterField(
+        value: _filterOf(section),
+        statuses: section.statuses,
+        onChanged: (value) => setState(() => _statusFilters[section] = value),
+      );
+
+  List<Map<String, dynamic>> get _visibleMembers => _members.where((member) => _matchesFilter(_ManagementSection.members, member['state'] as String?)).toList();
+
   List<Map<String, dynamic>> get _visibleInvitations {
     final query = _searchController.text.trim().toLowerCase();
     final items = _invitations.where((invite) {
-      final statusMatches = _statusFilter == 'all' || invite['status'] == _statusFilter;
+      final statusMatches = _matchesFilter(_ManagementSection.messInvitations, invite['status'] as String?);
       final textMatches = query.isEmpty || (invite['user_name'] as String? ?? '').toLowerCase().contains(query) || (invite['user_email'] as String? ?? '').toLowerCase().contains(query);
       return statusMatches && textMatches;
     }).toList();
@@ -270,7 +286,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
   List<MemberAction> _actionsFor(Map<String, dynamic> member, {required String? myRole, required bool isMe}) {
     if (isMe || myRole == null) return const [];
     final role = member['role'] as String? ?? 'member';
-    if (role == 'manager') return const [];
+    if (role == 'manager' || member['state'] == 'left') return const [];
     if (member['disabled'] == true) return const [MemberAction.enable];
     return [
       if (myRole == 'manager') ...[
@@ -286,7 +302,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
     final name = member['name'] as String? ?? '';
     final membershipId = member['membership_id'] as int;
     final isActing = member['role'] == 'acting_manager';
-    final currentActing = _members.where((m) => m['role'] == 'acting_manager').firstOrNull;
+    final currentActing = _members.where((m) => m['role'] == 'acting_manager' && m['state'] != 'left').firstOrNull;
 
     if (action != MemberAction.enable) {
       final (title, body, confirmLabel) = switch (action) {
@@ -344,7 +360,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
         return;
       }
       // Keep the row's spinner until the list shows the change.
-      final members = await _service.getManagerMembers(includeDisabled: true);
+      final members = await _service.getManagerMembers(includeDisabled: true, includeLeft: true);
       if (mounted) setState(() => _members = members);
     } catch (e) {
       if (mounted) context.showErrorSnackBar(_errorMessage(e));
@@ -388,10 +404,10 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                     canManage: _canManage,
                     counts: {
                       _ManagementSection.memberships: _status?.memberships.length ?? 0,
-                      _ManagementSection.invitations: _status?.invites.length ?? 0,
+                      _ManagementSection.invitations: _status?.invites.where((invite) => invite.status == 'pending').length ?? 0,
                       _ManagementSection.requests: _status?.pendingRequests.length ?? 0,
-                      _ManagementSection.members: _members.length,
-                      _ManagementSection.messRequests: _requests.length,
+                      _ManagementSection.members: _members.where((member) => member['state'] == 'active').length,
+                      _ManagementSection.messRequests: _requests.where((request) => request['status'] == 'pending').length,
                     },
                     onChanged: (section) => setState(() => _section = section),
                   ),
@@ -403,12 +419,16 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
+                          _filterField(_ManagementSection.memberships),
+                          const SizedBox(height: Dimensions.paddingSizeLarge),
                           if (_loading && _status == null)
                             const Center(child: CircularProgressIndicator.adaptive())
                           else if ((_status?.memberships ?? const []).isEmpty)
                             Text(context.local.noMembershipsYet, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
+                          else if (!_status!.memberships.any((membership) => _matchesFilter(_ManagementSection.memberships, membership.status)))
+                            Text(context.local.noMatchingRecords, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
                           else
-                            for (final membership in _status!.memberships)
+                            for (final membership in _status!.memberships.where((membership) => _matchesFilter(_ManagementSection.memberships, membership.status)))
                               Padding(
                                 padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
                                 child: MyMembershipTile(
@@ -429,40 +449,56 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                     _ManagePanel(
                       title: context.local.invitations,
                       icon: Icons.mark_email_unread_rounded,
-                      child: (_status?.invites ?? const []).isEmpty
-                          ? Text(context.local.noInvitationsForYou, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
-                          : Column(
-                              children: [
-                                for (final invite in _status!.invites)
-                                  MessItemTile(
-                                    messName: invite.messName,
-                                    subtitle: context.local.inviteCode(invite.inviteCode),
-                                    busy: _busyItem == 'invite:${invite.id}',
-                                    actions: [
-                                      TextButton(onPressed: idle ? () => _declineInvite(invite) : null, child: Text(context.local.decline)),
-                                      FilledButton(onPressed: idle ? () => _acceptInvite(invite) : null, child: Text(context.local.accept)),
-                                    ],
-                                  ),
-                              ],
-                            ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _filterField(_ManagementSection.invitations),
+                          const SizedBox(height: Dimensions.paddingSizeLarge),
+                          if ((_status?.invites ?? const []).isEmpty)
+                            Text(context.local.noInvitationsForYou, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
+                          else if (!_status!.invites.any((invite) => _matchesFilter(_ManagementSection.invitations, invite.status)))
+                            Text(context.local.noMatchingRecords, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
+                          else
+                            for (final invite in _status!.invites.where((invite) => _matchesFilter(_ManagementSection.invitations, invite.status)))
+                              MessItemTile(
+                                messName: invite.messName,
+                                subtitle: context.local.inviteCode(invite.inviteCode),
+                                busy: _busyItem == 'invite:${invite.id}',
+                                actions: invite.status == 'pending'
+                                    ? [
+                                        TextButton(onPressed: idle ? () => _declineInvite(invite) : null, child: Text(context.local.decline)),
+                                        FilledButton(onPressed: idle ? () => _acceptInvite(invite) : null, child: Text(context.local.accept)),
+                                      ]
+                                    : [_StatusChip(status: invite.status)],
+                              ),
+                        ],
+                      ),
                     )
                   else if (_section == _ManagementSection.requests)
                     _ManagePanel(
                       title: context.local.joinRequests,
                       icon: Icons.outgoing_mail,
-                      child: (_status?.pendingRequests ?? const []).isEmpty
-                          ? Text(context.local.noJoinRequestsSent, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
-                          : Column(
-                              children: [
-                                for (final request in _status!.pendingRequests)
-                                  MessItemTile(
-                                    messName: request.messName,
-                                    subtitle: context.local.waitingForApproval,
-                                    busy: _busyItem == 'request:${request.id}',
-                                    actions: [TextButton(onPressed: idle ? () => _cancelRequest(request) : null, child: Text(context.local.cancel))],
-                                  ),
-                              ],
-                            ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _filterField(_ManagementSection.requests),
+                          const SizedBox(height: Dimensions.paddingSizeLarge),
+                          if ((_status?.joinRequests ?? const []).isEmpty)
+                            Text(context.local.noJoinRequestsSent, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
+                          else if (!_status!.joinRequests.any((request) => _matchesFilter(_ManagementSection.requests, request.status)))
+                            Text(context.local.noMatchingRecords, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
+                          else
+                            for (final request in _status!.joinRequests.where((request) => _matchesFilter(_ManagementSection.requests, request.status)))
+                              MessItemTile(
+                                messName: request.messName,
+                                subtitle: request.status == 'pending' ? context.local.waitingForApproval : _statusLabel(context, request.status),
+                                busy: _busyItem == 'request:${request.id}',
+                                actions: request.status == 'pending'
+                                    ? [TextButton(onPressed: idle ? () => _cancelRequest(request) : null, child: Text(context.local.cancel))]
+                                    : [_StatusChip(status: request.status)],
+                              ),
+                        ],
+                      ),
                     )
                   else if (_section == _ManagementSection.messInvitations) ...[
                     _ManagePanel(
@@ -503,12 +539,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                         LayoutBuilder(
                           builder: (context, constraints) {
                             final search = TextField(controller: _searchController, decoration: const InputDecoration(prefixIcon: Icon(Icons.search_rounded), labelText: 'Search invitations'));
-                            final status = DropdownButtonFormField<String>(
-                              initialValue: _statusFilter,
-                              decoration: const InputDecoration(labelText: 'Status'),
-                              items: const [DropdownMenuItem(value: 'all', child: Text('All')), DropdownMenuItem(value: 'pending', child: Text('Pending')), DropdownMenuItem(value: 'accepted', child: Text('Accepted')), DropdownMenuItem(value: 'cancelled', child: Text('Cancelled')), DropdownMenuItem(value: 'expired', child: Text('Expired'))],
-                              onChanged: (value) => setState(() => _statusFilter = value ?? 'all'),
-                            );
+                            final status = _filterField(_ManagementSection.messInvitations);
                             final sort = DropdownButtonFormField<String>(
                               initialValue: _sort,
                               decoration: const InputDecoration(labelText: 'Sort by'),
@@ -523,7 +554,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                         if (_loading)
                           const Center(child: CircularProgressIndicator.adaptive())
                         else if (_visibleInvitations.isEmpty)
-                          Text('No invitations match these filters.', style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
+                          Text(context.local.noMatchingRecords, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
                         else
                           for (final invite in _visibleInvitations) _InvitationTile(invite: invite, onRevoke: () => _revoke(invite['id'] as int)),
                       ],
@@ -531,63 +562,73 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                     ),
                   ] else if (_section == _ManagementSection.messRequests)
                     _ManagePanel(
-                    title: 'Pending join requests',
-                    icon: Icons.group_add_outlined,
-                    child: _loading
-                        ? const Center(child: CircularProgressIndicator.adaptive())
-                        : _requests.isEmpty
-                            ? Text('No pending requests.', style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
-                            : Column(
-                                children: [
-                                  for (final request in _requests)
-                                    ListTile(
-                                      contentPadding: EdgeInsets.zero,
-                                      title: Text(request['user_name'] as String? ?? 'Member', maxLines: 1, overflow: TextOverflow.ellipsis),
-                                      subtitle: Text(request['user_email'] as String? ?? '', maxLines: 1, overflow: TextOverflow.ellipsis),
-                                      trailing: Wrap(
+                      title: context.local.messJoinRequests,
+                      icon: Icons.group_add_outlined,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _filterField(_ManagementSection.messRequests),
+                          const SizedBox(height: Dimensions.paddingSizeLarge),
+                          if (_loading)
+                            const Center(child: CircularProgressIndicator.adaptive())
+                          else if (!_requests.any((request) => _matchesFilter(_ManagementSection.messRequests, request['status'] as String?)))
+                            Text(context.local.noMatchingRecords, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
+                          else
+                            for (final request in _requests.where((request) => _matchesFilter(_ManagementSection.messRequests, request['status'] as String?)))
+                              ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                title: Text(request['user_name'] as String? ?? 'Member', maxLines: 1, overflow: TextOverflow.ellipsis),
+                                subtitle: Text(request['user_email'] as String? ?? '', maxLines: 1, overflow: TextOverflow.ellipsis),
+                                trailing: request['status'] == 'pending'
+                                    ? Wrap(
                                         spacing: Dimensions.paddingSizeExtraSmall,
                                         children: [
                                           IconButton(tooltip: 'Reject', onPressed: () => _decide(request['id'] as int, false), icon: Icon(Icons.close_rounded, color: colors.errorColor)),
                                           IconButton(tooltip: 'Accept', onPressed: () => _decide(request['id'] as int, true), icon: Icon(Icons.check_rounded, color: colors.successColor)),
                                         ],
-                                      ),
-                                    ),
-                                ],
+                                      )
+                                    : _StatusChip(status: request['status'] as String? ?? ''),
                               ),
+                        ],
+                      ),
                     )
                   else
                     _ManagePanel(
                       title: 'Existing members',
                       icon: Icons.groups_rounded,
-                      child: _loading
-                          ? const Center(child: CircularProgressIndicator.adaptive())
-                          : _members.isEmpty
-                              ? Text('No active members found.', style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
-                              : Column(
-                                  children: [
-                                    for (var i = 0; i < _members.length; i++) ...[
-                                      if (i > 0) Divider(height: 1, color: colors.dividerColor.withValues(alpha: 0.3)),
-                                      Builder(
-                                        builder: (context) {
-                                          final member = _members[i];
-                                          final isMe = member['id'] == myUserId;
-                                          return ManagedMemberTile(
-                                            name: member['name'] as String? ?? '',
-                                            email: member['email'] as String? ?? '',
-                                            phone: member['phone'] as String? ?? '',
-                                            role: member['role'] as String? ?? 'member',
-                                            disabled: member['disabled'] == true,
-                                            isMe: isMe,
-                                            actions: _actionsFor(member, myRole: myRole, isMe: isMe),
-                                            busy: _busyMembershipId == member['membership_id'],
-                                            // One action at a time.
-                                            onAction: _busyMembershipId == null ? (action) => _onMemberAction(member, action) : null,
-                                          );
-                                        },
-                                      ),
-                                    ],
-                                  ],
-                                ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _filterField(_ManagementSection.members),
+                          const SizedBox(height: Dimensions.paddingSizeLarge),
+                          if (_loading)
+                            const Center(child: CircularProgressIndicator.adaptive())
+                          else if (_visibleMembers.isEmpty)
+                            Text(context.local.noMatchingRecords, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
+                          else
+                            for (final (i, member) in _visibleMembers.indexed) ...[
+                              if (i > 0) Divider(height: 1, color: colors.dividerColor.withValues(alpha: 0.3)),
+                              Builder(
+                                builder: (context) {
+                                  final isMe = member['id'] == myUserId;
+                                  return ManagedMemberTile(
+                                    name: member['name'] as String? ?? '',
+                                    email: member['email'] as String? ?? '',
+                                    phone: member['phone'] as String? ?? '',
+                                    role: member['role'] as String? ?? 'member',
+                                    disabled: member['disabled'] == true,
+                                    left: member['state'] == 'left',
+                                    isMe: isMe,
+                                    actions: _actionsFor(member, myRole: myRole, isMe: isMe),
+                                    busy: _busyMembershipId == member['membership_id'],
+                                    // One action at a time.
+                                    onAction: _busyMembershipId == null ? (action) => _onMemberAction(member, action) : null,
+                                  );
+                                },
+                              ),
+                            ],
+                        ],
+                      ),
                     ),
                 ],
               ),
@@ -610,6 +651,13 @@ enum _ManagementSection {
   messRequests;
 
   bool get isMessSide => index >= _ManagementSection.members.index;
+
+  /// The statuses its list can be filtered by (besides "All").
+  List<String> get statuses => switch (this) {
+    _ManagementSection.memberships || _ManagementSection.members => const ['active', 'disabled', 'left'],
+    _ManagementSection.invitations || _ManagementSection.messInvitations => const ['pending', 'accepted', 'declined', 'revoked'],
+    _ManagementSection.requests || _ManagementSection.messRequests => const ['pending', 'approved', 'rejected', 'cancelled'],
+  };
 
   String label(BuildContext context) => switch (this) {
     _ManagementSection.memberships => context.local.myMemberships,
@@ -712,7 +760,7 @@ class _InvitationTile extends StatelessWidget {
     final colors = context.customThemeColors;
     final invitationStatus = invite['status'] as String? ?? 'pending';
     final status = invitationStatus.isEmpty ? 'pending' : invitationStatus;
-    final statusColor = switch (status) { 'accepted' => colors.successColor, 'expired' => colors.errorColor, _ => colors.warningColor };
+    final statusColor = _statusColor(context, status);
     final expireAt = DateTime.tryParse(invite['expire_at'] as String? ?? '');
     return Container(
       margin: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
@@ -733,16 +781,74 @@ class _InvitationTile extends StatelessWidget {
             ),
           ),
           const SizedBox(width: Dimensions.paddingSizeSmall),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeExtraSmall),
-            decoration: BoxDecoration(color: statusColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(Dimensions.radiusExtra2Large)),
-            child: Text(status[0].toUpperCase() + status.substring(1), style: AppTextStyles.sfProRoundedSemiBold.copyWith(color: statusColor, fontSize: Dimensions.fontSizeSmall)),
-          ),
+          _StatusChip(status: status),
           if (status == 'pending') IconButton(tooltip: 'Cancel invitation', onPressed: onRevoke, icon: Icon(Icons.cancel_outlined, color: colors.errorColor)),
         ],
       ),
     );
   }
+}
+
+/// Status filter for a management list: "All" plus the given [statuses].
+class _StatusFilterField extends StatelessWidget {
+  const _StatusFilterField({required this.value, required this.statuses, required this.onChanged});
+
+  final String value;
+  final List<String> statuses;
+  final ValueChanged<String> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<String>(
+      initialValue: value,
+      isExpanded: true,
+      decoration: InputDecoration(labelText: context.local.statusFilter),
+      items: [
+        DropdownMenuItem(value: 'all', child: Text(context.local.filterAll, maxLines: 1, overflow: TextOverflow.ellipsis)),
+        for (final status in statuses) DropdownMenuItem(value: status, child: Text(_statusLabel(context, status), maxLines: 1, overflow: TextOverflow.ellipsis)),
+      ],
+      onChanged: (value) => onChanged(value ?? 'all'),
+    );
+  }
+}
+
+class _StatusChip extends StatelessWidget {
+  const _StatusChip({required this.status});
+
+  final String status;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _statusColor(context, status);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeExtraSmall),
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(Dimensions.radiusExtra2Large)),
+      child: Text(_statusLabel(context, status), maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedSemiBold.copyWith(color: color, fontSize: Dimensions.fontSizeSmall)),
+    );
+  }
+}
+
+String _statusLabel(BuildContext context, String status) => switch (status) {
+  'pending' => context.local.statusPending,
+  'accepted' => context.local.statusAccepted,
+  'declined' => context.local.statusDeclined,
+  'revoked' || 'cancelled' => context.local.statusCancelled,
+  'approved' => context.local.statusApproved,
+  'rejected' => context.local.statusRejected,
+  'active' => context.local.statusActive,
+  'disabled' => context.local.disabled,
+  'left' => context.local.membershipLeft,
+  _ => status,
+};
+
+Color _statusColor(BuildContext context, String status) {
+  final colors = context.customThemeColors;
+  return switch (status) {
+    'accepted' || 'approved' || 'active' => colors.successColor,
+    'pending' => colors.warningColor,
+    'left' || 'cancelled' || 'revoked' => colors.textHintColor,
+    _ => colors.errorColor,
+  };
 }
 
 class _MemberPreview extends StatelessWidget {

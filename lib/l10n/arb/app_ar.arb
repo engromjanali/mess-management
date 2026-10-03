@@ -233,5 +233,15 @@
   "noJoinRequestsSent": "لم ترسل أي طلبات انضمام.",
   "seasonDates": "{start} – {end}",
   "inviteCode": "رمز الدعوة {code}",
-  "membershipSubtitle": "مساكنك ودعواتك وطلبات الانضمام"
+  "membershipSubtitle": "مساكنك ودعواتك وطلبات الانضمام",
+  "filterAll": "الكل",
+  "statusFilter": "الحالة",
+  "statusPending": "قيد الانتظار",
+  "statusAccepted": "مقبولة",
+  "statusDeclined": "مرفوضة",
+  "statusCancelled": "ملغاة",
+  "statusApproved": "موافق عليه",
+  "statusRejected": "مرفوض",
+  "statusActive": "نشط",
+  "noMatchingRecords": "لا يوجد ما يطابق هذه الفلاتر."
 }

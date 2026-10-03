@@ -493,5 +493,15 @@
       }
     }
   },
-  "membershipSubtitle": "Your messes, invitations and join requests"
+  "membershipSubtitle": "Your messes, invitations and join requests",
+  "filterAll": "All",
+  "statusFilter": "Status",
+  "statusPending": "Pending",
+  "statusAccepted": "Accepted",
+  "statusDeclined": "Declined",
+  "statusCancelled": "Cancelled",
+  "statusApproved": "Approved",
+  "statusRejected": "Rejected",
+  "statusActive": "Active",
+  "noMatchingRecords": "Nothing matches these filters."
 }

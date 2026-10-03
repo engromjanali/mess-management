@@ -233,5 +233,15 @@
   "noJoinRequestsSent": "আপনি কোনো যোগদানের অনুরোধ পাঠাননি।",
   "seasonDates": "{start} – {end}",
   "inviteCode": "আমন্ত্রণ কোড {code}",
-  "membershipSubtitle": "আপনার মেস, আমন্ত্রণ ও যোগদানের অনুরোধ"
+  "membershipSubtitle": "আপনার মেস, আমন্ত্রণ ও যোগদানের অনুরোধ",
+  "filterAll": "সব",
+  "statusFilter": "অবস্থা",
+  "statusPending": "অপেক্ষমাণ",
+  "statusAccepted": "গৃহীত",
+  "statusDeclined": "প্রত্যাখ্যাত",
+  "statusCancelled": "বাতিল",
+  "statusApproved": "অনুমোদিত",
+  "statusRejected": "নামঞ্জুর",
+  "statusActive": "সক্রিয়",
+  "noMatchingRecords": "এই ফিল্টারে কিছু পাওয়া যায়নি।"
 }

@@ -15,10 +15,8 @@ class MembershipApiService {
       current: status['current'] == null ? null : _membership(status['current'] as Map<String, dynamic>),
       memberships: (status['memberships'] as List<dynamic>? ?? []).map((item) => _membership(item as Map<String, dynamic>)).toList(),
       history: (status['history'] as List<dynamic>? ?? []).map((item) => _membership(item as Map<String, dynamic>)).toList(),
-      pendingRequests: (status['pending_requests'] as List<dynamic>? ?? []).map((item) {
-        final json = item as Map<String, dynamic>;
-        return JoinRequestSummaryEntity(id: json['id'] as int, messId: json['mess_id'] as int, messName: json['mess_name'] as String);
-      }).toList(),
+      pendingRequests: (status['pending_requests'] as List<dynamic>? ?? []).map((item) => _joinRequest(item as Map<String, dynamic>)).toList(),
+      joinRequests: (status['join_requests'] as List<dynamic>? ?? []).map((item) => _joinRequest(item as Map<String, dynamic>)).toList(),
       invites: (status['invites'] as List<dynamic>? ?? []).map((item) {
         final json = item as Map<String, dynamic>;
         final status = json['status'] as String? ?? 'pending';
@@ -102,8 +100,8 @@ class MembershipApiService {
 
   /// Active members of the current season; with [includeDisabled] also the
   /// members a manager disabled (each has a `disabled` flag).
-  Future<List<Map<String, dynamic>>> getManagerMembers({bool includeDisabled = false}) async {
-    final response = await _apiClient.get<List<dynamic>>(AppConstants.managerMembersEndpoint, queryParameters: includeDisabled ? {'include_disabled': true} : null);
+  Future<List<Map<String, dynamic>>> getManagerMembers({bool includeDisabled = false, bool includeLeft = false}) async {
+    final response = await _apiClient.get<List<dynamic>>(AppConstants.managerMembersEndpoint, queryParameters: {if (includeDisabled) 'include_disabled': true, if (includeLeft) 'include_left': true});
     return (response.data ?? []).cast<Map<String, dynamic>>();
   }
 
@@ -219,5 +217,12 @@ class MembershipApiService {
     joinedAt: DateTime.tryParse(json['joined_at'] as String? ?? '')?.toLocal(),
     isCurrent: json['is_current'] as bool? ?? false,
     canSwitch: json['can_switch'] as bool? ?? false,
+  );
+
+  JoinRequestSummaryEntity _joinRequest(Map<String, dynamic> json) => JoinRequestSummaryEntity(
+    id: json['id'] as int,
+    messId: json['mess_id'] as int,
+    messName: json['mess_name'] as String,
+    status: json['status'] as String? ?? 'pending',
   );
 }

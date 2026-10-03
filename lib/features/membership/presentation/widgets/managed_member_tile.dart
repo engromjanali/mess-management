@@ -22,6 +22,7 @@ class ManagedMemberTile extends StatelessWidget {
     required this.actions,
     required this.busy,
     required this.onAction,
+    this.left = false,
     super.key,
   });
 
@@ -32,6 +33,9 @@ class ManagedMemberTile extends StatelessWidget {
   /// `manager`, `acting_manager` or `member`.
   final String role;
   final bool disabled;
+
+  /// Left this season; shown dimmed with a "Left" badge.
+  final bool left;
   final bool isMe;
   final List<MemberAction> actions;
   final bool busy;
@@ -40,7 +44,8 @@ class ManagedMemberTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
-    final accent = disabled
+    final inactive = disabled || left;
+    final accent = inactive
         ? colors.textHintColor
         : switch (role) {
             'manager' => colors.primaryColor,
@@ -53,7 +58,7 @@ class ManagedMemberTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
       child: Row(
         children: [
-          Opacity(opacity: disabled ? 0.6 : 1, child: MessAvatar(name: name, color: accent, size: 44)),
+          Opacity(opacity: inactive ? 0.6 : 1, child: MessAvatar(name: name, color: accent, size: 44)),
           const SizedBox(width: Dimensions.paddingSizeDefault),
           Expanded(
             child: Column(
@@ -63,7 +68,7 @@ class ManagedMemberTile extends StatelessWidget {
                   name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: disabled ? colors.textSecondaryColor : colors.textPrimaryColor),
+                  style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: inactive ? colors.textSecondaryColor : colors.textPrimaryColor),
                 ),
                 if (contact.isNotEmpty)
                   Text(contact, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textHintColor)),
@@ -75,6 +80,7 @@ class ManagedMemberTile extends StatelessWidget {
                     if (isMe) _Badge(label: context.local.you, color: colors.successColor),
                     if (role != 'member') _Badge(label: MessFormatters.role(context, role), color: accent),
                     if (disabled) _Badge(label: context.local.disabled, color: colors.errorColor),
+                    if (left) _Badge(label: context.local.membershipLeft, color: colors.textHintColor),
                   ],
                 ),
               ],

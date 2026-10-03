@@ -1,5 +1,5 @@
 class MembershipStatusEntity {
-  const MembershipStatusEntity({required this.current, required this.history, required this.pendingRequests, required this.invites, required this.availableMesses, this.memberships = const []});
+  const MembershipStatusEntity({required this.current, required this.history, required this.pendingRequests, required this.invites, required this.availableMesses, this.memberships = const [], this.joinRequests = const []});
 
   final MembershipSummaryEntity? current;
 
@@ -7,6 +7,9 @@ class MembershipStatusEntity {
   final List<MembershipSummaryEntity> memberships;
   final List<MembershipSummaryEntity> history;
   final List<JoinRequestSummaryEntity> pendingRequests;
+
+  /// Every join request the user sent (any status), newest first.
+  final List<JoinRequestSummaryEntity> joinRequests;
   final List<InviteSummaryEntity> invites;
   final List<MessSummaryEntity> availableMesses;
 }
@@ -50,11 +53,14 @@ class MembershipSummaryEntity {
 }
 
 class JoinRequestSummaryEntity {
-  const JoinRequestSummaryEntity({required this.id, required this.messId, required this.messName});
+  const JoinRequestSummaryEntity({required this.id, required this.messId, required this.messName, this.status = 'pending'});
 
   final int id;
   final int messId;
   final String messName;
+
+  /// `pending`, `approved`, `rejected` or `cancelled`.
+  final String status;
 }
 
 class InviteSummaryEntity {
