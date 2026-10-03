@@ -3,6 +3,7 @@ import 'package:clean_boilerplate/config/util/app_constants.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_formatters.dart';
@@ -12,31 +13,54 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class MembershipGate extends StatelessWidget {
-  const MembershipGate({required this.connectedChild, super.key});
+class MembershipGate extends StatefulWidget {
+  const MembershipGate({required this.connectedChild, this.allowConnected = false, super.key});
 
   final Widget connectedChild;
 
-  /// A user without an active mess must join or create one first. `status.current` is resolved by the
-  /// same backend rule as the user's `activeMessId`, but stays fresh after joining, creating or leaving.
-  bool _hasMess(BuildContext context, MembershipStatusEntity status) => status.current != null;
+  /// Join screen mode: a user may belong to several messes, so connected users
+  /// also see the join / create UI and go home only once their current
+  /// membership changes (they created a mess or accepted an invite).
+  final bool allowConnected;
+
+  @override
+  State<MembershipGate> createState() => _MembershipGateState();
+}
+
+class _MembershipGateState extends State<MembershipGate> {
+  /// The current membership last seen, to notice when it changes.
+  int? _knownCurrentId;
+  bool _seenStatus = false;
+
+  /// A user without a current membership must join or create a mess first. `status.current` is resolved by the
+  /// same backend rule as the user's `activeMessId`, but stays fresh after joining, creating, leaving or switching.
+  bool _hasMess(MembershipStatusEntity status) => status.current != null;
+
+  void _onStatus(BuildContext context, MembershipStatusEntity status) {
+    final currentId = status.current?.membershipId;
+    final changed = _seenStatus && currentId != _knownCurrentId;
+    _seenStatus = true;
+    _knownCurrentId = currentId;
+
+    final onJoinScreen = GoRouterState.of(context).uri.path.startsWith(AppRoutes.joinMess);
+    final hasMess = _hasMess(status);
+    if (!hasMess && !onJoinScreen) context.go(AppRoutes.joinMessRequests);
+    if (hasMess && onJoinScreen && (!widget.allowConnected || changed)) context.go(AppRoutes.home);
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<MembershipCubit, MembershipState>(
       listener: (context, state) {
-        if (state is! MembershipLoaded) return;
-        final location = GoRouterState.of(context).uri.path;
-        final hasMess = _hasMess(context, state.status);
-        if (!hasMess && !location.startsWith(AppRoutes.joinMess)) context.go(AppRoutes.joinMessRequests);
-        if (hasMess && location.startsWith(AppRoutes.joinMess)) context.go(AppRoutes.home);
+        if (state is MembershipLoaded) _onStatus(context, state.status);
       },
       child: BlocBuilder<MembershipCubit, MembershipState>(
         builder: (context, state) {
           return switch (state) {
             MembershipLoading() => const Scaffold(body: Center(child: CircularProgressIndicator.adaptive())),
             MembershipError(:final message) => _MembershipError(message: message),
-            MembershipLoaded(:final status) => _hasMess(context, status) ? connectedChild : _NoCurrentMess(status: status),
+            MembershipLoaded(:final status) =>
+              _hasMess(status) && !widget.allowConnected ? widget.connectedChild : _NoCurrentMess(status: status, connected: _hasMess(status)),
           };
         },
       ),
@@ -72,9 +96,12 @@ class _MembershipError extends StatelessWidget {
 }
 
 class _NoCurrentMess extends StatefulWidget {
-  const _NoCurrentMess({required this.status});
+  const _NoCurrentMess({required this.status, this.connected = false});
 
   final MembershipStatusEntity status;
+
+  /// Already in a mess and joining or creating another one.
+  final bool connected;
 
   @override
   State<_NoCurrentMess> createState() => _NoCurrentMessState();
@@ -134,7 +161,7 @@ class _NoCurrentMessState extends State<_NoCurrentMess> {
     final location = GoRouterState.of(context).uri.path;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Mess Manager')),
+      appBar: AppBar(leading: widget.connected ? const HomeBackButton() : null, title: const Text('Mess Manager')),
       body: RefreshIndicator(
         onRefresh: () => context.read<MembershipCubit>().load(),
         child: ListView(
@@ -159,7 +186,7 @@ class _NoCurrentMessState extends State<_NoCurrentMess> {
                           const SizedBox(height: Dimensions.paddingSizeDefault),
                           Text('Welcome, ${user?.name ?? 'Member'}', textAlign: TextAlign.center, style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeExtraOverLarge)),
                           const SizedBox(height: Dimensions.paddingSizeSmall),
-                          Text('You are not connected to an active mess yet. Join with an invite or send a request to a mess manager.', textAlign: TextAlign.center, style: AppTextStyles.sfProRoundedRegular.copyWith(color: Colors.white.withValues(alpha: 0.85), height: 1.5)),
+                          Text(widget.connected ? context.local.joinAnotherMessSubtitle : 'You are not connected to an active mess yet. Join with an invite or send a request to a mess manager.', textAlign: TextAlign.center, style: AppTextStyles.sfProRoundedRegular.copyWith(color: Colors.white.withValues(alpha: 0.85), height: 1.5)),
                         ],
                       ),
                     ),

@@ -36,6 +36,8 @@ class AppConstants {
   static const String joinRequestEndpoint = '/api/v1/user/join-requests';
   static const String joinInviteEndpoint = '/api/v1/user/invites/accept';
   static const String leaveMessEndpoint = '/api/v1/user/membership/leave';
+  static const String switchMembershipEndpoint = '/api/v1/user/membership/switch';
+  static const String declineInviteEndpoint = '/api/v1/user/invites/decline';
 
   // Membership — admin
   static const String managerMembersEndpoint = '/api/v1/admin/members';
@@ -44,9 +46,11 @@ class AppConstants {
   static const String managerJoinRequestsEndpoint = '/api/v1/admin/join-requests';
   static const String joinRequestDecisionEndpoint = '/api/v1/admin/join-requests/decision';
 
+  // Mess — user
+  static const String messDetailsEndpoint = '/api/v1/user/mess';
+
   // Mess — admin (not on the backend yet)
-  static const String messDetailsEndpoint = '/api/v1/membership/mess';
-  static const String messLeadershipEndpoint = '/api/v1/membership/mess/leadership';
+  static const String messUpdateEndpoint = '/api/v1/membership/mess';
 
   // Notices — user
   static const String noticesEndpoint = '/api/v1/user/notices';

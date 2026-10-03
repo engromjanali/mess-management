@@ -13,7 +13,8 @@ class JoinMessScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<MembershipCubit>(
       create: (_) => MembershipCubit(MembershipApiService(getIt<ApiClient>()))..load(),
-      child: const MembershipGate(connectedChild: Scaffold(body: Center(child: CircularProgressIndicator.adaptive()))),
+      // Connected users may join or create another mess too.
+      child: const MembershipGate(allowConnected: true, connectedChild: Scaffold(body: Center(child: CircularProgressIndicator.adaptive()))),
     );
   }
 }

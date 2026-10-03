@@ -57,8 +57,6 @@
   "noticesSubtitle": "View the notice board",
   "mess": "Mess",
   "messSubtitle": "View mess details and management",
-  "manageMembers": "Manage members",
-  "manageMembersSubtitle": "Invite members and review join requests",
   "settingsSubtitle": "Theme, language and preferences",
   "logoutSubtitle": "Log out of your account",
   "logoutConfirm": "Are you sure you want to log out?",
@@ -261,5 +259,239 @@
   "noticeUpdated": "Notice updated",
   "noticePinned": "Notice pinned to the top",
   "noticeUnpinned": "Notice unpinned",
-  "noticeDeleted": "Notice deleted"
+  "noticeDeleted": "Notice deleted",
+  "messSince": "Since {date}",
+  "@messSince": {
+    "description": "Start date of the season",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "1 Jul 2026"
+      }
+    }
+  },
+  "seasonDay": "Day {day}",
+  "@seasonDay": {
+    "description": "Which day of the season today is",
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "roleManager": "Manager",
+  "roleActingManager": "Acting manager",
+  "roleMember": "Member",
+  "you": "You",
+  "joinedOn": "Joined {date}",
+  "@joinedOn": {
+    "description": "When the member joined",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "3 Jul 2026"
+      }
+    }
+  },
+  "seasonSnapshot": "Season snapshot",
+  "leadership": "Leadership",
+  "messContact": "Contact",
+  "totalMeals": "Total meals",
+  "mealRate": "Meal rate",
+  "fundBalance": "Fund balance",
+  "notAssigned": "Not assigned",
+  "notProvided": "Not provided",
+  "messActions": "Actions",
+  "editMessDetails": "Edit mess details",
+  "editMessDetailsSubtitle": "Name, address and contact info",
+  "transferLeadership": "Transfer leadership",
+  "transferLeadershipSubtitle": "Make another member the manager or acting manager",
+  "leaveMess": "Leave mess",
+  "leaveMessSubtitle": "You'll stop seeing this mess. Your records stay in its history.",
+  "leaveMessBlocked": "Transfer the manager role before leaving.",
+  "leaveMessConfirmTitle": "Leave {mess}?",
+  "@leaveMessConfirmTitle": {
+    "description": "Title of the leave-mess confirmation",
+    "placeholders": {
+      "mess": {
+        "type": "String",
+        "example": "Green House"
+      }
+    }
+  },
+  "leaveMessConfirm": "You'll lose access to this mess. Your meals, deposits and other records stay in its history.",
+  "leave": "Leave",
+  "leftMess": "You left {mess}.",
+  "@leftMess": {
+    "description": "Shown after leaving a mess",
+    "placeholders": {
+      "mess": {
+        "type": "String",
+        "example": "Green House"
+      }
+    }
+  },
+  "copiedToClipboard": "Copied to clipboard",
+  "joinMess": "Join a mess",
+  "membership": "Membership",
+  "memberActions": "Member actions",
+  "makeActingManager": "Make acting manager",
+  "removeActingManager": "Remove acting manager",
+  "makePrimaryManager": "Make primary manager",
+  "disableMember": "Disable member",
+  "enableMember": "Enable member",
+  "disable": "Disable",
+  "confirm": "Confirm",
+  "transfer": "Transfer",
+  "disableMemberTitle": "Disable {name}?",
+  "@disableMemberTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alice"
+      }
+    }
+  },
+  "disableMemberConfirm": "They won't be able to open this mess until you enable them again. Their meals, deposits and other records stay.",
+  "disableActingManagerNote": "They'll also stop being the acting manager.",
+  "makeActingManagerTitle": "Make {name} acting manager?",
+  "@makeActingManagerTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alice"
+      }
+    }
+  },
+  "makeActingManagerConfirm": "They'll be able to manage meals, deposits, costs, notices and members.",
+  "replaceActingManagerNote": "{name} will become a regular member.",
+  "@replaceActingManagerNote": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alice"
+      }
+    }
+  },
+  "removeActingManagerTitle": "Remove {name} as acting manager?",
+  "@removeActingManagerTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alice"
+      }
+    }
+  },
+  "removeActingManagerConfirm": "They'll become a regular member.",
+  "transferOwnershipTitle": "Make {name} the primary manager?",
+  "@transferOwnershipTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alice"
+      }
+    }
+  },
+  "transferOwnershipConfirm": "You'll become a regular member and lose manager access. Only the new primary manager can give it back.",
+  "memberDisabledSuccess": "{name} is disabled.",
+  "@memberDisabledSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alice"
+      }
+    }
+  },
+  "memberEnabledSuccess": "{name} is active again.",
+  "@memberEnabledSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alice"
+      }
+    }
+  },
+  "actingManagerAssigned": "{name} is now the acting manager.",
+  "@actingManagerAssigned": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alice"
+      }
+    }
+  },
+  "actingManagerRemoved": "{name} is no longer the acting manager.",
+  "@actingManagerRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alice"
+      }
+    }
+  },
+  "ownershipTransferred": "{name} is now the primary manager.",
+  "@ownershipTransferred": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Alice"
+      }
+    }
+  },
+  "joinAnotherMessSubtitle": "Join with an invite, send a request or create another mess. Switch between your messes from Membership.",
+  "myMemberships": "My memberships",
+  "invitations": "Invitations",
+  "joinRequests": "Join requests",
+  "messInvitations": "Mess invitations",
+  "messJoinRequests": "Mess join requests",
+  "currentMembership": "Current",
+  "membershipLeft": "Left",
+  "switchMembership": "Switch",
+  "switchedMembership": "Now using {mess} · {season}",
+  "@switchedMembership": {
+    "placeholders": {
+      "mess": {
+        "type": "String"
+      },
+      "season": {
+        "type": "String"
+      }
+    }
+  },
+  "accept": "Accept",
+  "decline": "Decline",
+  "joinedMess": "You joined {mess}.",
+  "@joinedMess": {
+    "placeholders": {
+      "mess": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteDeclined": "Invitation declined.",
+  "joinRequestCancelled": "Join request cancelled.",
+  "waitingForApproval": "Waiting for the manager's approval",
+  "noMembershipsYet": "You don't have any memberships yet.",
+  "noInvitationsForYou": "No invitations for you right now.",
+  "noJoinRequestsSent": "You haven't sent any join requests.",
+  "seasonDates": "{start} – {end}",
+  "@seasonDates": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteCode": "Invite code {code}",
+  "@inviteCode": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "membershipSubtitle": "Your messes, invitations and join requests"
 }

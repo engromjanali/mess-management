@@ -1,8 +1,11 @@
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/core/di/injection.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/network/api_client.dart';
 import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
 import 'package:clean_boilerplate/features/membership/data/membership_api_service.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/main_page_body.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
 import 'package:flutter/material.dart';
 
 class EditMessScreen extends StatefulWidget {
@@ -41,10 +44,10 @@ class _EditMessScreenState extends State<EditMessScreen> {
   Future<void> _load() async {
     try {
       final mess = await _service.getMessDetails();
-      _nameController.text = mess['name'] as String? ?? '';
-      _addressController.text = mess['address'] as String? ?? '';
-      _emailController.text = mess['email'] as String? ?? '';
-      _phoneController.text = mess['phone'] as String? ?? '';
+      _nameController.text = mess.name;
+      _addressController.text = mess.address;
+      _emailController.text = mess.email;
+      _phoneController.text = mess.phone;
     } catch (_) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not load mess details.')));
     } finally {
@@ -69,9 +72,13 @@ class _EditMessScreenState extends State<EditMessScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final showWebAppBar = MainPageBody.showWebAppBar(context);
     return Scaffold(
-      appBar: AppBar(leading: const HomeBackButton(), title: const Text('Edit mess')),
-      body: _loading
+      endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
+      appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.editMessDetails)),
+      body: MainPageBody(
+        title: context.local.editMessDetails,
+        child: _loading
           ? const Center(child: CircularProgressIndicator.adaptive())
           : Form(
               key: _formKey,
@@ -100,6 +107,7 @@ class _EditMessScreenState extends State<EditMessScreen> {
                 ],
               ),
             ),
+      ),
     );
   }
 }
