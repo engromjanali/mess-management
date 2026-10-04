@@ -320,5 +320,7 @@
   "invitationSeasonCode": "{season} · আমন্ত্রণ কোড {code}",
   "copy": "কপি",
   "privacyPolicy": "গোপনীয়তা নীতি",
-  "privacyPolicySubtitle": "আপনার অ্যাকাউন্ট ও মেসের তথ্য কীভাবে ব্যবহার হয়"
+  "privacyPolicySubtitle": "আপনার অ্যাকাউন্ট ও মেসের তথ্য কীভাবে ব্যবহার হয়",
+  "statusExpired": "মেয়াদোত্তীর্ণ",
+  "expiresOn": "মেয়াদ শেষ {date}"
 }

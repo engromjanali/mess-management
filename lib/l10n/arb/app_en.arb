@@ -764,5 +764,15 @@
   },
   "copy": "Copy",
   "privacyPolicy": "Privacy policy",
-  "privacyPolicySubtitle": "How your account and mess data are handled"
+  "privacyPolicySubtitle": "How your account and mess data are handled",
+  "statusExpired": "Expired",
+  "expiresOn": "Expires {date}",
+  "@expiresOn": {
+    "description": "When a pending invitation or join request expires (7 days after it was sent)",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  }
 }

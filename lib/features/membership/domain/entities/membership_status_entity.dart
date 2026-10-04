@@ -53,21 +53,24 @@ class MembershipSummaryEntity {
 }
 
 class JoinRequestSummaryEntity {
-  const JoinRequestSummaryEntity({required this.id, required this.messId, required this.messName, this.status = 'pending', this.seasonName});
+  const JoinRequestSummaryEntity({required this.id, required this.messId, required this.messName, this.status = 'pending', this.seasonName, this.expiresAt});
 
   final int id;
   final int messId;
   final String messName;
 
-  /// `pending`, `approved`, `rejected` or `cancelled`.
+  /// `pending`, `approved`, `rejected`, `cancelled` or `expired`.
   final String status;
 
   /// The season the manager added the user to; set once approved.
   final String? seasonName;
+
+  /// When it expires if nobody answers it (7 days after it was sent).
+  final DateTime? expiresAt;
 }
 
 class InviteSummaryEntity {
-  const InviteSummaryEntity({required this.id, required this.messId, required this.messName, required this.inviteCode, required this.status, this.seasonName});
+  const InviteSummaryEntity({required this.id, required this.messId, required this.messName, required this.inviteCode, required this.status, this.seasonName, this.expiresAt});
 
   final int id;
   final int messId;
@@ -77,6 +80,9 @@ class InviteSummaryEntity {
 
   /// The season the user joins on accepting, chosen by the manager.
   final String? seasonName;
+
+  /// When it expires if not answered (7 days after it was sent).
+  final DateTime? expiresAt;
 }
 
 class MessSummaryEntity {

@@ -27,6 +27,7 @@ class MembershipApiService {
           inviteCode: json['invite_code'] as String,
           status: status.isEmpty ? 'pending' : status,
           seasonName: json['season_name'] as String?,
+          expiresAt: DateTime.tryParse(json['expires_at'] as String? ?? '')?.toLocal(),
         );
       }).toList(),
       availableMesses: const [],
@@ -231,5 +232,6 @@ class MembershipApiService {
     messName: json['mess_name'] as String,
     status: json['status'] as String? ?? 'pending',
     seasonName: json['season_name'] as String?,
+    expiresAt: DateTime.tryParse(json['expires_at'] as String? ?? '')?.toLocal(),
   );
 }

@@ -320,5 +320,7 @@
   "invitationSeasonCode": "{season} · رمز الدعوة {code}",
   "copy": "نسخ",
   "privacyPolicy": "سياسة الخصوصية",
-  "privacyPolicySubtitle": "كيف تُعالَج بيانات حسابك وسكنك"
+  "privacyPolicySubtitle": "كيف تُعالَج بيانات حسابك وسكنك",
+  "statusExpired": "منتهية الصلاحية",
+  "expiresOn": "تنتهي في {date}"
 }

@@ -18,6 +18,7 @@ import 'package:clean_boilerplate/features/membership/domain/entities/membership
 import 'package:clean_boilerplate/features/home/presentation/widgets/main_page_body.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
 import 'package:clean_boilerplate/features/membership/presentation/widgets/managed_member_tile.dart';
+import 'package:clean_boilerplate/features/membership/presentation/widgets/mess_formatters.dart';
 import 'package:clean_boilerplate/features/membership/presentation/widgets/mess_item_tile.dart';
 import 'package:clean_boilerplate/features/membership/presentation/widgets/my_membership_tile.dart';
 import 'package:clean_boilerplate/features/membership/presentation/widgets/season_picker_dialog.dart';
@@ -556,7 +557,10 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                             for (final invite in _status!.invites.where((invite) => _matchesFilter(_ManagementSection.invitations, invite.status)))
                               MessItemTile(
                                 messName: invite.messName,
-                                subtitle: invite.seasonName == null ? context.local.inviteCode(invite.inviteCode) : context.local.invitationSeasonCode(invite.seasonName!, invite.inviteCode),
+                                subtitle: [
+                                  invite.seasonName == null ? context.local.inviteCode(invite.inviteCode) : context.local.invitationSeasonCode(invite.seasonName!, invite.inviteCode),
+                                  ?_expiryLabel(context, invite.status, invite.expiresAt),
+                                ].join(' · '),
                                 busy: _busyItem == 'invite:${invite.id}',
                                 actions: invite.status == 'pending'
                                     ? [
@@ -586,7 +590,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                               MessItemTile(
                                 messName: request.messName,
                                 subtitle: switch (request) {
-                                  JoinRequestSummaryEntity(status: 'pending') => context.local.waitingForApproval,
+                                  JoinRequestSummaryEntity(status: 'pending') => [context.local.waitingForApproval, ?_expiryLabel(context, request.status, request.expiresAt)].join(' · '),
                                   JoinRequestSummaryEntity(status: 'approved', :final seasonName?) => context.local.approvedForSeason(seasonName),
                                   _ => _statusLabel(context, request.status),
                                 },
@@ -684,7 +688,11 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                                 contentPadding: EdgeInsets.zero,
                                 title: Text(request['user_name'] as String? ?? context.local.member, maxLines: 1, overflow: TextOverflow.ellipsis),
                                 subtitle: Text(
-                                  [request['user_email'] as String? ?? '', if (request['season_name'] case final String season) context.local.seasonName(season)].where((part) => part.isNotEmpty).join(' · '),
+                                  [
+                                    request['user_email'] as String? ?? '',
+                                    if (request['season_name'] case final String season) context.local.seasonName(season),
+                                    ?_expiryLabel(context, request['status'] as String?, _expiresAt(request)),
+                                  ].where((part) => part.isNotEmpty).join(' · '),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -766,8 +774,8 @@ enum _ManagementSection {
   /// The statuses its list can be filtered by (besides "All").
   List<String> get statuses => switch (this) {
     _ManagementSection.memberships || _ManagementSection.members => const ['active', 'disabled', 'left'],
-    _ManagementSection.invitations || _ManagementSection.messInvitations => const ['pending', 'accepted', 'declined', 'revoked'],
-    _ManagementSection.requests || _ManagementSection.messRequests => const ['pending', 'approved', 'rejected', 'cancelled'],
+    _ManagementSection.invitations || _ManagementSection.messInvitations => const ['pending', 'accepted', 'declined', 'revoked', 'expired'],
+    _ManagementSection.requests || _ManagementSection.messRequests => const ['pending', 'approved', 'rejected', 'cancelled', 'expired'],
   };
 
   String label(BuildContext context) => switch (this) {
@@ -830,7 +838,7 @@ class _InvitationTile extends StatelessWidget {
               children: [
                 Text(invite['user_name'] as String? ?? context.local.member, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedSemiBold),
                 Text(invite['user_email'] as String? ?? '', maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor, fontSize: Dimensions.fontSizeSmall)),
-                Text(['#${invite['id']}', if (season != null) context.local.seasonName(season)].join(' · '), maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor, fontSize: Dimensions.fontSizeSmall)),
+                Text(['#${invite['id']}', if (season != null) context.local.seasonName(season), ?_expiryLabel(context, status, _expiresAt(invite))].join(' · '), maxLines: 2, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor, fontSize: Dimensions.fontSizeSmall)),
               ],
             ),
           ),
@@ -895,15 +903,24 @@ String _statusLabel(BuildContext context, String status) => switch (status) {
   'active' => context.local.statusActive,
   'disabled' => context.local.disabled,
   'left' => context.local.membershipLeft,
+  'expired' => context.local.statusExpired,
   _ => status,
 };
+
+/// "Expires …" for a pending invitation / join request (they expire 7 days
+/// after being sent), else null.
+String? _expiryLabel(BuildContext context, String? status, DateTime? expiresAt) =>
+    status == 'pending' && expiresAt != null ? context.local.expiresOn(MessFormatters.date(context, expiresAt)) : null;
+
+/// `expires_at` of an admin invitation / join request map.
+DateTime? _expiresAt(Map<String, dynamic> item) => DateTime.tryParse(item['expires_at'] as String? ?? '')?.toLocal();
 
 Color _statusColor(BuildContext context, String status) {
   final colors = context.customThemeColors;
   return switch (status) {
     'accepted' || 'approved' || 'active' => colors.successColor,
     'pending' => colors.warningColor,
-    'left' || 'cancelled' || 'revoked' => colors.textHintColor,
+    'left' || 'cancelled' || 'revoked' || 'expired' => colors.textHintColor,
     _ => colors.errorColor,
   };
 }
