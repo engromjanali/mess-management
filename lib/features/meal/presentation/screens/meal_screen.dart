@@ -11,6 +11,7 @@ import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
 import 'package:clean_boilerplate/core/widgets/app_footer.dart';
 import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
+import 'package:clean_boilerplate/core/widgets/pill_tab_bar.dart';
 import 'package:clean_boilerplate/core/widgets/stat_card.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
@@ -94,7 +95,11 @@ class _MealViewState extends State<_MealView> {
             constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, 0),
-              child: _TabSwitch(tab: _tab, onChanged: _selectTab),
+              child: PillTabBar<_MealTab>(
+                tabs: [PillTab(value: _MealTab.manage, label: context.local.manageMeals), PillTab(value: _MealTab.mine, label: context.local.mine)],
+                selected: _tab,
+                onChanged: _selectTab,
+              ),
             ),
           ),
         ),
@@ -122,34 +127,6 @@ class _MealTopBar extends StatelessWidget {
         DashboardNavItem(label: context.local.deposits, icon: Icons.account_balance_wallet_rounded, onTap: () => context.go(AppRoutes.deposits)),
         DashboardNavItem(label: context.local.cost, icon: Icons.shopping_cart_rounded, onTap: () => context.go(AppRoutes.costs)),
       ],
-    );
-  }
-}
-
-/// Segmented `Manage meals / Mine` switch (admins only).
-class _TabSwitch extends StatelessWidget {
-  const _TabSwitch({required this.tab, required this.onChanged});
-  final _MealTab tab;
-  final ValueChanged<_MealTab> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return SegmentedButton<_MealTab>(
-      segments: [
-        ButtonSegment(
-          value: _MealTab.manage,
-          icon: const Icon(Icons.manage_accounts_rounded),
-          label: Text(context.local.manageMeals, maxLines: 1, overflow: TextOverflow.ellipsis),
-        ),
-        ButtonSegment(
-          value: _MealTab.mine,
-          icon: const Icon(Icons.person_rounded),
-          label: Text(context.local.mine, maxLines: 1, overflow: TextOverflow.ellipsis),
-        ),
-      ],
-      selected: {tab},
-      showSelectedIcon: false,
-      onSelectionChanged: (set) => onChanged(set.first),
     );
   }
 }

@@ -12,6 +12,7 @@ import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
 import 'package:clean_boilerplate/core/widgets/app_footer.dart';
 import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
+import 'package:clean_boilerplate/core/widgets/pill_tab_bar.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
@@ -111,7 +112,11 @@ class _CostViewState extends State<_CostView> {
                           constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, 0),
-                            child: _TabSwitch(tab: tab, onChanged: (t) => setState(() => _tab = t)),
+                            child: PillTabBar<_CostTab>(
+                              tabs: [PillTab(value: _CostTab.list, label: context.local.costList), PillTab(value: _CostTab.entry, label: context.local.costEntry)],
+                              selected: tab,
+                              onChanged: (t) => setState(() => _tab = t),
+                            ),
                           ),
                         ),
                       ),
@@ -149,26 +154,6 @@ class _CostTopBar extends StatelessWidget {
         DashboardNavItem(label: context.local.deposits, icon: Icons.account_balance_wallet_rounded, onTap: () => context.go(AppRoutes.deposits)),
         DashboardNavItem(label: context.local.cost, icon: Icons.shopping_cart_rounded, active: true, onTap: () {}),
       ],
-    );
-  }
-}
-
-/// Segmented `Cost List / Cost Entry` switch.
-class _TabSwitch extends StatelessWidget {
-  const _TabSwitch({required this.tab, required this.onChanged});
-  final _CostTab tab;
-  final ValueChanged<_CostTab> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return SegmentedButton<_CostTab>(
-      segments: [
-        ButtonSegment(value: _CostTab.list, icon: const Icon(Icons.format_list_numbered_rounded), label: Text(context.local.costList)),
-        ButtonSegment(value: _CostTab.entry, icon: const Icon(Icons.edit_rounded), label: Text(context.local.costEntry)),
-      ],
-      selected: {tab},
-      showSelectedIcon: false,
-      onSelectionChanged: (set) => onChanged(set.first),
     );
   }
 }

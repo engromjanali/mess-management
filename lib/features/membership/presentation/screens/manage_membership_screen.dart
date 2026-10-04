@@ -10,6 +10,7 @@ import 'package:clean_boilerplate/core/network/api_client.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
 import 'package:clean_boilerplate/core/widgets/code_picker_widget.dart';
 import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
+import 'package:clean_boilerplate/core/widgets/pill_tab_bar.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
 import 'package:clean_boilerplate/features/membership/data/membership_api_service.dart';
@@ -382,6 +383,14 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
     final myRole = _status?.current?.role;
     final idle = _busyItem == null;
     final showWebAppBar = MainPageBody.showWebAppBar(context);
+    /// Shown as "Label (n)" for the sections that have one.
+    final counts = <_ManagementSection, int>{
+      _ManagementSection.memberships: _status?.memberships.length ?? 0,
+      _ManagementSection.invitations: _status?.invites.where((invite) => invite.status == 'pending').length ?? 0,
+      _ManagementSection.requests: _status?.pendingRequests.length ?? 0,
+      _ManagementSection.members: _members.where((member) => member['state'] == 'active').length,
+      _ManagementSection.messRequests: _requests.where((request) => request['status'] == 'pending').length,
+    };
     return Scaffold(
       endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
       appBar: showWebAppBar ? null : AppBar(
@@ -399,16 +408,12 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _ManagementMenu(
-                    section: _section,
-                    canManage: _canManage,
-                    counts: {
-                      _ManagementSection.memberships: _status?.memberships.length ?? 0,
-                      _ManagementSection.invitations: _status?.invites.where((invite) => invite.status == 'pending').length ?? 0,
-                      _ManagementSection.requests: _status?.pendingRequests.length ?? 0,
-                      _ManagementSection.members: _members.where((member) => member['state'] == 'active').length,
-                      _ManagementSection.messRequests: _requests.where((request) => request['status'] == 'pending').length,
-                    },
+                  PillTabBar<_ManagementSection>(
+                    tabs: [
+                      for (final item in _ManagementSection.values.where((s) => _canManage || !s.isMessSide))
+                        PillTab(value: item, label: counts[item] == null ? item.label(context) : '${item.label(context)} (${counts[item]})'),
+                    ],
+                    selected: _section,
                     onChanged: (section) => setState(() => _section = section),
                   ),
                   const SizedBox(height: Dimensions.spaceLarge),
@@ -667,68 +672,6 @@ enum _ManagementSection {
     _ManagementSection.messInvitations => context.local.messInvitations,
     _ManagementSection.messRequests => context.local.messJoinRequests,
   };
-}
-
-class _ManagementMenu extends StatelessWidget {
-  const _ManagementMenu({required this.section, required this.canManage, required this.counts, required this.onChanged});
-
-  final _ManagementSection section;
-  final bool canManage;
-
-  /// Shown as "Label (n)" for the sections that have one.
-  final Map<_ManagementSection, int> counts;
-  final ValueChanged<_ManagementSection> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final sections = _ManagementSection.values.where((s) => canManage || !s.isMessSide);
-    return LayoutBuilder(
-      builder: (context, constraints) => SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minWidth: constraints.maxWidth),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (final item in sections) ...[
-                if (item != sections.first) const SizedBox(width: Dimensions.paddingSizeDefault),
-                _ManagementMenuItem(
-                  label: counts[item] == null ? item.label(context) : '${item.label(context)} (${counts[item]})',
-                  selected: section == item,
-                  onTap: () => onChanged(item),
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ManagementMenuItem extends StatelessWidget {
-  const _ManagementMenuItem({required this.label, required this.selected, required this.onTap});
-
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.customThemeColors;
-    return Material(
-      color: selected ? colors.primaryColor : Colors.transparent,
-      borderRadius: BorderRadius.circular(Dimensions.radiusExtra2Large),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(Dimensions.radiusExtra2Large),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault),
-          child: Text(label, maxLines: 1, style: AppTextStyles.sfProRoundedSemiBold.copyWith(color: selected ? Theme.of(context).colorScheme.onPrimary : colors.textPrimaryColor)),
-        ),
-      ),
-    );
-  }
 }
 
 class _ManagePanel extends StatelessWidget {
