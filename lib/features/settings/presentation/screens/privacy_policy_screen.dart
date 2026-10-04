@@ -12,7 +12,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
     return Scaffold(
-      appBar: AppBar(leading: const HomeBackButton(), title: const Text('Privacy Policy')),
+      appBar: AppBar(leading: const HomeBackButton(), title: Text(context.local.privacyPolicy)),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(

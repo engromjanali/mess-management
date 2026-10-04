@@ -5,15 +5,15 @@ import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
 import 'package:clean_boilerplate/features/auth/domain/entities/user_entity.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_event.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
-import 'package:clean_boilerplate/features/settings/domain/entities/theme_mode.dart';
-import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_bloc.dart';
-import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_event.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/profile_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+/// Desktop / big-tablet profile drawer (the `endDrawer` opened from the
+/// `DashboardTopBar`). It offers the same features as the phone profile
+/// screen — see [profileMenuItems]; the header opens the profile screen.
 class WebProfileDrawer extends StatelessWidget {
   const WebProfileDrawer({super.key});
 
@@ -27,33 +27,24 @@ class WebProfileDrawer extends StatelessWidget {
       child: SafeArea(
         child: Column(
           children: [
-            _DrawerHeader(user: user),
+            _DrawerHeader(user: user, onTap: () => _navigate(context, AppRoutes.profile)),
             Divider(height: 1, color: context.customThemeColors.borderColor),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
                 children: [
-                  _DrawerItem(icon: Icons.home_rounded, label: 'Home', onTap: () => _navigate(context, AppRoutes.home)),
-                  _DrawerItem(icon: Icons.restaurant_rounded, label: 'Meals', onTap: () => _navigate(context, AppRoutes.meals)),
-                  if (isAdmin) _DrawerItem(icon: Icons.add_circle_outline_rounded, label: 'Add Meal', onTap: () => _navigate(context, AppRoutes.addMeal)),
-                  _DrawerItem(icon: Icons.account_balance_wallet_rounded, label: 'Deposits', onTap: () => _navigate(context, AppRoutes.deposits)),
-                  _DrawerItem(icon: Icons.savings_rounded, label: 'Fund', onTap: () => _navigate(context, AppRoutes.funds)),
-                  _DrawerItem(icon: Icons.shopping_cart_rounded, label: 'Cost', onTap: () => _navigate(context, AppRoutes.costs)),
-                  _DrawerItem(icon: Icons.push_pin_rounded, label: 'Notices', onTap: () => _navigate(context, AppRoutes.notices)),
-                  _DrawerItem(icon: Icons.home_work_rounded, label: 'Mess', onTap: () => _navigate(context, AppRoutes.messDetails)),
-                  _DrawerItem(icon: Icons.manage_accounts_rounded, label: context.local.membership, onTap: () => _navigate(context, AppRoutes.manageMembership)),
-                  const Divider(),
-                  _DrawerItem(icon: Icons.person_rounded, label: 'Profile', onTap: () => _navigate(context, AppRoutes.profile)),
-                  _DrawerItem(
-                    icon: context.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-                    label: context.isDarkMode ? 'Light mode' : 'Dark mode',
-                    onTap: () => context.read<ThemeBloc>().add(ThemeEvent.changeThemeMode(context.isDarkMode ? AppThemeMode.light : AppThemeMode.dark)),
-                  ),
+                  for (final item in profileMenuItems(context, isAdmin: isAdmin))
+                    _DrawerItem(icon: item.icon, label: item.title, onTap: () => _navigate(context, item.route)),
                 ],
               ),
             ),
             Divider(height: 1, color: context.customThemeColors.borderColor),
-            _DrawerItem(icon: Icons.logout_rounded, label: 'Sign out', danger: true, onTap: () => _confirmSignOut(context)),
+            _DrawerItem(
+              icon: Icons.logout_rounded,
+              label: context.local.logout,
+              danger: true,
+              onTap: () => confirmSignOut(context, beforeSignOut: () => Navigator.of(context).pop()),
+            ),
             const SizedBox(height: Dimensions.paddingSizeSmall),
           ],
         ),
@@ -65,31 +56,14 @@ class WebProfileDrawer extends StatelessWidget {
     Navigator.of(context).pop();
     context.go(route);
   }
-
-  Future<void> _confirmSignOut(BuildContext context) async {
-    final authBloc = context.read<AuthBloc>();
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Sign out'),
-        content: const Text('Are you sure you want to sign out?'),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: const Text('Sign out')),
-        ],
-      ),
-    );
-    if (!(confirmed ?? false) || !context.mounted) return;
-    Navigator.of(context).pop();
-    authBloc.add(const AuthEvent.logoutRequested());
-    context.go(AppRoutes.getLoginRoute());
-  }
 }
 
+/// Avatar, name and email; tapping it opens the profile screen.
 class _DrawerHeader extends StatelessWidget {
-  const _DrawerHeader({required this.user});
+  const _DrawerHeader({required this.user, required this.onTap});
 
   final UserEntity? user;
+  final VoidCallback onTap;
 
   String get _initials {
     final parts = user?.name.trim().split(RegExp(r'\s+')) ?? [];
@@ -101,29 +75,57 @@ class _DrawerHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
-    final role = context.watch<RoleCubit>().state;
+    final roleLabel = context.watch<RoleCubit>().state.isAdmin ? context.local.roleAdmin : context.local.roleUser;
 
     return Padding(
-      padding: const EdgeInsets.all(Dimensions.paddingSizeExtraLarge24),
+      padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 28,
-            backgroundColor: colors.primaryColor.withValues(alpha: 0.15),
-            child: Text(_initials, style: AppTextStyles.sfProRoundedBold.copyWith(color: colors.primaryColor, fontSize: Dimensions.fontSizeExtraLarge)),
-          ),
-          const SizedBox(width: Dimensions.paddingSizeDefault),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(user?.name ?? 'User', maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedBold.copyWith(color: colors.textPrimaryColor, fontSize: Dimensions.fontSizeLarge)),
-                const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-                Text(user?.email ?? role.label, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor, fontSize: Dimensions.fontSizeSmall)),
-              ],
+            child: Semantics(
+              button: true,
+              label: context.local.profile,
+              child: InkWell(
+                onTap: onTap,
+                borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
+                child: Padding(
+                  padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 28,
+                        backgroundColor: colors.primaryColor.withValues(alpha: 0.15),
+                        child: Text(_initials, style: AppTextStyles.sfProRoundedBold.copyWith(color: colors.primaryColor, fontSize: Dimensions.fontSizeExtraLarge)),
+                      ),
+                      const SizedBox(width: Dimensions.paddingSizeDefault),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              user?.name ?? context.local.roleUser,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTextStyles.sfProRoundedBold.copyWith(color: colors.textPrimaryColor, fontSize: Dimensions.fontSizeLarge),
+                            ),
+                            const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                            Text(
+                              user?.email ?? roleLabel,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor, fontSize: Dimensions.fontSizeSmall),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(Icons.chevron_right_rounded, color: colors.textHintColor),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
-          IconButton(tooltip: 'Close', onPressed: () => Navigator.of(context).pop(), icon: const Icon(Icons.close_rounded)),
+          IconButton(tooltip: MaterialLocalizations.of(context).closeButtonTooltip, onPressed: () => Navigator.of(context).pop(), icon: const Icon(Icons.close_rounded)),
         ],
       ),
     );

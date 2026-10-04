@@ -6,29 +6,37 @@ import 'package:clean_boilerplate/core/role/role_cubit.dart';
 import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
 import 'package:clean_boilerplate/features/auth/domain/entities/user_entity.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_event.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/main_page_body.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/profile_menu.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-/// Profile screen — shows the signed-in user's details, current role and
-/// quick links to settings / sign out.
+/// Profile screen — the signed-in user's details and current role, then the
+/// profile menu ([profileMenuItems], the same features as the desktop profile
+/// drawer) and sign out.
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final showWebAppBar = MainPageBody.showWebAppBar(context);
     return Scaffold(
-      appBar: AppBar(leading: const HomeBackButton(), title: Text(context.local.profile)),
-      body: BlocBuilder<AuthBloc, AuthState>(
-        builder: (context, state) {
-          final user = state.maybeWhen(authenticated: (user) => user, orElse: () => null);
-          if (user != null) return _ProfileBody(user: user);
-          final isSignedOut = state.maybeWhen(unauthenticated: () => true, error: (_) => true, orElse: () => false);
-          if (isSignedOut) return const _SignedOutView();
-          return const Center(child: CircularProgressIndicator.adaptive());
-        },
+      endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
+      appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.profile)),
+      body: MainPageBody(
+        title: context.local.profile,
+        child: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) {
+            final user = state.maybeWhen(authenticated: (user) => user, orElse: () => null);
+            if (user != null) return _ProfileBody(user: user);
+            final isSignedOut = state.maybeWhen(unauthenticated: () => true, error: (_) => true, orElse: () => false);
+            if (isSignedOut) return const _SignedOutView();
+            return const Center(child: CircularProgressIndicator.adaptive());
+          },
+        ),
       ),
     );
   }
@@ -48,44 +56,18 @@ class _ProfileBody extends StatelessWidget {
           children: [
             _ProfileHeader(user: user),
             const SizedBox(height: Dimensions.spaceLarge),
-            _ProfileTile(icon: Icons.edit_outlined, title: context.local.editProfile, subtitle: context.local.editProfileSubtitle, onTap: () => context.push(AppRoutes.editProfile)),
-            const SizedBox(height: Dimensions.paddingSizeSmall),
-            _ProfileTile(icon: Icons.savings_outlined, title: context.local.fund, subtitle: context.local.fundSubtitle, onTap: () => context.push(AppRoutes.funds)),
-            const SizedBox(height: Dimensions.paddingSizeSmall),
-            _ProfileTile(icon: Icons.notifications_outlined, title: context.local.notices, subtitle: context.local.noticesSubtitle, onTap: () => context.push(AppRoutes.notices)),
-            const SizedBox(height: Dimensions.paddingSizeSmall),
-            _ProfileTile(icon: Icons.home_work_outlined, title: context.local.mess, subtitle: context.local.messSubtitle, onTap: () => context.push(AppRoutes.messDetails)),
-            const SizedBox(height: Dimensions.paddingSizeSmall),
-            // Everyone has memberships; managers also see the mess side there.
-            _ProfileTile(icon: Icons.manage_accounts_rounded, title: context.local.membership, subtitle: context.local.membershipSubtitle, onTap: () => context.push(AppRoutes.manageMembership)),
-            const SizedBox(height: Dimensions.paddingSizeSmall),
-            _ProfileTile(icon: Icons.settings_outlined, title: context.local.settings, subtitle: context.local.settingsSubtitle, onTap: () => context.push(AppRoutes.settings)),
+            for (final item in profileMenuItems(context, isAdmin: context.watch<RoleCubit>().state.isAdmin)) ...[
+              _ProfileTile(icon: item.icon, title: item.title, subtitle: item.subtitle, onTap: () => context.push(item.route)),
+              const SizedBox(height: Dimensions.paddingSizeSmall),
+            ],
             const SizedBox(height: Dimensions.spaceLarge),
             const Divider(),
             const SizedBox(height: Dimensions.paddingSizeSmall),
-            _ProfileTile(icon: Icons.logout_rounded, title: context.local.logout, subtitle: context.local.logoutSubtitle, danger: true, onTap: () => _confirmSignOut(context)),
+            _ProfileTile(icon: Icons.logout_rounded, title: context.local.logout, subtitle: context.local.logoutSubtitle, danger: true, onTap: () => confirmSignOut(context)),
           ],
         ),
       ),
     );
-  }
-
-  Future<void> _confirmSignOut(BuildContext context) async {
-    final bloc = context.read<AuthBloc>();
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(context.local.logout),
-        content: Text(context.local.logoutConfirm),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: Text(context.local.cancel)),
-          FilledButton(onPressed: () => Navigator.of(ctx).pop(true), child: Text(context.local.logout)),
-        ],
-      ),
-    );
-    if (!(confirmed ?? false) || !context.mounted) return;
-    bloc.add(const AuthEvent.logoutRequested());
-    context.go(AppRoutes.getLoginRoute());
   }
 }
 

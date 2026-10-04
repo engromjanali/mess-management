@@ -26,6 +26,7 @@ class MembershipApiService {
           messName: json['mess_name'] as String,
           inviteCode: json['invite_code'] as String,
           status: status.isEmpty ? 'pending' : status,
+          seasonName: json['season_name'] as String?,
         );
       }).toList(),
       availableMesses: const [],
@@ -79,8 +80,9 @@ class MembershipApiService {
     return response.data!;
   }
 
-  Future<Map<String, dynamic>> createInvite(String userId) async {
-    final response = await _apiClient.post<Map<String, dynamic>>(AppConstants.createInviteEndpoint, data: {'user_id': userId});
+  /// Invites [userId] to the running season [seasonId].
+  Future<Map<String, dynamic>> createInvite(String userId, {required String seasonId}) async {
+    final response = await _apiClient.post<Map<String, dynamic>>(AppConstants.createInviteEndpoint, data: {'user_id': userId, 'season_id': int.parse(seasonId)});
     return response.data!;
   }
 
@@ -122,8 +124,12 @@ class MembershipApiService {
   /// caller a regular member.
   Future<void> transferOwnership(int membershipId) => _memberAction(membershipId, 'transfer-ownership');
 
-  Future<void> decideRequest(int requestId, bool accept) async {
-    await _apiClient.post<void>(AppConstants.joinRequestDecisionEndpoint, data: {'request_id': requestId, 'decision': accept ? 'accepted' : 'rejected'});
+  /// Accepting adds the user to the running season [seasonId].
+  Future<void> decideRequest(int requestId, {required bool accept, String? seasonId}) async {
+    await _apiClient.post<void>(
+      AppConstants.joinRequestDecisionEndpoint,
+      data: {'request_id': requestId, 'decision': accept ? 'accepted' : 'rejected', if (accept && seasonId != null) 'season_id': int.parse(seasonId)},
+    );
   }
 
   /// The signed-in user's current mess and its active season.
@@ -224,5 +230,6 @@ class MembershipApiService {
     messId: json['mess_id'] as int,
     messName: json['mess_name'] as String,
     status: json['status'] as String? ?? 'pending',
+    seasonName: json['season_name'] as String?,
   );
 }

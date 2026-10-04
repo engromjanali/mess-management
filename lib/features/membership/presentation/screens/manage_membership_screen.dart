@@ -5,9 +5,9 @@ import 'package:clean_boilerplate/core/di/injection.dart';
 import 'package:clean_boilerplate/core/errors/exceptions.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
-import 'package:clean_boilerplate/core/helpers/date_converter.dart';
 import 'package:clean_boilerplate/core/network/api_client.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
+import 'package:clean_boilerplate/core/usecase/usecase.dart';
 import 'package:clean_boilerplate/core/widgets/code_picker_widget.dart';
 import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
 import 'package:clean_boilerplate/core/widgets/pill_tab_bar.dart';
@@ -20,6 +20,10 @@ import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile
 import 'package:clean_boilerplate/features/membership/presentation/widgets/managed_member_tile.dart';
 import 'package:clean_boilerplate/features/membership/presentation/widgets/mess_item_tile.dart';
 import 'package:clean_boilerplate/features/membership/presentation/widgets/my_membership_tile.dart';
+import 'package:clean_boilerplate/features/membership/presentation/widgets/season_picker_dialog.dart';
+import 'package:clean_boilerplate/features/season/domain/entities/season_entity.dart';
+import 'package:clean_boilerplate/features/season/domain/entities/season_overview_entity.dart';
+import 'package:clean_boilerplate/features/season/domain/usecases/season_usecases.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,6 +40,12 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
   final _emailController = TextEditingController();
   final _memberFocusNode = FocusNode();
   final _searchController = TextEditingController();
+
+  /// What the screen last built from the two controllers. They also notify on
+  /// caret / selection moves (e.g. tapping a field), which change nothing, so
+  /// the screen only rebuilds when these change.
+  String _builtSearch = '';
+  bool _builtPhoneQuery = false;
   late final MembershipApiService _service;
   List<Map<String, dynamic>> _requests = [];
   List<Map<String, dynamic>> _invitations = [];
@@ -58,8 +68,20 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
   /// The member whose action (disable, promote, …) is running, if any.
   int? _busyMembershipId;
 
+  /// The mess's seasons (manager only); new members join a running one.
+  SeasonOverviewEntity? _seasons;
+
+  /// The join request being approved / rejected, if any.
+  int? _busyRequestId;
+
+  /// The invitation being cancelled, if any.
+  int? _busyInviteId;
+  bool _sendingInvite = false;
+
   /// The mess side shows for the manager / acting manager of the current membership.
   bool get _canManage => const {'manager', 'acting_manager'}.contains(_status?.current?.role);
+
+  List<SeasonEntity> get _runningSeasons => [...?_seasons?.seasons.where((season) => season.status == SeasonStatus.running)];
 
   bool get _isPhoneQuery {
     final query = _emailController.text.trim();
@@ -91,15 +113,19 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
       final status = await _service.getStatus();
       final manage = const {'manager', 'acting_manager'}.contains(status.current?.role);
       // Only the current mess's manager can read the mess side.
+      final seasons = manage ? getIt<GetSeasonsUseCase>()(const NoParams()) : null;
       final admin = manage ? await Future.wait([_service.getManagerRequests(), _service.getManagerInvites(), _service.getManagerMembers(includeDisabled: true, includeLeft: true)]) : null;
+      final seasonsResult = await seasons;
       if (mounted) {
         setState(() {
           _status = status;
           _requests = admin?[0] ?? [];
           _invitations = admin?[1] ?? [];
           _members = admin?[2] ?? [];
+          _seasons = seasonsResult?.data ?? _seasons;
           if (!manage && _section.isMessSide) _section = _ManagementSection.memberships;
         });
+        seasonsResult?.onFailure((failure) => context.showErrorSnackBar('${failure.error}'));
       }
     } catch (e) {
       if (mounted) context.showErrorSnackBar(_errorMessage(e));
@@ -161,52 +187,75 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
     try {
       final member = await _service.findMember(query);
       if (mounted) setState(() => _selectedMember = member);
-    } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Member not found. Use an exact email address or phone number.')));
+    } catch (e) {
+      if (mounted) context.showErrorSnackBar(_errorMessage(e));
     } finally {
       if (mounted) setState(() => _findingMember = false);
     }
   }
 
+  /// Asks which running season the found member joins, then invites them to it.
   Future<void> _invite() async {
     final member = _selectedMember;
     if (member == null || member['available'] != true) return;
+    final local = context.local;
+    final name = member['name'] as String? ?? local.member;
+    final seasonId = await showSeasonPickerDialog(
+      context,
+      title: local.inviteMemberTitle(name),
+      message: local.chooseSeasonToJoin(name),
+      confirmLabel: local.invite,
+      seasons: _runningSeasons,
+      initialSeasonId: _seasons?.currentSeasonId,
+      joinedSeasonIds: {for (final id in member['joined_season_ids'] as List<dynamic>? ?? const []) '$id'},
+    );
+    if (seasonId == null || !mounted) return;
+
+    setState(() => _sendingInvite = true);
+    final Map<String, dynamic> invite;
     try {
-      final invite = await _service.createInvite(member['id'] as String);
-      _emailController.clear();
-      setState(() => _selectedMember = null);
-      if (!mounted) return;
-      await showDialog<void>(
-        context: context,
-        builder: (dialogContext) => AlertDialog(
-          icon: Icon(Icons.mark_email_read_rounded, color: context.customThemeColors.successColor, size: Dimensions.iconSizeExtraLarge),
-          title: const Text('Invitation sent'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Invitation sent to ${member['name']}. Only this account can use it.'),
-              const SizedBox(height: Dimensions.paddingSizeDefault),
-              _CopyValue(label: 'Invitation ID', value: '#${invite['id']}'),
-              const SizedBox(height: Dimensions.paddingSizeSmall),
-              _CopyValue(label: 'Invitation code', value: invite['invite_code'] as String),
-            ],
-          ),
-          actions: [TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Done'))],
-        ),
-      );
-      await _load();
-    } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not send this invitation. The member may already belong to a mess.')));
+      invite = await _service.createInvite(member['id'] as String, seasonId: seasonId);
+    } catch (e) {
+      if (mounted) context.showErrorSnackBar(_errorMessage(e));
+      return;
+    } finally {
+      if (mounted) setState(() => _sendingInvite = false);
     }
+    if (!mounted) return;
+    _emailController.clear();
+    setState(() => _selectedMember = null);
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        icon: Icon(Icons.mark_email_read_rounded, color: context.customThemeColors.successColor, size: Dimensions.iconSizeExtraLarge),
+        title: Text(local.invitationSent),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(local.invitationSentMessage(name, invite['season_name'] as String? ?? '')),
+            const SizedBox(height: Dimensions.paddingSizeDefault),
+            _CopyValue(label: local.invitationId, value: '#${invite['id']}'),
+            const SizedBox(height: Dimensions.paddingSizeSmall),
+            _CopyValue(label: local.invitationCode, value: invite['invite_code'] as String),
+          ],
+        ),
+        actions: [TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: Text(local.done))],
+      ),
+    );
+    await _load();
   }
 
+  /// The invitation list depends on the search text only.
   void _refreshFilters() {
-    if (mounted) setState(() {});
+    if (!mounted || _searchController.text == _builtSearch) return;
+    setState(() => _builtSearch = _searchController.text);
   }
 
+  /// The member field shows the dial-code picker for phone numbers only.
   void _refreshMemberField() {
-    if (mounted) setState(() {});
+    if (!mounted || _isPhoneQuery == _builtPhoneQuery) return;
+    setState(() => _builtPhoneQuery = _isPhoneQuery);
   }
 
   String _filterOf(_ManagementSection section) => _statusFilters[section] ?? 'all';
@@ -241,44 +290,83 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
   }
 
   Future<void> _revoke(int inviteId) async {
+    final local = context.local;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Cancel invitation?'),
-        content: Text('Invitation #$inviteId will no longer be usable.'),
+        title: Text(local.cancelInvitationTitle),
+        content: Text(local.cancelInvitationConfirm(inviteId)),
         actions: [
-          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text('Keep')),
-          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: const Text('Cancel invitation')),
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: Text(local.keep)),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: context.customThemeColors.errorColor),
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(local.revoke),
+          ),
         ],
       ),
     );
-    if (confirmed != true) return;
+    if (confirmed != true || !mounted) return;
+    setState(() => _busyInviteId = inviteId);
     try {
       await _service.revokeInvite(inviteId);
+      if (mounted) context.showSuccessSnackBar(local.invitationRevoked);
+      // Keep the row's spinner until the list shows the change.
       await _load();
-    } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not revoke this invitation.')));
+    } catch (e) {
+      if (mounted) context.showErrorSnackBar(_errorMessage(e));
+    } finally {
+      if (mounted) setState(() => _busyInviteId = null);
     }
   }
 
-  Future<void> _decide(int requestId, bool accept) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(accept ? 'Approve join request?' : 'Cancel join request?'),
-        content: Text(accept ? 'This member will be added to your mess.' : 'This join request will be rejected.'),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text('Back')),
-          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: Text(accept ? 'Approve' : 'Cancel request')),
-        ],
-      ),
-    );
-    if (confirmed != true) return;
+  /// Approving asks which running season the user joins; rejecting asks to confirm.
+  Future<void> _decide(Map<String, dynamic> request, {required bool accept}) async {
+    final local = context.local;
+    final requestId = request['id'] as int;
+    final name = request['user_name'] as String? ?? local.member;
+    String? seasonId;
+    if (accept) {
+      seasonId = await showSeasonPickerDialog(
+        context,
+        title: local.approveRequestTitle(name),
+        message: local.chooseSeasonToJoin(name),
+        confirmLabel: local.approve,
+        seasons: _runningSeasons,
+        initialSeasonId: _seasons?.currentSeasonId,
+      );
+      if (seasonId == null) return;
+    } else {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(local.rejectRequestTitle(name)),
+          content: Text(local.rejectRequestConfirm(name)),
+          actions: [
+            TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: Text(local.cancel)),
+            FilledButton(
+              style: FilledButton.styleFrom(backgroundColor: context.customThemeColors.errorColor),
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(local.reject),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true) return;
+    }
+    if (!mounted) return;
+
+    final seasonName = _runningSeasons.where((season) => season.id == seasonId).firstOrNull?.name ?? '';
+    setState(() => _busyRequestId = requestId);
     try {
-      await _service.decideRequest(requestId, accept);
+      await _service.decideRequest(requestId, accept: accept, seasonId: seasonId);
+      if (mounted) context.showSuccessSnackBar(accept ? local.requestApproved(name, seasonName) : local.requestRejected(name));
+      // Keep the row's spinner until the list shows the change.
       await _load();
-    } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not update this join request.')));
+    } catch (e) {
+      if (mounted) context.showErrorSnackBar(_errorMessage(e));
+    } finally {
+      if (mounted) setState(() => _busyRequestId = null);
     }
   }
 
@@ -388,7 +476,8 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
       _ManagementSection.memberships: _status?.memberships.length ?? 0,
       _ManagementSection.invitations: _status?.invites.where((invite) => invite.status == 'pending').length ?? 0,
       _ManagementSection.requests: _status?.pendingRequests.length ?? 0,
-      _ManagementSection.members: _members.where((member) => member['state'] == 'active').length,
+      // Everyone still in the season: active and disabled, not those who left.
+      _ManagementSection.members: _members.where((member) => member['state'] != 'left').length,
       _ManagementSection.messRequests: _requests.where((request) => request['status'] == 'pending').length,
     };
     return Scaffold(
@@ -467,7 +556,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                             for (final invite in _status!.invites.where((invite) => _matchesFilter(_ManagementSection.invitations, invite.status)))
                               MessItemTile(
                                 messName: invite.messName,
-                                subtitle: context.local.inviteCode(invite.inviteCode),
+                                subtitle: invite.seasonName == null ? context.local.inviteCode(invite.inviteCode) : context.local.invitationSeasonCode(invite.seasonName!, invite.inviteCode),
                                 busy: _busyItem == 'invite:${invite.id}',
                                 actions: invite.status == 'pending'
                                     ? [
@@ -496,7 +585,11 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                             for (final request in _status!.joinRequests.where((request) => _matchesFilter(_ManagementSection.requests, request.status)))
                               MessItemTile(
                                 messName: request.messName,
-                                subtitle: request.status == 'pending' ? context.local.waitingForApproval : _statusLabel(context, request.status),
+                                subtitle: switch (request) {
+                                  JoinRequestSummaryEntity(status: 'pending') => context.local.waitingForApproval,
+                                  JoinRequestSummaryEntity(status: 'approved', :final seasonName?) => context.local.approvedForSeason(seasonName),
+                                  _ => _statusLabel(context, request.status),
+                                },
                                 busy: _busyItem == 'request:${request.id}',
                                 actions: request.status == 'pending'
                                     ? [TextButton(onPressed: idle ? () => _cancelRequest(request) : null, child: Text(context.local.cancel))]
@@ -524,6 +617,8 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                           const SizedBox(height: Dimensions.paddingSizeLarge),
                           _MemberPreview(
                             member: _selectedMember!,
+                            hasRunningSeason: _runningSeasons.isNotEmpty,
+                            sending: _sendingInvite,
                             onCancel: () => setState(() {
                               _selectedMember = null;
                               _emailController.clear();
@@ -561,7 +656,12 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                         else if (_visibleInvitations.isEmpty)
                           Text(context.local.noMatchingRecords, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
                         else
-                          for (final invite in _visibleInvitations) _InvitationTile(invite: invite, onRevoke: () => _revoke(invite['id'] as int)),
+                          for (final invite in _visibleInvitations)
+                            _InvitationTile(
+                              invite: invite,
+                              busy: _busyInviteId == invite['id'],
+                              onRevoke: _busyInviteId == null ? () => _revoke(invite['id'] as int) : null,
+                            ),
                       ],
                     ),
                     ),
@@ -582,14 +682,20 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                             for (final request in _requests.where((request) => _matchesFilter(_ManagementSection.messRequests, request['status'] as String?)))
                               ListTile(
                                 contentPadding: EdgeInsets.zero,
-                                title: Text(request['user_name'] as String? ?? 'Member', maxLines: 1, overflow: TextOverflow.ellipsis),
-                                subtitle: Text(request['user_email'] as String? ?? '', maxLines: 1, overflow: TextOverflow.ellipsis),
-                                trailing: request['status'] == 'pending'
+                                title: Text(request['user_name'] as String? ?? context.local.member, maxLines: 1, overflow: TextOverflow.ellipsis),
+                                subtitle: Text(
+                                  [request['user_email'] as String? ?? '', if (request['season_name'] case final String season) context.local.seasonName(season)].where((part) => part.isNotEmpty).join(' · '),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                trailing: _busyRequestId == request['id']
+                                    ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                                    : request['status'] == 'pending'
                                     ? Wrap(
                                         spacing: Dimensions.paddingSizeExtraSmall,
                                         children: [
-                                          IconButton(tooltip: 'Reject', onPressed: () => _decide(request['id'] as int, false), icon: Icon(Icons.close_rounded, color: colors.errorColor)),
-                                          IconButton(tooltip: 'Accept', onPressed: () => _decide(request['id'] as int, true), icon: Icon(Icons.check_rounded, color: colors.successColor)),
+                                          IconButton(tooltip: context.local.reject, onPressed: _busyRequestId == null ? () => _decide(request, accept: false) : null, icon: Icon(Icons.close_rounded, color: colors.errorColor)),
+                                          IconButton(tooltip: context.local.approve, onPressed: _busyRequestId == null ? () => _decide(request, accept: true) : null, icon: Icon(Icons.check_rounded, color: colors.successColor)),
                                         ],
                                       )
                                     : _StatusChip(status: request['status'] as String? ?? ''),
@@ -693,10 +799,15 @@ class _ManagePanel extends StatelessWidget {
 }
 
 class _InvitationTile extends StatelessWidget {
-  const _InvitationTile({required this.invite, required this.onRevoke});
+  const _InvitationTile({required this.invite, required this.onRevoke, this.busy = false});
 
   final Map<String, dynamic> invite;
-  final VoidCallback onRevoke;
+
+  /// Null while another invitation is being cancelled.
+  final VoidCallback? onRevoke;
+
+  /// Shows a spinner in place of the cancel button.
+  final bool busy;
 
   @override
   Widget build(BuildContext context) {
@@ -704,7 +815,7 @@ class _InvitationTile extends StatelessWidget {
     final invitationStatus = invite['status'] as String? ?? 'pending';
     final status = invitationStatus.isEmpty ? 'pending' : invitationStatus;
     final statusColor = _statusColor(context, status);
-    final expireAt = DateTime.tryParse(invite['expire_at'] as String? ?? '');
+    final season = invite['season_name'] as String?;
     return Container(
       margin: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
       padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
@@ -717,15 +828,18 @@ class _InvitationTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(invite['user_name'] as String? ?? 'Member', maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedSemiBold),
+                Text(invite['user_name'] as String? ?? context.local.member, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedSemiBold),
                 Text(invite['user_email'] as String? ?? '', maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor, fontSize: Dimensions.fontSizeSmall)),
-                Text('#${invite['id']} | ${expireAt == null ? 'No expiry date' : DateConverter.orderDateTime(expireAt.toLocal())}', maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor, fontSize: Dimensions.fontSizeSmall)),
+                Text(['#${invite['id']}', if (season != null) context.local.seasonName(season)].join(' · '), maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor, fontSize: Dimensions.fontSizeSmall)),
               ],
             ),
           ),
           const SizedBox(width: Dimensions.paddingSizeSmall),
           _StatusChip(status: status),
-          if (status == 'pending') IconButton(tooltip: 'Cancel invitation', onPressed: onRevoke, icon: Icon(Icons.cancel_outlined, color: colors.errorColor)),
+          if (busy)
+            const Padding(padding: EdgeInsets.all(Dimensions.paddingSizeSmall), child: SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2)))
+          else if (status == 'pending')
+            IconButton(tooltip: context.local.cancelInvitation, onPressed: onRevoke, icon: Icon(Icons.cancel_outlined, color: colors.errorColor)),
         ],
       ),
     );
@@ -795,16 +909,28 @@ Color _statusColor(BuildContext context, String status) {
 }
 
 class _MemberPreview extends StatelessWidget {
-  const _MemberPreview({required this.member, required this.onCancel, required this.onSend});
+  const _MemberPreview({required this.member, required this.hasRunningSeason, required this.sending, required this.onCancel, required this.onSend});
 
   final Map<String, dynamic> member;
+
+  /// Whether the mess has a running season to invite into.
+  final bool hasRunningSeason;
+
+  /// The invitation is being sent: the send button shows a spinner.
+  final bool sending;
   final VoidCallback onCancel;
   final VoidCallback onSend;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
+    final local = context.local;
     final available = member['available'] == true;
+    final availability = available
+        ? local.availableToInvite
+        : hasRunningSeason
+        ? local.inAllRunningSeasons
+        : local.noRunningSeason;
     return Container(
       padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
       decoration: BoxDecoration(color: colors.primaryColor.withValues(alpha: 0.06), borderRadius: BorderRadius.circular(Dimensions.radiusLarge), border: Border.all(color: colors.primaryColor.withValues(alpha: 0.25))),
@@ -819,7 +945,7 @@ class _MemberPreview extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(member['name'] as String? ?? 'Member', maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
+                    Text(member['name'] as String? ?? local.member, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
                     Text(member['email'] as String? ?? '', maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor)),
                     if ((member['phone'] as String? ?? '').isNotEmpty) Text(member['phone'] as String, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor, fontSize: Dimensions.fontSizeSmall)),
                   ],
@@ -828,15 +954,19 @@ class _MemberPreview extends StatelessWidget {
             ],
           ),
           const SizedBox(height: Dimensions.paddingSizeDefault),
-          Text(available ? 'Available to invite' : 'Already connected to ${member['current_mess'] ?? 'another mess'}', style: AppTextStyles.sfProRoundedMedium.copyWith(color: available ? colors.successColor : colors.errorColor)),
+          Text(availability, style: AppTextStyles.sfProRoundedMedium.copyWith(color: available ? colors.successColor : colors.errorColor)),
           const SizedBox(height: Dimensions.paddingSizeDefault),
           Wrap(
             alignment: WrapAlignment.end,
             spacing: Dimensions.paddingSizeSmall,
             runSpacing: Dimensions.paddingSizeSmall,
             children: [
-              OutlinedButton(onPressed: onCancel, child: const Text('Cancel')),
-              FilledButton.icon(onPressed: available ? onSend : null, icon: const Icon(Icons.send_rounded), label: const Text('Send invitation')),
+              OutlinedButton(onPressed: sending ? null : onCancel, child: Text(local.cancel)),
+              FilledButton.icon(
+                onPressed: available && !sending ? onSend : null,
+                icon: sending ? const SizedBox.square(dimension: Dimensions.iconSizeSmall, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.send_rounded),
+                label: Text(local.invite),
+              ),
             ],
           ),
         ],
@@ -861,10 +991,10 @@ class _CopyValue extends StatelessWidget {
         children: [
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(label, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor, fontSize: Dimensions.fontSizeExtraSmall)), SelectableText(value, maxLines: 1, style: AppTextStyles.sfProRoundedSemiBold)])),
           IconButton(
-            tooltip: 'Copy $label',
+            tooltip: context.local.copy,
             onPressed: () async {
               await Clipboard.setData(ClipboardData(text: value));
-              if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$label copied')));
+              if (context.mounted) context.showSuccessSnackBar(context.local.copiedToClipboard);
             },
             icon: const Icon(Icons.copy_rounded),
           ),

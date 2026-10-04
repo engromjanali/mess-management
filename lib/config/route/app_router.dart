@@ -21,6 +21,7 @@ import 'package:clean_boilerplate/features/membership/presentation/screens/edit_
 import 'package:clean_boilerplate/features/membership/presentation/screens/mess_leadership_screen.dart';
 import 'package:clean_boilerplate/features/notice/presentation/screens/notice_screen.dart';
 import 'package:clean_boilerplate/features/opinion/presentation/screens/opinion_screen.dart';
+import 'package:clean_boilerplate/features/season/presentation/screens/season_management_screen.dart';
 import 'package:clean_boilerplate/features/settings/presentation/screens/privacy_policy_screen.dart';
 import 'package:clean_boilerplate/features/settings/presentation/screens/settings_screen.dart';
 
@@ -57,6 +58,7 @@ class AppRoutes {
   static const String messDetails = '/mess';
   static const String editMess = '/mess/edit';
   static const String messLeadership = '/mess/leadership';
+  static const String seasons = '/seasons';
 
   // Helper methods for parameterized routes
   static String getProfileRoute({required String userId}) => '$profile?userId=$userId';
@@ -132,6 +134,9 @@ final router = GoRouter(
     GoRoute(path: AppRoutes.editMess, name: 'editMess', builder: (context, state) => const EditMessScreen()),
 
     GoRoute(path: AppRoutes.messLeadership, name: 'messLeadership', builder: (context, state) => const MessLeadershipScreen()),
+
+    // Season management (admin: start, end, delete seasons)
+    GoRoute(path: AppRoutes.seasons, name: 'seasons', builder: (context, state) => const SeasonManagementScreen()),
 
     // Add more routes as your app grows
   ],

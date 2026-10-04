@@ -503,5 +503,266 @@
   "statusApproved": "Approved",
   "statusRejected": "Rejected",
   "statusActive": "Active",
-  "noMatchingRecords": "Nothing matches these filters."
+  "noMatchingRecords": "Nothing matches these filters.",
+  "seasonManagement": "Season management",
+  "seasonManagementSubtitle": "Create, switch, end and delete seasons",
+  "seasonManagementAdminOnly": "Only the manager can manage seasons.",
+  "seasonInUse": "Season in use",
+  "noSeasonInUse": "No season is in use. Switch to a season or create a new one.",
+  "allSeasons": "All seasons",
+  "noSeasons": "This mess has no seasons yet.",
+  "newSeason": "New season",
+  "newSeasonNote": "Other seasons keep running. Switch to this season to work in it.",
+  "editSeason": "Edit season",
+  "create": "Create",
+  "enable": "Enable",
+  "seasonNameLabel": "Season name",
+  "seasonNameRequired": "Enter a season name.",
+  "seasonStartDate": "Start date",
+  "seasonEndDate": "End date",
+  "seasonEndDateHint": "Empty while the season is running",
+  "seasonEndBeforeStart": "The end date can't be before the start date.",
+  "endSeason": "End season",
+  "endSeasonConfirm": "End {name} today? No meals, deposits or costs can be added after the end date.",
+  "@endSeasonConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteSeason": "Delete season",
+  "deleteSeasonConfirm": "Delete {name}? All data of this season — meals, deposits and costs — will be deleted permanently.",
+  "@deleteSeasonConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "autoCreateSeason": "Auto Create new season",
+  "autoCreateSeasonHint": "On day {day} of every month, a new season is created automatically and the app switches to it.",
+  "@autoCreateSeasonHint": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "seasonCreated": "{name} created.",
+  "@seasonCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "seasonUpdated": "{name} updated.",
+  "@seasonUpdated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "seasonSwitched": "Now using {name}.",
+  "@seasonSwitched": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "seasonEnded": "{name} ended.",
+  "@seasonEnded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "seasonDisabled": "{name} disabled.",
+  "@seasonDisabled": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "seasonEnabled": "{name} enabled.",
+  "@seasonEnabled": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "seasonDeleted": "{name} deleted.",
+  "@seasonDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "statusRunning": "Running",
+  "statusEnded": "Ended",
+  "inUse": "In use",
+  "autoCreateSeasonMonthEndHint": "On the last day of every month (28th–31st), a new season is created automatically and the app switches to it.",
+  "dayOfMonth": "Day {day}",
+  "@dayOfMonth": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "monthEnd": "Month end",
+  "changeDate": "Change date",
+  "autoCreateDayTitle": "Create new season on",
+  "autoCreateDayNote": "Days 1–28 exist in every month. Pick Month end to always use the month's last day (28th, 29th, 30th or 31st).",
+  "autoCreateOn": "Auto-create is on.",
+  "autoCreateOff": "Auto-create is off.",
+  "autoCreateDaySet": "New seasons will be created on {day}.",
+  "@autoCreateDaySet": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "copyMembersFrom": "Copy members from",
+  "copyMembersFromHint": "Members who left the mess aren't copied.",
+  "seasonMemberCount": "{count, plural, =1{1 member} other{{count} members}}",
+  "@seasonMemberCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "seasonFieldLabel": "Season",
+  "chooseSeasonToJoin": "Choose the season {name} will join.",
+  "@chooseSeasonToJoin": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "noRunningSeason": "No season is running. Start a season first.",
+  "inAllRunningSeasons": "Already a member of every running season.",
+  "alreadyInSeason": "{season} (member)",
+  "@alreadyInSeason": {
+    "placeholders": {
+      "season": {
+        "type": "String"
+      }
+    }
+  },
+  "approve": "Approve",
+  "reject": "Reject",
+  "approveRequestTitle": "Approve {name}?",
+  "@approveRequestTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "rejectRequestTitle": "Reject {name}?",
+  "@rejectRequestTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "rejectRequestConfirm": "{name} won't be added to the mess.",
+  "@rejectRequestConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "requestApproved": "{name} joined {season}.",
+  "@requestApproved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "season": {
+        "type": "String"
+      }
+    }
+  },
+  "requestRejected": "{name}'s request was rejected.",
+  "@requestRejected": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteMemberTitle": "Invite {name}",
+  "@inviteMemberTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "invite": "Invite",
+  "availableToInvite": "Available to invite",
+  "invitationSent": "Invitation sent",
+  "invitationSentMessage": "{name} can join {season} with this invitation. Only their account can use it.",
+  "@invitationSentMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "season": {
+        "type": "String"
+      }
+    }
+  },
+  "invitationId": "Invitation ID",
+  "invitationCode": "Invitation code",
+  "done": "Done",
+  "cancelInvitation": "Cancel invitation",
+  "cancelInvitationTitle": "Cancel invitation?",
+  "cancelInvitationConfirm": "Invitation #{id} will no longer be usable.",
+  "@cancelInvitationConfirm": {
+    "placeholders": {
+      "id": {
+        "type": "int"
+      }
+    }
+  },
+  "keep": "Keep",
+  "revoke": "Revoke",
+  "invitationRevoked": "Invitation cancelled.",
+  "approvedForSeason": "Approved for {season}",
+  "@approvedForSeason": {
+    "placeholders": {
+      "season": {
+        "type": "String"
+      }
+    }
+  },
+  "invitationSeasonCode": "{season} · Invite code {code}",
+  "@invitationSeasonCode": {
+    "placeholders": {
+      "season": {
+        "type": "String"
+      },
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "copy": "Copy",
+  "privacyPolicy": "Privacy policy",
+  "privacyPolicySubtitle": "How your account and mess data are handled"
 }

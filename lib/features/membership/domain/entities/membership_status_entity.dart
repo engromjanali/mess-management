@@ -53,7 +53,7 @@ class MembershipSummaryEntity {
 }
 
 class JoinRequestSummaryEntity {
-  const JoinRequestSummaryEntity({required this.id, required this.messId, required this.messName, this.status = 'pending'});
+  const JoinRequestSummaryEntity({required this.id, required this.messId, required this.messName, this.status = 'pending', this.seasonName});
 
   final int id;
   final int messId;
@@ -61,16 +61,22 @@ class JoinRequestSummaryEntity {
 
   /// `pending`, `approved`, `rejected` or `cancelled`.
   final String status;
+
+  /// The season the manager added the user to; set once approved.
+  final String? seasonName;
 }
 
 class InviteSummaryEntity {
-  const InviteSummaryEntity({required this.id, required this.messId, required this.messName, required this.inviteCode, required this.status});
+  const InviteSummaryEntity({required this.id, required this.messId, required this.messName, required this.inviteCode, required this.status, this.seasonName});
 
   final int id;
   final int messId;
   final String messName;
   final String inviteCode;
   final String status;
+
+  /// The season the user joins on accepting, chosen by the manager.
+  final String? seasonName;
 }
 
 class MessSummaryEntity {

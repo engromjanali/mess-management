@@ -52,6 +52,10 @@ class AppConstants {
   // Mess — admin (not on the backend yet)
   static const String messUpdateEndpoint = '/api/v1/membership/mess';
 
+  // Seasons — admin
+  static const String adminSeasonsEndpoint = '/api/v1/admin/seasons';
+  static const String adminSeasonAutoCreateEndpoint = '/api/v1/admin/seasons/auto-create';
+
   // Notices — user
   static const String noticesEndpoint = '/api/v1/user/notices';
 
