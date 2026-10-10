@@ -1,4 +1,10 @@
+import 'package:clean_boilerplate/features/splash/presentation/screens/maintenance_screen.dart';
 import 'package:clean_boilerplate/features/splash/presentation/screens/splash_screeen.dart';
+import 'package:clean_boilerplate/features/splash/presentation/screens/update_required_screen.dart';
+import 'package:clean_boilerplate/features/app_info/domain/entities/content_page_entity.dart';
+import 'package:clean_boilerplate/features/app_info/presentation/screens/content_page_screen.dart';
+import 'package:clean_boilerplate/features/app_info/presentation/screens/faq_screen.dart';
+import 'package:clean_boilerplate/features/auth/presentation/screens/delete_account_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -22,7 +28,6 @@ import 'package:clean_boilerplate/features/membership/presentation/screens/mess_
 import 'package:clean_boilerplate/features/notice/presentation/screens/notice_screen.dart';
 import 'package:clean_boilerplate/features/opinion/presentation/screens/opinion_screen.dart';
 import 'package:clean_boilerplate/features/season/presentation/screens/season_management_screen.dart';
-import 'package:clean_boilerplate/features/settings/presentation/screens/privacy_policy_screen.dart';
 import 'package:clean_boilerplate/features/settings/presentation/screens/settings_screen.dart';
 
 /// App route constants
@@ -36,6 +41,10 @@ class AppRoutes {
   static const String register = '/register';
   static const String forgotPassword = '/forgot-password';
 
+  // App gate (from the admin's app config)
+  static const String maintenance = '/maintenance';
+  static const String updateRequired = '/update-required';
+
   // Main routes
   static const String home = '/';
   static const String meals = '/meals';
@@ -48,8 +57,11 @@ class AppRoutes {
   static const String opinions = '/opinions';
   static const String profile = '/profile';
   static const String editProfile = '/profile/edit';
+  static const String deleteAccount = '/account/delete';
   static const String settings = '/settings';
   static const String privacyPolicy = '/privacy-policy';
+  static const String termsAndConditions = '/terms-and-conditions';
+  static const String faq = '/faq';
   static const String manageMembership = '/membership/manage';
   static const String joinMess = '/mess/join';
   static const String joinMessInvites = '/mess/join/invites';
@@ -77,6 +89,10 @@ final router = GoRouter(
   requestFocus: !kIsWeb,
   routes: [
     GoRoute(path: AppRoutes._splash, name: 'splash', builder: (context, state) => const SplashScreen()),
+
+    // App gate: maintenance mode / forced update
+    GoRoute(path: AppRoutes.maintenance, name: 'maintenance', builder: (context, state) => const MaintenanceScreen()),
+    GoRoute(path: AppRoutes.updateRequired, name: 'updateRequired', builder: (context, state) => const UpdateRequiredScreen()),
 
     // Authentication routes
     GoRoute(path: AppRoutes._login, name: 'login', builder: (context, state) => const LoginScreen()),
@@ -113,11 +129,15 @@ final router = GoRouter(
     // Profile route
     GoRoute(path: AppRoutes.profile, name: 'profile', builder: (context, state) => const ProfileScreen()),
     GoRoute(path: AppRoutes.editProfile, name: 'editProfile', builder: (context, state) => const EditProfileScreen()),
+    GoRoute(path: AppRoutes.deleteAccount, name: 'deleteAccount', builder: (context, state) => const DeleteAccountScreen()),
 
     // Settings route
     GoRoute(path: AppRoutes.settings, name: 'settings', builder: (context, state) => const SettingsScreen()),
 
-    GoRoute(path: AppRoutes.privacyPolicy, name: 'privacyPolicy', builder: (context, state) => const PrivacyPolicyScreen()),
+    // App info (content from Django admin)
+    GoRoute(path: AppRoutes.privacyPolicy, name: 'privacyPolicy', builder: (context, state) => const ContentPageScreen(kind: ContentKind.privacyPolicy)),
+    GoRoute(path: AppRoutes.termsAndConditions, name: 'termsAndConditions', builder: (context, state) => const ContentPageScreen(kind: ContentKind.termsAndConditions)),
+    GoRoute(path: AppRoutes.faq, name: 'faq', builder: (context, state) => const FaqScreen()),
 
     GoRoute(path: AppRoutes.manageMembership, name: 'manageMembership', builder: (context, state) => const ManageMembershipScreen()),
 

@@ -50,6 +50,16 @@ class AuthApiService {
     return UserModel.fromJson((response.data as Map<String, dynamic>)['user'] as Map<String, dynamic>);
   }
 
+  /// Schedules account deletion; the backend replies `{ message, deletion_scheduled_for }`.
+  Future<DateTime> requestAccountDeletion(Map<String, dynamic> body) async {
+    final response = await _apiClient.post(AppConstants.accountDeletionEndpoint, data: body);
+    return DateTime.parse((response.data as Map<String, dynamic>)['deletion_scheduled_for'] as String);
+  }
+
+  Future<void> cancelAccountDeletion() async {
+    await _apiClient.delete(AppConstants.accountDeletionEndpoint);
+  }
+
   /// Stores the tokens from an auth response and returns the embedded user.
   Future<UserModel> _handleAuthResponse(Map<String, dynamic> data) async {
     await _apiClient.updateToken(data['access_token'] as String?);

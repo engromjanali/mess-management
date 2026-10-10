@@ -774,5 +774,97 @@
         "type": "String"
       }
     }
-  }
+  },
+  "termsAndConditions": "Terms and conditions",
+  "termsSubtitle": "Rules for using the app",
+  "faq": "FAQ",
+  "faqSubtitle": "Answers to common questions",
+  "noFaqs": "No questions yet.",
+  "lastUpdatedOn": "Last updated {date}",
+  "@lastUpdatedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "supportEmail": "Need help? Write to {email}",
+  "@supportEmail": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteAccount": "Delete account",
+  "deleteAccountSubtitle": "Permanently remove your account and data",
+  "deleteAccountTitle": "Delete your account?",
+  "deleteAccountIntro": "Your account will be deleted 60 days after you confirm. Until then you can sign in and keep it.",
+  "deleteAccountWhatHappens": "What will be deleted",
+  "deleteAccountPointProfile": "Your profile: name, email, phone and photo.",
+  "deleteAccountPointMemberships": "Your memberships in every mess and season.",
+  "deleteAccountPointRecords": "Your meals, deposits and other records will no longer be linked to you.",
+  "deleteAccountPointSignOut": "You'll be signed out right away.",
+  "deleteAccountReasonLabel": "Why are you leaving? (optional)",
+  "deleteReasonNotUsing": "I don't use the app anymore",
+  "deleteReasonLeftMess": "I left my mess",
+  "deleteReasonPrivacy": "Privacy concerns",
+  "deleteReasonOther": "Other",
+  "enterPasswordToConfirm": "Enter your password to confirm.",
+  "deleteAccountUnderstand": "I understand my account will be deleted after 60 days.",
+  "deletionScheduledTitle": "Account deletion scheduled",
+  "deletionScheduledMessage": "Your account will be deleted on {date}. We've signed you out. Sign in before then if you change your mind.",
+  "@deletionScheduledMessage": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "deletionScheduledBanner": "Your account will be deleted on {date}.",
+  "@deletionScheduledBanner": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "keepAccountHint": "Changed your mind? Keep your account and nothing will be deleted.",
+  "keepAccount": "Keep account",
+  "deletionCancelled": "Deletion cancelled. Your account stays.",
+  "maintenanceTitle": "We'll be back soon",
+  "maintenanceUntil": "Expected back {date}",
+  "@maintenanceUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "updateRequiredTitle": "Update required",
+  "updateRequiredMessage": "Version {current} is no longer supported. Update to version {latest} to keep using the app.",
+  "@updateRequiredMessage": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "latest": {
+        "type": "String"
+      }
+    }
+  },
+  "updateAvailableTitle": "Update available",
+  "updateAvailableMessage": "Version {latest} is available. You're using {current}.",
+  "@updateAvailableMessage": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "latest": {
+        "type": "String"
+      }
+    }
+  },
+  "updateNow": "Update",
+  "later": "Later"
 }

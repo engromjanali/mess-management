@@ -16,4 +16,9 @@ abstract class AuthRepository {
   ResultFuture<UserEntity?> getCurrentUser();
 
   ResultFuture<UserEntity> updateProfile({required String fullName, required String email, required String phone, String? address, List<int>? photoBytes, String? photoName});
+
+  /// Schedules deletion of the signed-in account; returns when it takes effect.
+  ResultFuture<DateTime> requestAccountDeletion({required String password, String? reason});
+
+  ResultFuture<void> cancelAccountDeletion();
 }

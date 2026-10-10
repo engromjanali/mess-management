@@ -51,4 +51,10 @@ class AuthRemoteDataSourceImpl implements AuthDataSource {
     // A new photo is sent as multipart; the backend stores it in Cloudinary.
     return _apiService.updateProfile(FormData.fromMap({...body, 'photo': MultipartFile.fromBytes(photoBytes, filename: photoName ?? 'profile.jpg')}));
   }
+
+  @override
+  Future<DateTime> requestAccountDeletion({required String password, String? reason}) => _apiService.requestAccountDeletion({'password': password, 'reason': ?reason});
+
+  @override
+  Future<void> cancelAccountDeletion() => _apiService.cancelAccountDeletion();
 }

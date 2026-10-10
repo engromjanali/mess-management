@@ -1,10 +1,9 @@
-import 'package:clean_boilerplate/config/route/app_router.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
-import 'package:clean_boilerplate/core/helpers/auth_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:clean_boilerplate/features/splash/presentation/bloc/splash_bloc.dart';
-import 'package:go_router/go_router.dart';
+import 'package:clean_boilerplate/features/splash/presentation/widgets/app_gate.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -15,10 +14,8 @@ class SplashScreen extends StatelessWidget {
       listener: (context, state) {
         state.when(
           loading: () {},
-          loaded: (config) {
-            final isLoggedIn = AuthHelper.isLogin();
-            context.replace(isLoggedIn ? AppRoutes.getHomeRoute() : AppRoutes.getLoginRoute());
-          },
+          // Maintenance, forced / optional update, then home or login.
+          loaded: (config) => openApp(context, config),
           error: (error) {
             context.showErrorSnackBar(error);
           },
@@ -40,7 +37,7 @@ class SplashScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => context.read<SplashBloc>().add(const SplashEvent.getConfig()),
-                    child: const Text('Retry'),
+                    child: Text(context.local.tryAgain),
                   ),
                 ],
               ),

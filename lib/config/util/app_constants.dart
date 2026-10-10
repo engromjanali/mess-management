@@ -15,8 +15,10 @@ class AppConstants {
   // Grouped by feature; inside a feature, user (`/api/v1/user`) routes come
   // before manager (`/api/v1/admin`) routes.
 
-  // Config
-  static const String configEndPoint = '/api/v1/auth/config';
+  // Config & app content (public, managed in Django admin)
+  static const String configEndPoint = '/api/v1/app/config';
+  static const String contentPagesEndpoint = '/api/v1/app/pages';
+  static const String faqsEndpoint = '/api/v1/app/faqs';
   static const String authTestEndpoint = '/api/v1/auth/test';
 
   // Auth
@@ -28,6 +30,9 @@ class AppConstants {
   static const String forgotPasswordEndpoint = '/api/v1/auth/forgot-password';
   static const String forgetPasswordEndpoint = '/api/v1/auth/forget-password';
   static const String resetPasswordEndpoint = '/api/v1/auth/change-password';
+
+  // Account — user
+  static const String accountDeletionEndpoint = '/api/v1/user/account/delete';
 
   // Membership — user
   static const String membershipStatusEndpoint = '/api/v1/user/membership/status';

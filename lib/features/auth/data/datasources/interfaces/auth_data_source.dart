@@ -27,4 +27,10 @@ abstract class AuthDataSource {
 
   /// Update the signed-in user's profile (optionally with a new photo) and return the saved user
   Future<UserModel> updateProfile({required String fullName, required String email, required String phone, String? address, List<int>? photoBytes, String? photoName});
+
+  /// Schedules deletion of the signed-in account (60 days ahead); returns when it takes effect
+  Future<DateTime> requestAccountDeletion({required String password, String? reason});
+
+  /// Cancels a scheduled account deletion
+  Future<void> cancelAccountDeletion();
 }

@@ -52,6 +52,8 @@ dependencies:
   country_code_picker: ^3.4.1
   firebase_core: ^4.11.0
   image_picker: ^1.2.3
+  package_info_plus: ^10.2.2
+  url_launcher: ^6.3.3
 
 
 dev_dependencies:

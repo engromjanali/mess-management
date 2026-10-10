@@ -76,4 +76,10 @@ class AuthLocalDataSourceImpl implements AuthDataSource {
       'This is a placeholder for future local data source functionality.',
     );
   }
+
+  @override
+  Future<DateTime> requestAccountDeletion({required String password, String? reason}) async => DateTime.now().add(const Duration(days: 60));
+
+  @override
+  Future<void> cancelAccountDeletion() async {}
 }

@@ -17,13 +17,16 @@ class UserEntity extends Equatable {
 
   final String? address;
 
-  const UserEntity({required this.id, required this.email, required this.name, this.phone, this.photoUrl, this.currentSeason, this.role = 'member', this.activeMessId, this.address});
+  /// When the account deletion the user asked for takes effect; null when none is scheduled.
+  final DateTime? deletionScheduledFor;
+
+  const UserEntity({required this.id, required this.email, required this.name, this.phone, this.photoUrl, this.currentSeason, this.role = 'member', this.activeMessId, this.address, this.deletionScheduledFor});
 
   /// Whether this user manages a mess (maps to the admin experience).
   bool get isManager => role == 'manager';
 
   @override
-  List<Object?> get props => [id, email, name, phone, photoUrl, currentSeason, role, activeMessId, address];
+  List<Object?> get props => [id, email, name, phone, photoUrl, currentSeason, role, activeMessId, address, deletionScheduledFor];
 }
 
 class CurrentSeasonEntity extends Equatable {

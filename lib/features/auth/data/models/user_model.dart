@@ -19,6 +19,7 @@ abstract class UserModel with _$UserModel {
     @Default('member') String role,
     @JsonKey(name: 'active_mess_id') int? activeMessId,
     String? address,
+    @JsonKey(name: 'deletion_scheduled_for') DateTime? deletionScheduledFor,
   }) = _UserModel;
 
   /// From JSON
@@ -26,12 +27,12 @@ abstract class UserModel with _$UserModel {
 
   /// Convert model to entity
   UserEntity toEntity() {
-    return UserEntity(id: id, email: email, name: name, phone: phone, photoUrl: photoUrl, currentSeason: currentSeason?.toEntity(), role: role, activeMessId: activeMessId, address: address);
+    return UserEntity(id: id, email: email, name: name, phone: phone, photoUrl: photoUrl, currentSeason: currentSeason?.toEntity(), role: role, activeMessId: activeMessId, address: address, deletionScheduledFor: deletionScheduledFor?.toLocal());
   }
 
   /// Create model from entity
   factory UserModel.fromEntity(UserEntity entity) {
-    return UserModel(id: entity.id, email: entity.email, name: entity.name, phone: entity.phone, photoUrl: entity.photoUrl, currentSeason: entity.currentSeason == null ? null : CurrentSeasonModel.fromEntity(entity.currentSeason!), role: entity.role, activeMessId: entity.activeMessId, address: entity.address);
+    return UserModel(id: entity.id, email: entity.email, name: entity.name, phone: entity.phone, photoUrl: entity.photoUrl, currentSeason: entity.currentSeason == null ? null : CurrentSeasonModel.fromEntity(entity.currentSeason!), role: entity.role, activeMessId: entity.activeMessId, address: entity.address, deletionScheduledFor: entity.deletionScheduledFor);
   }
 }
 

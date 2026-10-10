@@ -37,4 +37,11 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   ResultFuture<UserEntity> updateProfile({required String fullName, required String email, required String phone, String? address, List<int>? photoBytes, String? photoName}) =>
       guardResult(() async => (await _dataSource.updateProfile(fullName: fullName, email: email, phone: phone, address: address, photoBytes: photoBytes, photoName: photoName)).toEntity());
+
+  @override
+  ResultFuture<DateTime> requestAccountDeletion({required String password, String? reason}) =>
+      guardResult(() => _dataSource.requestAccountDeletion(password: password, reason: reason));
+
+  @override
+  ResultFuture<void> cancelAccountDeletion() => guardResult(() => _dataSource.cancelAccountDeletion());
 }

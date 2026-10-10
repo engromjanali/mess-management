@@ -1,5 +1,6 @@
 import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_event.dart';
 import 'package:clean_boilerplate/features/splash/presentation/bloc/splash_bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
@@ -15,6 +16,7 @@ import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_event.dart';
 import 'package:clean_boilerplate/features/settings/presentation/bloc/localization/localization_bloc.dart';
 import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_bloc.dart';
+import 'package:clean_boilerplate/features/splash/presentation/widgets/app_gate.dart';
 import 'package:clean_boilerplate/l10n/gen/app_localizations.dart';
 
 void main() async {
@@ -39,8 +41,27 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  FocusTraversalPolicy _focusTraversalPolicy = kIsWeb ? WidgetOrderTraversalPolicy() : ReadingOrderTraversalPolicy();
+
+  @override
+  void initState() {
+    super.initState();
+    if (kIsWeb) {
+      // Browser focus can arrive before the router overlay has a layout.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        setState(() => _focusTraversalPolicy = ReadingOrderTraversalPolicy());
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +91,18 @@ class MyApp extends StatelessWidget {
                 themeMode: themeMode,
                 locale: localeState.locale,
                 routerConfig: router,
-                builder: (context, child) => RoleSwitcherOverlay(child: child ?? const SizedBox.shrink()),
+                builder: (context, child) => BlocListener<SplashBloc, SplashState>(
+                  listener: (context, state) {
+                    state.maybeWhen(
+                      loaded: (config) => openBlockedAppRoute(context, config),
+                      orElse: () {},
+                    );
+                  },
+                  child: FocusTraversalGroup(
+                    policy: _focusTraversalPolicy,
+                    child: RoleSwitcherOverlay(child: child ?? const SizedBox.shrink()),
+                  ),
+                ),
                 localizationsDelegates: AppLocalizations.localizationsDelegates,
                 supportedLocales: AppLocalizations.supportedLocales,
               );

@@ -181,4 +181,39 @@ class MockAuthRepository extends _i1.Mock implements _i2.AuthRepository {
             ),
           )
           as _i3.Future<_i4.Result<_i5.UserEntity>>);
+
+  @override
+  _i3.Future<_i4.Result<DateTime>> requestAccountDeletion({
+    required String? password,
+    String? reason,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#requestAccountDeletion, [], {
+              #password: password,
+              #reason: reason,
+            }),
+            returnValue: _i3.Future<_i4.Result<DateTime>>.value(
+              _i6.dummyValue<_i4.Result<DateTime>>(
+                this,
+                Invocation.method(#requestAccountDeletion, [], {
+                  #password: password,
+                  #reason: reason,
+                }),
+              ),
+            ),
+          )
+          as _i3.Future<_i4.Result<DateTime>>);
+
+  @override
+  _i3.Future<_i4.Result<void>> cancelAccountDeletion() =>
+      (super.noSuchMethod(
+            Invocation.method(#cancelAccountDeletion, []),
+            returnValue: _i3.Future<_i4.Result<void>>.value(
+              _i6.dummyValue<_i4.Result<void>>(
+                this,
+                Invocation.method(#cancelAccountDeletion, []),
+              ),
+            ),
+          )
+          as _i3.Future<_i4.Result<void>>);
 }

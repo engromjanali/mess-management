@@ -56,8 +56,8 @@ class _ProfileBody extends StatelessWidget {
           children: [
             _ProfileHeader(user: user),
             const SizedBox(height: Dimensions.spaceLarge),
-            for (final item in profileMenuItems(context, isAdmin: context.watch<RoleCubit>().state.isAdmin)) ...[
-              _ProfileTile(icon: item.icon, title: item.title, subtitle: item.subtitle, onTap: () => context.push(item.route)),
+            for (final item in profileMenuItems(context, isAdmin: context.watch<RoleCubit>().state.isAdmin, deletionScheduledFor: user.deletionScheduledFor)) ...[
+              _ProfileTile(icon: item.icon, title: item.title, subtitle: item.subtitle, danger: item.danger, onTap: () => context.push(item.route)),
               const SizedBox(height: Dimensions.paddingSizeSmall),
             ],
             const SizedBox(height: Dimensions.spaceLarge),

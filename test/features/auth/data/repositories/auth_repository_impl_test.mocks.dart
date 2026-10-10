@@ -32,6 +32,11 @@ class _FakeUserModel_0 extends _i1.SmartFake implements _i2.UserModel {
     : super(parent, parentInvocation);
 }
 
+class _FakeDateTime_1 extends _i1.SmartFake implements DateTime {
+  _FakeDateTime_1(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
 /// A class which mocks [AuthDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -163,4 +168,35 @@ class MockAuthDataSource extends _i1.Mock implements _i3.AuthDataSource {
             ),
           )
           as _i4.Future<_i2.UserModel>);
+
+  @override
+  _i4.Future<DateTime> requestAccountDeletion({
+    required String? password,
+    String? reason,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#requestAccountDeletion, [], {
+              #password: password,
+              #reason: reason,
+            }),
+            returnValue: _i4.Future<DateTime>.value(
+              _FakeDateTime_1(
+                this,
+                Invocation.method(#requestAccountDeletion, [], {
+                  #password: password,
+                  #reason: reason,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<DateTime>);
+
+  @override
+  _i4.Future<void> cancelAccountDeletion() =>
+      (super.noSuchMethod(
+            Invocation.method(#cancelAccountDeletion, []),
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
 }

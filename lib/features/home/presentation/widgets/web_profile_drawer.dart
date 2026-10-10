@@ -33,8 +33,8 @@ class WebProfileDrawer extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
                 children: [
-                  for (final item in profileMenuItems(context, isAdmin: isAdmin))
-                    _DrawerItem(icon: item.icon, label: item.title, onTap: () => _navigate(context, item.route)),
+                  for (final item in profileMenuItems(context, isAdmin: isAdmin, deletionScheduledFor: user?.deletionScheduledFor))
+                    _DrawerItem(icon: item.icon, label: item.title, danger: item.danger, onTap: () => _navigate(context, item.route)),
                 ],
               ),
             ),
