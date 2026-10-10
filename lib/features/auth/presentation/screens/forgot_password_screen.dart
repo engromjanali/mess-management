@@ -70,9 +70,9 @@ class _ForgotPasswordViewState extends State<_ForgotPasswordView> {
     return BlocConsumer<PasswordResetBloc, PasswordResetState>(
       listener: (context, state) {
         state.maybeWhen(
-          otpSent: (email) => context.showInfoSnackBar('We sent a reset code to $email.'),
+          otpSent: (email) => context.showInfoSnackBar(context.local.resetCodeSent(email)),
           success: () {
-            context.showSuccessSnackBar('Password reset. Please sign in.');
+            context.showSuccessSnackBar(context.local.passwordResetComplete);
             _goBack();
           },
           error: (message, _) => context.showErrorSnackBar(message),

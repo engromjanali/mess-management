@@ -172,7 +172,7 @@ class _BodyState extends State<_Body> {
         _drafts[member.id] = MemberMealEntity(memberId: member.id, date: widget.date, breakfast: _breakfast, lunch: _lunch, dinner: _dinner);
       }
     });
-    context.showSuccessSnackBar('Meal applied to all members');
+    context.showSuccessSnackBar(context.local.mealAppliedToAllMembers);
   }
 
   void _saveAll(BuildContext context) {

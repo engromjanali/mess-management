@@ -47,6 +47,8 @@ dependencies:
   logger: ^2.6.2
   flutter_svg: ^2.2.3
   collection: ^1.19.1
+  email_validator: ^3.0.0
+  phone_numbers_parser: ^9.0.28
 
 
   country_code_picker: ^3.4.1

@@ -53,8 +53,9 @@ extension DioExceptionX on DioException {
         return RequestTimeoutException(message: 'Request timeout. Please try again.');
       case DioExceptionType.badResponse:
         final statusCode = response?.statusCode;
+        if (statusCode != null && statusCode >= 500) return ServerException(message: 'Server error. Please try again later.', statusCode: statusCode);
         if (statusCode == 401) {
-          return UnauthorizedException(message: response?.data['message'] ?? 'Unauthorized access', statusCode: statusCode!);
+          return UnauthorizedException(message: 'Your session has expired. Please sign in again.', statusCode: statusCode!);
         }
         return ServerException(message: _extractErrorMessage(response?.data), statusCode: statusCode, fieldErrors: _extractFieldErrors(response?.data));
       case DioExceptionType.cancel:

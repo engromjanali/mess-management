@@ -55,7 +55,7 @@ class AppConstants {
   static const String messDetailsEndpoint = '/api/v1/user/mess';
 
   // Mess — admin (not on the backend yet)
-  static const String messUpdateEndpoint = '/api/v1/membership/mess';
+  static const String messUpdateEndpoint = '/api/v1/user/mess';
 
   // Seasons — admin
   static const String adminSeasonsEndpoint = '/api/v1/admin/seasons';

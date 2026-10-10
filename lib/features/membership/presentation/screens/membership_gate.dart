@@ -3,6 +3,7 @@ import 'package:clean_boilerplate/config/util/app_constants.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
 import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
@@ -228,7 +229,7 @@ class _InviteCard extends StatelessWidget {
   Future<void> _join(BuildContext context, String code, {String? messName}) async {
     final inviteCode = code.trim();
     if (inviteCode.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Enter an invite code first.')));
+      context.showErrorSnackBar(context.local.inviteCodeRequired);
       return;
     }
     final confirmed = await showDialog<bool>(

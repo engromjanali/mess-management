@@ -7,6 +7,7 @@ import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/di/injection.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
 import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
 import 'package:clean_boilerplate/core/network/api_client.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
@@ -469,7 +470,7 @@ class _MessDetailsCard extends StatelessWidget {
                 runSpacing: Dimensions.paddingSizeSmall,
                 children: [
                   FilledButton.icon(
-                    onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Google Maps location is not implemented yet.'))),
+                    onPressed: () => context.showInfoSnackBar(context.local.locationComingSoon),
                     icon: const Icon(Icons.map_outlined),
                     label: const Text('Show on Google Maps'),
                   ),

@@ -1,8 +1,10 @@
 import 'package:clean_boilerplate/config/util/dimensions.dart';
-import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/errors/user_error_message.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/screen_matres_extensions.dart';
 import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
+import 'package:clean_boilerplate/core/widgets/app_snackbar_content.dart';
+import 'package:clean_boilerplate/core/widgets/app_desktop_toast.dart';
 import 'package:flutter/material.dart';
 
 /// SnackBar status types
@@ -14,78 +16,39 @@ extension OverlayExtensions on BuildContext {
   Future<void> _showCustomSnackBar(String? message, {SnackBarStatus status = SnackBarStatus.success, Duration duration = const Duration(seconds: 3)}) async {
     if (message == null || message.isEmpty) return;
 
-    // Determine icon and colors based on status
-    Widget statusIcon;
+    final (icon, color) = switch (status) {
+      SnackBarStatus.error => (Icons.error_outline_rounded, customThemeColors.errorColor),
+      SnackBarStatus.success => (Icons.check_circle_outline_rounded, customThemeColors.successColor),
+      SnackBarStatus.info => (Icons.info_outline_rounded, customThemeColors.primaryColor),
+      SnackBarStatus.alert => (Icons.warning_amber_rounded, customThemeColors.warningColor),
+    };
 
-    switch (status) {
-      case SnackBarStatus.error:
-        statusIcon = CircleAvatar(
-          radius: 12,
-          backgroundColor: customThemeColors.errorColor,
-          child: const Icon(Icons.close_rounded, color: Colors.white, size: 16),
-        );
-        break;
-      case SnackBarStatus.success:
-        statusIcon = CircleAvatar(
-          radius: 12,
-          backgroundColor: customThemeColors.successColor,
-          child: const Icon(Icons.check_rounded, color: Colors.white, size: 16),
-        );
-        break;
-      case SnackBarStatus.info:
-        statusIcon = const Icon(Icons.warning_rounded, color: Colors.orangeAccent, size: 22);
-        break;
-      case SnackBarStatus.alert:
-        statusIcon = Icon(Icons.warning_rounded, color: customThemeColors.warningColor, size: 22);
-        break;
+    AppDesktopToast.dismiss();
+    if (ResponsiveHelper.isDesktop(this)) {
+      ScaffoldMessenger.of(this).hideCurrentSnackBar();
+      AppDesktopToast.show(this, message: message, icon: icon, color: color, duration: duration);
+      return;
     }
 
     ScaffoldMessenger.of(this)
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
-          elevation: 0,
+          elevation: 4,
           duration: duration,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-          content: Align(
-            child: Material(
-              color: Colors.black,
-              elevation: 0,
-              borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-              child: Container(
-                constraints: const BoxConstraints(minHeight: 60),
-                padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Status icon
-                    statusIcon,
-                    const SizedBox(width: Dimensions.paddingSizeSmall),
-                    // Message text
-                    Flexible(
-                      child: Text(
-                        message,
-                        style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeDefault),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          margin: ResponsiveHelper.isDesktop(this)
-              ? EdgeInsets.only(right: screenWidth * 0.7, bottom: Dimensions.paddingSizeExtraSmall, left: Dimensions.paddingSizeExtraSmall)
-              : EdgeInsets.only(bottom: screenHeight * 0.08),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: BorderSide(color: customThemeColors.borderColor)),
+          content: AppSnackbarContent(message: message, icon: icon, color: color),
+          width: (screenWidth - 24).clamp(0.0, 560.0),
           behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.transparent,
+          backgroundColor: customThemeColors.surfaceColor,
         ),
       );
   }
 
   /// Show error snackbar
-  void showErrorSnackBar(String? message, {Duration? duration}) {
-    _showCustomSnackBar(message, status: SnackBarStatus.error, duration: duration ?? const Duration(seconds: 4));
+  void showErrorSnackBar(Object? error, {Duration? duration}) {
+    if (error == null || error is String && error.trim().isEmpty) return;
+    _showCustomSnackBar(userErrorMessage(error, local), status: SnackBarStatus.error, duration: duration ?? const Duration(seconds: 6));
   }
 
   /// Show success snackbar

@@ -2,7 +2,6 @@ import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/di/injection.dart';
-import 'package:clean_boilerplate/core/errors/exceptions.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
 import 'package:clean_boilerplate/core/network/api_client.dart';
@@ -126,10 +125,10 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
           _seasons = seasonsResult?.data ?? _seasons;
           if (!manage && _section.isMessSide) _section = _ManagementSection.memberships;
         });
-        seasonsResult?.onFailure((failure) => context.showErrorSnackBar('${failure.error}'));
+        seasonsResult?.onFailure((failure) => context.showErrorSnackBar(failure.error));
       }
     } catch (e) {
-      if (mounted) context.showErrorSnackBar(_errorMessage(e));
+      if (mounted) context.showErrorSnackBar(e);
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -144,7 +143,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
       if (mounted) context.showSuccessSnackBar(success);
       return true;
     } catch (e) {
-      if (mounted) context.showErrorSnackBar(_errorMessage(e));
+      if (mounted) context.showErrorSnackBar(e);
       return false;
     } finally {
       if (mounted) setState(() => _busyItem = null);
@@ -189,7 +188,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
       final member = await _service.findMember(query);
       if (mounted) setState(() => _selectedMember = member);
     } catch (e) {
-      if (mounted) context.showErrorSnackBar(_errorMessage(e));
+      if (mounted) context.showErrorSnackBar(e);
     } finally {
       if (mounted) setState(() => _findingMember = false);
     }
@@ -217,7 +216,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
     try {
       invite = await _service.createInvite(member['id'] as String, seasonId: seasonId);
     } catch (e) {
-      if (mounted) context.showErrorSnackBar(_errorMessage(e));
+      if (mounted) context.showErrorSnackBar(e);
       return;
     } finally {
       if (mounted) setState(() => _sendingInvite = false);
@@ -315,7 +314,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
       // Keep the row's spinner until the list shows the change.
       await _load();
     } catch (e) {
-      if (mounted) context.showErrorSnackBar(_errorMessage(e));
+      if (mounted) context.showErrorSnackBar(e);
     } finally {
       if (mounted) setState(() => _busyInviteId = null);
     }
@@ -365,7 +364,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
       // Keep the row's spinner until the list shows the change.
       await _load();
     } catch (e) {
-      if (mounted) context.showErrorSnackBar(_errorMessage(e));
+      if (mounted) context.showErrorSnackBar(e);
     } finally {
       if (mounted) setState(() => _busyRequestId = null);
     }
@@ -453,17 +452,11 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
       final members = await _service.getManagerMembers(includeDisabled: true, includeLeft: true);
       if (mounted) setState(() => _members = members);
     } catch (e) {
-      if (mounted) context.showErrorSnackBar(_errorMessage(e));
+      if (mounted) context.showErrorSnackBar(e);
     } finally {
       if (mounted) setState(() => _busyMembershipId = null);
     }
   }
-
-  /// The backend's reason when there is one.
-  String _errorMessage(Object error) => switch (error) {
-    ServerException(:final message) || NoInternetException(:final message) || RequestTimeoutException(:final message) || UnauthorizedException(:final message) => message,
-    _ => 'Something went wrong. Please try again.',
-  };
 
   @override
   Widget build(BuildContext context) {

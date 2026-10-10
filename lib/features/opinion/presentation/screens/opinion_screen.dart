@@ -5,6 +5,7 @@ import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
 import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
 import 'package:clean_boilerplate/core/widgets/app_footer.dart';
@@ -82,23 +83,23 @@ class _OpinionScreenState extends State<OpinionScreen> {
   void _submitOpinion(OpinionPeriodEntity period) {
     final message = _messageController.text.trim();
     if (message.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Write your opinion first')));
+      context.showErrorSnackBar(context.local.opinionMessageRequired);
       return;
     }
     if (!period.isActiveAt(DateTime.now())) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('This opinion period is closed')));
+      context.showErrorSnackBar(context.local.opinionPeriodClosed);
       return;
     }
     _store.submitOpinion(periodId: period.id, message: message);
     _messageController.clear();
     setState(() {});
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Opinion submitted anonymously')));
+    context.showSuccessSnackBar(context.local.opinionSubmitted);
   }
 
   void _toggleSending(OpinionPeriodEntity period) {
     _store.setMessageSending(periodId: period.id, enabled: !period.acceptingMessages);
     setState(() {});
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(period.acceptingMessages ? 'Message sending paused' : 'Message sending enabled')));
+    context.showInfoSnackBar(period.acceptingMessages ? context.local.opinionSendingPaused : context.local.opinionSendingEnabled);
   }
 
   Future<void> _changeEndDate(OpinionPeriodEntity period) async {

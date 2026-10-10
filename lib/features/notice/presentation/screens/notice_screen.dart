@@ -222,7 +222,7 @@ class _NoticeBody extends StatelessWidget {
     context.read<NoticeBloc>().add(NoticeEvent.refresh(done: done));
     // Keeps the pull-to-refresh spinner until the reload actually finishes.
     final failure = await done.future;
-    if (failure != null && context.mounted) context.showErrorSnackBar(failure.message);
+    if (failure != null && context.mounted) context.showErrorSnackBar(failure);
   }
 
   /// Shows [success] or the failure's specific message once [outcome] lands.
@@ -232,7 +232,7 @@ class _NoticeBody extends StatelessWidget {
     if (failure == null) {
       context.showSuccessSnackBar(success);
     } else {
-      context.showErrorSnackBar(failure.message);
+      context.showErrorSnackBar(failure);
     }
   }
 

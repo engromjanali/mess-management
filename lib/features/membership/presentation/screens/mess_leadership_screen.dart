@@ -2,8 +2,8 @@ import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/di/injection.dart';
-import 'package:clean_boilerplate/core/errors/exceptions.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
 import 'package:clean_boilerplate/core/network/api_client.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
 import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
@@ -48,8 +48,8 @@ class _MessLeadershipScreenState extends State<MessLeadershipScreen> {
           _members = members;
         });
       }
-    } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not load mess members.')));
+    } catch (error) {
+      if (mounted) context.showErrorSnackBar(error);
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -81,7 +81,7 @@ class _MessLeadershipScreenState extends State<MessLeadershipScreen> {
         await _service.makeActingManager(membershipId);
       }
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${member?['name'] ?? 'Member'} is now the $roleName.')));
+      context.showSuccessSnackBar(context.local.leadershipUpdated);
       if (transferOwnership) {
         // No longer the manager: drop to the member view.
         context.read<RoleCubit>().setRole(UserRole.user);
@@ -90,8 +90,7 @@ class _MessLeadershipScreenState extends State<MessLeadershipScreen> {
         Navigator.of(context).pop();
       }
     } catch (e) {
-      final message = e is ServerException ? e.message : 'Could not transfer mess leadership.';
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+      if (mounted) context.showErrorSnackBar(e);
     } finally {
       if (mounted) setState(() => _saving = false);
     }

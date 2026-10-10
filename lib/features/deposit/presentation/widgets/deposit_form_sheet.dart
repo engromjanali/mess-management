@@ -72,7 +72,7 @@ class _DepositFormSheetState extends State<_DepositFormSheet> {
   void _submit() {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     if (_memberId == null) {
-      context.showErrorSnackBar('Please select a member');
+      context.showErrorSnackBar(context.local.selectMember);
       return;
     }
     final magnitude = double.parse(_amountController.text.trim());

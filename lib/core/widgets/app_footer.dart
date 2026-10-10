@@ -1,6 +1,8 @@
 import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -176,7 +178,7 @@ class _AppInstallSection extends StatelessWidget {
   }
 
   void _showComingSoon(BuildContext context, String platform) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$platform app is coming soon')));
+    context.showInfoSnackBar(context.local.platformAppComingSoon(platform));
   }
 }
 

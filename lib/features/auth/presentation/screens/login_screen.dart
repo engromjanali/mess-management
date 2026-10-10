@@ -47,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _fillDemoCredentials() {
     _emailController.text = 'test@gmail.com';
     _passwordController.text = '12345678';
-    context.showInfoSnackBar('Demo credentials filled');
+    context.showInfoSnackBar(context.local.demoCredentialsFilled);
   }
 
   @override

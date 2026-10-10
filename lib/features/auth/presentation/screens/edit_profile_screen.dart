@@ -100,7 +100,7 @@ class _EditProfileFormState extends State<_EditProfileForm> {
         context.showSuccessSnackBar(context.local.profileUpdated);
         context.pop();
       },
-      failure: (failure) => context.showErrorSnackBar(failure.message.toString()),
+      failure: (failure) => context.showErrorSnackBar(failure),
     );
   }
 

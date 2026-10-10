@@ -21,9 +21,9 @@ Failure mapErrorToFailure(Object error) {
     return CacheFailure(message: error.message);
   }
   if (error is ServerException) {
-    return ServerFailure(message: error.message, statusCode: error.statusCode);
+    return ServerFailure(message: error.message, statusCode: error.statusCode, fieldErrors: error.fieldErrors);
   }
-  return ServerFailure(message: 'An unexpected error occurred: $error');
+  return const ServerFailure(message: 'Something went wrong. Please try again.');
 }
 
 ResultFuture<T> guardResult<T>(Future<T> Function() action) async {
