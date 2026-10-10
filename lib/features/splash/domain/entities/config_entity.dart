@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:clean_boilerplate/features/splash/domain/entities/support_channel_entity.dart';
 
 /// App-wide settings the admin sets in Django admin (`/api/v1/app/config`).
 class ConfigEntity extends Equatable {
@@ -21,6 +22,7 @@ class ConfigEntity extends Equatable {
   final DateTime? maintenanceUntil;
 
   final String supportEmail;
+  final List<SupportChannelEntity> supportChannels;
 
   const ConfigEntity({
     required this.latestVersion,
@@ -32,6 +34,7 @@ class ConfigEntity extends Equatable {
     this.maintenanceMessage = '',
     this.maintenanceUntil,
     this.supportEmail = '',
+    this.supportChannels = const [],
   });
 
   /// Whether [appVersion] is too old to use.
@@ -41,7 +44,13 @@ class ConfigEntity extends Equatable {
   bool updateAvailable(String appVersion) => compareVersions(appVersion, latestVersion) < 0;
 
   @override
-  List<Object?> get props => [latestVersion, minimumVersion, updateMessage, androidStoreUrl, iosStoreUrl, maintenanceMode, maintenanceMessage, maintenanceUntil, supportEmail];
+  List<Object?> get props => [latestVersion, minimumVersion, updateMessage, androidStoreUrl, iosStoreUrl, maintenanceMode, maintenanceMessage, maintenanceUntil, supportEmail, supportChannels];
+
+  List<SupportChannelEntity> get availableSupportChannels => [
+    ...supportChannels,
+    if (supportEmail.trim().isNotEmpty && !supportChannels.any((channel) => channel.kind == 'email'))
+      SupportChannelEntity(name: '', kind: 'email', destination: supportEmail.trim(), url: Uri(scheme: 'mailto', path: supportEmail.trim()).toString()),
+  ];
 }
 
 /// Compares dotted versions part by part (`1.2.10` > `1.2.9`); `+build` suffixes are ignored.

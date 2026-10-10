@@ -1,4 +1,5 @@
 import 'package:clean_boilerplate/features/splash/domain/entities/config_entity.dart';
+import 'package:clean_boilerplate/features/splash/data/models/support_channel_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'dart:convert';
 
@@ -21,6 +22,7 @@ abstract class ConfigModel with _$ConfigModel {
     @JsonKey(name: 'ios_store_url') @Default('') String iosStoreUrl,
     @Default(MaintenanceModel()) MaintenanceModel maintenance,
     @JsonKey(name: 'support_email') @Default('') String supportEmail,
+    @JsonKey(name: 'support_channels') @Default([]) List<SupportChannelModel> supportChannels,
   }) = _ConfigModel;
 
   factory ConfigModel.fromJson(Map<String, dynamic> json) => _$ConfigModelFromJson(json);
@@ -36,6 +38,7 @@ abstract class ConfigModel with _$ConfigModel {
       maintenanceMessage: maintenance.message,
       maintenanceUntil: maintenance.until?.toLocal(),
       supportEmail: supportEmail,
+      supportChannels: supportChannels,
     );
   }
 }

@@ -37,6 +37,7 @@ List<ProfileMenuItem> profileMenuItems(BuildContext context, {required bool isAd
   if (isAdmin) ProfileMenuItem(icon: Icons.event_repeat_rounded, title: context.local.seasonManagement, subtitle: context.local.seasonManagementSubtitle, route: AppRoutes.seasons),
   ProfileMenuItem(icon: Icons.settings_outlined, title: context.local.settings, subtitle: context.local.settingsSubtitle, route: AppRoutes.settings),
   ProfileMenuItem(icon: Icons.help_outline_rounded, title: context.local.faq, subtitle: context.local.faqSubtitle, route: AppRoutes.faq),
+  ProfileMenuItem(icon: Icons.support_agent_rounded, title: context.local.support, subtitle: context.local.supportSubtitle, route: AppRoutes.support),
   ProfileMenuItem(icon: Icons.privacy_tip_outlined, title: context.local.privacyPolicy, subtitle: context.local.privacyPolicySubtitle, route: AppRoutes.privacyPolicy),
   ProfileMenuItem(icon: Icons.gavel_rounded, title: context.local.termsAndConditions, subtitle: context.local.termsSubtitle, route: AppRoutes.termsAndConditions),
   ProfileMenuItem(

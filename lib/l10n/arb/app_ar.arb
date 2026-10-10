@@ -359,5 +359,12 @@
   "updateAvailableTitle": "تحديث متاح",
   "updateAvailableMessage": "الإصدار {latest} متاح. أنت تستخدم {current}.",
   "updateNow": "تحديث",
-  "later": "لاحقًا"
+  "later": "لاحقًا",
+  "support": "الدعم",
+  "supportSubtitle": "تواصل مع فريق الدعم",
+  "noSupportChannels": "جهات اتصال الدعم غير متاحة بعد.",
+  "supportOpenFailed": "تعذر فتح قناة الدعم. يرجى المحاولة مرة أخرى.",
+  "supportChannelEmail": "البريد الإلكتروني",
+  "supportChannelPhone": "الهاتف",
+  "supportChannelWebsite": "الموقع الإلكتروني"
 }

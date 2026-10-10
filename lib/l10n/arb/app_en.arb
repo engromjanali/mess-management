@@ -866,5 +866,12 @@
     }
   },
   "updateNow": "Update",
-  "later": "Later"
+  "later": "Later",
+  "support": "Support",
+  "supportSubtitle": "Contact our support team",
+  "noSupportChannels": "Support contacts are not available yet.",
+  "supportOpenFailed": "Could not open this support channel. Please try again.",
+  "supportChannelEmail": "Email",
+  "supportChannelPhone": "Phone",
+  "supportChannelWebsite": "Website"
 }

@@ -6,6 +6,7 @@ import 'package:clean_boilerplate/core/di/injection.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/usecase/usecase.dart';
 import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
+import 'package:clean_boilerplate/core/widgets/support_channels_view.dart';
 import 'package:clean_boilerplate/features/app_info/domain/entities/faq_entity.dart';
 import 'package:clean_boilerplate/features/app_info/domain/usecases/app_info_usecases.dart';
 import 'package:clean_boilerplate/features/app_info/presentation/widgets/app_info_error_view.dart';
@@ -14,7 +15,7 @@ import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile
 import 'package:clean_boilerplate/features/splash/presentation/bloc/splash_bloc.dart';
 
 /// Frequently asked questions from Django admin, in the app's language, with
-/// the support email (from the app config) below them.
+/// the support channels (from the app config) below them.
 class FaqScreen extends StatefulWidget {
   const FaqScreen({super.key});
 
@@ -69,7 +70,7 @@ class _FaqList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
-    final supportEmail = context.watch<SplashBloc>().state.maybeWhen(loaded: (config) => config.supportEmail, orElse: () => '');
+    final supportChannels = context.watch<SplashBloc>().state.maybeWhen(loaded: (config) => config.availableSupportChannels, orElse: () => null);
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
@@ -91,9 +92,11 @@ class _FaqList extends StatelessWidget {
                       padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
                       child: _FaqTile(faq: faq),
                     ),
-                if (supportEmail.isNotEmpty) ...[
+                if (supportChannels != null && supportChannels.isNotEmpty) ...[
                   const SizedBox(height: Dimensions.paddingSizeLarge),
-                  SelectableText(context.local.supportEmail(supportEmail), textAlign: TextAlign.center, style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor)),
+                  Text(context.local.support, style: AppTextStyles.sfProRoundedSemiBold.copyWith(color: colors.textPrimaryColor)),
+                  const SizedBox(height: Dimensions.paddingSizeSmall),
+                  SupportChannelsView(channels: supportChannels),
                 ],
               ],
             ),

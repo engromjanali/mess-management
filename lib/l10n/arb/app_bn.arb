@@ -359,5 +359,12 @@
   "updateAvailableTitle": "আপডেট পাওয়া যাচ্ছে",
   "updateAvailableMessage": "সংস্করণ {latest} এসেছে। আপনি ব্যবহার করছেন {current}।",
   "updateNow": "আপডেট",
-  "later": "পরে"
+  "later": "পরে",
+  "support": "সহায়তা",
+  "supportSubtitle": "আমাদের সহায়তা দলের সাথে যোগাযোগ করুন",
+  "noSupportChannels": "সহায়তার যোগাযোগের তথ্য এখনও পাওয়া যায়নি।",
+  "supportOpenFailed": "এই যোগাযোগের মাধ্যমটি খোলা যায়নি। আবার চেষ্টা করুন।",
+  "supportChannelEmail": "ইমেইল",
+  "supportChannelPhone": "ফোন",
+  "supportChannelWebsite": "ওয়েবসাইট"
 }

@@ -4,6 +4,7 @@ import 'package:clean_boilerplate/features/splash/presentation/screens/update_re
 import 'package:clean_boilerplate/features/app_info/domain/entities/content_page_entity.dart';
 import 'package:clean_boilerplate/features/app_info/presentation/screens/content_page_screen.dart';
 import 'package:clean_boilerplate/features/app_info/presentation/screens/faq_screen.dart';
+import 'package:clean_boilerplate/features/app_info/presentation/screens/support_screen.dart';
 import 'package:clean_boilerplate/features/auth/presentation/screens/delete_account_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -62,6 +63,7 @@ class AppRoutes {
   static const String privacyPolicy = '/privacy-policy';
   static const String termsAndConditions = '/terms-and-conditions';
   static const String faq = '/faq';
+  static const String support = '/support';
   static const String manageMembership = '/membership/manage';
   static const String joinMess = '/mess/join';
   static const String joinMessInvites = '/mess/join/invites';
@@ -138,6 +140,7 @@ final router = GoRouter(
     GoRoute(path: AppRoutes.privacyPolicy, name: 'privacyPolicy', builder: (context, state) => const ContentPageScreen(kind: ContentKind.privacyPolicy)),
     GoRoute(path: AppRoutes.termsAndConditions, name: 'termsAndConditions', builder: (context, state) => const ContentPageScreen(kind: ContentKind.termsAndConditions)),
     GoRoute(path: AppRoutes.faq, name: 'faq', builder: (context, state) => const FaqScreen()),
+    GoRoute(path: AppRoutes.support, name: 'support', builder: (context, state) => const SupportScreen()),
 
     GoRoute(path: AppRoutes.manageMembership, name: 'manageMembership', builder: (context, state) => const ManageMembershipScreen()),
 
