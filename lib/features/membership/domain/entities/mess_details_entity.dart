@@ -8,6 +8,9 @@ class MessDetailsEntity extends Equatable {
   final String address;
   final String email;
   final String phone;
+  final String mapUrl;
+  final double? latitude;
+  final double? longitude;
   final MessSeasonInfoEntity season;
 
   /// `manager`, `acting_manager` or `member`.
@@ -39,10 +42,13 @@ class MessDetailsEntity extends Equatable {
     required this.canEdit,
     required this.canTransfer,
     required this.canLeave,
+    this.mapUrl = '',
+    this.latitude,
+    this.longitude,
   });
 
   @override
-  List<Object?> get props => [id, name, address, email, phone, season, myRole, joinedAt, manager, actingManager, members, stats, canEdit, canTransfer, canLeave];
+  List<Object?> get props => [id, name, address, email, phone, mapUrl, latitude, longitude, season, myRole, joinedAt, manager, actingManager, members, stats, canEdit, canTransfer, canLeave];
 }
 
 class MessSeasonInfoEntity extends Equatable {

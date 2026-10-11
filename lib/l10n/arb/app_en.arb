@@ -909,5 +909,15 @@
   "messAddressTooLong": "Address cannot exceed 255 characters.",
   "messEmailOptional": "Mess email (optional)",
   "messPhoneOptional": "Mess phone (optional)",
-  "saveChanges": "Save changes"
+  "saveChanges": "Save changes",
+  "googleMapsLinkOptional": "Google Maps link (optional)",
+  "validationInvalidGoogleMapsLink": "Enter a valid Google Maps HTTPS link.",
+  "showOnGoogleMaps": "Show on Google Maps",
+  "messLocationNotSet": "No mess location has been set yet.",
+  "mapOpenFailed": "Could not open Google Maps. Please try again.",
+  "setMapLocation": "Set map location",
+  "changeMapLocation": "Change map location",
+  "searchLocation": "Search for a location",
+  "dragMapToChoose": "Drag the map to choose the exact location",
+  "useThisLocation": "Use this location"
 }

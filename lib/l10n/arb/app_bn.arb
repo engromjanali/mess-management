@@ -400,5 +400,15 @@
   "messAddressTooLong": "ঠিকানা ২৫৫ অক্ষরের বেশি হতে পারবে না।",
   "messEmailOptional": "মেসের ইমেইল (ঐচ্ছিক)",
   "messPhoneOptional": "মেসের ফোন (ঐচ্ছিক)",
-  "saveChanges": "পরিবর্তন সংরক্ষণ করুন"
+  "saveChanges": "পরিবর্তন সংরক্ষণ করুন",
+  "googleMapsLinkOptional": "গুগল ম্যাপস লিংক (ঐচ্ছিক)",
+  "validationInvalidGoogleMapsLink": "একটি বৈধ গুগল ম্যাপস HTTPS লিংক লিখুন।",
+  "showOnGoogleMaps": "গুগল ম্যাপসে দেখুন",
+  "messLocationNotSet": "মেসের অবস্থান এখনও সেট করা হয়নি।",
+  "mapOpenFailed": "গুগল ম্যাপস খোলা যায়নি। আবার চেষ্টা করুন।",
+  "setMapLocation": "ম্যাপে অবস্থান সেট করুন",
+  "changeMapLocation": "ম্যাপের অবস্থান পরিবর্তন করুন",
+  "searchLocation": "একটি অবস্থান খুঁজুন",
+  "dragMapToChoose": "সঠিক অবস্থান বেছে নিতে ম্যাপ টানুন",
+  "useThisLocation": "এই অবস্থান ব্যবহার করুন"
 }

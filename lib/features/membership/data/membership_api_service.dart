@@ -146,6 +146,9 @@ class MembershipApiService {
       address: json['address'] as String? ?? '',
       email: json['email'] as String? ?? '',
       phone: json['phone'] as String? ?? '',
+      mapUrl: json['map_url'] as String? ?? '',
+      latitude: _double(json['latitude']),
+      longitude: _double(json['longitude']),
       season: MessSeasonInfoEntity(
         id: season['id'] as int,
         name: season['name'] as String? ?? '',
@@ -180,8 +183,13 @@ class MembershipApiService {
     );
   }
 
-  Future<void> updateMess({required String name, required String address, required String email, required String phone}) async {
-    await _apiClient.patch<void>(AppConstants.messUpdateEndpoint, data: {'name': name, 'address': address, 'email': email, 'phone': phone});
+  Future<void> updateMess({required String name, required String address, required String email, required String phone, double? latitude, double? longitude}) async {
+    await _apiClient.patch<void>(AppConstants.messUpdateEndpoint, data: {'name': name, 'address': address, 'email': email, 'phone': phone, 'latitude': latitude?.toStringAsFixed(7), 'longitude': longitude?.toStringAsFixed(7)});
+  }
+
+  Future<List<Map<String, dynamic>>> searchMessLocations(String query) async {
+    final response = await _apiClient.get<List<dynamic>>('${AppConstants.messDetailsEndpoint}/location-search', queryParameters: {'q': query});
+    return (response.data ?? const []).cast<Map<String, dynamic>>();
   }
 
   Future<void> leaveMess() async {
@@ -209,6 +217,8 @@ class MembershipApiService {
     if (value is! Map<String, dynamic>) return null;
     return MessPersonEntity(userId: value['user_id'] as int, name: value['name'] as String? ?? '', email: value['email'] as String? ?? '', phone: value['phone'] as String? ?? '');
   }
+
+  double? _double(Object? value) => value is num ? value.toDouble() : double.tryParse(value?.toString() ?? '');
 
   MembershipSummaryEntity _membership(Map<String, dynamic> json) => MembershipSummaryEntity(
     membershipId: json['membership_id'] as int,

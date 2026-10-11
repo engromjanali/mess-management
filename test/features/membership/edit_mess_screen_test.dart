@@ -70,7 +70,7 @@ void main() {
         handler.resolve(Response(requestOptions: options, statusCode: 200));
       } else {
         handler.resolve(Response(requestOptions: options, statusCode: 200, data: {
-          'id': 1, 'name': 'Green House', 'email': '', 'phone': '+8801712345678', 'address': '',
+          'id': 1, 'name': 'Green House', 'email': '', 'phone': '+8801712345678', 'address': '', 'map_url': '',
           'season': {'id': 1, 'name': 'Season', 'start_date': '2026-10-01'},
           'stats': <String, dynamic>{}, 'joined_at': '2026-10-01',
         }));
@@ -112,6 +112,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(saved?['phone'], '+8801812345678');
     expect(saved?['email'], 'house+manager@example.com');
+    expect(saved?['latitude'], isNull);
+    expect(saved?['longitude'], isNull);
     expect(tester.takeException(), isNull);
   });
 

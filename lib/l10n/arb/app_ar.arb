@@ -400,5 +400,15 @@
   "messAddressTooLong": "يجب ألا يتجاوز العنوان 255 حرفًا.",
   "messEmailOptional": "البريد الإلكتروني للسكن (اختياري)",
   "messPhoneOptional": "هاتف السكن (اختياري)",
-  "saveChanges": "حفظ التغييرات"
+  "saveChanges": "حفظ التغييرات",
+  "googleMapsLinkOptional": "رابط خرائط Google (اختياري)",
+  "validationInvalidGoogleMapsLink": "أدخل رابط HTTPS صالحًا لخرائط Google.",
+  "showOnGoogleMaps": "عرض على خرائط Google",
+  "messLocationNotSet": "لم يتم تحديد موقع السكن بعد.",
+  "mapOpenFailed": "تعذر فتح خرائط Google. يرجى المحاولة مرة أخرى.",
+  "setMapLocation": "تحديد الموقع على الخريطة",
+  "changeMapLocation": "تغيير موقع الخريطة",
+  "searchLocation": "البحث عن موقع",
+  "dragMapToChoose": "اسحب الخريطة لاختيار الموقع الدقيق",
+  "useThisLocation": "استخدام هذا الموقع"
 }

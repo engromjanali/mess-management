@@ -20,7 +20,10 @@ void main() {
     await service.updateMess(name: 'Green House', address: 'Mirpur', email: 'house@example.com', phone: '01711111111');
     expect(request!.method, 'PATCH');
     expect(request!.path, '/api/v1/user/mess');
-    expect(request!.data, {'name': 'Green House', 'address': 'Mirpur', 'email': 'house@example.com', 'phone': '01711111111'});
+    expect(request!.data, {'name': 'Green House', 'address': 'Mirpur', 'email': 'house@example.com', 'phone': '01711111111', 'latitude': null, 'longitude': null});
+    await service.updateMess(name: 'Green House', address: 'Mirpur', email: 'house@example.com', phone: '01711111111', latitude: 23.676705700000014, longitude: 90.98840510000002);
+    expect((request!.data as Map)['latitude'], '23.6767057');
+    expect((request!.data as Map)['longitude'], '90.9884051');
     dio.close();
   });
 }

@@ -31,6 +31,13 @@
 
   <title>clean_boilerplate</title>
   <link rel="manifest" href="manifest.json">
+  <script>
+    window.messMapsAuthFailed = false;
+    window.gm_authFailure = function () {
+      window.messMapsAuthFailed = true;
+    };
+  </script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBktvyfMj1GRqOnf3gFFdB6idMLhwrX9VQ"></script>
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>

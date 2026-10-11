@@ -8,7 +8,8 @@
             "name": "mess-management",
             "request": "launch",
             "type": "dart",
-            "program": "lib/main.dart"
+            "program": "lib/main.dart",
+            "toolArgs": ["--web-port=54302"]
         },
         {
             "name": "mess-management (profile mode)",

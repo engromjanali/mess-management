@@ -13,6 +13,7 @@ import 'package:clean_boilerplate/core/network/api_client.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
 import 'package:clean_boilerplate/core/widgets/app_footer.dart';
 import 'package:clean_boilerplate/core/widgets/stat_card.dart';
+import 'package:clean_boilerplate/core/widgets/mess_google_map_sheet.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
 import 'package:clean_boilerplate/features/home/domain/entities/dashboard_entity.dart';
@@ -24,13 +25,13 @@ import 'package:clean_boilerplate/features/home/presentation/widgets/animated_en
 import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_formatters.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_hero_banner.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_top_bar.dart';
+import 'package:clean_boilerplate/features/membership/data/membership_api_service.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/home_sliver_app_bar.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/member_stats_table.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/pinned_notice_card.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/pinned_section_header.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
-import 'package:clean_boilerplate/features/membership/data/membership_api_service.dart';
 import 'package:clean_boilerplate/features/membership/presentation/bloc/membership_cubit.dart';
 import 'package:clean_boilerplate/features/membership/presentation/screens/membership_gate.dart';
 
@@ -470,9 +471,9 @@ class _MessDetailsCard extends StatelessWidget {
                 runSpacing: Dimensions.paddingSizeSmall,
                 children: [
                   FilledButton.icon(
-                    onPressed: () => context.showInfoSnackBar(context.local.locationComingSoon),
+                    onPressed: () => _openMessMap(context),
                     icon: const Icon(Icons.map_outlined),
-                    label: const Text('Show on Google Maps'),
+                    label: Text(context.local.showOnGoogleMaps),
                   ),
                   OutlinedButton.icon(onPressed: () => context.go(AppRoutes.opinions), icon: const Icon(Icons.forum_outlined), label: const Text('Anonymous opinions')),
                 ],
@@ -482,6 +483,20 @@ class _MessDetailsCard extends StatelessWidget {
         },
       ),
     );
+  }
+}
+
+Future<void> _openMessMap(BuildContext context) async {
+  try {
+    final mess = await MembershipApiService(getIt<ApiClient>()).getMessDetails();
+    if (!context.mounted) return;
+    if (mess.latitude == null || mess.longitude == null) {
+      context.showInfoSnackBar(context.local.messLocationNotSet);
+      return;
+    }
+    await showMessGoogleMap(context: context, latitude: mess.latitude, longitude: mess.longitude, address: mess.address);
+  } catch (error) {
+    if (context.mounted) context.showErrorSnackBar(error);
   }
 }
 
