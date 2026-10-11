@@ -125,10 +125,6 @@ class ApiClient {
 
       final response = await _dio.get<T>(path, queryParameters: queryParameters, options: options, cancelToken: cancelToken, onReceiveProgress: onReceiveProgress);
 
-      if (kDebugMode) {
-        print('=====> Response [${response.statusCode}]: $path');
-      }
-
       return response;
     } on DioException catch (e) {
       if (kDebugMode) {
@@ -163,10 +159,6 @@ class ApiClient {
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress,
       );
-
-      if (kDebugMode) {
-        print('=====> Response [${response.statusCode}]: $path');
-      }
 
       return response;
     } on DioException catch (e) {
@@ -203,10 +195,6 @@ class ApiClient {
         onReceiveProgress: onReceiveProgress,
       );
 
-      if (kDebugMode) {
-        print('=====> Response [${response.statusCode}]: $path');
-      }
-
       return response;
     } on DioException catch (e) {
       if (kDebugMode) {
@@ -242,10 +230,6 @@ class ApiClient {
         onReceiveProgress: onReceiveProgress,
       );
 
-      if (kDebugMode) {
-        print('=====> Response [${response.statusCode}]: $path');
-      }
-
       return response;
     } on DioException catch (e) {
       if (kDebugMode) {
@@ -263,10 +247,6 @@ class ApiClient {
       }
 
       final response = await _dio.delete<T>(path, data: data, queryParameters: queryParameters, options: options, cancelToken: cancelToken);
-
-      if (kDebugMode) {
-        print('=====> Response [${response.statusCode}]: $path');
-      }
 
       return response;
     } on DioException catch (e) {
@@ -313,10 +293,6 @@ class ApiClient {
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress,
       );
-
-      if (kDebugMode) {
-        print('=====> Response [${response.statusCode}]: $path');
-      }
 
       return response;
     } on DioException catch (e) {
