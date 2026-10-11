@@ -18,9 +18,10 @@ abstract class NetworkModule {
         baseUrl: AppConstants.baseUrl,
         connectTimeout: const Duration(seconds: AppConstants.connectionTimeout),
         receiveTimeout: const Duration(seconds: AppConstants.receiveTimeout),
-        headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+        headers: {'Accept': 'application/json'},
       ),
     );
+    if (kIsWeb) (dio.httpClientAdapter as dynamic).enableCORSWarning = false;
 
     // Add interceptors
     dio.interceptors.add(PrettyDioLogger(requestHeader: false, requestBody: false, enabled: kDebugMode));
