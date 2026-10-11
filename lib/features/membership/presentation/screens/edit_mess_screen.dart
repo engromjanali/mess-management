@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/core/di/injection.dart';
 import 'package:clean_boilerplate/core/errors/exceptions.dart';
@@ -14,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:go_router/go_router.dart';
 import 'package:phone_numbers_parser/phone_numbers_parser.dart';
 
 class EditMessScreen extends StatefulWidget {
@@ -74,6 +76,7 @@ class _EditMessScreenState extends State<EditMessScreen> {
 
   Future<void> _save() async {
     if (!(_formKey.currentState?.validate() ?? false) || _saving) return;
+    var saved = false;
     setState(() {
       _saving = true;
       _fieldErrors = const {};
@@ -82,8 +85,7 @@ class _EditMessScreenState extends State<EditMessScreen> {
       final phone = _phoneController.text.trim();
       await _service.updateMess(name: _nameController.text.trim(), address: _addressController.text.trim(), email: _emailController.text.trim(), phone: phone.isEmpty ? '' : '$_dialCode$phone', latitude: _latitude, longitude: _longitude);
       if (!mounted) return;
-      context.showSuccessSnackBar(context.local.messDetailsUpdated);
-      Navigator.of(context).pop();
+      saved = true;
     } on ServerException catch (error) {
       if (!mounted) return;
       setState(() => _fieldErrors = error.statusCode == 400 || error.statusCode == 422 ? {for (final key in ['name', 'address', 'email', 'phone']) if (error.fieldErrors.containsKey(key)) key: error.fieldErrors[key]!} : const {});
@@ -92,6 +94,14 @@ class _EditMessScreenState extends State<EditMessScreen> {
       if (mounted) context.showErrorSnackBar(_errorMessage(error, context.local.messDetailsSaveFailed));
     } finally {
       if (mounted) setState(() => _saving = false);
+    }
+    if (saved && mounted) {
+      final navigator = Navigator.of(context);
+      if (navigator.canPop()) {
+        navigator.pop(true);
+      } else {
+        GoRouter.maybeOf(context)?.go(AppRoutes.messDetails);
+      }
     }
   }
 
@@ -212,7 +222,7 @@ class _EditMessScreenState extends State<EditMessScreen> {
                           ),
                           const SizedBox(height: Dimensions.paddingSizeDefault),
                           OutlinedButton.icon(onPressed: _pickLocation, icon: const Icon(Icons.add_location_alt_outlined), label: Text(_latitude == null ? context.local.setMapLocation : context.local.changeMapLocation)),
-                          if (_latitude != null) Padding(padding: const EdgeInsets.only(top: Dimensions.paddingSizeSmall), child: Text(_locationAddress.isEmpty ? '${_latitude!.toStringAsFixed(6)}, ${_longitude!.toStringAsFixed(6)}' : _locationAddress, maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center)),
+                          if (_latitude != null) Padding(padding: const EdgeInsets.only(top: Dimensions.paddingSizeSmall), child: Text('${_latitude!.toStringAsFixed(6)}, ${_longitude!.toStringAsFixed(6)}', maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center)),
                           const SizedBox(height: Dimensions.spaceLarge),
                           FilledButton.icon(onPressed: _saving ? null : _save, icon: _saving ? const SizedBox(width: Dimensions.iconSizeSmall, height: Dimensions.iconSizeSmall, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.save_outlined), label: Text(context.local.saveChanges)),
                         ],

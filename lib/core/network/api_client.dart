@@ -1,7 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:clean_boilerplate/config/util/app_constants.dart';
-import 'package:clean_boilerplate/core/methods/printer.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
@@ -125,6 +125,8 @@ class ApiClient {
 
       final response = await _dio.get<T>(path, queryParameters: queryParameters, options: options, cancelToken: cancelToken, onReceiveProgress: onReceiveProgress);
 
+      _logResponse(response);
+
       return response;
     } on DioException catch (e) {
       if (kDebugMode) {
@@ -146,8 +148,8 @@ class ApiClient {
   }) async {
     try {
       if (kDebugMode) {
-        printer('=====> POST: $path');
-        printer('=====> Body: $data');
+        print('=====> POST: $path');
+        print('=====> Body: ${_formatLogValue(data)}');
       }
 
       final response = await _dio.post<T>(
@@ -159,6 +161,8 @@ class ApiClient {
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress,
       );
+
+      _logResponse(response);
 
       return response;
     } on DioException catch (e) {
@@ -182,7 +186,7 @@ class ApiClient {
     try {
       if (kDebugMode) {
         print('=====> PUT: $path');
-        print('=====> Body: $data');
+        print('=====> Body: ${_formatLogValue(data)}');
       }
 
       final response = await _dio.put<T>(
@@ -194,6 +198,8 @@ class ApiClient {
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress,
       );
+
+      _logResponse(response);
 
       return response;
     } on DioException catch (e) {
@@ -217,7 +223,7 @@ class ApiClient {
     try {
       if (kDebugMode) {
         print('=====> PATCH: $path');
-        print('=====> Body: $data');
+        print('=====> Body: ${_formatLogValue(data)}');
       }
 
       final response = await _dio.patch<T>(
@@ -229,6 +235,8 @@ class ApiClient {
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress,
       );
+
+      _logResponse(response);
 
       return response;
     } on DioException catch (e) {
@@ -247,6 +255,8 @@ class ApiClient {
       }
 
       final response = await _dio.delete<T>(path, data: data, queryParameters: queryParameters, options: options, cancelToken: cancelToken);
+
+      _logResponse(response);
 
       return response;
     } on DioException catch (e) {
@@ -271,7 +281,7 @@ class ApiClient {
     try {
       if (kDebugMode) {
         print('=====> POST Multipart: $path');
-        print('=====> Data: $data');
+        print('=====> Data: ${_formatLogValue(data)}');
         print('=====> Files: ${files?.length ?? 0}');
       }
 
@@ -294,6 +304,8 @@ class ApiClient {
         onReceiveProgress: onReceiveProgress,
       );
 
+      _logResponse(response);
+
       return response;
     } on DioException catch (e) {
       if (kDebugMode) {
@@ -310,5 +322,32 @@ class ApiClient {
       onUnauthorized?.call();
     }
     return error.toAppException();
+  }
+
+  void _logResponse(Response<dynamic> response) {
+    if (!kDebugMode) return;
+    debugPrint('=====> Response [${response.statusCode}] ${response.requestOptions.method}: ${response.requestOptions.uri}');
+    debugPrint('=====> Data: ${_formatLogValue(response.data)}');
+  }
+
+  String _formatLogValue(dynamic value) {
+    final sanitized = _sanitizeLogValue(value);
+    if (sanitized is Map || sanitized is List) {
+      try {
+        return const JsonEncoder.withIndent('  ').convert(sanitized);
+      } catch (_) {
+        return sanitized.toString();
+      }
+    }
+    return sanitized?.toString() ?? 'null';
+  }
+
+  dynamic _sanitizeLogValue(dynamic value, [String? key]) {
+    final normalizedKey = key?.toLowerCase().replaceAll('-', '_');
+    if (normalizedKey != null && (normalizedKey.contains('password') || normalizedKey.contains('token') || normalizedKey.contains('secret') || normalizedKey.contains('authorization') || normalizedKey.contains('api_key'))) return '[REDACTED]';
+    if (value is Map) return value.map((key, value) => MapEntry(key.toString(), _sanitizeLogValue(value, key.toString())));
+    if (value is List) return value.map((item) => _sanitizeLogValue(item)).toList();
+    if (value is FormData) return '[FormData]';
+    return value;
   }
 }

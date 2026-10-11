@@ -424,14 +424,41 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
 // Shared helpers.
 // ─────────────────────────────────────────────────────────────────────────
 
-class _MessDetailsCard extends StatelessWidget {
+class _MessDetailsCard extends StatefulWidget {
   const _MessDetailsCard({required this.dashboard});
 
   final DashboardEntity dashboard;
 
   @override
+  State<_MessDetailsCard> createState() => _MessDetailsCardState();
+}
+
+class _MessDetailsCardState extends State<_MessDetailsCard> {
+  bool _openingMap = false;
+
+  Future<void> _openMap() async {
+    if (_openingMap) return;
+    setState(() => _openingMap = true);
+    try {
+      final mess = await MembershipApiService(getIt<ApiClient>()).getMessDetails();
+      if (!mounted) return;
+      if (mess.latitude == null || mess.longitude == null) {
+        context.showInfoSnackBar(context.local.messLocationNotSet);
+        return;
+      }
+      setState(() => _openingMap = false);
+      await showMessGoogleMap(context: context, latitude: mess.latitude, longitude: mess.longitude, address: mess.address);
+    } catch (error) {
+      if (mounted) context.showErrorSnackBar(error);
+    } finally {
+      if (mounted && _openingMap) setState(() => _openingMap = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
+    final dashboard = widget.dashboard;
 
     return Container(
       padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
@@ -471,8 +498,8 @@ class _MessDetailsCard extends StatelessWidget {
                 runSpacing: Dimensions.paddingSizeSmall,
                 children: [
                   FilledButton.icon(
-                    onPressed: () => _openMessMap(context),
-                    icon: const Icon(Icons.map_outlined),
+                    onPressed: _openingMap ? null : _openMap,
+                    icon: _openingMap ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.map_outlined),
                     label: Text(context.local.showOnGoogleMaps),
                   ),
                   OutlinedButton.icon(onPressed: () => context.go(AppRoutes.opinions), icon: const Icon(Icons.forum_outlined), label: const Text('Anonymous opinions')),
@@ -483,20 +510,6 @@ class _MessDetailsCard extends StatelessWidget {
         },
       ),
     );
-  }
-}
-
-Future<void> _openMessMap(BuildContext context) async {
-  try {
-    final mess = await MembershipApiService(getIt<ApiClient>()).getMessDetails();
-    if (!context.mounted) return;
-    if (mess.latitude == null || mess.longitude == null) {
-      context.showInfoSnackBar(context.local.messLocationNotSet);
-      return;
-    }
-    await showMessGoogleMap(context: context, latitude: mess.latitude, longitude: mess.longitude, address: mess.address);
-  } catch (error) {
-    if (context.mounted) context.showErrorSnackBar(error);
   }
 }
 

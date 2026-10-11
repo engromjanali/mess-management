@@ -2,7 +2,6 @@ import 'package:clean_boilerplate/config/util/app_constants.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 @module
@@ -22,9 +21,6 @@ abstract class NetworkModule {
       ),
     );
     if (kIsWeb) (dio.httpClientAdapter as dynamic).enableCORSWarning = false;
-
-    // Add interceptors
-    dio.interceptors.add(PrettyDioLogger(requestHeader: false, requestBody: false, enabled: kDebugMode));
 
     return dio;
   }

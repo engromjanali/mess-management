@@ -271,9 +271,12 @@ class _ActionsCard extends StatelessWidget {
   final MessDetailsLoaded state;
 
   Future<void> _open(BuildContext context, String route) async {
-    await context.push(route);
+    final updated = await context.push<bool>(route);
     // The details may have changed there.
-    if (context.mounted) await _refresh(context);
+    if (context.mounted) {
+      if (updated == true) context.showSuccessSnackBar(context.local.messDetailsUpdated);
+      await _refresh(context);
+    }
   }
 
   Future<void> _leave(BuildContext context) async {
