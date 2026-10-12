@@ -12,6 +12,7 @@ import 'package:clean_boilerplate/core/role/role_cubit.dart';
 import 'package:clean_boilerplate/core/widgets/app_footer.dart';
 import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
 import 'package:clean_boilerplate/core/widgets/pill_tab_bar.dart';
+import 'package:clean_boilerplate/core/widgets/segmented_tab_bar.dart';
 import 'package:clean_boilerplate/core/widgets/stat_card.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
@@ -94,11 +95,26 @@ class _MealViewState extends State<_MealView> {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, 0),
-              child: PillTabBar<_MealTab>(
+              padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeExtraLarge),
+              child: Row(
+                children: [
+                  Expanded(child: SegmentedTabBar<_MealTab>(
                 tabs: [PillTab(value: _MealTab.manage, label: context.local.manageMeals), PillTab(value: _MealTab.mine, label: context.local.mine)],
                 selected: _tab,
                 onChanged: _selectTab,
+                  )),
+                  Visibility(
+                    visible: _tab == _MealTab.manage,
+                    maintainSize: true,
+                    maintainAnimation: true,
+                    maintainState: true,
+                    child: IconButton(
+                      tooltip: context.local.viewAll,
+                      onPressed: () => context.push(AppRoutes.mealList),
+                      icon: const Icon(Icons.arrow_circle_right_outlined),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -141,7 +157,7 @@ class _ManageTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const AnimatedEntrance(child: MealAdminPanel()),
+          const AnimatedEntrance(child: MealAdminPanel(showHeading: false)),
           SizedBox(height: context.bottomPadding),
         ],
       ),
@@ -327,7 +343,7 @@ class _MealTabScroll extends StatelessWidget {
               Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
-                  child: Padding(padding: const EdgeInsets.all(Dimensions.paddingSizeLarge), child: child),
+                  child: Padding(padding: EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, context.watch<RoleCubit>().state.isAdmin ? 0 : Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge), child: child),
                 ),
               ),
               if (isDesktop) const AppFooter(),

@@ -60,13 +60,18 @@ class DashboardTopBar extends StatelessWidget {
                       _Brand(showText: showBrandText),
                       if (navItems.isNotEmpty) ...[
                         const SizedBox(width: Dimensions.paddingSizeExtraLarge32),
+                        Expanded(child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(mainAxisSize: MainAxisSize.min, children: [
                         for (final item in navItems)
                           Padding(
                             padding: const EdgeInsets.only(right: Dimensions.paddingSizeExtraSmall),
                             child: _NavButton(item: item, showLabel: showNavLabels),
                           ),
+                          ]),
+                        )),
                       ],
-                      const Spacer(),
+                      if (navItems.isEmpty) const Spacer(),
                       _ActionIcon(icon: Icons.notifications_outlined, tooltip: 'Notifications', onPressed: () => context.go(AppRoutes.notices)),
                       _ActionIcon(
                         icon: context.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,

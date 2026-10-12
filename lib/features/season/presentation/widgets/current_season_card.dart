@@ -17,36 +17,64 @@ class CurrentSeasonCard extends StatelessWidget {
     final colors = context.customThemeColors;
     final season = this.season;
     return Container(
-      padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
-      decoration: BoxDecoration(color: colors.surfaceColor, borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge), border: Border.all(color: colors.primaryColor.withValues(alpha: 0.4))),
+      padding: const EdgeInsets.all(Dimensions.paddingSizeExtraLarge24),
+      decoration: BoxDecoration(color: colors.surfaceColor, borderRadius: BorderRadius.circular(Dimensions.radiusDefault), border: Border.all(color: colors.borderColor)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             children: [
-              Icon(Icons.event_available_rounded, color: colors.primaryColor),
+              Container(
+                padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+                decoration: BoxDecoration(color: colors.primaryColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
+                child: Icon(Icons.event_available_rounded, color: colors.primaryColor),
+              ),
               const SizedBox(width: Dimensions.paddingSizeSmall),
-              Expanded(child: Text(context.local.seasonInUse, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge))),
-              if (season != null) SeasonStatusChip(status: season.status),
+              Expanded(child: Text(context.local.seasonInUse, style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor))),
             ],
           ),
           const SizedBox(height: Dimensions.paddingSizeLarge),
           if (season == null)
             Text(context.local.noSeasonInUse, style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor))
           else ...[
-            Text(season.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor)),
-            const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-            Text(
-              [
-                if (season.endDate == null) ...[context.local.messSince(SeasonFormatters.date(season.startDate)), context.local.seasonDay(season.day)]
-                else context.local.seasonDates(SeasonFormatters.date(season.startDate), SeasonFormatters.date(season.endDate!)),
-                context.local.seasonMemberCount(season.memberCount),
-              ].join(' · '),
-              style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor),
+            Text(season.name, style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor)),
+            const SizedBox(height: Dimensions.paddingSizeDefault),
+            Wrap(
+              spacing: Dimensions.paddingSizeSmall,
+              runSpacing: Dimensions.paddingSizeSmall,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                SeasonStatusChip(status: season.status),
+                if (season.endDate == null) SeasonStatusChip(inUse: true),
+              ],
+            ),
+            const SizedBox(height: Dimensions.paddingSizeDefault),
+            Divider(height: 1, color: colors.borderColor),
+            const SizedBox(height: Dimensions.paddingSizeDefault),
+            _detail(context, Icons.calendar_today_outlined, season.endDate == null ? context.local.messSince(SeasonFormatters.date(season.startDate)) : context.local.seasonDates(SeasonFormatters.date(season.startDate), SeasonFormatters.date(season.endDate!))),
+            const SizedBox(height: Dimensions.paddingSizeSmall),
+            Wrap(
+              spacing: Dimensions.paddingSizeExtraLarge24,
+              runSpacing: Dimensions.paddingSizeSmall,
+              children: [
+                if (season.endDate == null) _detail(context, Icons.timelapse_rounded, context.local.seasonDay(season.day)),
+                _detail(context, Icons.group_outlined, context.local.seasonMemberCount(season.memberCount)),
+              ],
             ),
           ],
         ],
       ),
+    );
+  }
+
+  Widget _detail(BuildContext context, IconData icon, String text) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: Dimensions.iconSizeSmall, color: context.customThemeColors.textSecondaryColor),
+        const SizedBox(width: Dimensions.paddingSizeSmall),
+        Flexible(child: Text(text, style: AppTextStyles.sfProRoundedMedium.copyWith(color: context.customThemeColors.textSecondaryColor))),
+      ],
     );
   }
 }

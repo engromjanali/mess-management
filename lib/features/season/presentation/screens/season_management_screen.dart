@@ -12,8 +12,9 @@ import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
 import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
+import 'package:clean_boilerplate/core/widgets/pill_tab_bar.dart';
+import 'package:clean_boilerplate/core/widgets/segmented_tab_bar.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/main_page_body.dart';
-import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
 import 'package:clean_boilerplate/features/season/domain/entities/auto_create_season_entity.dart';
 import 'package:clean_boilerplate/features/season/domain/entities/season_entity.dart';
@@ -21,7 +22,6 @@ import 'package:clean_boilerplate/features/season/domain/entities/season_overvie
 import 'package:clean_boilerplate/features/season/presentation/bloc/season_bloc.dart';
 import 'package:clean_boilerplate/features/season/presentation/bloc/season_event.dart';
 import 'package:clean_boilerplate/features/season/presentation/bloc/season_state.dart';
-import 'package:clean_boilerplate/features/season/presentation/widgets/auto_create_day_sheet.dart';
 import 'package:clean_boilerplate/features/season/presentation/widgets/auto_create_season_card.dart';
 import 'package:clean_boilerplate/features/season/presentation/widgets/current_season_card.dart';
 import 'package:clean_boilerplate/features/season/presentation/widgets/season_form_sheet.dart';
@@ -80,20 +80,6 @@ class _SeasonView extends StatelessWidget {
         backgroundColor: context.theme.scaffoldBackgroundColor,
         endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
         appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.seasonManagement)),
-        floatingActionButton: isAdmin
-            ? BlocBuilder<SeasonBloc, SeasonState>(
-                builder: (context, state) {
-                  final (overview, busy) = state.maybeWhen(loaded: (overview, busy) => (overview, busy), orElse: () => (null, true));
-                  if (overview == null) return const SizedBox.shrink();
-                  return FloatingActionButton.extended(
-                    onPressed: busy ? null : () => _create(context, overview),
-                    backgroundColor: busy ? context.theme.disabledColor : null,
-                    icon: const Icon(Icons.add_rounded),
-                    label: Text(context.local.newSeason),
-                  );
-                },
-              )
-            : null,
         body: MainPageBody(
           title: context.local.seasonManagement,
           child: isAdmin ? content : const _AdminOnlyView(),
@@ -101,40 +87,50 @@ class _SeasonView extends StatelessWidget {
       ),
     );
   }
-
-  /// New season; its members are copied from the season picked in the form
-  /// (the one in use by default). Nobody switches to it.
-  Future<void> _create(BuildContext context, SeasonOverviewEntity overview) async {
-    final bloc = context.read<SeasonBloc>();
-    final name = await showSeasonFormSheet(
-      context,
-      sources: overview.seasons,
-      defaultSourceId: overview.currentSeasonId,
-      onSubmit: (form) {
-        final done = Completer<Failure?>();
-        bloc.add(SeasonEvent.create(name: form.name, startDate: form.startDate, sourceSeasonId: form.sourceSeasonId!, done: done));
-        return done.future;
-      },
-    );
-    if (name != null && context.mounted) context.showSuccessSnackBar(context.local.seasonCreated(name));
-  }
 }
 
-class _SeasonBody extends StatelessWidget {
+enum _SeasonTab { seasons, create }
+
+class _SeasonBody extends StatefulWidget {
   const _SeasonBody({required this.overview, required this.busy});
 
   final SeasonOverviewEntity overview;
   final bool busy;
 
   @override
+  State<_SeasonBody> createState() => _SeasonBodyState();
+}
+
+class _SeasonBodyState extends State<_SeasonBody> {
+  _SeasonTab _tab = _SeasonTab.seasons;
+
+  SeasonOverviewEntity get overview => widget.overview;
+  bool get busy => widget.busy;
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        RefreshIndicator(
+        Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeExtraLarge),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 900),
+                  child: SegmentedTabBar<_SeasonTab>(
+                    tabs: [PillTab(value: _SeasonTab.seasons, label: context.local.allSeasons), PillTab(value: _SeasonTab.create, label: context.local.newSeason)],
+                    selected: _tab,
+                    onChanged: (tab) => setState(() => _tab = tab),
+                  ),
+                ),
+              ),
+            ),
+            Expanded(child: RefreshIndicator(
           onRefresh: () => _refresh(context),
           child: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, 96),
+            padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, 0, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge),
             children: [
               Center(
                 child: ConstrainedBox(
@@ -142,15 +138,38 @@ class _SeasonBody extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      CurrentSeasonCard(season: overview.current),
-                      const SizedBox(height: Dimensions.paddingSizeDefault),
-                      AutoCreateSeasonCard(
+                      if (_tab == _SeasonTab.create) ...[
+                        AutoCreateSeasonCard(
                         setting: overview.autoCreate,
                         onToggle: busy ? null : (enabled) => _toggleAutoCreate(context, enabled),
-                        onChangeDay: busy ? null : () => _changeAutoCreateDay(context),
-                      ),
+                        onChangeDay: null,
+                        onDayChanged: busy ? null : (day) => _setAutoCreateDay(context, day),
+                        inlineDay: true,
+                        ),
+                        const SizedBox(height: Dimensions.paddingSizeExtraLarge24),
+                        Container(
+                          padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+                          decoration: BoxDecoration(color: context.customThemeColors.surfaceColor, borderRadius: BorderRadius.circular(Dimensions.radiusDefault), border: Border.all(color: context.customThemeColors.borderColor)),
+                          child: SeasonForm(
+                          inline: true,
+                          enabled: !busy,
+                          sources: overview.seasons,
+                          defaultSourceId: overview.currentSeasonId,
+                          onSubmit: (form) {
+                            final done = Completer<Failure?>();
+                            context.read<SeasonBloc>().add(SeasonEvent.create(name: form.name, startDate: form.startDate, sourceSeasonId: form.sourceSeasonId!, done: done));
+                            return done.future;
+                          },
+                          onSaved: (name) {
+                            context.showSuccessSnackBar(context.local.seasonCreated(name));
+                            setState(() => _tab = _SeasonTab.seasons);
+                          },
+                          ),
+                        ),
+                      ],
+                      if (_tab == _SeasonTab.seasons) ...[
+                      CurrentSeasonCard(season: overview.current),
                       const SizedBox(height: Dimensions.paddingSizeDefault),
-                      SectionTitle(title: context.local.allSeasons, icon: Icons.event_note_rounded),
                       if (overview.seasons.isEmpty)
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeLarge),
@@ -171,12 +190,15 @@ class _SeasonBody extends StatelessWidget {
                               onDelete: () => _delete(context, season),
                             ),
                           ),
+                      ],
                     ],
                   ),
                 ),
               ),
             ],
           ),
+            )),
+          ],
         ),
         if (busy) const Positioned(top: 0, left: 0, right: 0, child: LinearProgressIndicator(minHeight: 2)),
       ],
@@ -234,10 +256,9 @@ class _SeasonBody extends StatelessWidget {
     await _report(context, done.future, enabled ? context.local.autoCreateOn : context.local.autoCreateOff);
   }
 
-  Future<void> _changeAutoCreateDay(BuildContext context) async {
+  Future<void> _setAutoCreateDay(BuildContext context, int day) async {
     final bloc = context.read<SeasonBloc>();
-    final day = await showAutoCreateDaySheet(context, selected: overview.autoCreate.day);
-    if (day == null || day == overview.autoCreate.day || !context.mounted) return;
+    if (day == overview.autoCreate.day) return;
     final done = Completer<Failure?>();
     bloc.add(SeasonEvent.setAutoCreate(day: day, done: done));
     await _report(context, done.future, context.local.autoCreateDaySet(day == AutoCreateSeasonEntity.monthEnd ? context.local.monthEnd : context.local.dayOfMonth(day)));

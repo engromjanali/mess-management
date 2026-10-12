@@ -27,23 +27,26 @@ Future<String?> showSeasonFormSheet(
   String? defaultSourceId,
 }) {
   return context.showAdaptiveSheet<String>(
-    child: _SeasonForm(existing: existing, sources: sources, defaultSourceId: defaultSourceId, onSubmit: onSubmit),
+    child: SeasonForm(existing: existing, sources: sources, defaultSourceId: defaultSourceId, onSubmit: onSubmit),
   );
 }
 
-class _SeasonForm extends StatefulWidget {
-  const _SeasonForm({required this.existing, required this.sources, required this.defaultSourceId, required this.onSubmit});
+class SeasonForm extends StatefulWidget {
+  const SeasonForm({required this.sources, required this.defaultSourceId, required this.onSubmit, this.existing, this.onSaved, this.inline = false, this.enabled = true, super.key});
 
   final SeasonEntity? existing;
   final List<SeasonEntity> sources;
   final String? defaultSourceId;
   final SeasonSubmit onSubmit;
+  final ValueChanged<String>? onSaved;
+  final bool inline;
+  final bool enabled;
 
   @override
-  State<_SeasonForm> createState() => _SeasonFormState();
+  State<SeasonForm> createState() => _SeasonFormState();
 }
 
-class _SeasonFormState extends State<_SeasonForm> {
+class _SeasonFormState extends State<SeasonForm> {
   /// Backend fields this form shows errors under.
   static const _fields = {'name', 'start_date', 'end_date', 'source_season_id'};
 
@@ -57,6 +60,7 @@ class _SeasonFormState extends State<_SeasonForm> {
   String? _error;
 
   bool get _isEdit => widget.existing != null;
+  bool get _disabled => _submitting || !widget.enabled;
 
   @override
   void dispose() {
@@ -84,8 +88,8 @@ class _SeasonFormState extends State<_SeasonForm> {
             const SizedBox(height: Dimensions.paddingSizeLarge),
             TextFormField(
               controller: _nameController,
-              enabled: !_submitting,
-              autofocus: !_isEdit,
+              enabled: !_disabled,
+              autofocus: !_isEdit && !widget.inline,
               maxLength: 100,
               textInputAction: TextInputAction.done,
               decoration: InputDecoration(labelText: context.local.seasonNameLabel, prefixIcon: const Icon(Icons.label_outline_rounded)),
@@ -94,12 +98,26 @@ class _SeasonFormState extends State<_SeasonForm> {
               onFieldSubmitted: (_) => _submit(),
             ),
             const SizedBox(height: Dimensions.paddingSizeSmall),
-            _DateField(
+            if (widget.inline)
+              IgnorePointer(
+                ignoring: _disabled,
+                child: InputDatePickerFormField(
+                  initialDate: _startDate,
+                  firstDate: DateTime(DateTime.now().year - 2),
+                  lastDate: DateTime(DateTime.now().year + 2),
+                  fieldLabelText: context.local.seasonStartDate,
+                  onDateSaved: (date) => _startDate = date,
+                  onDateSubmitted: (date) => _startDate = date,
+                ),
+              )
+            else _DateField(
               label: context.local.seasonStartDate,
               value: SeasonFormatters.date(_startDate),
               error: _fieldErrors['start_date'],
               onTap: _submitting ? null : () => _pickDate(start: true),
             ),
+            if (widget.inline && _fieldErrors['start_date'] != null)
+              Text(_fieldErrors['start_date']!, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.errorColor, fontSize: Dimensions.fontSizeSmall)),
             if (_isEdit) ...[
               const SizedBox(height: Dimensions.paddingSizeDefault),
               _DateField(
@@ -129,7 +147,7 @@ class _SeasonFormState extends State<_SeasonForm> {
                       child: Text('${season.name} · ${context.local.seasonMemberCount(season.memberCount)}', maxLines: 1, overflow: TextOverflow.ellipsis),
                     ),
                 ],
-                onChanged: _submitting ? null : (value) => setState(() => _sourceId = value),
+                onChanged: _disabled ? null : (value) => setState(() => _sourceId = value),
               ),
             ],
             if (_error != null) ...[
@@ -147,10 +165,12 @@ class _SeasonFormState extends State<_SeasonForm> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                TextButton(onPressed: _submitting ? null : () => Navigator.of(context).pop(), child: Text(context.local.cancel)),
-                const SizedBox(width: Dimensions.paddingSizeSmall),
+                if (!widget.inline) ...[
+                  TextButton(onPressed: _disabled ? null : () => Navigator.of(context).pop(), child: Text(context.local.cancel)),
+                  const SizedBox(width: Dimensions.paddingSizeSmall),
+                ],
                 FilledButton(
-                  onPressed: _submitting ? null : _submit,
+                  onPressed: _disabled || (!_isEdit && _sourceId == null) ? null : _submit,
                   child: _submitting
                       ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
                       : Text(_isEdit ? context.local.save : context.local.create, maxLines: 1, overflow: TextOverflow.ellipsis),
@@ -171,7 +191,7 @@ class _SeasonFormState extends State<_SeasonForm> {
       firstDate: DateTime(now.year - 2),
       lastDate: DateTime(now.year + 2),
     );
-    if (picked == null) return;
+    if (picked == null || !mounted) return;
     setState(() {
       if (start) {
         _startDate = picked;
@@ -182,18 +202,25 @@ class _SeasonFormState extends State<_SeasonForm> {
   }
 
   Future<void> _submit() async {
+    if (_disabled || (!_isEdit && _sourceId == null)) return;
     final endDate = _endDate;
     setState(() {
       _error = null;
       _fieldErrors = endDate != null && endDate.isBefore(_startDate) ? {'end_date': context.local.seasonEndBeforeStart} : const {};
     });
     if (!(_formKey.currentState?.validate() ?? false) || _fieldErrors.isNotEmpty) return;
+    _formKey.currentState?.save();
 
     final name = _nameController.text.trim();
     setState(() => _submitting = true);
     final failure = await widget.onSubmit((name: name, startDate: _startDate, endDate: endDate, sourceSeasonId: _isEdit ? null : _sourceId));
     if (!mounted) return;
     if (failure == null) {
+      if (widget.inline) {
+        setState(() => _submitting = false);
+        widget.onSaved?.call(name);
+        return;
+      }
       Navigator.of(context).pop(name);
       return;
     }

@@ -23,30 +23,32 @@ import 'package:clean_boilerplate/features/meal/presentation/widgets/member_meal
 /// specific date, with member and date filters over the full record list.
 /// Provides its own [MealAdminBloc] so it is self-contained inside the screen.
 class MealAdminPanel extends StatelessWidget {
-  const MealAdminPanel({this.showViewAll = true, super.key});
+  const MealAdminPanel({this.showViewAll = true, this.showHeading = true, super.key});
 
   final bool showViewAll;
+  final bool showHeading;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<MealAdminBloc>(
       create: (_) => getIt<MealAdminBloc>()..add(const MealAdminEvent.load()),
-      child: _MealAdminView(showViewAll: showViewAll),
+      child: _MealAdminView(showViewAll: showViewAll, showHeading: showHeading),
     );
   }
 }
 
 class _MealAdminView extends StatelessWidget {
-  const _MealAdminView({required this.showViewAll});
+  const _MealAdminView({required this.showViewAll, required this.showHeading});
 
   final bool showViewAll;
+  final bool showHeading;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SectionTitle(
+        if (showHeading) SectionTitle(
           title: context.local.manageMeals,
           icon: Icons.manage_accounts_rounded,
           showViewAll: showViewAll,
@@ -360,8 +362,8 @@ class _EntryRow extends StatelessWidget {
           ),
           Expanded(
             flex: 3,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            child: Wrap(
+              alignment: WrapAlignment.center,
               children: [
                 _Mini(label: 'B', value: entry.breakfast, accent: colors.warningColor),
                 _Mini(label: 'L', value: entry.lunch, accent: colors.primaryColor),
