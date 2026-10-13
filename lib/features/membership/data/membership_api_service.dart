@@ -2,6 +2,7 @@ import 'package:clean_boilerplate/config/util/app_constants.dart';
 import 'package:clean_boilerplate/core/network/api_client.dart';
 import 'package:clean_boilerplate/features/membership/domain/entities/mess_details_entity.dart';
 import 'package:clean_boilerplate/features/membership/domain/entities/membership_status_entity.dart';
+import 'package:dio/dio.dart';
 
 class MembershipApiService {
   const MembershipApiService(this._apiClient);
@@ -135,7 +136,7 @@ class MembershipApiService {
 
   /// The signed-in user's current mess and its active season.
   Future<MessDetailsEntity> getMessDetails() async {
-    final response = await _apiClient.get<Map<String, dynamic>>(AppConstants.messDetailsEndpoint);
+    final response = await _apiClient.get<Map<String, dynamic>>(AppConstants.messDetailsEndpoint, options: Options(extra: {'sensitive': true}));
     final json = response.data!;
     final season = json['season'] as Map<String, dynamic>;
     final stats = json['stats'] as Map<String, dynamic>;

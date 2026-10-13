@@ -40,6 +40,8 @@ class _MemberStatsTableState extends State<MemberStatsTable> {
         children: [
           _buildHeaderRow(context),
           Divider(height: 1, color: colors.dividerColor.withValues(alpha: 0.4)),
+          if (widget.members.isEmpty)
+            Padding(padding: const EdgeInsets.all(Dimensions.paddingSizeLarge), child: Text(context.local.noMembers)),
           AnimatedSize(
             duration: const Duration(milliseconds: 250),
             curve: Curves.easeInOut,
@@ -63,7 +65,7 @@ class _MemberStatsTableState extends State<MemberStatsTable> {
       padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault),
       child: Row(
         children: [
-          SizedBox(width: 28, child: Text('#', style: style)),
+          SizedBox(width: 36, child: Text('#', style: style)),
           Expanded(flex: 3, child: Text('Member', style: style)),
           Expanded(
             child: Text('Deposit', style: style, textAlign: TextAlign.end),
@@ -109,17 +111,17 @@ class _MemberStatsTableState extends State<MemberStatsTable> {
             ),
           ),
           Expanded(
-            child: Text(DashboardFormatters.taka(m.deposit), style: valueStyle, textAlign: TextAlign.end),
+            child: Align(alignment: Alignment.centerRight, child: FittedBox(fit: BoxFit.scaleDown, child: Text(DashboardFormatters.taka(m.deposit), style: valueStyle, textAlign: TextAlign.end))),
           ),
           Expanded(
-            child: Text(DashboardFormatters.number(m.meal), style: valueStyle, textAlign: TextAlign.end),
+            child: Align(alignment: Alignment.centerRight, child: FittedBox(fit: BoxFit.scaleDown, child: Text(DashboardFormatters.number(m.meal), style: valueStyle, textAlign: TextAlign.end))),
           ),
           Expanded(
-            child: Text(
+            child: Align(alignment: Alignment.centerRight, child: FittedBox(fit: BoxFit.scaleDown, child: Text(
               DashboardFormatters.taka(remaining),
               textAlign: TextAlign.end,
               style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: remainingColor),
-            ),
+            ))),
           ),
         ],
       ),

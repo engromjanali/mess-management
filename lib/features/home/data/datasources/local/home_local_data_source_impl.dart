@@ -1,40 +1,38 @@
 import 'package:injectable/injectable.dart';
+import 'package:dio/dio.dart';
+import 'package:clean_boilerplate/config/util/app_constants.dart';
+import 'package:clean_boilerplate/core/network/api_client.dart';
 import 'package:clean_boilerplate/features/home/data/models/dashboard_model.dart';
 import 'package:clean_boilerplate/features/home/data/datasources/interfaces/home_data_source.dart';
 
-/// Local mock data source.
-///
-/// Returns representative sample data so the redesigned home screen is fully
-/// previewable without a backend. Swap this binding for a remote
-/// implementation later — the repository and presentation layers won't change.
+/// Live mess/member totals with the remaining dashboard placeholders.
 @LazySingleton(as: HomeDataSource)
 class HomeLocalDataSourceImpl implements HomeDataSource {
+  HomeLocalDataSourceImpl(this._apiClient);
+
+  final ApiClient _apiClient;
+
   @override
   Future<DashboardModel> getDashboard() async {
-    // Simulate network/IO latency so loading + refresh states are visible.
-    await Future<void>.delayed(const Duration(milliseconds: 700));
+    final response = await _apiClient.get<Map<String, dynamic>>(AppConstants.messDetailsEndpoint, options: Options(extra: {'sensitive': true}));
+    final json = response.data!;
+    final stats = json['stats'] as Map<String, dynamic>;
+    final mealRate = (stats['meal_rate'] as num).toDouble();
+    final members = (json['member_stats'] as List<dynamic>? ?? const []).map((item) {
+      final member = item as Map<String, dynamic>;
+      return MemberStatModel(id: '${member['id']}', name: member['name'] as String, deposit: (member['deposit'] as num).toDouble(), meal: (member['meal'] as num).toDouble());
+    }).toList();
 
-    const mealRate = 62.5;
-    final members = <MemberStatModel>[
-      const MemberStatModel(id: '1', name: 'Romjan Ali', deposit: 3000, meal: 41),
-      const MemberStatModel(id: '2', name: 'Mehedi Hasan', deposit: 2500, meal: 38),
-      const MemberStatModel(id: '3', name: 'Sakib Khan', deposit: 2800, meal: 45),
-      const MemberStatModel(id: '4', name: 'Tanvir Ahmed', deposit: 2200, meal: 30),
-      const MemberStatModel(id: '5', name: 'Rakib Hossain', deposit: 3200, meal: 52),
-      const MemberStatModel(id: '6', name: 'Jisan Mahmud', deposit: 2000, meal: 27),
-      const MemberStatModel(id: '7', name: 'Nayeem Islam', deposit: 2600, meal: 36),
-    ];
-
-    final totalDeposit = members.fold<double>(0, (sum, m) => sum + m.deposit);
-    final totalMeal = members.fold<double>(0, (sum, m) => sum + m.meal);
-    const bazerCost = 12450.0;
-    const fundBalance = 4500.0;
+    final totalDeposit = (stats['total_deposit'] as num).toDouble();
+    final totalMeal = (stats['total_meals'] as num).toDouble();
+    final bazerCost = (stats['total_cost'] as num).toDouble();
+    final fundBalance = (stats['fund_balance'] as num).toDouble();
     final mealBalance = totalDeposit - bazerCost;
     final totalBalance = mealBalance + fundBalance;
 
     return DashboardModel(
       userName: 'Romjan',
-      isManager: true,
+      isManager: const ['manager', 'acting_manager'].contains(json['my_role']),
       totalBalance: totalBalance,
       mealBalance: mealBalance,
       fundBalance: fundBalance,
