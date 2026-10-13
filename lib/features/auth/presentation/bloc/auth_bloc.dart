@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:clean_boilerplate/core/usecase/usecase.dart';
@@ -28,6 +30,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       logoutRequested: () => _handleLogout(emit),
       checkAuthStatus: () => _handleCheckAuthStatus(emit),
       userUpdated: (user) async => emit(AuthState.authenticated(user)),
+      refreshProfileRequested: (done) async {
+        try {
+          await _handleRefreshProfile(emit);
+          done.complete();
+        } catch (error, stackTrace) {
+          done.completeError(error, stackTrace);
+        }
+      },
     );
   }
 
@@ -56,6 +66,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final result = await _logoutUseCase(const NoParams());
 
     result.when(success: (_) => emit(const AuthState.unauthenticated()), failure: (failure) => emit(AuthState.error(failure.message.toString())));
+  }
+
+  Future<void> refreshProfile() {
+    final done = Completer<void>();
+    add(AuthEvent.refreshProfileRequested(done));
+    return done.future;
+  }
+
+  Future<void> _handleRefreshProfile(Emitter<AuthState> emit) async {
+    final userId = state.maybeWhen(authenticated: (user) => user.id, orElse: () => null);
+    if (userId == null) return;
+    final result = await _getCurrentUserUseCase(const NoParams());
+    if (emit.isDone || state.maybeWhen(authenticated: (user) => user.id, orElse: () => null) != userId) return;
+    result.when(
+      success: (success) => emit(success.data == null ? const AuthState.unauthenticated() : AuthState.authenticated(success.data!)),
+      failure: (failure) => throw failure.error,
+    );
   }
 
   /// Check authentication status

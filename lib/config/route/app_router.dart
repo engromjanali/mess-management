@@ -30,6 +30,7 @@ import 'package:clean_boilerplate/features/notice/presentation/screens/notice_sc
 import 'package:clean_boilerplate/features/opinion/presentation/screens/opinion_screen.dart';
 import 'package:clean_boilerplate/features/season/presentation/screens/season_management_screen.dart';
 import 'package:clean_boilerplate/features/settings/presentation/screens/settings_screen.dart';
+import 'package:clean_boilerplate/core/widgets/main_navigation_shell.dart';
 
 /// App route constants
 class AppRoutes {
@@ -103,25 +104,24 @@ final router = GoRouter(
 
     GoRoute(path: AppRoutes.forgotPassword, name: 'forgotPassword', builder: (context, state) => const ForgotPasswordScreen()),
 
-    // Home route
-    GoRoute(path: AppRoutes.home, name: 'home', builder: (context, state) => const HomeScreen()),
-
-    // Meal route
-    GoRoute(path: AppRoutes.meals, name: 'meals', builder: (context, state) => const MealScreen()),
+    ShellRoute(
+      builder: (context, state, child) => MainNavigationShell(location: state.uri.path, child: child),
+      routes: [
+        GoRoute(path: AppRoutes.home, name: 'home', builder: (context, state) => const HomeScreen()),
+        GoRoute(path: AppRoutes.meals, name: 'meals', builder: (context, state) => const MealScreen()),
+        GoRoute(path: AppRoutes.deposits, name: 'deposits', builder: (context, state) => const DepositScreen()),
+        GoRoute(path: AppRoutes.costs, name: 'costs', builder: (context, state) => const CostScreen()),
+        GoRoute(path: AppRoutes.profile, name: 'profile', builder: (context, state) => const ProfileScreen()),
+      ],
+    ),
 
     // Admin: add meal for all members
     GoRoute(path: AppRoutes.addMeal, name: 'addMeal', builder: (context, state) => const MealEntryScreen()),
 
     GoRoute(path: AppRoutes.mealList, name: 'mealList', builder: (context, state) => const MealListScreen()),
 
-    // Deposit route (role-aware: admin manages, user views own list)
-    GoRoute(path: AppRoutes.deposits, name: 'deposits', builder: (context, state) => const DepositScreen()),
-
     // Fund route (role-aware: admin manages, user views the list)
     GoRoute(path: AppRoutes.funds, name: 'funds', builder: (context, state) => const FundScreen()),
-
-    // Cost / Cost route (role-aware: admin manages, user views the list)
-    GoRoute(path: AppRoutes.costs, name: 'costs', builder: (context, state) => const CostScreen()),
 
     // Notice route (role-aware: admin manages, user views the list)
     GoRoute(path: AppRoutes.notices, name: 'notices', builder: (context, state) => const NoticeScreen()),
@@ -129,7 +129,6 @@ final router = GoRouter(
     GoRoute(path: AppRoutes.opinions, name: 'opinions', builder: (context, state) => const OpinionScreen()),
 
     // Profile route
-    GoRoute(path: AppRoutes.profile, name: 'profile', builder: (context, state) => const ProfileScreen()),
     GoRoute(path: AppRoutes.editProfile, name: 'editProfile', builder: (context, state) => const EditProfileScreen()),
     GoRoute(path: AppRoutes.deleteAccount, name: 'deleteAccount', builder: (context, state) => const DeleteAccountScreen()),
 

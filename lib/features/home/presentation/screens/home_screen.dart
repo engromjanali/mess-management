@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart' show ScrollDirection;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:clean_boilerplate/config/route/app_router.dart';
@@ -20,7 +19,6 @@ import 'package:clean_boilerplate/features/home/domain/entities/dashboard_entity
 import 'package:clean_boilerplate/features/home/presentation/bloc/home_bloc.dart';
 import 'package:clean_boilerplate/features/home/presentation/bloc/home_event.dart';
 import 'package:clean_boilerplate/features/home/presentation/bloc/home_state.dart';
-import 'package:clean_boilerplate/features/home/presentation/widgets/animated_bottom_nav_bar.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_formatters.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_hero_banner.dart';
@@ -167,67 +165,26 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
   final _statsAnchor = GlobalKey();
   final _noticeAnchor = GlobalKey();
 
-  bool _navVisible = true;
-  int _currentIndex = 0;
-
   @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
   }
 
-  /// Show the bar on scroll-up, hide it on scroll-down.
-  bool _onScroll(UserScrollNotification n) {
-    // Ignore horizontal / inner scrollables.
-    if (n.metrics.axis != Axis.vertical) return false;
-
-    switch (n.direction) {
-      case ScrollDirection.reverse:
-        if (_navVisible) setState(() => _navVisible = false);
-        break;
-      case ScrollDirection.forward:
-        if (!_navVisible) setState(() => _navVisible = true);
-        break;
-      case ScrollDirection.idle:
-        break;
-    }
-    return false;
-  }
-
-  void _onNavTap(int index, VoidCallback action) {
-    setState(() {
-      _currentIndex = index;
-      // Any deliberate navigation reveals the bar again.
-      _navVisible = true;
-    });
-    action();
-  }
-
-  void _scrollToTop() => _scrollController.animateTo(0, duration: const Duration(milliseconds: 450), curve: Curves.easeInOutCubic);
-
   @override
   Widget build(BuildContext context) {
     final dashboard = widget.dashboard;
-
-    final navItems = <BottomNavItem>[
-      BottomNavItem(icon: Icons.home_outlined, activeIcon: Icons.home_rounded, label: 'Home', onTap: () => _onNavTap(0, _scrollToTop)),
-      BottomNavItem(icon: Icons.restaurant_outlined, activeIcon: Icons.restaurant_rounded, label: 'Meals', onTap: () => _onNavTap(1, () => context.go(AppRoutes.meals))),
-      BottomNavItem(icon: Icons.account_balance_wallet_outlined, activeIcon: Icons.account_balance_wallet_rounded, label: 'Deposits', onTap: () => _onNavTap(2, () => context.go(AppRoutes.deposits))),
-      BottomNavItem(icon: Icons.shopping_cart_outlined, activeIcon: Icons.shopping_cart_rounded, label: 'Cost', onTap: () => _onNavTap(3, () => context.go(AppRoutes.costs))),
-      BottomNavItem(icon: Icons.person_outline_rounded, activeIcon: Icons.person_rounded, label: 'Profile', onTap: () => _onNavTap(4, () => context.go(AppRoutes.profile))),
-    ];
+    final photoUrl = context.select<AuthBloc, String?>((bloc) => bloc.state.maybeWhen(authenticated: (user) => user.photoUrl, orElse: () => null));
 
     return Stack(
       children: [
         RefreshIndicator(
           onRefresh: () => _refresh(context),
-          child: NotificationListener<UserScrollNotification>(
-            onNotification: _onScroll,
-            child: CustomScrollView(
+          child: CustomScrollView(
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
-                HomeSliverAppBar(userName: dashboard.userName, totalBalance: dashboard.totalBalance, mealBalance: dashboard.mealBalance, depositBalance: dashboard.totalDeposit, expandedHeight: 200),
+                HomeSliverAppBar(userName: dashboard.userName, photoUrl: photoUrl, totalBalance: dashboard.totalBalance, mealBalance: dashboard.mealBalance, depositBalance: dashboard.totalDeposit, expandedHeight: 200),
                 SliverPersistentHeader(
                   pinned: true,
                   delegate: PinnedSectionHeader(title: 'Mess Section', icon: Icons.groups_rounded),
@@ -265,12 +222,7 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
                   ),
                 ),
               ],
-            ),
           ),
-        ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: AnimatedBottomNavBar(items: navItems, currentIndex: _currentIndex, visible: _navVisible),
         ),
       ],
     );

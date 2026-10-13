@@ -123,4 +123,6 @@ class AppConstants {
 
     LanguageModel(code: 'ar', name: 'Arabic', nativeName: 'العربية'),
   ];
+  static const String opinionsEndpoint = '/api/v1/user/opinions';
+  static const String adminOpinionsEndpoint = '/api/v1/admin/opinions';
 }

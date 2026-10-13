@@ -410,5 +410,16 @@
   "changeMapLocation": "تغيير موقع الخريطة",
   "searchLocation": "البحث عن موقع",
   "dragMapToChoose": "اسحب الخريطة لاختيار الموقع الدقيق",
-  "useThisLocation": "استخدام هذا الموقع"
+  "useThisLocation": "استخدام هذا الموقع",
+  "opinionVisibility": "عرض الآراء",
+  "opinionVisibilityRealtime": "متاحة للجميع فوراً",
+  "opinionVisibilityAfterPublish": "بعد النشر",
+  "opinionPublishMessages": "نشر الآراء",
+  "opinionMessagesPublished": "تم نشر الآراء لجميع الأعضاء.",
+  "opinionAwaitingPublication": "ستظهر الآراء هنا بعد أن ينشرها المدير.",
+  "opinionCurrentSeasonOnly": "يمكن للأعضاء النشطين في الموسم الحالي فقط إرسال الآراء.",
+  "opinionLoadMore": "عرض المزيد",
+  "opinionPublic": "عام",
+  "opinionPrivate": "خاص",
+  "opinionSeasonMembersOnly": "يمكن للأعضاء النشطين في موسم فترة الآراء هذه فقط إرسال الآراء."
 }

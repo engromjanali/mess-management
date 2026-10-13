@@ -7,9 +7,10 @@ import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_formatters.dart';
 
 class HomeSliverAppBar extends StatelessWidget {
-  const HomeSliverAppBar({required this.userName, required this.totalBalance, required this.mealBalance, required this.depositBalance, required this.expandedHeight, super.key});
+  const HomeSliverAppBar({required this.userName, required this.totalBalance, required this.mealBalance, required this.depositBalance, required this.expandedHeight, this.photoUrl, super.key});
 
   final String userName;
+  final String? photoUrl;
   final double totalBalance;
   final double mealBalance;
   final double depositBalance;
@@ -49,7 +50,7 @@ class HomeSliverAppBar extends StatelessWidget {
                 height: kToolbarHeight,
                 child: IgnorePointer(
                   ignoring: collapseProgress < 0.55,
-                  child: Opacity(opacity: ((collapseProgress - 0.55) / 0.55).clamp(0.0, 1.0), child: _CollapsedIdentity(userName: userName)),
+                  child: Opacity(opacity: ((collapseProgress - 0.55) / 0.55).clamp(0.0, 1.0), child: _CollapsedIdentity(userName: userName, photoUrl: photoUrl)),
                 ),
               ),
             ],
@@ -141,9 +142,10 @@ class _HeaderBackground extends StatelessWidget {
 }
 
 class _CollapsedIdentity extends StatelessWidget {
-  const _CollapsedIdentity({required this.userName});
+  const _CollapsedIdentity({required this.userName, this.photoUrl});
 
   final String userName;
+  final String? photoUrl;
 
   String get _initials {
     final parts = userName.trim().split(RegExp(r'\s+'));
@@ -154,6 +156,9 @@ class _CollapsedIdentity extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final imageUrl = photoUrl?.trim() ?? '';
+    final fallback = Text(_initials, style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeDefault));
+    final imageSize = (38 * MediaQuery.devicePixelRatioOf(context)).round();
     return Row(
       children: [
         Container(
@@ -161,7 +166,7 @@ class _CollapsedIdentity extends StatelessWidget {
           height: 38,
           decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.18), shape: BoxShape.circle, border: Border.all(color: Colors.white.withValues(alpha: 0.35))),
           alignment: Alignment.center,
-          child: Text(_initials, style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeDefault)),
+          child: imageUrl.isEmpty ? fallback : ClipOval(child: Image.network(imageUrl, width: 38, height: 38, fit: BoxFit.cover, cacheWidth: imageSize, cacheHeight: imageSize, errorBuilder: (_, _, _) => Center(child: fallback))),
         ),
         const SizedBox(width: Dimensions.paddingSizeSmall),
         Expanded(

@@ -410,5 +410,16 @@
   "changeMapLocation": "ম্যাপের অবস্থান পরিবর্তন করুন",
   "searchLocation": "একটি অবস্থান খুঁজুন",
   "dragMapToChoose": "সঠিক অবস্থান বেছে নিতে ম্যাপ টানুন",
-  "useThisLocation": "এই অবস্থান ব্যবহার করুন"
+  "useThisLocation": "এই অবস্থান ব্যবহার করুন",
+  "opinionVisibility": "মতামত দেখার অনুমতি",
+  "opinionVisibilityRealtime": "সঙ্গে সঙ্গে সবার জন্য উন্মুক্ত",
+  "opinionVisibilityAfterPublish": "প্রকাশ করার পরে",
+  "opinionPublishMessages": "মতামত প্রকাশ করুন",
+  "opinionMessagesPublished": "সকল সদস্যের জন্য মতামত প্রকাশ করা হয়েছে।",
+  "opinionAwaitingPublication": "ম্যানেজার প্রকাশ করার পরে মতামত এখানে দেখা যাবে।",
+  "opinionCurrentSeasonOnly": "শুধু বর্তমান সিজনের সক্রিয় সদস্যরা মতামত জমা দিতে পারবেন।",
+  "opinionLoadMore": "আরও দেখুন",
+  "opinionPublic": "সবার জন্য উন্মুক্ত",
+  "opinionPrivate": "ব্যক্তিগত",
+  "opinionSeasonMembersOnly": "শুধু এই মতামত পর্বের সিজনের সক্রিয় সদস্যরা মতামত জমা দিতে পারবেন।"
 }

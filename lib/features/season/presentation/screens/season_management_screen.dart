@@ -16,6 +16,7 @@ import 'package:clean_boilerplate/core/widgets/pill_tab_bar.dart';
 import 'package:clean_boilerplate/core/widgets/segmented_tab_bar.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/main_page_body.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:clean_boilerplate/features/season/domain/entities/auto_create_season_entity.dart';
 import 'package:clean_boilerplate/features/season/domain/entities/season_entity.dart';
 import 'package:clean_boilerplate/features/season/domain/entities/season_overview_entity.dart';
@@ -209,7 +210,7 @@ class _SeasonBodyState extends State<_SeasonBody> {
   Future<void> _switchTo(BuildContext context, SeasonEntity season) async {
     final done = Completer<Failure?>();
     context.read<SeasonBloc>().add(SeasonEvent.switchTo(season.id, done: done));
-    if (await _report(context, done.future, context.local.seasonSwitched(season.name)) && context.mounted) _reloadApp(context);
+    if (await _report(context, done.future, context.local.seasonSwitched(season.name)) && context.mounted) await _reloadApp(context);
   }
 
   Future<void> _edit(BuildContext context, SeasonEntity season) async {
@@ -247,7 +248,7 @@ class _SeasonBodyState extends State<_SeasonBody> {
     final wasInUse = season.id == overview.currentSeasonId;
     final done = Completer<Failure?>();
     context.read<SeasonBloc>().add(SeasonEvent.delete(season.id, done: done));
-    if (await _report(context, done.future, context.local.seasonDeleted(season.name)) && wasInUse && context.mounted) _reloadApp(context);
+    if (await _report(context, done.future, context.local.seasonDeleted(season.name)) && wasInUse && context.mounted) await _reloadApp(context);
   }
 
   Future<void> _toggleAutoCreate(BuildContext context, bool enabled) async {
@@ -286,7 +287,14 @@ class _SeasonBodyState extends State<_SeasonBody> {
   }
 
   /// The season in use changed: open home so every screen loads its data.
-  void _reloadApp(BuildContext context) => context.go(AppRoutes.home);
+  Future<void> _reloadApp(BuildContext context) async {
+    try {
+      await context.read<AuthBloc>().refreshProfile();
+      if (context.mounted) context.go(AppRoutes.home);
+    } catch (error) {
+      if (context.mounted) context.showErrorSnackBar(error);
+    }
+  }
 
   Future<bool> _confirm(BuildContext context, {required String title, required String message, required String action, bool destructive = false}) async {
     final confirmed = await showDialog<bool>(

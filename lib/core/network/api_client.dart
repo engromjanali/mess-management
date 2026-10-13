@@ -149,7 +149,7 @@ class ApiClient {
     try {
       if (kDebugMode) {
         print('=====> POST: $path');
-        print('=====> Body: ${_formatLogValue(data)}');
+        print('=====> Body: ${options?.extra?['sensitive'] == true ? '[REDACTED]' : _formatLogValue(data)}');
       }
 
       final response = await _dio.post<T>(
@@ -223,7 +223,7 @@ class ApiClient {
     try {
       if (kDebugMode) {
         print('=====> PATCH: $path');
-        print('=====> Body: ${_formatLogValue(data)}');
+        print('=====> Body: ${options?.extra?['sensitive'] == true ? '[REDACTED]' : _formatLogValue(data)}');
       }
 
       final response = await _dio.patch<T>(
@@ -327,7 +327,7 @@ class ApiClient {
   void _logResponse(Response<dynamic> response) {
     if (!kDebugMode) return;
     debugPrint('=====> Response [${response.statusCode}] ${response.requestOptions.method}: ${response.requestOptions.uri}');
-    debugPrint('=====> Data: ${_formatLogValue(response.data)}');
+    debugPrint('=====> Data: ${response.requestOptions.extra['sensitive'] == true ? '[REDACTED]' : _formatLogValue(response.data)}');
   }
 
   String _formatLogValue(dynamic value) {

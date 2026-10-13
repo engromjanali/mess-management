@@ -6,12 +6,13 @@ import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 
 /// A single destination in the [AnimatedBottomNavBar].
 class BottomNavItem {
-  const BottomNavItem({required this.icon, required this.activeIcon, required this.label, required this.onTap});
+  const BottomNavItem({required this.icon, required this.activeIcon, required this.label, required this.onTap, this.profileImageUrl});
 
   final IconData icon;
   final IconData activeIcon;
   final String label;
   final VoidCallback onTap;
+  final String? profileImageUrl;
 }
 
 class AnimatedBottomNavBar extends StatelessWidget {
@@ -50,7 +51,7 @@ class AnimatedBottomNavBar extends StatelessWidget {
                     boxShadow: [BoxShadow(color: colors.shadowColor, blurRadius: 20, offset: const Offset(0, 8))],
                   ),
                   child: Row(
-                    spacing: Dimensions.paddingSizeExtraSmall,
+                    spacing: Dimensions.paddingSizeSmall,
                     children: [for (var i = 0; i < items.length; i++) _NavCell(item: items[i], active: i == currentIndex)],
                   ),
                 ),
@@ -74,8 +75,9 @@ class _NavCell extends StatelessWidget {
     final color = active ? colors.primaryColor : colors.textSecondaryColor;
 
     return Expanded(
-      flex: active ? 0 : 1,
-      child: Center(
+      flex: active ? 2 : 1,
+      child: SizedBox(
+        height: 48,
         child: Material(
           color: Colors.transparent,
           child: InkWell(
@@ -84,30 +86,63 @@ class _NavCell extends StatelessWidget {
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 320),
               curve: Curves.easeOutCubic,
-              padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeDefault),
               decoration: BoxDecoration(color: active ? colors.primaryColor.withValues(alpha: 0.12) : Colors.transparent, borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge)),
               child: Row(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(active ? item.activeIcon : item.icon, color: color, size: Dimensions.iconSizeDefault),
-                  AnimatedSize(
-                    duration: const Duration(milliseconds: 320),
-                    curve: Curves.easeOutCubic,
-                    child: active
-                        ? Padding(
-                            padding: const EdgeInsets.only(left: Dimensions.paddingSizeSmall),
-                            child: Text(
-                              item.label,
-                              style: AppTextStyles.sfProRoundedSemiBold.copyWith(color: color, fontSize: Dimensions.fontSizeDefault),
-                            ),
-                          )
-                        : const SizedBox.shrink(),
-                  ),
+                  item.profileImageUrl == null
+                      ? Icon(active ? item.activeIcon : item.icon, color: color, size: Dimensions.iconSizeDefault)
+                      : _ProfileNavImage(imageUrl: item.profileImageUrl!, fallbackIcon: active ? item.activeIcon : item.icon),
+                  if (active) ...[
+                    const SizedBox(width: Dimensions.paddingSizeSmall),
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(item.label, maxLines: 1, style: AppTextStyles.sfProRoundedSemiBold.copyWith(color: color, fontSize: Dimensions.fontSizeDefault)),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _ProfileNavImage extends StatelessWidget {
+  const _ProfileNavImage({required this.imageUrl, required this.fallbackIcon});
+  final String imageUrl;
+  final IconData fallbackIcon;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+
+    return Container(
+      width: 30,
+      height: 30,
+      padding: const EdgeInsets.all(1),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: colors.primaryColor),
+      ),
+      child: ClipOval(
+        child: imageUrl.isEmpty
+            ? ColoredBox(
+                color: colors.primaryColor.withValues(alpha: 0.12),
+                child: Icon(fallbackIcon, color: colors.primaryColor, size: Dimensions.iconSizeSmall),
+              )
+            : Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => ColoredBox(
+                  color: colors.primaryColor.withValues(alpha: 0.12),
+                  child: Icon(fallbackIcon, color: colors.primaryColor, size: Dimensions.iconSizeSmall),
+                ),
+              ),
       ),
     );
   }

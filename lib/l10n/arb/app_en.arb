@@ -919,5 +919,16 @@
   "changeMapLocation": "Change map location",
   "searchLocation": "Search for a location",
   "dragMapToChoose": "Drag the map to choose the exact location",
-  "useThisLocation": "Use this location"
+  "useThisLocation": "Use this location",
+  "opinionVisibility": "Message visibility",
+  "opinionVisibilityRealtime": "Public immediately",
+  "opinionVisibilityAfterPublish": "After publish",
+  "opinionPublishMessages": "Publish opinions",
+  "opinionMessagesPublished": "Opinions published for all members.",
+  "opinionAwaitingPublication": "Opinions will appear here after the manager publishes them.",
+  "opinionCurrentSeasonOnly": "Only active members of the current season can submit opinions.",
+  "opinionLoadMore": "Load more",
+  "opinionPublic": "Public",
+  "opinionPrivate": "Private",
+  "opinionSeasonMembersOnly": "Only active members of this opinion period's season can submit opinions."
 }

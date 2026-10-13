@@ -37,11 +37,22 @@ class _MembershipGateState extends State<MembershipGate> {
   /// same backend rule as the user's `activeMessId`, but stays fresh after joining, creating, leaving or switching.
   bool _hasMess(MembershipStatusEntity status) => status.current != null;
 
-  void _onStatus(BuildContext context, MembershipStatusEntity status) {
+  Future<void> _onStatus(BuildContext context, MembershipStatusEntity status) async {
     final currentId = status.current?.membershipId;
     final changed = _seenStatus && currentId != _knownCurrentId;
     _seenStatus = true;
     _knownCurrentId = currentId;
+
+    final activeMessId = context.read<AuthBloc>().state.maybeWhen(authenticated: (user) => user.activeMessId, orElse: () => null);
+    if (changed || activeMessId != status.current?.messId) {
+      try {
+        await context.read<AuthBloc>().refreshProfile();
+      } catch (error) {
+        if (context.mounted) context.showErrorSnackBar(error);
+        return;
+      }
+      if (!context.mounted || _knownCurrentId != currentId) return;
+    }
 
     final onJoinScreen = GoRouterState.of(context).uri.path.startsWith(AppRoutes.joinMess);
     final hasMess = _hasMess(status);

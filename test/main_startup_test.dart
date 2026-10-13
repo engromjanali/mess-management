@@ -33,6 +33,9 @@ class _AuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
   _AuthBloc() : super(const AuthState.initial()) {
     on<AuthEvent>((event, emit) {});
   }
+
+  @override
+  Future<void> refreshProfile() async {}
 }
 
 class _SplashBloc extends Bloc<SplashEvent, SplashState> implements SplashBloc {

@@ -136,10 +136,11 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
 
   /// Runs a user-side action keyed [key] (row spinner meanwhile) and reports
   /// [success]; on failure shows the backend's reason.
-  Future<bool> _runUserAction(String key, Future<void> Function() action, String success) async {
+  Future<bool> _runUserAction(String key, Future<void> Function() action, String success, {bool refreshProfile = false}) async {
     setState(() => _busyItem = key);
     try {
       await action();
+      if (refreshProfile && mounted) await context.read<AuthBloc>().refreshProfile();
       if (mounted) context.showSuccessSnackBar(success);
       return true;
     } catch (e) {
@@ -158,13 +159,13 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
   }
 
   Future<void> _switchTo(MembershipSummaryEntity membership) async {
-    final switched = await _runUserAction('switch:${membership.membershipId}', () => _service.switchMembership(membership.membershipId), context.local.switchedMembership(membership.messName, membership.seasonName));
+    final switched = await _runUserAction('switch:${membership.membershipId}', () => _service.switchMembership(membership.membershipId), context.local.switchedMembership(membership.messName, membership.seasonName), refreshProfile: true);
     if (switched && mounted) _openCurrentMembership(membership.role);
   }
 
   Future<void> _acceptInvite(InviteSummaryEntity invite) async {
     // Joining makes the new membership current.
-    final joined = await _runUserAction('invite:${invite.id}', () => _service.joinInvite(invite.inviteCode), context.local.joinedMess(invite.messName));
+    final joined = await _runUserAction('invite:${invite.id}', () => _service.joinInvite(invite.inviteCode), context.local.joinedMess(invite.messName), refreshProfile: true);
     if (joined && mounted) _openCurrentMembership('member');
   }
 

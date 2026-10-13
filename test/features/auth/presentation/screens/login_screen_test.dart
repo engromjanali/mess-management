@@ -14,12 +14,18 @@ class MockAuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
   MockAuthBloc() : super(const AuthState.initial()) {
     on<AuthEvent>((event, emit) {});
   }
+
+  @override
+  Future<void> refreshProfile() async {}
 }
 
 class LoadingMockAuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
   LoadingMockAuthBloc() : super(const AuthState.loading()) {
     on<AuthEvent>((event, emit) {});
   }
+
+  @override
+  Future<void> refreshProfile() async {}
 }
 
 void main() {
