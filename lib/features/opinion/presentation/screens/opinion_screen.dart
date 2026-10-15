@@ -475,7 +475,7 @@ class _PeriodCard extends StatelessWidget {
             Align(alignment: Alignment.centerRight, child: FilledButton.icon(onPressed: busy ? null : onSubmit, icon: const Icon(Icons.send_rounded), label: const Text('Submit anonymously'))),
           ] else if (active) ...[
             const SizedBox(height: Dimensions.paddingSizeLarge),
-            Text(context.local.opinionSeasonMembersOnly, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor)),
+            Text(context.local.opinionCurrentSeasonOnly, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor)),
           ],
           if (isAdmin || period.visibility == OpinionVisibility.realtime) ...[
             const SizedBox(height: Dimensions.paddingSizeLarge),

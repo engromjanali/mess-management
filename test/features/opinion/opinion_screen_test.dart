@@ -98,7 +98,7 @@ void main() {
           }
           expect(tester.takeException(), isNull, reason: '$width $language admin=$admin');
           canWrite = false;
-          expired = true;
+          expired = false;
           visibility = 'realtime';
           final previousRequests = requests;
           await tester.pump(const Duration(seconds: 45));
@@ -114,9 +114,13 @@ void main() {
           await tester.pumpAndSettle();
           expect(requests, previousRequests + 1);
           expect(find.byType(TextField), findsNothing);
+          expect(find.text(AppLocalizations.of(tester.element(find.byType(OpinionScreen))).opinionCurrentSeasonOnly), findsOneWidget);
           expect(find.text('Private feedback'), findsOneWidget);
           expect(tester.takeException(), isNull, reason: '$width $language read only');
           if (admin) {
+            expired = true;
+            await tester.tap(refreshButton);
+            await tester.pumpAndSettle();
             final local = AppLocalizations.of(tester.element(find.byType(OpinionScreen)));
             final publicButton = find.widgetWithText(OutlinedButton, local.opinionPublic);
             await tester.ensureVisible(publicButton);
