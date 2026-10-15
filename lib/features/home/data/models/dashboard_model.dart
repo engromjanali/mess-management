@@ -24,6 +24,7 @@ class DashboardModel {
   final List<MemberStatModel> members;
   final NoticeModel? pinnedNotice;
   final bool isManager;
+  final bool isMember;
   final String userName;
 
   const DashboardModel({
@@ -45,6 +46,7 @@ class DashboardModel {
     required this.members,
     required this.userName,
     this.isManager = false,
+    this.isMember = true,
     this.pinnedNotice,
   });
 
@@ -67,6 +69,7 @@ class DashboardModel {
     members: members.map((m) => m.toEntity()).toList(),
     pinnedNotice: pinnedNotice?.toEntity(),
     isManager: isManager,
+    isMember: isMember,
     userName: userName,
   );
 }

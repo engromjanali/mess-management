@@ -157,7 +157,10 @@ class MembershipApiService {
         endDate: season['end_date'] == null ? null : DateTime.parse(season['end_date'] as String),
       ),
       myRole: json['my_role'] as String? ?? 'member',
-      joinedAt: DateTime.parse(json['joined_at'] as String).toLocal(),
+      joinedAt: DateTime.tryParse(json['joined_at'] as String? ?? '')?.toLocal(),
+      isManager: json['is_manager'] as bool? ?? json['my_role'] == 'manager',
+      isMember: json['is_member'] as bool? ?? true,
+      isActingManager: json['is_acting_manager'] as bool? ?? json['my_role'] == 'acting_manager',
       manager: _person(json['manager']),
       actingManager: _person(json['acting_manager']),
       members: (json['members'] as List<dynamic>? ?? []).map((item) {
@@ -197,9 +200,9 @@ class MembershipApiService {
     await _apiClient.post<void>(AppConstants.leaveMessEndpoint);
   }
 
-  /// Makes [membershipId] the user's current membership (saved on the profile).
-  Future<void> switchMembership(int membershipId) async {
-    await _apiClient.post<void>(AppConstants.switchMembershipEndpoint, data: {'membership_id': membershipId});
+  /// Makes the selected real membership or leader-only season context current.
+  Future<void> switchMembership(MembershipSummaryEntity membership) async {
+    await _apiClient.post<void>(AppConstants.switchMembershipEndpoint, data: {'membership_id': membership.membershipId, 'mess_id': membership.messId, 'season_id': membership.seasonId});
   }
 
   Future<void> declineInvite(String code) async {
@@ -222,7 +225,8 @@ class MembershipApiService {
   double? _double(Object? value) => value is num ? value.toDouble() : double.tryParse(value?.toString() ?? '');
 
   MembershipSummaryEntity _membership(Map<String, dynamic> json) => MembershipSummaryEntity(
-    membershipId: json['membership_id'] as int,
+    membershipId: json['membership_id'] as int?,
+    seasonId: json['season_id'] as int,
     messId: json['mess_id'] as int,
     messName: json['mess_name'] as String,
     seasonName: json['season_name'] as String,
@@ -235,6 +239,9 @@ class MembershipApiService {
     joinedAt: DateTime.tryParse(json['joined_at'] as String? ?? '')?.toLocal(),
     isCurrent: json['is_current'] as bool? ?? false,
     canSwitch: json['can_switch'] as bool? ?? false,
+    isManager: json['is_manager'] as bool? ?? json['role'] == 'manager',
+    isMember: json['is_member'] as bool? ?? true,
+    isActingManager: json['is_acting_manager'] as bool? ?? json['role'] == 'acting_manager',
   );
 
   JoinRequestSummaryEntity _joinRequest(Map<String, dynamic> json) => JoinRequestSummaryEntity(

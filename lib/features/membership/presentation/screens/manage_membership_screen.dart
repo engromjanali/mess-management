@@ -159,7 +159,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
   }
 
   Future<void> _switchTo(MembershipSummaryEntity membership) async {
-    final switched = await _runUserAction('switch:${membership.membershipId}', () => _service.switchMembership(membership.membershipId), context.local.switchedMembership(membership.messName, membership.seasonName), refreshProfile: true);
+    final switched = await _runUserAction('switch:${membership.messId}:${membership.seasonId}', () => _service.switchMembership(membership), context.local.switchedMembership(membership.messName, membership.seasonName), refreshProfile: true);
     if (switched && mounted) _openCurrentMembership(membership.role);
   }
 
@@ -522,7 +522,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                                 padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
                                 child: MyMembershipTile(
                                   membership: membership,
-                                  busy: _busyItem == 'switch:${membership.membershipId}',
+                                  busy: _busyItem == 'switch:${membership.messId}:${membership.seasonId}',
                                   onSwitch: idle ? () => _switchTo(membership) : null,
                                 ),
                               ),

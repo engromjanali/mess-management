@@ -15,6 +15,7 @@ void main() {
     final dio = Dio();
     addTearDown(dio.close);
     var role = 'manager';
+    var isMember = true;
     var deposit = 2200;
     dio.interceptors.add(InterceptorsWrapper(onRequest: (options, handler) {
       expect(options.path, '/api/v1/user/mess');
@@ -22,6 +23,7 @@ void main() {
       expect(options.extra['sensitive'], isTrue);
       handler.resolve(Response(requestOptions: options, statusCode: 200, data: {
         'my_role': role,
+        'is_member': isMember,
         'stats': {'meal_rate': 100, 'total_deposit': deposit, 'total_meals': 2.5, 'total_cost': 250, 'fund_balance': 800},
         if (role != 'member') 'member_stats': [{'id': 8, 'name': 'Actual member', 'deposit': deposit, 'meal': 2.5}],
       }));
@@ -34,8 +36,10 @@ void main() {
     deposit = 2500;
     expect((await source.getDashboard()).members.single.deposit, 2500);
     role = 'member';
+    isMember = false;
     final member = await source.getDashboard();
     expect(member.isManager, isFalse);
+    expect(member.isMember, isFalse);
     expect(member.members, isEmpty);
   });
 

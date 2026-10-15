@@ -17,6 +17,7 @@ class MembershipStatusEntity {
 class MembershipSummaryEntity {
   const MembershipSummaryEntity({
     required this.membershipId,
+    required this.seasonId,
     required this.messId,
     required this.messName,
     required this.seasonName,
@@ -29,9 +30,13 @@ class MembershipSummaryEntity {
     this.joinedAt,
     this.isCurrent = false,
     this.canSwitch = false,
+    this.isManager = false,
+    this.isMember = false,
+    this.isActingManager = false,
   });
 
-  final int membershipId;
+  final int? membershipId;
+  final int seasonId;
   final int messId;
   final String messName;
   final String seasonName;
@@ -48,6 +53,9 @@ class MembershipSummaryEntity {
 
   /// Whether it can be made current (not left, not disabled).
   final bool canSwitch;
+  final bool isManager;
+  final bool isMember;
+  final bool isActingManager;
   final double totalDeposit;
   final double totalMeal;
 }

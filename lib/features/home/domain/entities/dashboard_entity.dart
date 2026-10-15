@@ -31,6 +31,7 @@ class DashboardEntity extends Equatable {
 
   /// Whether the current user is a manager/admin (controls member table).
   final bool isManager;
+  final bool isMember;
 
   /// Friendly name shown in the welcome header.
   final String userName;
@@ -54,10 +55,11 @@ class DashboardEntity extends Equatable {
     required this.members,
     required this.userName,
     this.isManager = false,
+    this.isMember = true,
     this.pinnedNotice,
   });
 
-  DashboardEntity copyWith({bool? isManager, String? userName}) => DashboardEntity(
+  DashboardEntity copyWith({bool? isManager, bool? isMember, String? userName}) => DashboardEntity(
     totalBalance: totalBalance,
     mealBalance: mealBalance,
     fundBalance: fundBalance,
@@ -76,11 +78,12 @@ class DashboardEntity extends Equatable {
     members: members,
     userName: userName ?? this.userName,
     isManager: isManager ?? this.isManager,
+    isMember: isMember ?? this.isMember,
     pinnedNotice: pinnedNotice,
   );
 
   @override
-  List<Object?> get props => [totalBalance, mealBalance, fundBalance, totalDeposit, bazerCost, totalMeal, mealRate, managerEmail, managerPhone, actingManagerEmail, actingManagerPhone, messAddress, myTotalMeal, myDeposit, myRemaining, members, pinnedNotice, isManager, userName];
+  List<Object?> get props => [totalBalance, mealBalance, fundBalance, totalDeposit, bazerCost, totalMeal, mealRate, managerEmail, managerPhone, actingManagerEmail, actingManagerPhone, messAddress, myTotalMeal, myDeposit, myRemaining, members, pinnedNotice, isManager, isMember, userName];
 }
 
 /// Per-member statistics rendered in the manager member table.

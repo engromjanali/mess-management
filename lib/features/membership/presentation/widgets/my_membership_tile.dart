@@ -61,7 +61,10 @@ class MyMembershipTile extends StatelessWidget {
                   runSpacing: Dimensions.paddingSizeExtraSmall,
                   children: [
                     if (m.isCurrent) _Badge(label: context.local.currentMembership, color: colors.primaryColor),
-                    _Badge(label: MessFormatters.role(context, m.role), color: m.role == 'member' ? colors.infoColor : colors.secondaryColor),
+                    if (m.isManager) _Badge(label: MessFormatters.role(context, 'manager'), color: colors.secondaryColor),
+                    if (m.isActingManager) _Badge(label: MessFormatters.role(context, 'acting_manager'), color: colors.secondaryColor),
+                    if (m.isMember) _Badge(label: MessFormatters.role(context, 'member'), color: colors.infoColor),
+                    if (!m.isMember && (m.isManager || m.isActingManager)) _Badge(label: context.local.leadershipAccessNotJoined, color: colors.warningColor, icon: Icons.admin_panel_settings_outlined),
                     if (m.status == 'disabled') _Badge(label: context.local.disabled, color: colors.errorColor),
                     if (m.status == 'left') _Badge(label: context.local.membershipLeft, color: colors.textHintColor),
                   ],
@@ -85,17 +88,27 @@ class MyMembershipTile extends StatelessWidget {
 }
 
 class _Badge extends StatelessWidget {
-  const _Badge({required this.label, required this.color});
+  const _Badge({required this.label, required this.color, this.icon});
 
   final String label;
   final Color color;
+  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: 2),
       decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
-      child: Text(label, maxLines: 1, style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: color)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 13, color: color),
+            const SizedBox(width: 3),
+          ],
+          Flexible(child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: color))),
+        ],
+      ),
     );
   }
 }

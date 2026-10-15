@@ -930,5 +930,7 @@
   "opinionLoadMore": "Load more",
   "opinionPublic": "Public",
   "opinionPrivate": "Private",
-  "opinionSeasonMembersOnly": "Only active members of this opinion period's season can submit opinions."
+  "opinionSeasonMembersOnly": "Only active members of this opinion period's season can submit opinions.",
+  "noSeasonMembershipAccess": "You can manage this season, but you were not a member of it. Personal meals, deposits, opinions, and voting are unavailable.",
+  "leadershipAccessNotJoined": "Leadership access only · Not joined"
 }

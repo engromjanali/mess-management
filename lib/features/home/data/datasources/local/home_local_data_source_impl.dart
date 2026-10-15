@@ -33,6 +33,7 @@ class HomeLocalDataSourceImpl implements HomeDataSource {
     return DashboardModel(
       userName: 'Romjan',
       isManager: const ['manager', 'acting_manager'].contains(json['my_role']),
+      isMember: json['is_member'] as bool? ?? true,
       totalBalance: totalBalance,
       mealBalance: mealBalance,
       fundBalance: fundBalance,

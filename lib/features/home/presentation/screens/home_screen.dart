@@ -199,7 +199,13 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
                   pinned: true,
                   delegate: PinnedSectionHeader(title: 'My Section', icon: Icons.person_rounded),
                 ),
-                _StatSliverGrid(stats: _myStats(context, dashboard)),
+                if (dashboard.isMember)
+                  _StatSliverGrid(stats: _myStats(context, dashboard))
+                else
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge),
+                    sliver: SliverToBoxAdapter(child: _NoSeasonMembershipCard(message: context.local.noSeasonMembershipAccess)),
+                  ),
                 if (dashboard.isManager) ...[
                   SliverPersistentHeader(
                     pinned: true,
@@ -330,7 +336,10 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   const SectionTitle(title: 'My Section', icon: Icons.person_rounded),
-                                  _StatBoxGrid(stats: _myStats(context, dashboard), maxCrossAxisExtent: 230),
+                                  if (dashboard.isMember)
+                                    _StatBoxGrid(stats: _myStats(context, dashboard), maxCrossAxisExtent: 230)
+                                  else
+                                    _NoSeasonMembershipCard(message: context.local.noSeasonMembershipAccess),
                                 ],
                               ),
                             ),
@@ -375,6 +384,33 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
 // ─────────────────────────────────────────────────────────────────────────
 // Shared helpers.
 // ─────────────────────────────────────────────────────────────────────────
+
+class _NoSeasonMembershipCard extends StatelessWidget {
+  const _NoSeasonMembershipCard({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+    return Container(
+      padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+      decoration: BoxDecoration(
+        color: colors.infoColor.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
+        border: Border.all(color: colors.infoColor.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.info_outline_rounded, color: colors.infoColor),
+          const SizedBox(width: Dimensions.paddingSizeDefault),
+          Expanded(child: Text(message, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor, height: 1.4))),
+        ],
+      ),
+    );
+  }
+}
 
 class _MessDetailsCard extends StatefulWidget {
   const _MessDetailsCard({required this.dashboard});

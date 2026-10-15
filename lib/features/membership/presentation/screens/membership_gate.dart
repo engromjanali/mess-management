@@ -8,6 +8,7 @@ import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_formatters.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/profile_menu.dart';
 import 'package:clean_boilerplate/features/membership/domain/entities/membership_status_entity.dart';
 import 'package:clean_boilerplate/features/membership/presentation/bloc/membership_cubit.dart';
 import 'package:flutter/material.dart';
@@ -30,15 +31,18 @@ class MembershipGate extends StatefulWidget {
 
 class _MembershipGateState extends State<MembershipGate> {
   /// The current membership last seen, to notice when it changes.
-  int? _knownCurrentId;
+  String? _knownCurrentId;
   bool _seenStatus = false;
 
   /// A user without a current membership must join or create a mess first. `status.current` is resolved by the
   /// same backend rule as the user's `activeMessId`, but stays fresh after joining, creating, leaving or switching.
-  bool _hasMess(MembershipStatusEntity status) => status.current != null;
+  bool _hasMess(MembershipStatusEntity status) {
+    final current = status.current;
+    return current != null && (current.isManager || current.isMember || current.isActingManager);
+  }
 
   Future<void> _onStatus(BuildContext context, MembershipStatusEntity status) async {
-    final currentId = status.current?.membershipId;
+    final currentId = status.current == null ? null : '${status.current!.messId}:${status.current!.seasonId}';
     final changed = _seenStatus && currentId != _knownCurrentId;
     _seenStatus = true;
     _knownCurrentId = currentId;
@@ -173,7 +177,13 @@ class _NoCurrentMessState extends State<_NoCurrentMess> {
     final location = GoRouterState.of(context).uri.path;
 
     return Scaffold(
-      appBar: AppBar(leading: widget.connected ? const HomeBackButton() : null, title: const Text('Mess Manager')),
+      appBar: AppBar(
+        leading: widget.connected ? const HomeBackButton() : null,
+        title: const Text('Mess Manager'),
+        actions: [
+          IconButton(onPressed: () => confirmSignOut(context), icon: const Icon(Icons.logout_rounded), tooltip: context.local.logout),
+        ],
+      ),
       body: RefreshIndicator(
         onRefresh: () => context.read<MembershipCubit>().load(),
         child: ListView(
