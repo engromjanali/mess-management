@@ -14,8 +14,15 @@ class HomeLocalDataSourceImpl implements HomeDataSource {
 
   @override
   Future<DashboardModel> getDashboard() async {
-    final response = await _apiClient.get<Map<String, dynamic>>(AppConstants.messDetailsEndpoint, options: Options(extra: {'sensitive': true}));
+    final responses = await Future.wait([
+      _apiClient.get<Map<String, dynamic>>(AppConstants.messDetailsEndpoint, options: Options(extra: {'sensitive': true})),
+      _apiClient.get<Map<String, dynamic>>(AppConstants.noticesEndpoint),
+    ]);
+    final response = responses[0];
+    final noticesResponse = responses[1];
     final json = response.data!;
+    final notices = noticesResponse.data!['data'] as List<dynamic>? ?? [];
+    final pinnedNoticeJson = notices.cast<Map<String, dynamic>>().where((notice) => notice['pinned'] == true).firstOrNull;
     final stats = json['stats'] as Map<String, dynamic>;
     final mealRate = (stats['meal_rate'] as num).toDouble();
     final members = (json['member_stats'] as List<dynamic>? ?? const []).map((item) {
@@ -50,14 +57,7 @@ class HomeLocalDataSourceImpl implements HomeDataSource {
       myDeposit: 3000,
       myRemaining: 3000 - (41 * mealRate),
       members: members,
-      pinnedNotice: NoticeModel(
-        noticeId: '#1042',
-        title: 'Monthly meal rate updated',
-        description:
-            'The meal rate for this session has been recalculated to ৳62.5. '
-            'Please clear any pending deposits before the 10th.',
-        createdAt: DateTime(2026, 6, 1, 9, 30),
-      ),
+      pinnedNotice: pinnedNoticeJson == null ? null : NoticeModel(noticeId: '${pinnedNoticeJson['id']}', title: pinnedNoticeJson['title'] as String, description: pinnedNoticeJson['description'] as String, createdAt: DateTime.parse(pinnedNoticeJson['created_at'] as String).toLocal()),
     );
   }
 }
