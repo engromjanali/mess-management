@@ -105,14 +105,14 @@ final router = GoRouter(
 
     GoRoute(path: AppRoutes.forgotPassword, name: 'forgotPassword', builder: (context, state) => const ForgotPasswordScreen()),
 
-    ShellRoute(
-      builder: (context, state, child) => MainNavigationShell(location: state.uri.path, child: child),
-      routes: [
-        GoRoute(path: AppRoutes.home, name: 'home', builder: (context, state) => const HomeScreen()),
-        GoRoute(path: AppRoutes.meals, name: 'meals', builder: (context, state) => const MealScreen()),
-        GoRoute(path: AppRoutes.deposits, name: 'deposits', builder: (context, state) => const DepositScreen()),
-        GoRoute(path: AppRoutes.costs, name: 'costs', builder: (context, state) => const CostScreen()),
-        GoRoute(path: AppRoutes.profile, name: 'profile', builder: (context, state) => const ProfileScreen()),
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) => MainNavigationShell(navigationShell: navigationShell),
+      branches: [
+        StatefulShellBranch(routes: [GoRoute(path: AppRoutes.home, name: 'home', builder: (context, state) => const HomeScreen())]),
+        StatefulShellBranch(routes: [GoRoute(path: AppRoutes.meals, name: 'meals', builder: (context, state) => const MealScreen())]),
+        StatefulShellBranch(routes: [GoRoute(path: AppRoutes.deposits, name: 'deposits', builder: (context, state) => const DepositScreen())]),
+        StatefulShellBranch(routes: [GoRoute(path: AppRoutes.costs, name: 'costs', builder: (context, state) => const CostScreen())]),
+        StatefulShellBranch(routes: [GoRoute(path: AppRoutes.profile, name: 'profile', builder: (context, state) => const ProfileScreen())]),
       ],
     ),
 

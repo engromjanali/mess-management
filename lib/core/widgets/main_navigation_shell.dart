@@ -1,4 +1,3 @@
-import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
 import 'package:clean_boilerplate/core/widgets/animated_bottom_nav_bar.dart';
@@ -9,25 +8,23 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class MainNavigationShell extends StatelessWidget {
-  const MainNavigationShell({required this.location, required this.child, super.key});
+  const MainNavigationShell({required this.navigationShell, super.key});
 
-  final String location;
-  final Widget child;
+  final StatefulNavigationShell navigationShell;
 
   @override
   Widget build(BuildContext context) {
-    if (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)) return child;
+    if (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)) return navigationShell;
 
-    const routes = [AppRoutes.home, AppRoutes.meals, AppRoutes.deposits, AppRoutes.costs, AppRoutes.profile];
-    final currentIndex = routes.indexOf(location);
+    final currentIndex = navigationShell.currentIndex;
     final photoUrl = context.select<AuthBloc, String?>((bloc) => bloc.state.maybeWhen(authenticated: (user) => user.photoUrl, orElse: () => null));
 
     void navigate(int index) {
-      if (index != currentIndex) context.go(routes[index]);
+      if (index != currentIndex) navigationShell.goBranch(index);
     }
 
     return Scaffold(
-      body: child,
+      body: navigationShell,
       bottomNavigationBar: MediaQuery.viewInsetsOf(context).bottom > 0
           ? null
           : Align(
