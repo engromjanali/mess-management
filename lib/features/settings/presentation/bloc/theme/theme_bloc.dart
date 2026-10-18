@@ -16,7 +16,7 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
   final GetThemeModeUseCase _getThemeModeUseCase;
   final SetThemeModeUseCase _setThemeModeUseCase;
 
-  ThemeBloc(this._getThemeModeUseCase, this._setThemeModeUseCase) : super(const ThemeState.system()) {
+  ThemeBloc(this._getThemeModeUseCase, this._setThemeModeUseCase) : super(const ThemeState.light()) {
     on<ThemeEvent>(_onThemeEvent);
   }
 

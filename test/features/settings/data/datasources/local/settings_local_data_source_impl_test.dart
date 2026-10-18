@@ -19,7 +19,7 @@ void main() {
 
   const tThemeKey = 'theme_mode';
   const tLocaleKey = 'locale_code';
-  const tDefaultTheme = 'system';
+  const tDefaultTheme = 'light';
 
   group('getThemeMode', () {
     test('should return theme mode from SharedPreferences', () async {

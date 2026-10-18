@@ -12,6 +12,18 @@ enum AppThemeMode {
 
 /// Extension methods for AppThemeMode
 extension AppThemeModeExtension on AppThemeMode {
+  /// Next mode used by the theme action button: light → dark → system.
+  AppThemeMode get next {
+    switch (this) {
+      case AppThemeMode.light:
+        return AppThemeMode.dark;
+      case AppThemeMode.dark:
+        return AppThemeMode.system;
+      case AppThemeMode.system:
+        return AppThemeMode.light;
+    }
+  }
+
   /// Convert enum to string for storage
   String toStringValue() {
     switch (this) {

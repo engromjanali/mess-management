@@ -10,7 +10,7 @@ class SettingsLocalDataSourceImpl implements SettingsDataSource {
 
   static const String _themeKey = 'theme_mode';
   static const String _localeKey = 'locale_code';
-  static const String _defaultTheme = 'system';
+  static const String _defaultTheme = 'light';
 
   SettingsLocalDataSourceImpl(this._prefs);
 

@@ -34,6 +34,12 @@ class DashboardTopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
+    final themeMode = context.watch<ThemeBloc>().state.when(dark: (_) => AppThemeMode.dark, light: (_) => AppThemeMode.light, system: (_) => AppThemeMode.system);
+    final themeIcon = switch (themeMode) {
+      AppThemeMode.light => Icons.light_mode_rounded,
+      AppThemeMode.dark => Icons.dark_mode_rounded,
+      AppThemeMode.system => Icons.sunny_snowing,
+    };
 
     return Material(
       color: colors.surfaceColor,
@@ -74,9 +80,9 @@ class DashboardTopBar extends StatelessWidget {
                       if (navItems.isEmpty) const Spacer(),
                       _ActionIcon(icon: Icons.notifications_outlined, tooltip: 'Notifications', onPressed: () => context.go(AppRoutes.notices)),
                       _ActionIcon(
-                        icon: context.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-                        tooltip: 'Toggle theme',
-                        onPressed: () => context.read<ThemeBloc>().add(ThemeEvent.changeThemeMode(context.isDarkMode ? AppThemeMode.light : AppThemeMode.dark)),
+                        icon: themeIcon,
+                        tooltip: 'Theme: ${themeMode.displayName}',
+                        onPressed: () => context.read<ThemeBloc>().add(ThemeEvent.changeThemeMode(themeMode.next)),
                       ),
                       const _LocaleMenu(),
                       const SizedBox(width: Dimensions.paddingSizeDefault),
