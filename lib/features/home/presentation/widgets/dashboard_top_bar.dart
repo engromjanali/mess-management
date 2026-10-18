@@ -7,6 +7,8 @@ import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/assets/assets.gen.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
 import 'package:clean_boilerplate/features/settings/domain/entities/theme_mode.dart';
 import 'package:clean_boilerplate/features/settings/presentation/bloc/localization/localization_bloc.dart';
 import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_bloc.dart';
@@ -34,6 +36,7 @@ class DashboardTopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
+    final profileImageUrl = context.select<AuthBloc, String?>((bloc) => bloc.state.maybeWhen(authenticated: (user) => user.photoUrl, orElse: () => null));
     final themeMode = context.watch<ThemeBloc>().state.when(dark: (_) => AppThemeMode.dark, light: (_) => AppThemeMode.light, system: (_) => AppThemeMode.system);
     final themeIcon = switch (themeMode) {
       AppThemeMode.light => Icons.light_mode_rounded,
@@ -86,7 +89,7 @@ class DashboardTopBar extends StatelessWidget {
                       ),
                       const _LocaleMenu(),
                       const SizedBox(width: Dimensions.paddingSizeDefault),
-                      _ProfileChip(userName: userName, showText: showProfileText, onTap: onProfileTap),
+                      _ProfileChip(userName: userName, profileImageUrl: profileImageUrl, showText: showProfileText, onTap: onProfileTap),
                     ],
                   );
                 },
@@ -256,8 +259,9 @@ class _ActionIcon extends StatelessWidget {
 }
 
 class _ProfileChip extends StatelessWidget {
-  const _ProfileChip({required this.userName, required this.showText, required this.onTap});
+  const _ProfileChip({required this.userName, required this.profileImageUrl, required this.showText, required this.onTap});
   final String userName;
+  final String? profileImageUrl;
   final bool showText;
   final VoidCallback onTap;
 
@@ -271,14 +275,13 @@ class _ProfileChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
+    final imageUrl = profileImageUrl?.trim() ?? '';
+    final fallback = Center(child: Text(_initials, style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.primaryColor)));
 
     final avatar = CircleAvatar(
       radius: 18,
       backgroundColor: colors.primaryColor.withValues(alpha: 0.15),
-      child: Text(
-        _initials,
-        style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.primaryColor),
-      ),
+      child: imageUrl.isEmpty ? fallback : ClipOval(child: Image.network(imageUrl, width: 36, height: 36, fit: BoxFit.cover, cacheWidth: 108, cacheHeight: 108, errorBuilder: (_, _, _) => fallback)),
     );
 
     if (!showText) {

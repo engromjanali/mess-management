@@ -57,6 +57,7 @@ class AppRoutes {
   static const String costs = '/costs';
   static const String notices = '/notices';
   static const String opinions = '/opinions';
+  static const String createOpinionPeriod = '/opinions/create';
   static const String profile = '/profile';
   static const String editProfile = '/profile/edit';
   static const String deleteAccount = '/account/delete';
@@ -127,6 +128,7 @@ final router = GoRouter(
     GoRoute(path: AppRoutes.notices, name: 'notices', builder: (context, state) => const NoticeScreen()),
 
     GoRoute(path: AppRoutes.opinions, name: 'opinions', builder: (context, state) => const OpinionScreen()),
+    GoRoute(path: AppRoutes.createOpinionPeriod, name: 'createOpinionPeriod', builder: (context, state) => const OpinionPeriodFormScreen()),
 
     // Profile route
     GoRoute(path: AppRoutes.editProfile, name: 'editProfile', builder: (context, state) => const EditProfileScreen()),
