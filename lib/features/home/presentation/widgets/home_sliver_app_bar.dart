@@ -30,7 +30,7 @@ class HomeSliverAppBar extends StatelessWidget {
       elevation: 0,
       shape: const Border(),
       actions: [
-        IconButton(tooltip: 'Notifications', onPressed: () => context.go(AppRoutes.notices), icon: const Icon(Icons.notifications_outlined)),
+        IconButton(tooltip: 'Notifications', onPressed: () => context.push(AppRoutes.notices), icon: const Icon(Icons.notifications_outlined)),
       ],
       flexibleSpace: LayoutBuilder(
         builder: (context, constraints) {

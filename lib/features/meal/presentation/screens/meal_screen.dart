@@ -14,8 +14,7 @@ import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
 import 'package:clean_boilerplate/core/widgets/pill_tab_bar.dart';
 import 'package:clean_boilerplate/core/widgets/segmented_tab_bar.dart';
 import 'package:clean_boilerplate/core/widgets/stat_card.dart';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
+
 import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_formatters.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_top_bar.dart';
@@ -72,7 +71,7 @@ class _MealViewState extends State<_MealView> {
       body: showWebAppBar
           ? Column(
               children: [
-                const _MealTopBar(),
+                const DashboardTopBar(active: DashboardSection.meals),
                 Expanded(child: content),
               ],
             )
@@ -127,25 +126,7 @@ class _MealViewState extends State<_MealView> {
   }
 }
 
-/// Desktop / big-tablet app bar, shown in every state (loading, error, loaded).
-class _MealTopBar extends StatelessWidget {
-  const _MealTopBar();
 
-  @override
-  Widget build(BuildContext context) {
-    final user = context.watch<AuthBloc>().state.maybeWhen(authenticated: (user) => user, orElse: () => null);
-    return DashboardTopBar(
-      userName: user?.name ?? context.local.roleUser,
-      onProfileTap: () => Scaffold.of(context).openEndDrawer(),
-      navItems: [
-        DashboardNavItem(label: context.local.home, icon: Icons.home_rounded, onTap: () => context.go(AppRoutes.home)),
-        DashboardNavItem(label: context.local.meals, icon: Icons.restaurant_rounded, active: true, onTap: () {}),
-        DashboardNavItem(label: context.local.deposits, icon: Icons.account_balance_wallet_rounded, onTap: () => context.go(AppRoutes.deposits)),
-        DashboardNavItem(label: context.local.cost, icon: Icons.shopping_cart_rounded, onTap: () => context.go(AppRoutes.costs)),
-      ],
-    );
-  }
-}
 
 /// Admin tab: record, edit and delete meals for any member on any date.
 class _ManageTab extends StatelessWidget {

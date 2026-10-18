@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/di/injection.dart';
@@ -13,8 +11,7 @@ import 'package:clean_boilerplate/core/role/role_cubit.dart';
 import 'package:clean_boilerplate/core/widgets/app_footer.dart';
 import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
 import 'package:clean_boilerplate/core/widgets/web_page_title_bar.dart';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
+
 import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_top_bar.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
@@ -86,7 +83,7 @@ class _FundView extends StatelessWidget {
             return FloatingActionButton.extended(onPressed: () => _openAdd(context), icon: const Icon(Icons.add_rounded), label: Text(context.local.addFund));
           },
         ),
-        body: showWebAppBar ? Column(children: [const _FundTopBar(), WebPageTitleBar(title: context.local.fund), Expanded(child: content)]) : content,
+        body: showWebAppBar ? Column(children: [const DashboardTopBar(), WebPageTitleBar(title: context.local.fund), Expanded(child: content)]) : content,
       ),
     );
   }
@@ -100,25 +97,7 @@ class _FundView extends StatelessWidget {
   }
 }
 
-/// Desktop / big-tablet app bar, shown in every state (loading, error, loaded).
-class _FundTopBar extends StatelessWidget {
-  const _FundTopBar();
 
-  @override
-  Widget build(BuildContext context) {
-    final user = context.watch<AuthBloc>().state.maybeWhen(authenticated: (user) => user, orElse: () => null);
-    return DashboardTopBar(
-      userName: user?.name ?? context.local.roleUser,
-      onProfileTap: () => Scaffold.of(context).openEndDrawer(),
-      navItems: [
-        DashboardNavItem(label: context.local.home, icon: Icons.home_rounded, onTap: () => context.go(AppRoutes.home)),
-        DashboardNavItem(label: context.local.meals, icon: Icons.restaurant_rounded, onTap: () => context.go(AppRoutes.meals)),
-        DashboardNavItem(label: context.local.deposits, icon: Icons.account_balance_wallet_rounded, onTap: () => context.go(AppRoutes.deposits)),
-        DashboardNavItem(label: context.local.cost, icon: Icons.shopping_cart_rounded, onTap: () => context.go(AppRoutes.costs)),
-      ],
-    );
-  }
-}
 
 class _ErrorView extends StatelessWidget {
   const _ErrorView({required this.message});

@@ -194,7 +194,6 @@ class _OpinionScreenState extends State<OpinionScreen> {
   Widget build(BuildContext context) {
     final showWebAppBar = ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context);
     final isAdmin = context.watch<RoleCubit>().state.isAdmin && _canManage;
-    final user = context.watch<AuthBloc>().state.maybeWhen(authenticated: (user) => user, orElse: () => null);
     final opinionContent = _loading ? const Center(child: CircularProgressIndicator.adaptive()) : _error != null && _periods.isEmpty
         ? Center(child: Padding(padding: const EdgeInsets.all(Dimensions.paddingSizeLarge), child: Column(mainAxisSize: MainAxisSize.min, children: [Text(userErrorMessage(_error!, context.local), textAlign: TextAlign.center), TextButton.icon(onPressed: () => _load(), icon: const Icon(Icons.refresh_rounded), label: Text(context.local.tryAgain))])))
         : RefreshIndicator(onRefresh: () => _load(), child: _OpinionBody(
@@ -234,16 +233,7 @@ class _OpinionScreenState extends State<OpinionScreen> {
           ? Builder(
               builder: (context) => Column(
                 children: [
-                  DashboardTopBar(
-                    userName: user?.name ?? 'User',
-                    onProfileTap: () => Scaffold.of(context).openEndDrawer(),
-                    navItems: [
-                      DashboardNavItem(label: 'Home', icon: Icons.home_rounded, onTap: () => context.go(AppRoutes.home)),
-                      DashboardNavItem(label: 'Meals', icon: Icons.restaurant_rounded, onTap: () => context.go(AppRoutes.meals)),
-                      DashboardNavItem(label: 'Deposits', icon: Icons.account_balance_wallet_rounded, onTap: () => context.go(AppRoutes.deposits)),
-                      DashboardNavItem(label: 'Bazar', icon: Icons.shopping_cart_rounded, onTap: () => context.go(AppRoutes.costs)),
-                    ],
-                  ),
+                  const DashboardTopBar(),
                   Stack(children: [WebPageTitleBar(title: context.local.shareYourOpinions), Positioned(top: 4, right: Dimensions.paddingSizeSmall, child: IconButton(tooltip: context.local.refresh, onPressed: _busy || _refreshing ? null : () => _load(), icon: const Icon(Icons.refresh_rounded)))]),
                   Expanded(child: content),
                 ],

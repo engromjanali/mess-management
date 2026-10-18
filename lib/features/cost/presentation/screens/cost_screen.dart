@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:clean_boilerplate/config/route/app_router.dart';
+
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/di/injection.dart';
@@ -13,8 +12,7 @@ import 'package:clean_boilerplate/core/role/role_cubit.dart';
 import 'package:clean_boilerplate/core/widgets/app_footer.dart';
 import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
 import 'package:clean_boilerplate/core/widgets/pill_tab_bar.dart';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
+
 import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_top_bar.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
@@ -76,7 +74,7 @@ class _CostViewState extends State<_CostView> {
           title: Text(context.local.cost),
           actions: [IconButton(tooltip: context.local.refresh, icon: const Icon(Icons.refresh_rounded), onPressed: () => context.read<CostBloc>().add(const CostEvent.refresh()))],
         ),
-        body: showWebAppBar ? Column(children: [const _CostTopBar(), Expanded(child: _content())]) : _content(),
+        body: showWebAppBar ? Column(children: [const DashboardTopBar(active: DashboardSection.cost), Expanded(child: _content())]) : _content(),
       ),
     );
   }
@@ -138,25 +136,7 @@ class _CostViewState extends State<_CostView> {
   }
 }
 
-/// Desktop / big-tablet app bar, shown in every state (loading, error, loaded).
-class _CostTopBar extends StatelessWidget {
-  const _CostTopBar();
 
-  @override
-  Widget build(BuildContext context) {
-    final user = context.watch<AuthBloc>().state.maybeWhen(authenticated: (user) => user, orElse: () => null);
-    return DashboardTopBar(
-      userName: user?.name ?? context.local.roleUser,
-      onProfileTap: () => Scaffold.of(context).openEndDrawer(),
-      navItems: [
-        DashboardNavItem(label: context.local.home, icon: Icons.home_rounded, onTap: () => context.go(AppRoutes.home)),
-        DashboardNavItem(label: context.local.meals, icon: Icons.restaurant_rounded, onTap: () => context.go(AppRoutes.meals)),
-        DashboardNavItem(label: context.local.deposits, icon: Icons.account_balance_wallet_rounded, onTap: () => context.go(AppRoutes.deposits)),
-        DashboardNavItem(label: context.local.cost, icon: Icons.shopping_cart_rounded, active: true, onTap: () {}),
-      ],
-    );
-  }
-}
 
 // ─────────────────────────────────────────────────────────────────────────
 // List tab

@@ -24,19 +24,36 @@ class DashboardNavItem {
   final bool active;
 }
 
-class DashboardTopBar extends StatelessWidget {
-  const DashboardTopBar({required this.userName, required this.onProfileTap, this.navItems = const [], super.key});
+enum DashboardSection { home, meals, deposits, cost }
 
-  final String userName;
-  final VoidCallback onProfileTap;
-  final List<DashboardNavItem> navItems;
+class DashboardTopBar extends StatelessWidget {
+  const DashboardTopBar({this.userName, this.onProfileTap, this.navItems, this.active, this.hiddenSections = const {}, this.extraNavItems = const [], this.showNotifications = true, this.showTheme = true, this.showLocale = true, this.showProfile = true, super.key});
+
+  final String? userName;
+  final VoidCallback? onProfileTap;
+  final List<DashboardNavItem>? navItems;
+  final DashboardSection? active;
+  final Set<DashboardSection> hiddenSections;
+  final List<DashboardNavItem> extraNavItems;
+  final bool showNotifications;
+  final bool showTheme;
+  final bool showLocale;
+  final bool showProfile;
 
   static const double height = 72;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
-    final profileImageUrl = context.select<AuthBloc, String?>((bloc) => bloc.state.maybeWhen(authenticated: (user) => user.photoUrl, orElse: () => null));
+    final user = context.watch<AuthBloc>().state.maybeWhen(authenticated: (user) => user, orElse: () => null);
+    final resolvedUserName = userName ?? user?.name ?? context.local.roleUser;
+    final resolvedNavItems = navItems ?? [
+      if (!hiddenSections.contains(DashboardSection.home)) DashboardNavItem(label: context.local.home, icon: Icons.home_rounded, active: active == DashboardSection.home, onTap: () => context.go(AppRoutes.home)),
+      if (!hiddenSections.contains(DashboardSection.meals)) DashboardNavItem(label: context.local.meals, icon: Icons.restaurant_rounded, active: active == DashboardSection.meals, onTap: () => context.go(AppRoutes.meals)),
+      if (!hiddenSections.contains(DashboardSection.deposits)) DashboardNavItem(label: context.local.deposits, icon: Icons.account_balance_wallet_rounded, active: active == DashboardSection.deposits, onTap: () => context.go(AppRoutes.deposits)),
+      if (!hiddenSections.contains(DashboardSection.cost)) DashboardNavItem(label: context.local.cost, icon: Icons.shopping_cart_rounded, active: active == DashboardSection.cost, onTap: () => context.go(AppRoutes.costs)),
+      ...extraNavItems,
+    ];
     final themeMode = context.watch<ThemeBloc>().state.when(dark: (_) => AppThemeMode.dark, light: (_) => AppThemeMode.light, system: (_) => AppThemeMode.system);
     final themeIcon = switch (themeMode) {
       AppThemeMode.light => Icons.light_mode_rounded,
@@ -67,12 +84,12 @@ class DashboardTopBar extends StatelessWidget {
                   return Row(
                     children: [
                       _Brand(showText: showBrandText),
-                      if (navItems.isNotEmpty) ...[
+                      if (resolvedNavItems.isNotEmpty) ...[
                         const SizedBox(width: Dimensions.paddingSizeExtraLarge32),
                         Expanded(child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(mainAxisSize: MainAxisSize.min, children: [
-                        for (final item in navItems)
+                        for (final item in resolvedNavItems)
                           Padding(
                             padding: const EdgeInsets.only(right: Dimensions.paddingSizeExtraSmall),
                             child: _NavButton(item: item, showLabel: showNavLabels),
@@ -80,16 +97,18 @@ class DashboardTopBar extends StatelessWidget {
                           ]),
                         )),
                       ],
-                      if (navItems.isEmpty) const Spacer(),
-                      _ActionIcon(icon: Icons.notifications_outlined, tooltip: 'Notifications', onPressed: () => context.go(AppRoutes.notices)),
-                      _ActionIcon(
+                      if (resolvedNavItems.isEmpty) const Spacer(),
+                      if (showNotifications) _ActionIcon(icon: Icons.notifications_outlined, tooltip: 'Notifications', onPressed: () => context.push(AppRoutes.notices)),
+                      if (showTheme) _ActionIcon(
                         icon: themeIcon,
                         tooltip: 'Theme: ${themeMode.displayName}',
                         onPressed: () => context.read<ThemeBloc>().add(ThemeEvent.changeThemeMode(themeMode.next)),
                       ),
-                      const _LocaleMenu(),
-                      const SizedBox(width: Dimensions.paddingSizeDefault),
-                      _ProfileChip(userName: userName, profileImageUrl: profileImageUrl, showText: showProfileText, onTap: onProfileTap),
+                      if (showLocale) const _LocaleMenu(),
+                      if (showProfile) ...[
+                        const SizedBox(width: Dimensions.paddingSizeDefault),
+                        _ProfileChip(userName: resolvedUserName, profileImageUrl: user?.photoUrl, showText: showProfileText, onTap: onProfileTap ?? () => Scaffold.of(context).openEndDrawer()),
+                      ],
                     ],
                   );
                 },
