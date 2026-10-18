@@ -423,5 +423,17 @@
   "opinionPrivate": "خاص",
   "opinionSeasonMembersOnly": "يمكن للأعضاء النشطين في موسم فترة الآراء هذه فقط إرسال الآراء.",
   "noSeasonMembershipAccess": "يمكنك إدارة هذا الموسم، لكنك لم تكن عضوًا فيه. الوجبات والإيداعات والآراء والتصويت الشخصية غير متاحة.",
-  "leadershipAccessNotJoined": "صلاحية إدارية فقط · غير منضم"
+  "leadershipAccessNotJoined": "صلاحية إدارية فقط · غير منضم",
+  "shareYourOpinions": "شارك آراءك",
+  "opinionAnonymous": "مجهول الهوية",
+  "opinionNamed": "باسمي",
+  "opinionMessageHint": "اكتب رأيك",
+  "opinionAnonymousHint": "لن يتم حفظ هويتك",
+  "opinionNamedHint": "سيظهر اسمك مع هذا الرأي",
+  "submitOpinion": "إرسال الرأي",
+  "opinionSubmittedNamed": "تم إرسال الرأي باسمك.",
+  "opinionMessages": "الآراء",
+  "currentSeasonLabel": "الموسم الحالي",
+  "opinionAnonymousOnly": "مجهول الهوية فقط",
+  "opinionBothModes": "مجهول الهوية وبالاسم"
 }

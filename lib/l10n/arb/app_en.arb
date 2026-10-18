@@ -932,5 +932,17 @@
   "opinionPrivate": "Private",
   "opinionSeasonMembersOnly": "Only active members of this opinion period's season can submit opinions.",
   "noSeasonMembershipAccess": "You can manage this season, but you were not a member of it. Personal meals, deposits, opinions, and voting are unavailable.",
-  "leadershipAccessNotJoined": "Leadership access only · Not joined"
+  "leadershipAccessNotJoined": "Leadership access only · Not joined",
+  "shareYourOpinions": "Share your opinions",
+  "opinionAnonymous": "Anonymous",
+  "opinionNamed": "With my name",
+  "opinionMessageHint": "Write your opinion",
+  "opinionAnonymousHint": "Your identity will not be stored",
+  "opinionNamedHint": "Your name will be shown with this opinion",
+  "submitOpinion": "Submit opinion",
+  "opinionSubmittedNamed": "Opinion submitted with your name.",
+  "opinionMessages": "Opinions",
+  "currentSeasonLabel": "Current season",
+  "opinionAnonymousOnly": "Anonymous only",
+  "opinionBothModes": "Anonymous and named"
 }

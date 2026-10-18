@@ -184,7 +184,7 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
-                HomeSliverAppBar(userName: dashboard.userName, photoUrl: photoUrl, totalBalance: dashboard.totalBalance, mealBalance: dashboard.mealBalance, depositBalance: dashboard.totalDeposit, expandedHeight: 200),
+                HomeSliverAppBar(userName: dashboard.userName, photoUrl: photoUrl, currentSeasonName: dashboard.currentSeasonName, totalBalance: dashboard.totalBalance, expandedHeight: 200),
                 SliverPersistentHeader(
                   pinned: true,
                   delegate: PinnedSectionHeader(title: 'Mess Section', icon: Icons.groups_rounded),
@@ -467,19 +467,23 @@ class _MessDetailsCardState extends State<_MessDetailsCard> {
                 spacing: Dimensions.paddingSizeLarge,
                 runSpacing: Dimensions.paddingSizeLarge,
                 children: [
-                  SizedBox(width: contactWidth, child: _MessContact(title: 'Manager', email: dashboard.managerEmail, phone: dashboard.managerPhone)),
-                  SizedBox(width: contactWidth, child: _MessContact(title: 'Acting manager', email: dashboard.actingManagerEmail, phone: dashboard.actingManagerPhone)),
+                  if ([dashboard.managerName, dashboard.managerEmail, dashboard.managerPhone].any((value) => value.isNotEmpty))
+                    SizedBox(width: contactWidth, child: _MessContact(title: 'Manager', name: dashboard.managerName, email: dashboard.managerEmail, phone: dashboard.managerPhone)),
+                  if ([dashboard.actingManagerName, dashboard.actingManagerEmail, dashboard.actingManagerPhone].any((value) => value.isNotEmpty))
+                    SizedBox(width: contactWidth, child: _MessContact(title: 'Acting manager', name: dashboard.actingManagerName, email: dashboard.actingManagerEmail, phone: dashboard.actingManagerPhone)),
                 ],
               ),
-              const SizedBox(height: Dimensions.paddingSizeLarge),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(Icons.location_on_outlined, color: colors.primaryColor),
-                  const SizedBox(width: Dimensions.paddingSizeSmall),
-                  Expanded(child: Text(dashboard.messAddress, maxLines: 3, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textPrimaryColor))),
-                ],
-              ),
+              if (dashboard.messAddress.isNotEmpty) ...[
+                const SizedBox(height: Dimensions.paddingSizeLarge),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.location_on_outlined, color: colors.primaryColor),
+                    const SizedBox(width: Dimensions.paddingSizeSmall),
+                    Expanded(child: Text(dashboard.messAddress, maxLines: 3, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textPrimaryColor))),
+                  ],
+                ),
+              ],
               const SizedBox(height: Dimensions.paddingSizeDefault),
               Wrap(
                 spacing: Dimensions.paddingSizeSmall,
@@ -490,7 +494,7 @@ class _MessDetailsCardState extends State<_MessDetailsCard> {
                     icon: _openingMap ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.map_outlined),
                     label: Text(context.local.showOnGoogleMaps),
                   ),
-                  OutlinedButton.icon(onPressed: () => context.go(AppRoutes.opinions), icon: const Icon(Icons.forum_outlined), label: const Text('Anonymous opinions')),
+                  OutlinedButton.icon(onPressed: () => context.go(AppRoutes.opinions), icon: const Icon(Icons.forum_outlined), label: Text(context.local.shareYourOpinions)),
                 ],
               ),
             ],
@@ -502,9 +506,10 @@ class _MessDetailsCardState extends State<_MessDetailsCard> {
 }
 
 class _MessContact extends StatelessWidget {
-  const _MessContact({required this.title, required this.email, required this.phone});
+  const _MessContact({required this.title, required this.name, required this.email, required this.phone});
 
   final String title;
+  final String name;
   final String email;
   final String phone;
 
@@ -516,10 +521,18 @@ class _MessContact extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(title, style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor)),
-        const SizedBox(height: Dimensions.paddingSizeSmall),
-        _MessContactLine(icon: Icons.email_outlined, value: email),
-        const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-        _MessContactLine(icon: Icons.phone_outlined, value: phone),
+        if (name.isNotEmpty) ...[
+          const SizedBox(height: Dimensions.paddingSizeSmall),
+          _MessContactLine(icon: Icons.person_outline_rounded, value: name),
+        ],
+        if (email.isNotEmpty) ...[
+          const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+          _MessContactLine(icon: Icons.email_outlined, value: email),
+        ],
+        if (phone.isNotEmpty) ...[
+          const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+          _MessContactLine(icon: Icons.phone_outlined, value: phone),
+        ],
       ],
     );
   }
@@ -574,7 +587,7 @@ class _StatBoxGrid extends StatelessWidget {
 
 Widget _statCard(_Stat stat) => StatCard(label: stat.label, value: stat.value, icon: stat.icon, accent: stat.accent);
 
-Widget _heroBanner(DashboardEntity d) => DashboardHeroBanner(userName: d.userName, totalBalance: d.totalBalance, mealBalance: d.mealBalance, depositBalance: d.totalDeposit);
+Widget _heroBanner(DashboardEntity d) => DashboardHeroBanner(userName: d.userName, currentSeasonName: d.currentSeasonName, totalBalance: d.totalBalance);
 
 Future<void> _refresh(BuildContext context) async {
   context.read<HomeBloc>().add(const HomeEvent.refreshDashboard());

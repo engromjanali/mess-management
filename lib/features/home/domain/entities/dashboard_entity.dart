@@ -14,11 +14,14 @@ class DashboardEntity extends Equatable {
   final double bazerCost;
   final double totalMeal;
   final double mealRate;
+  final String managerName;
   final String managerEmail;
   final String managerPhone;
+  final String actingManagerName;
   final String actingManagerEmail;
   final String actingManagerPhone;
   final String messAddress;
+  final String currentSeasonName;
 
   // My section
   final double myTotalMeal;
@@ -44,11 +47,14 @@ class DashboardEntity extends Equatable {
     required this.bazerCost,
     required this.totalMeal,
     required this.mealRate,
+    required this.managerName,
     required this.managerEmail,
     required this.managerPhone,
+    required this.actingManagerName,
     required this.actingManagerEmail,
     required this.actingManagerPhone,
     required this.messAddress,
+    required this.currentSeasonName,
     required this.myTotalMeal,
     required this.myDeposit,
     required this.myRemaining,
@@ -67,11 +73,14 @@ class DashboardEntity extends Equatable {
     bazerCost: bazerCost,
     totalMeal: totalMeal,
     mealRate: mealRate,
+    managerName: managerName,
     managerEmail: managerEmail,
     managerPhone: managerPhone,
+    actingManagerName: actingManagerName,
     actingManagerEmail: actingManagerEmail,
     actingManagerPhone: actingManagerPhone,
     messAddress: messAddress,
+    currentSeasonName: currentSeasonName,
     myTotalMeal: myTotalMeal,
     myDeposit: myDeposit,
     myRemaining: myRemaining,
@@ -83,7 +92,7 @@ class DashboardEntity extends Equatable {
   );
 
   @override
-  List<Object?> get props => [totalBalance, mealBalance, fundBalance, totalDeposit, bazerCost, totalMeal, mealRate, managerEmail, managerPhone, actingManagerEmail, actingManagerPhone, messAddress, myTotalMeal, myDeposit, myRemaining, members, pinnedNotice, isManager, isMember, userName];
+  List<Object?> get props => [totalBalance, mealBalance, fundBalance, totalDeposit, bazerCost, totalMeal, mealRate, managerName, managerEmail, managerPhone, actingManagerName, actingManagerEmail, actingManagerPhone, messAddress, currentSeasonName, myTotalMeal, myDeposit, myRemaining, members, pinnedNotice, isManager, isMember, userName];
 }
 
 /// Per-member statistics rendered in the manager member table.

@@ -28,11 +28,12 @@ class OpinionApiService {
     await _apiClient.post<void>(AppConstants.adminOpinionsEndpoint, data: {'title': title, 'details': details, 'start_date': _date(startDate), 'end_date': _date(endDate), 'visibility': _visibility(visibility)}, options: _privateOptions);
   }
 
-  Future<void> submitOpinion({required String periodId, required String message}) async {
-    await _apiClient.post<void>('${AppConstants.opinionsEndpoint}/$periodId/messages', data: {'message': message}, options: _privateOptions);
+  Future<void> submitOpinion({required String periodId, required String message, required bool anonymous}) async {
+    await _apiClient.post<void>('${AppConstants.opinionsEndpoint}/$periodId/messages', data: {'message': message, 'anonymous': anonymous}, options: _privateOptions);
   }
 
   Future<void> setMessageSending({required String periodId, required bool enabled}) => _update(periodId, {'accepting_messages': enabled});
+  Future<void> setNamedOpinions({required String periodId, required bool enabled}) => _update(periodId, {'allow_named_opinions': enabled});
   Future<void> updateEndDate({required String periodId, required DateTime endDate}) => _update(periodId, {'end_date': _date(endDate)});
   Future<void> setVisibility({required String periodId, required OpinionVisibility visibility}) => _update(periodId, {'visibility': _visibility(visibility)});
 
@@ -50,10 +51,10 @@ class OpinionApiService {
   OpinionPeriodEntity _period(Map<String, dynamic> json) => OpinionPeriodEntity(
     id: '${json['id']}', messId: '${json['mess_id']}', seasonId: '${json['season_id']}', seasonName: json['season_name'] as String,
     title: json['title'] as String, details: json['details'] as String, startDate: DateTime.parse(json['start_date'] as String), endDate: DateTime.parse(json['end_date'] as String),
-    acceptingMessages: json['accepting_messages'] == true, visibility: json['visibility'] == 'realtime' ? OpinionVisibility.realtime : OpinionVisibility.afterPublish,
+    acceptingMessages: json['accepting_messages'] == true, allowNamedOpinions: json['allow_named_opinions'] == true, visibility: json['visibility'] == 'realtime' ? OpinionVisibility.realtime : OpinionVisibility.afterPublish,
     canWrite: json['can_write'] == true, opinionCount: (json['opinion_count'] as num).toInt(), hasMoreOpinions: json['has_more_opinions'] == true,
     opinions: (json['opinions'] as List<dynamic>).map((item) => _opinion(item as Map<String, dynamic>)).toList(),
   );
 
-  AnonymousOpinionEntity _opinion(Map<String, dynamic> json) => AnonymousOpinionEntity(id: '${json['id']}', periodId: '${json['period_id']}', message: json['message'] as String, createdAt: DateTime.parse(json['created_at'] as String).toLocal(), isPublished: json['is_published'] == true);
+  AnonymousOpinionEntity _opinion(Map<String, dynamic> json) => AnonymousOpinionEntity(id: '${json['id']}', periodId: '${json['period_id']}', message: json['message'] as String, createdAt: DateTime.parse(json['created_at'] as String).toLocal(), authorName: json['author_name'] as String?, isPublished: json['is_published'] == true);
 }

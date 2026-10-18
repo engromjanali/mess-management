@@ -3,7 +3,10 @@ import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
+import 'package:clean_boilerplate/features/splash/presentation/bloc/splash_bloc.dart';
+import 'package:clean_boilerplate/features/splash/presentation/widgets/app_gate.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class AppFooter extends StatelessWidget {
@@ -19,6 +22,10 @@ class AppFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final config = context.watch<SplashBloc>().state.maybeWhen(loaded: (config) => config, orElse: () => null);
+    final androidUrl = _storeUri(config?.androidStoreUrl ?? '');
+    final iosUrl = _storeUri(config?.iosStoreUrl ?? '');
+
     return ColoredBox(
       color: _backgroundColor,
       child: Column(
@@ -46,7 +53,7 @@ class AppFooter extends StatelessWidget {
                               _FooterLink(label: 'Home', route: AppRoutes.home),
                               _FooterLink(label: 'Meals', route: AppRoutes.meals),
                               _FooterLink(label: 'Deposits', route: AppRoutes.deposits),
-                              _FooterLink(label: 'Anonymous opinions', route: AppRoutes.opinions),
+                              _FooterLink(label: context.local.shareYourOpinions, route: AppRoutes.opinions),
                             ],
                           ),
                         ),
@@ -71,7 +78,7 @@ class AppFooter extends StatelessWidget {
                             ],
                           ),
                         ),
-                        SizedBox(width: itemWidth, child: _AppInstallSection(onAndroidInstall: onAndroidInstall, onAppleInstall: onAppleInstall)),
+                        SizedBox(width: itemWidth, child: _AppInstallSection(onAndroidInstall: onAndroidInstall ?? (androidUrl == null ? null : () => openStore(androidUrl)), onAppleInstall: onAppleInstall ?? (iosUrl == null ? null : () => openStore(iosUrl)))),
                       ],
                     );
                   },
@@ -91,6 +98,11 @@ class AppFooter extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Uri? _storeUri(String value) {
+    final uri = Uri.tryParse(value.trim());
+    return uri != null && (uri.scheme == 'https' || uri.scheme == 'http') && uri.host.isNotEmpty ? uri : null;
   }
 }
 

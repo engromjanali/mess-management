@@ -21,6 +21,9 @@ class HomeLocalDataSourceImpl implements HomeDataSource {
     final response = responses[0];
     final noticesResponse = responses[1];
     final json = response.data!;
+    final manager = json['manager'] as Map<String, dynamic>?;
+    final actingManager = json['acting_manager'] as Map<String, dynamic>?;
+    final season = json['season'] as Map<String, dynamic>;
     final notices = noticesResponse.data!['data'] as List<dynamic>? ?? [];
     final pinnedNoticeJson = notices.cast<Map<String, dynamic>>().where((notice) => notice['pinned'] == true).firstOrNull;
     final stats = json['stats'] as Map<String, dynamic>;
@@ -48,11 +51,14 @@ class HomeLocalDataSourceImpl implements HomeDataSource {
       bazerCost: bazerCost,
       totalMeal: totalMeal,
       mealRate: mealRate,
-      managerEmail: 'manager@messmanager.com',
-      managerPhone: '+880 1712-345678',
-      actingManagerEmail: 'acting.manager@messmanager.com',
-      actingManagerPhone: '+880 1812-345678',
-      messAddress: 'Mirpur-10, Dhaka, Bangladesh',
+      managerName: manager?['name'] as String? ?? '',
+      managerEmail: manager?['email'] as String? ?? '',
+      managerPhone: manager?['phone'] as String? ?? '',
+      actingManagerName: actingManager?['name'] as String? ?? '',
+      actingManagerEmail: actingManager?['email'] as String? ?? '',
+      actingManagerPhone: actingManager?['phone'] as String? ?? '',
+      messAddress: json['address'] as String? ?? '',
+      currentSeasonName: season['name'] as String? ?? '',
       myTotalMeal: 41,
       myDeposit: 3000,
       myRemaining: 3000 - (41 * mealRate),

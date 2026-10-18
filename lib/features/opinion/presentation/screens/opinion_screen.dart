@@ -43,6 +43,7 @@ class _OpinionScreenState extends State<OpinionScreen> {
   bool _loading = true;
   bool _refreshing = false;
   bool _busy = false;
+  bool _submitAnonymously = true;
   Object? _error;
   CancelToken? _cancel;
   int _requestVersion = 0;
@@ -185,9 +186,12 @@ class _OpinionScreenState extends State<OpinionScreen> {
       periods: _periods,
       isAdmin: isAdmin,
       messageController: _messageController,
+      submitAnonymously: _submitAnonymously,
+      onSubmissionTypeChanged: (value) => setState(() => _submitAnonymously = value),
       opinionsForPeriod: (periodId) => _opinions[periodId] ?? const [],
       onSubmit: _submitOpinion,
       onToggleSending: _toggleSending,
+      onToggleNamedOpinions: (period) => _mutate(() => _api.setNamedOpinions(periodId: period.id, enabled: !period.allowNamedOpinions)),
       onChangeEndDate: _changeEndDate,
       onChangeVisibility: (period, visibility) => _mutate(() => _api.setVisibility(periodId: period.id, visibility: visibility)),
       onPublish: (period) => _mutate(() => _api.setVisibility(periodId: period.id, visibility: period.visibility == OpinionVisibility.realtime ? OpinionVisibility.afterPublish : OpinionVisibility.realtime)),
@@ -203,7 +207,7 @@ class _OpinionScreenState extends State<OpinionScreen> {
       child: Scaffold(
       backgroundColor: context.theme.scaffoldBackgroundColor,
       endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
-      appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: const Text('Anonymous opinions'), actions: [IconButton(tooltip: context.local.refresh, onPressed: _busy || _refreshing ? null : () => _load(), icon: const Icon(Icons.refresh_rounded))]),
+      appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.shareYourOpinions), actions: [IconButton(tooltip: context.local.refresh, onPressed: _busy || _refreshing ? null : () => _load(), icon: const Icon(Icons.refresh_rounded))]),
       floatingActionButton: isAdmin && _canCreate ? FloatingActionButton.extended(onPressed: _busy || _refreshing ? null : _createPeriod, icon: const Icon(Icons.add_rounded), label: const Text('Open period')) : null,
       body: showWebAppBar
           ? Builder(
@@ -219,7 +223,7 @@ class _OpinionScreenState extends State<OpinionScreen> {
                       DashboardNavItem(label: 'Bazar', icon: Icons.shopping_cart_rounded, onTap: () => context.go(AppRoutes.costs)),
                     ],
                   ),
-                  Stack(children: [const WebPageTitleBar(title: 'Anonymous opinions'), Positioned(top: 4, right: Dimensions.paddingSizeSmall, child: IconButton(tooltip: context.local.refresh, onPressed: _busy || _refreshing ? null : () => _load(), icon: const Icon(Icons.refresh_rounded)))]),
+                  Stack(children: [WebPageTitleBar(title: context.local.shareYourOpinions), Positioned(top: 4, right: Dimensions.paddingSizeSmall, child: IconButton(tooltip: context.local.refresh, onPressed: _busy || _refreshing ? null : () => _load(), icon: const Icon(Icons.refresh_rounded)))]),
                   Expanded(child: content),
                 ],
               ),
@@ -239,7 +243,8 @@ class _OpinionScreenState extends State<OpinionScreen> {
       context.showErrorSnackBar(context.local.opinionPeriodClosed);
       return;
     }
-    if (await _mutate(() => _api.submitOpinion(periodId: period.id, message: message), success: context.local.opinionSubmitted) && mounted) _messageController.clear();
+    final anonymous = !period.allowNamedOpinions || _submitAnonymously;
+    if (await _mutate(() => _api.submitOpinion(periodId: period.id, message: message, anonymous: anonymous), success: anonymous ? context.local.opinionSubmitted : context.local.opinionSubmittedNamed) && mounted) _messageController.clear();
   }
 
   void _toggleSending(OpinionPeriodEntity period) {
@@ -328,14 +333,17 @@ class _OpinionScreenState extends State<OpinionScreen> {
 }
 
 class _OpinionBody extends StatelessWidget {
-  const _OpinionBody({required this.periods, required this.isAdmin, required this.messageController, required this.opinionsForPeriod, required this.onSubmit, required this.onToggleSending, required this.onChangeEndDate, required this.onChangeVisibility, required this.onPublish, required this.busy, required this.hasMoreOpinions, required this.onLoadMoreOpinions, required this.onLoadMorePeriods});
+  const _OpinionBody({required this.periods, required this.isAdmin, required this.messageController, required this.submitAnonymously, required this.onSubmissionTypeChanged, required this.opinionsForPeriod, required this.onSubmit, required this.onToggleSending, required this.onToggleNamedOpinions, required this.onChangeEndDate, required this.onChangeVisibility, required this.onPublish, required this.busy, required this.hasMoreOpinions, required this.onLoadMoreOpinions, required this.onLoadMorePeriods});
 
   final List<OpinionPeriodEntity> periods;
   final bool isAdmin;
   final TextEditingController messageController;
+  final bool submitAnonymously;
+  final ValueChanged<bool> onSubmissionTypeChanged;
   final List<AnonymousOpinionEntity> Function(String periodId) opinionsForPeriod;
   final ValueChanged<OpinionPeriodEntity> onSubmit;
   final ValueChanged<OpinionPeriodEntity> onToggleSending;
+  final ValueChanged<OpinionPeriodEntity> onToggleNamedOpinions;
   final ValueChanged<OpinionPeriodEntity> onChangeEndDate;
   final void Function(OpinionPeriodEntity period, OpinionVisibility visibility) onChangeVisibility;
   final ValueChanged<OpinionPeriodEntity> onPublish;
@@ -374,7 +382,7 @@ class _OpinionBody extends StatelessWidget {
                                   children: [
                                     Icon(Icons.shield_outlined, color: context.customThemeColors.primaryColor),
                                     const SizedBox(width: Dimensions.paddingSizeDefault),
-                                    Expanded(child: Text('Share freely. Messages are stored without member identity and cannot be edited or deleted.', style: AppTextStyles.sfProRoundedMedium.copyWith(color: context.customThemeColors.textPrimaryColor, height: 1.4))),
+                                    Expanded(child: Text(context.local.shareYourOpinions, style: AppTextStyles.sfProRoundedMedium.copyWith(color: context.customThemeColors.textPrimaryColor, height: 1.4))),
                                   ],
                                 ),
                               ),
@@ -385,9 +393,12 @@ class _OpinionBody extends StatelessWidget {
                                     period: period,
                                     isAdmin: isAdmin,
                                     messageController: messageController,
+                                    submitAnonymously: submitAnonymously,
+                                    onSubmissionTypeChanged: onSubmissionTypeChanged,
                                     opinions: isAdmin || period.visibility == OpinionVisibility.realtime ? opinionsForPeriod(period.id) : const [],
                                     onSubmit: () => onSubmit(period),
                                     onToggleSending: () => onToggleSending(period),
+                                    onToggleNamedOpinions: () => onToggleNamedOpinions(period),
                                     onChangeEndDate: () => onChangeEndDate(period),
                                     onChangeVisibility: (visibility) => onChangeVisibility(period, visibility),
                                     onPublish: () => onPublish(period),
@@ -413,14 +424,17 @@ class _OpinionBody extends StatelessWidget {
 }
 
 class _PeriodCard extends StatelessWidget {
-  const _PeriodCard({required this.period, required this.isAdmin, required this.messageController, required this.opinions, required this.onSubmit, required this.onToggleSending, required this.onChangeEndDate, required this.onChangeVisibility, required this.onPublish, required this.busy, required this.hasMoreOpinions, required this.onLoadMoreOpinions});
+  const _PeriodCard({required this.period, required this.isAdmin, required this.messageController, required this.submitAnonymously, required this.onSubmissionTypeChanged, required this.opinions, required this.onSubmit, required this.onToggleSending, required this.onToggleNamedOpinions, required this.onChangeEndDate, required this.onChangeVisibility, required this.onPublish, required this.busy, required this.hasMoreOpinions, required this.onLoadMoreOpinions});
 
   final OpinionPeriodEntity period;
   final bool isAdmin;
   final TextEditingController messageController;
+  final bool submitAnonymously;
+  final ValueChanged<bool> onSubmissionTypeChanged;
   final List<AnonymousOpinionEntity> opinions;
   final VoidCallback onSubmit;
   final VoidCallback onToggleSending;
+  final VoidCallback onToggleNamedOpinions;
   final VoidCallback onChangeEndDate;
   final ValueChanged<OpinionVisibility> onChangeVisibility;
   final VoidCallback onPublish;
@@ -464,6 +478,7 @@ class _PeriodCard extends StatelessWidget {
               runSpacing: Dimensions.paddingSizeSmall,
               children: [
                 OutlinedButton.icon(style: managerButtonStyle, onPressed: busy ? null : onToggleSending, icon: Icon(period.acceptingMessages ? Icons.pause_rounded : Icons.play_arrow_rounded), label: Text(period.acceptingMessages ? 'Pause messages' : 'Enable messages')),
+                OutlinedButton.icon(style: managerButtonStyle, onPressed: busy ? null : onToggleNamedOpinions, icon: Icon(period.allowNamedOpinions ? Icons.person_rounded : Icons.visibility_off_outlined), label: Text(period.allowNamedOpinions ? context.local.opinionBothModes : context.local.opinionAnonymousOnly)),
                 OutlinedButton.icon(style: managerButtonStyle, onPressed: busy ? null : onChangeEndDate, icon: const Icon(Icons.event_rounded), label: const Text('Change end date')),
                 OutlinedButton.icon(style: managerButtonStyle, onPressed: busy ? null : onPublish, icon: Icon(period.visibility == OpinionVisibility.realtime ? Icons.public_rounded : Icons.lock_outline_rounded), label: Text(period.visibility == OpinionVisibility.realtime ? context.local.opinionPublic : context.local.opinionPrivate)),
               ],
@@ -471,15 +486,20 @@ class _PeriodCard extends StatelessWidget {
           ],
           if (active && period.canWrite) ...[
             const SizedBox(height: Dimensions.paddingSizeLarge),
-            TextField(controller: messageController, enabled: !busy, maxLength: 2000, minLines: 2, maxLines: 5, decoration: const InputDecoration(labelText: 'Your anonymous opinion', hintText: 'No identity is stored with this message')),
-            Align(alignment: Alignment.centerRight, child: FilledButton.icon(onPressed: busy ? null : onSubmit, icon: const Icon(Icons.send_rounded), label: const Text('Submit anonymously'))),
+            if (period.allowNamedOpinions)
+              SegmentedButton<bool>(segments: [ButtonSegment(value: true, icon: const Icon(Icons.visibility_off_outlined), label: Text(context.local.opinionAnonymous)), ButtonSegment(value: false, icon: const Icon(Icons.person_outline_rounded), label: Text(context.local.opinionNamed))], selected: {submitAnonymously}, onSelectionChanged: busy ? null : (selection) => onSubmissionTypeChanged(selection.first))
+            else
+              Row(children: [const Icon(Icons.visibility_off_outlined, size: Dimensions.iconSizeSmall), const SizedBox(width: Dimensions.paddingSizeSmall), Text(context.local.opinionAnonymousOnly)]),
+            const SizedBox(height: Dimensions.paddingSizeSmall),
+            TextField(controller: messageController, enabled: !busy, maxLength: 2000, minLines: 2, maxLines: 5, decoration: InputDecoration(labelText: context.local.opinionMessageHint, hintText: !period.allowNamedOpinions || submitAnonymously ? context.local.opinionAnonymousHint : context.local.opinionNamedHint)),
+            Align(alignment: Alignment.centerRight, child: FilledButton.icon(onPressed: busy ? null : onSubmit, icon: const Icon(Icons.send_rounded), label: Text(context.local.submitOpinion))),
           ] else if (active) ...[
             const SizedBox(height: Dimensions.paddingSizeLarge),
             Text(context.local.opinionCurrentSeasonOnly, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor)),
           ],
           if (isAdmin || period.visibility == OpinionVisibility.realtime) ...[
             const SizedBox(height: Dimensions.paddingSizeLarge),
-            Text('Anonymous messages (${isAdmin || period.visibility == OpinionVisibility.realtime ? period.opinionCount : opinions.length})', style: AppTextStyles.sfProRoundedBold.copyWith(color: colors.textPrimaryColor)),
+            Text('${context.local.opinionMessages} (${isAdmin || period.visibility == OpinionVisibility.realtime ? period.opinionCount : opinions.length})', style: AppTextStyles.sfProRoundedBold.copyWith(color: colors.textPrimaryColor)),
             const SizedBox(height: Dimensions.paddingSizeSmall),
             if (opinions.isEmpty)
               Text('No messages submitted in this period.', style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
@@ -493,7 +513,13 @@ class _PeriodCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
                     border: Border.all(color: opinionColors[index % opinionColors.length].withValues(alpha: 0.3)),
                   ),
-                  child: Text(opinion.message, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textPrimaryColor, height: 1.4)),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    if (!opinion.isAnonymous) ...[
+                      Text(opinion.authorName!, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedBold.copyWith(color: colors.primaryColor)),
+                      const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                    ],
+                    Text(opinion.message, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textPrimaryColor, height: 1.4)),
+                  ]),
                 ),
             if (hasMoreOpinions)
               TextButton.icon(onPressed: busy ? null : onLoadMoreOpinions, icon: const Icon(Icons.expand_more_rounded), label: Text(context.local.opinionLoadMore)),

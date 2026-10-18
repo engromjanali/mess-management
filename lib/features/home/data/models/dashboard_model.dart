@@ -13,11 +13,14 @@ class DashboardModel {
   final double bazerCost;
   final double totalMeal;
   final double mealRate;
+  final String managerName;
   final String managerEmail;
   final String managerPhone;
+  final String actingManagerName;
   final String actingManagerEmail;
   final String actingManagerPhone;
   final String messAddress;
+  final String currentSeasonName;
   final double myTotalMeal;
   final double myDeposit;
   final double myRemaining;
@@ -35,11 +38,14 @@ class DashboardModel {
     required this.bazerCost,
     required this.totalMeal,
     required this.mealRate,
+    required this.managerName,
     required this.managerEmail,
     required this.managerPhone,
+    required this.actingManagerName,
     required this.actingManagerEmail,
     required this.actingManagerPhone,
     required this.messAddress,
+    required this.currentSeasonName,
     required this.myTotalMeal,
     required this.myDeposit,
     required this.myRemaining,
@@ -58,11 +64,14 @@ class DashboardModel {
     bazerCost: bazerCost,
     totalMeal: totalMeal,
     mealRate: mealRate,
+    managerName: managerName,
     managerEmail: managerEmail,
     managerPhone: managerPhone,
+    actingManagerName: actingManagerName,
     actingManagerEmail: actingManagerEmail,
     actingManagerPhone: actingManagerPhone,
     messAddress: messAddress,
+    currentSeasonName: currentSeasonName,
     myTotalMeal: myTotalMeal,
     myDeposit: myDeposit,
     myRemaining: myRemaining,

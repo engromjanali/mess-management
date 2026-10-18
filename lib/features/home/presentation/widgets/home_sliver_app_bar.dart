@@ -7,13 +7,12 @@ import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_formatters.dart';
 
 class HomeSliverAppBar extends StatelessWidget {
-  const HomeSliverAppBar({required this.userName, required this.totalBalance, required this.mealBalance, required this.depositBalance, required this.expandedHeight, this.photoUrl, super.key});
+  const HomeSliverAppBar({required this.userName, required this.currentSeasonName, required this.totalBalance, required this.expandedHeight, this.photoUrl, super.key});
 
   final String userName;
   final String? photoUrl;
+  final String currentSeasonName;
   final double totalBalance;
-  final double mealBalance;
-  final double depositBalance;
   final double expandedHeight;
 
   @override
@@ -42,7 +41,7 @@ class HomeSliverAppBar extends StatelessWidget {
           return Stack(
             fit: StackFit.expand,
             children: [
-              _HeaderBackground(userName: userName, totalBalance: totalBalance, mealBalance: mealBalance, depositBalance: depositBalance, expandedHeight: maximumHeight, contentOpacity: expandedOpacity),
+              _HeaderBackground(userName: userName, currentSeasonName: currentSeasonName, totalBalance: totalBalance, expandedHeight: maximumHeight, contentOpacity: expandedOpacity),
               Positioned(
                 top: topInset,
                 left: Dimensions.paddingSizeLarge,
@@ -62,12 +61,11 @@ class HomeSliverAppBar extends StatelessWidget {
 }
 
 class _HeaderBackground extends StatelessWidget {
-  const _HeaderBackground({required this.userName, required this.totalBalance, required this.mealBalance, required this.depositBalance, required this.expandedHeight, required this.contentOpacity});
+  const _HeaderBackground({required this.userName, required this.currentSeasonName, required this.totalBalance, required this.expandedHeight, required this.contentOpacity});
 
   final String userName;
+  final String currentSeasonName;
   final double totalBalance;
-  final double mealBalance;
-  final double depositBalance;
   final double expandedHeight;
   final double contentOpacity;
 
@@ -80,15 +78,21 @@ class _HeaderBackground extends StatelessWidget {
         gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [colors.primaryDarkColor, colors.primaryColor, colors.primaryLightColor]),
       ),
       child: ClipRect(
-        child: OverflowBox(
-          alignment: Alignment.topCenter,
-          minHeight: expandedHeight,
-          maxHeight: expandedHeight,
-          child: Opacity(
-            opacity: contentOpacity,
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, MediaQuery.paddingOf(context).top + Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge + kToolbarHeight, 0),
-              child: Column(
+        child: Stack(
+          children: [
+            Positioned(top: -70, right: -45, child: _DecorativeCircle(size: 190, color: Colors.white.withValues(alpha: 0.08))),
+            Positioned(bottom: -85, left: -70, child: _DecorativeCircle(size: 180, color: colors.secondaryColor.withValues(alpha: 0.20))),
+            OverflowBox(
+              alignment: Alignment.topLeft,
+              minWidth: MediaQuery.sizeOf(context).width,
+              maxWidth: MediaQuery.sizeOf(context).width,
+              minHeight: expandedHeight,
+              maxHeight: expandedHeight,
+              child: Opacity(
+                opacity: contentOpacity,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, MediaQuery.paddingOf(context).top + Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge + kToolbarHeight, 0),
+                  child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Column(
@@ -108,33 +112,23 @@ class _HeaderBackground extends StatelessWidget {
             ),
             const SizedBox(height: Dimensions.paddingSizeSmall),
             const Spacer(),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Total balance',
-                  style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.85), fontSize: Dimensions.fontSizeSmall),
-                ),
-                const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text(DashboardFormatters.taka(totalBalance), style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: 34)),
-                ),
-              ],
+            Text(
+              'Total balance',
+              style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.78), fontSize: Dimensions.fontSizeSmall),
             ),
-            Wrap(
-              spacing: Dimensions.paddingSizeSmall,
-              runSpacing: Dimensions.paddingSizeSmall,
-              children: [
-                _HeaderChip(icon: Icons.restaurant_rounded, label: 'Meal', value: DashboardFormatters.taka(mealBalance)),
-                _HeaderChip(icon: Icons.payments_rounded, label: 'Deposit', value: DashboardFormatters.taka(depositBalance)),
-              ],
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(DashboardFormatters.taka(totalBalance), style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: 32)),
             ),
+            if (currentSeasonName.isNotEmpty)
+              _SeasonChip(seasonName: currentSeasonName),
             const SizedBox(height: Dimensions.paddingSizeDefault),
           ]),
-            )
-          ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -184,33 +178,42 @@ class _CollapsedIdentity extends StatelessWidget {
   }
 }
 
-class _HeaderChip extends StatelessWidget {
-  const _HeaderChip({required this.icon, required this.label, required this.value});
+class _SeasonChip extends StatelessWidget {
+  const _SeasonChip({required this.seasonName});
 
-  final IconData icon;
-  final String label;
-  final String value;
+  final String seasonName;
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      constraints: const BoxConstraints(maxWidth: 320),
       padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeSmall),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.18),
-        borderRadius: BorderRadius.circular(Dimensions.radiusExtra2Large),
+        borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
         border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: Dimensions.iconSizeSmall, color: Colors.white),
-          const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-          Text(
-            '$label · $value',
-            style: AppTextStyles.sfProRoundedSemiBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeSmall),
-          ),
+          Container(width: 30, height: 30, decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.16), borderRadius: BorderRadius.circular(Dimensions.radiusDefault)), child: const Icon(Icons.event_note_rounded, size: Dimensions.iconSizeSmall, color: Colors.white)),
+          const SizedBox(width: Dimensions.paddingSizeSmall),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(context.local.currentSeasonLabel, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.70), fontSize: Dimensions.fontSizeExtraSmall)),
+            Text(seasonName, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedSemiBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeSmall)),
+          ])),
         ],
       ),
     );
   }
+}
+
+class _DecorativeCircle extends StatelessWidget {
+  const _DecorativeCircle({required this.size, required this.color});
+
+  final double size;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) => IgnorePointer(child: Container(width: size, height: size, decoration: BoxDecoration(color: color, shape: BoxShape.circle)));
 }

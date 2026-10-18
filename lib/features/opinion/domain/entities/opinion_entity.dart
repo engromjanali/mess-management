@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 enum OpinionVisibility { realtime, afterPublish }
 
 class OpinionPeriodEntity extends Equatable {
-  const OpinionPeriodEntity({required this.id, required this.messId, required this.title, required this.details, required this.startDate, required this.endDate, this.acceptingMessages = true, this.visibility = OpinionVisibility.afterPublish, this.seasonId = '', this.seasonName = '', this.canWrite = false, this.opinionCount = 0, this.hasMoreOpinions = false, this.opinions = const []});
+  const OpinionPeriodEntity({required this.id, required this.messId, required this.title, required this.details, required this.startDate, required this.endDate, this.acceptingMessages = true, this.allowNamedOpinions = false, this.visibility = OpinionVisibility.afterPublish, this.seasonId = '', this.seasonName = '', this.canWrite = false, this.opinionCount = 0, this.hasMoreOpinions = false, this.opinions = const []});
 
   final String id;
   final String messId;
@@ -12,6 +12,7 @@ class OpinionPeriodEntity extends Equatable {
   final DateTime startDate;
   final DateTime endDate;
   final bool acceptingMessages;
+  final bool allowNamedOpinions;
   final OpinionVisibility visibility;
   final String seasonId;
   final String seasonName;
@@ -20,7 +21,7 @@ class OpinionPeriodEntity extends Equatable {
   final bool hasMoreOpinions;
   final List<AnonymousOpinionEntity> opinions;
 
-  OpinionPeriodEntity copyWith({DateTime? endDate, bool? acceptingMessages, OpinionVisibility? visibility}) => OpinionPeriodEntity(
+  OpinionPeriodEntity copyWith({DateTime? endDate, bool? acceptingMessages, bool? allowNamedOpinions, OpinionVisibility? visibility}) => OpinionPeriodEntity(
     id: id,
     messId: messId,
     title: title,
@@ -28,6 +29,7 @@ class OpinionPeriodEntity extends Equatable {
     startDate: startDate,
     endDate: endDate ?? this.endDate,
     acceptingMessages: acceptingMessages ?? this.acceptingMessages,
+    allowNamedOpinions: allowNamedOpinions ?? this.allowNamedOpinions,
     visibility: visibility ?? this.visibility,
     seasonId: seasonId,
     seasonName: seasonName,
@@ -47,20 +49,23 @@ class OpinionPeriodEntity extends Equatable {
   bool isActiveAt(DateTime value) => acceptingMessages && isWithinDateRangeAt(value);
 
   @override
-  List<Object?> get props => [id, messId, title, details, startDate, endDate, acceptingMessages, visibility, seasonId, seasonName, canWrite, opinionCount, hasMoreOpinions, opinions];
+  List<Object?> get props => [id, messId, title, details, startDate, endDate, acceptingMessages, allowNamedOpinions, visibility, seasonId, seasonName, canWrite, opinionCount, hasMoreOpinions, opinions];
 }
 
 class AnonymousOpinionEntity extends Equatable {
-  const AnonymousOpinionEntity({required this.id, required this.periodId, required this.message, required this.createdAt, this.isPublished = false});
+  const AnonymousOpinionEntity({required this.id, required this.periodId, required this.message, required this.createdAt, this.authorName, this.isPublished = false});
 
   final String id;
   final String periodId;
   final String message;
   final DateTime createdAt;
+  final String? authorName;
   final bool isPublished;
 
-  AnonymousOpinionEntity copyWith({bool? isPublished}) => AnonymousOpinionEntity(id: id, periodId: periodId, message: message, createdAt: createdAt, isPublished: isPublished ?? this.isPublished);
+  bool get isAnonymous => authorName == null || authorName!.isEmpty;
+
+  AnonymousOpinionEntity copyWith({bool? isPublished}) => AnonymousOpinionEntity(id: id, periodId: periodId, message: message, createdAt: createdAt, authorName: authorName, isPublished: isPublished ?? this.isPublished);
 
   @override
-  List<Object?> get props => [id, periodId, message, createdAt, isPublished];
+  List<Object?> get props => [id, periodId, message, createdAt, authorName, isPublished];
 }

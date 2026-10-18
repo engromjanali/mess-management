@@ -423,5 +423,17 @@
   "opinionPrivate": "ব্যক্তিগত",
   "opinionSeasonMembersOnly": "শুধু এই মতামত পর্বের সিজনের সক্রিয় সদস্যরা মতামত জমা দিতে পারবেন।",
   "noSeasonMembershipAccess": "আপনি এই সিজন পরিচালনা করতে পারবেন, তবে আপনি এই সিজনের সদস্য ছিলেন না। ব্যক্তিগত মিল, ডিপোজিট, মতামত ও ভোট দেওয়া যাবে না।",
-  "leadershipAccessNotJoined": "শুধু নেতৃত্বের অ্যাক্সেস · যোগ দেননি"
+  "leadershipAccessNotJoined": "শুধু নেতৃত্বের অ্যাক্সেস · যোগ দেননি",
+  "shareYourOpinions": "আপনার মতামত শেয়ার করুন",
+  "opinionAnonymous": "নাম প্রকাশ না করে",
+  "opinionNamed": "আমার নামসহ",
+  "opinionMessageHint": "আপনার মতামত লিখুন",
+  "opinionAnonymousHint": "আপনার পরিচয় সংরক্ষণ করা হবে না",
+  "opinionNamedHint": "এই মতামতের সাথে আপনার নাম দেখানো হবে",
+  "submitOpinion": "মতামত জমা দিন",
+  "opinionSubmittedNamed": "আপনার নামসহ মতামত জমা হয়েছে।",
+  "opinionMessages": "মতামত",
+  "currentSeasonLabel": "বর্তমান সিজন",
+  "opinionAnonymousOnly": "শুধু নাম প্রকাশ না করে",
+  "opinionBothModes": "নাম প্রকাশ না করে এবং নামসহ"
 }
