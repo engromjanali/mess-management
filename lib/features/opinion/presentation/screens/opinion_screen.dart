@@ -26,7 +26,9 @@ import 'package:clean_boilerplate/features/opinion/data/opinion_api_service.dart
 import 'package:clean_boilerplate/features/opinion/domain/entities/opinion_entity.dart';
 
 class OpinionScreen extends StatefulWidget {
-  const OpinionScreen({super.key});
+  const OpinionScreen({this.showCreateTab = false, super.key});
+
+  final bool showCreateTab;
 
   @override
   State<OpinionScreen> createState() => _OpinionScreenState();
@@ -49,7 +51,7 @@ class _OpinionScreenState extends State<OpinionScreen> {
   bool _refreshing = false;
   bool _busy = false;
   bool _submitAnonymously = true;
-  _OpinionPageTab _tab = _OpinionPageTab.opinions;
+  late _OpinionPageTab _tab;
   Object? _error;
   CancelToken? _cancel;
   int _requestVersion = 0;
@@ -57,7 +59,14 @@ class _OpinionScreenState extends State<OpinionScreen> {
   @override
   void initState() {
     super.initState();
+    _tab = widget.showCreateTab ? _OpinionPageTab.create : _OpinionPageTab.opinions;
     _load();
+  }
+
+  @override
+  void didUpdateWidget(covariant OpinionScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.showCreateTab != widget.showCreateTab) _tab = widget.showCreateTab ? _OpinionPageTab.create : _OpinionPageTab.opinions;
   }
 
   Future<void> _load({bool silent = false}) async {
@@ -208,7 +217,7 @@ class _OpinionScreenState extends State<OpinionScreen> {
     ));
     final content = isAdmin && !_loading
         ? Column(children: [
-            Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth), child: Padding(padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, 0), child: SegmentedTabBar<_OpinionPageTab>(tabs: const [PillTab(value: _OpinionPageTab.opinions, label: 'Opinions'), PillTab(value: _OpinionPageTab.create, label: 'Create')], selected: _tab, onChanged: (value) => setState(() => _tab = value))))),
+            Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth), child: Padding(padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, 0), child: SegmentedTabBar<_OpinionPageTab>(tabs: const [PillTab(value: _OpinionPageTab.opinions, label: 'Opinions'), PillTab(value: _OpinionPageTab.create, label: 'Create')], selected: _tab, onChanged: (value) => context.go(value == _OpinionPageTab.create ? AppRoutes.createOpinionPeriod : AppRoutes.opinions))))),
             Expanded(child: _tab == _OpinionPageTab.opinions ? opinionContent : OpinionPeriodFormScreen(embedded: true, onSubmitted: _createPeriodResult)),
           ])
         : opinionContent;
@@ -220,7 +229,7 @@ class _OpinionScreenState extends State<OpinionScreen> {
       backgroundColor: context.theme.scaffoldBackgroundColor,
       endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
       appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.shareYourOpinions), actions: [IconButton(tooltip: context.local.refresh, onPressed: _busy || _refreshing ? null : () => _load(), icon: const Icon(Icons.refresh_rounded))]),
-      floatingActionButton: isAdmin && _canCreate && _tab == _OpinionPageTab.opinions ? FloatingActionButton.extended(onPressed: _busy || _refreshing ? null : () => setState(() => _tab = _OpinionPageTab.create), icon: const Icon(Icons.add_rounded), label: const Text('Open period')) : null,
+      floatingActionButton: isAdmin && _canCreate && _tab == _OpinionPageTab.opinions ? FloatingActionButton.extended(onPressed: _busy || _refreshing ? null : () => context.go(AppRoutes.createOpinionPeriod), icon: const Icon(Icons.add_rounded), label: const Text('Open period')) : null,
       body: showWebAppBar
           ? Builder(
               builder: (context) => Column(
@@ -270,7 +279,7 @@ class _OpinionScreenState extends State<OpinionScreen> {
   }
 
   Future<void> _createPeriodResult(OpinionPeriodFormResult result) async {
-    if (await _mutate(() => _api.createPeriod(title: result.title, details: result.details, startDate: result.startDate, endDate: result.endDate, visibility: result.visibility, submissionMode: result.submissionMode)) && mounted) setState(() => _tab = _OpinionPageTab.opinions);
+    if (await _mutate(() => _api.createPeriod(title: result.title, details: result.details, startDate: result.startDate, endDate: result.endDate, visibility: result.visibility, submissionMode: result.submissionMode)) && mounted) context.go(AppRoutes.opinions);
   }
 }
 

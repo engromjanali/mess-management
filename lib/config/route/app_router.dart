@@ -127,8 +127,8 @@ final router = GoRouter(
     // Notice route (role-aware: admin manages, user views the list)
     GoRoute(path: AppRoutes.notices, name: 'notices', builder: (context, state) => const NoticeScreen()),
 
-    GoRoute(path: AppRoutes.opinions, name: 'opinions', builder: (context, state) => const OpinionScreen()),
-    GoRoute(path: AppRoutes.createOpinionPeriod, name: 'createOpinionPeriod', builder: (context, state) => const OpinionPeriodFormScreen()),
+    GoRoute(path: AppRoutes.opinions, name: 'opinions', pageBuilder: (context, state) => const NoTransitionPage(key: ValueKey('opinions-page'), child: OpinionScreen())),
+    GoRoute(path: AppRoutes.createOpinionPeriod, name: 'createOpinionPeriod', pageBuilder: (context, state) => const NoTransitionPage(key: ValueKey('opinions-page'), child: OpinionScreen(showCreateTab: true))),
 
     // Profile route
     GoRoute(path: AppRoutes.editProfile, name: 'editProfile', builder: (context, state) => const EditProfileScreen()),
