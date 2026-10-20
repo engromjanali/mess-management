@@ -7,6 +7,7 @@ import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/assets/assets.gen.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/widgets/app_logo.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
 import 'package:clean_boilerplate/features/settings/domain/entities/theme_mode.dart';
@@ -135,7 +136,7 @@ class _Brand extends StatelessWidget {
           height: 40,
           width: 40,
           decoration: BoxDecoration(color: colors.primaryColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
-          child: Icon(Icons.restaurant_menu_rounded, color: colors.primaryColor, size: Dimensions.iconSizeDefault),
+          child: AppLogo(size: 40, borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
         ),
         if (showText) ...[
           const SizedBox(width: Dimensions.paddingSizeDefault),

@@ -1,6 +1,7 @@
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/widgets/app_logo.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
 import 'package:flutter/material.dart';
 
@@ -54,7 +55,7 @@ class AuthScaffold extends StatelessWidget {
                                 shape: BoxShape.circle,
                                 border: Border.all(color: colors.primaryColor.withValues(alpha: 0.25), width: 1.5),
                               ),
-                              child: Icon(icon, size: Dimensions.iconSizeLarge, color: colors.primaryColor),
+                              child: const AppLogo(size: 76, shape: BoxShape.circle),
                             ),
                             const SizedBox(height: Dimensions.paddingSizeLarge),
                             Text(

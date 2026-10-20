@@ -3,6 +3,7 @@ import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
+import 'package:clean_boilerplate/core/widgets/app_logo.dart';
 import 'package:clean_boilerplate/features/splash/presentation/bloc/splash_bloc.dart';
 import 'package:clean_boilerplate/features/splash/presentation/widgets/app_gate.dart';
 import 'package:flutter/material.dart';
@@ -120,7 +121,7 @@ class _FooterBrand extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(color: AppFooter._textColor.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
-              child: const Icon(Icons.restaurant_menu_rounded, color: Color(0xFF35C57F)),
+              child: AppLogo(size: 44, borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
             ),
             const SizedBox(width: Dimensions.paddingSizeDefault),
             Expanded(
