@@ -9,30 +9,22 @@ import 'package:clean_boilerplate/features/splash/presentation/bloc/splash_bloc.
 import 'package:clean_boilerplate/features/splash/presentation/widgets/app_gate.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  const SplashScreen({required this.destination, super.key});
+
+  final String destination;
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  static const _splashDuration = Duration(seconds: 3);
-  late final DateTime _startedAt;
   bool _isOpening = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _startedAt = DateTime.now();
-  }
 
   Future<void> _openApp(ConfigEntity config) async {
     if (_isOpening) return;
     _isOpening = true;
-    final remaining = _splashDuration - DateTime.now().difference(_startedAt);
-    if (remaining > Duration.zero) await Future<void>.delayed(remaining);
     if (!mounted) return;
-    await openApp(context, config);
+    await openApp(context, config, destination: widget.destination);
   }
 
   @override

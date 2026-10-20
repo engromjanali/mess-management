@@ -84,15 +84,41 @@ class AppRoutes {
   static String getLoginRoute() => _login;
 
   static String getHomeRoute() => home;
+
+  static String loginRouteFor(String destination) {
+    final resolvedDestination = startupRoute(destination);
+    if (resolvedDestination == home) return _login;
+    return Uri(path: _login, queryParameters: {'redirect': resolvedDestination}).toString();
+  }
+
+  static String startupRoute(String destination) {
+    final uri = Uri.tryParse(destination);
+    if (uri == null || uri.hasScheme || uri.hasAuthority || !uri.path.startsWith('/') || uri.path.startsWith('//')) return home;
+    const startupRoutes = [_splash, _login, register, forgotPassword, maintenance, updateRequired];
+    if (startupRoutes.contains(uri.path)) return home;
+    return uri.toString();
+  }
+}
+
+final String initialDestination = _initialDestination();
+
+String _initialDestination() {
+  if (kIsWeb) {
+    final uri = Uri.base;
+    if (uri.fragment.startsWith('/')) return uri.fragment;
+    return uri.hasQuery ? '${uri.path}?${uri.query}' : uri.path;
+  }
+  return PlatformDispatcher.instance.defaultRouteName;
 }
 
 /// Router configuration using go_router
 final router = GoRouter(
   initialLocation: AppRoutes._splash,
+  overridePlatformDefaultLocation: true,
   // On web, route focus before the first layout triggers view focus traversal on an unlaid Overlay.
   requestFocus: !kIsWeb,
   routes: [
-    GoRoute(path: AppRoutes._splash, name: 'splash', builder: (context, state) => const SplashScreen()),
+    GoRoute(path: AppRoutes._splash, name: 'splash', builder: (context, state) => SplashScreen(destination: initialDestination)),
 
     // App gate: maintenance mode / forced update
     GoRoute(path: AppRoutes.maintenance, name: 'maintenance', builder: (context, state) => const MaintenanceScreen()),

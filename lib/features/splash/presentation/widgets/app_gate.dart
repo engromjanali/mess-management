@@ -14,7 +14,7 @@ Future<String> currentAppVersion() async => (await PackageInfo.fromPlatform()).v
 /// Opens the app for [config]: the maintenance screen while maintenance mode
 /// is on, the update screen when this version is too old, an optional update
 /// prompt when a newer one exists, then home (or login when signed out).
-Future<void> openApp(BuildContext context, ConfigEntity config) async {
+Future<void> openApp(BuildContext context, ConfigEntity config, {String destination = AppRoutes.home}) async {
   final version = await currentAppVersion();
   if (!context.mounted) return;
   if (config.maintenanceMode) return context.go(AppRoutes.maintenance);
@@ -23,7 +23,7 @@ Future<void> openApp(BuildContext context, ConfigEntity config) async {
     await showDialog<void>(context: context, builder: (_) => _UpdateAvailableDialog(config: config, currentVersion: version));
     if (!context.mounted) return;
   }
-  context.go(AuthHelper.isLogin() ? AppRoutes.getHomeRoute() : AppRoutes.getLoginRoute());
+  context.go(AuthHelper.isLogin() ? AppRoutes.startupRoute(destination) : AppRoutes.loginRouteFor(destination));
 }
 
 Future<void> openBlockedAppRoute(BuildContext context, ConfigEntity config) async {

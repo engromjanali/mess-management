@@ -88,6 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _onAuthenticated(UserEntity user) {
     context.read<RoleCubit>().setRole(user.isManager ? UserRole.admin : UserRole.user);
     context.showSuccessSnackBar(context.local.welcome(user.name));
-    context.go(AppRoutes.home);
+    final destination = GoRouterState.of(context).uri.queryParameters['redirect'] ?? AppRoutes.home;
+    context.go(AppRoutes.startupRoute(destination));
   }
 }
