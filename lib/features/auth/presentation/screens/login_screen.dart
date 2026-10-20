@@ -65,6 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         return AuthScaffold(
           icon: Icons.restaurant_menu_rounded,
+          logoShadow: true,
           title: context.local.welcomeBack,
           subtitle: 'Sign in to continue managing your mess',
           action: IconButton(tooltip: 'Fill demo credentials', icon: const Icon(Icons.info_outline_rounded), onPressed: _fillDemoCredentials),

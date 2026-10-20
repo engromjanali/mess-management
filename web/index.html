@@ -31,6 +31,79 @@
 
   <title>clean_boilerplate</title>
   <link rel="manifest" href="manifest.json">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: #F7FAF8;
+    }
+
+    #flutter-launch-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #F7FAF8;
+      font-family: Arial, sans-serif;
+    }
+
+    .launch-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px;
+    }
+
+    .launch-logo {
+      width: 120px;
+      height: 120px;
+      border-radius: 60px;
+      object-fit: cover;
+      box-shadow: 0 8px 24px 2px rgba(23, 111, 73, 0.35);
+    }
+
+    .launch-title {
+      margin-top: 24px;
+      color: #202522;
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .launch-progress {
+      width: 120px;
+      height: 3px;
+      margin-top: 24px;
+      overflow: hidden;
+      border-radius: 2px;
+      background: rgba(25, 135, 84, 0.16);
+    }
+
+    .launch-progress::after {
+      display: block;
+      width: 45%;
+      height: 100%;
+      border-radius: inherit;
+      background: #198754;
+      content: '';
+      animation: launch-progress 1.1s ease-in-out infinite;
+    }
+
+    @keyframes launch-progress {
+      from { transform: translateX(-110%); }
+      to { transform: translateX(245%); }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      html, body, #flutter-launch-screen { background: #111512; }
+      .launch-title { color: #F4F7F5; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .launch-progress::after { animation: none; }
+    }
+  </style>
   <script>
     window.messMapsAuthFailed = false;
     window.gm_authFailure = function () {
@@ -40,6 +113,18 @@
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBktvyfMj1GRqOnf3gFFdB6idMLhwrX9VQ"></script>
 </head>
 <body>
+  <div id="flutter-launch-screen" role="status" aria-label="Loading Mess Manager">
+    <div class="launch-content">
+      <img class="launch-logo" src="logo.png" alt="Mess Manager">
+      <div class="launch-title">Mess Manager</div>
+      <div class="launch-progress" aria-hidden="true"></div>
+    </div>
+  </div>
+  <script>
+    window.addEventListener('flutter-first-frame', function () {
+      document.getElementById('flutter-launch-screen')?.remove();
+    }, { once: true });
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

@@ -65,7 +65,10 @@ class _SplashScreenState extends State<SplashScreen> {
               orElse: () => Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const AppLogo(size: 120, shape: BoxShape.circle),
+                  Container(
+                    decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [BoxShadow(color: const Color(0xFF176F49).withValues(alpha: 0.35), blurRadius: 24, spreadRadius: 2, offset: const Offset(0, 8))]),
+                    child: const AppLogo(size: 120, shape: BoxShape.circle),
+                  ),
                   const SizedBox(height: 24),
                   Text('Mess Manager', style: AppTextStyles.sfProRoundedBold.copyWith(color: colors.textPrimaryColor, fontSize: 28)),
                   const SizedBox(height: 24),

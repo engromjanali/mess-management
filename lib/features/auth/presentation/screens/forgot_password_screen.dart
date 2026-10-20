@@ -90,6 +90,7 @@ class _ForgotPasswordViewState extends State<_ForgotPasswordView> {
 
         return AuthScaffold(
           icon: Icons.lock_reset_rounded,
+          logoShadow: true,
           title: 'Reset password',
           subtitle: isResetStep
               ? 'Enter the code we sent to $email and choose a new password'

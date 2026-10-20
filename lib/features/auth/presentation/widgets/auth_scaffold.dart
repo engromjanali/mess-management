@@ -12,13 +12,14 @@ import 'package:flutter/material.dart';
 /// surface card that hosts the form [child]. Responsive (card capped for
 /// web/tablet).
 class AuthScaffold extends StatelessWidget {
-  const AuthScaffold({required this.icon, required this.title, required this.subtitle, required this.child, this.footer, this.action, super.key});
+  const AuthScaffold({required this.icon, required this.title, required this.subtitle, required this.child, this.footer, this.action, this.logoShadow = false, super.key});
 
   final IconData icon;
   final String title;
   final String subtitle;
   final Widget child;
   final Widget? footer;
+  final bool logoShadow;
 
   /// Optional top-right action (e.g. an info button).
   final Widget? action;
@@ -54,6 +55,7 @@ class AuthScaffold extends StatelessWidget {
                                 color: colors.primaryColor.withValues(alpha: 0.12),
                                 shape: BoxShape.circle,
                                 border: Border.all(color: colors.primaryColor.withValues(alpha: 0.25), width: 1.5),
+                                boxShadow: logoShadow ? [BoxShadow(color: const Color(0xFF176F49).withValues(alpha: 0.35), blurRadius: 24, spreadRadius: 2, offset: const Offset(0, 8))] : null,
                               ),
                               child: const AppLogo(size: 76, shape: BoxShape.circle),
                             ),
