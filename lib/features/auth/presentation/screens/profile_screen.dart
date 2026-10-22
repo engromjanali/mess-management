@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
@@ -34,7 +35,7 @@ class ProfileScreen extends StatelessWidget {
             if (user != null) return _ProfileBody(user: user);
             final isSignedOut = state.maybeWhen(unauthenticated: () => true, error: (_) => true, orElse: () => false);
             if (isSignedOut) return const _SignedOutView();
-            return const Center(child: CircularProgressIndicator.adaptive());
+            return const Center(child: AppLoader());
           },
         ),
       ),

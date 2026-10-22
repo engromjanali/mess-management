@@ -435,5 +435,6 @@
   "opinionMessages": "الآراء",
   "currentSeasonLabel": "الموسم الحالي",
   "opinionAnonymousOnly": "مجهول الهوية فقط",
-  "opinionBothModes": "مجهول الهوية وبالاسم"
+  "opinionBothModes": "مجهول الهوية وبالاسم",
+  "loading": "جارٍ التحميل…"
 }

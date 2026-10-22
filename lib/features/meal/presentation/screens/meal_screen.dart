@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -171,7 +172,7 @@ class _MineTab extends StatelessWidget {
     );
   }
 
-  Widget _loading() => const Center(child: CircularProgressIndicator.adaptive());
+  Widget _loading() => const Center(child: AppLoader());
 }
 
 class _ErrorView extends StatelessWidget {

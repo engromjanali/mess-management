@@ -944,5 +944,6 @@
   "opinionMessages": "Opinions",
   "currentSeasonLabel": "Current season",
   "opinionAnonymousOnly": "Anonymous only",
-  "opinionBothModes": "Anonymous and named"
+  "opinionBothModes": "Anonymous and named",
+  "loading": "Loading…"
 }

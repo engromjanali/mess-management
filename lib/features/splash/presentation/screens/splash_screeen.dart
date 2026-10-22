@@ -1,7 +1,7 @@
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
-import 'package:clean_boilerplate/core/widgets/app_logo.dart';
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:clean_boilerplate/features/splash/domain/entities/config_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -65,14 +65,9 @@ class _SplashScreenState extends State<SplashScreen> {
               orElse: () => Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
-                    decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [BoxShadow(color: const Color(0xFF176F49).withValues(alpha: 0.35), blurRadius: 24, spreadRadius: 2, offset: const Offset(0, 8))]),
-                    child: const AppLogo(size: 120, shape: BoxShape.circle),
-                  ),
+                  const AppLoader(size: 132),
                   const SizedBox(height: 24),
                   Text('Mess Pilot', style: AppTextStyles.sfProRoundedBold.copyWith(color: colors.textPrimaryColor, fontSize: 28)),
-                  const SizedBox(height: 24),
-                  SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2.5, color: colors.primaryColor)),
                 ],
               ),
             ),

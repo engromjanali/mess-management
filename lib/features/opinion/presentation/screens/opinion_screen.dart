@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -194,7 +195,7 @@ class _OpinionScreenState extends State<OpinionScreen> {
   Widget build(BuildContext context) {
     final showWebAppBar = ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context);
     final isAdmin = context.watch<RoleCubit>().state.isAdmin && _canManage;
-    final opinionContent = _loading ? const Center(child: CircularProgressIndicator.adaptive()) : _error != null && _periods.isEmpty
+    final opinionContent = _loading ? const Center(child: AppLoader()) : _error != null && _periods.isEmpty
         ? Center(child: Padding(padding: const EdgeInsets.all(Dimensions.paddingSizeLarge), child: Column(mainAxisSize: MainAxisSize.min, children: [Text(userErrorMessage(_error!, context.local), textAlign: TextAlign.center), TextButton.icon(onPressed: () => _load(), icon: const Icon(Icons.refresh_rounded), label: Text(context.local.tryAgain))])))
         : RefreshIndicator(onRefresh: () => _load(), child: _OpinionBody(
       periods: _periods,

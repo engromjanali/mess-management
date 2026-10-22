@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
@@ -59,7 +60,7 @@ class _ContentPageScreenState extends State<ContentPageScreen> {
         child: _error != null && page == null
             ? AppInfoErrorView(message: _error!, onRetry: _load)
             : page == null
-            ? const Center(child: CircularProgressIndicator.adaptive())
+            ? const Center(child: AppLoader())
             : RefreshIndicator(onRefresh: _load, child: _PageBody(page: page)),
       ),
     );

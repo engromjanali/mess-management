@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/core/di/injection.dart';
@@ -172,7 +173,7 @@ class _EditMessScreenState extends State<EditMessScreen> {
       body: MainPageBody(
         title: context.local.editMessDetails,
         child: _loading
-          ? const Center(child: CircularProgressIndicator.adaptive())
+          ? const Center(child: AppLoader())
           : Form(
               key: _formKey,
               autovalidateMode: AutovalidateMode.onUserInteraction,

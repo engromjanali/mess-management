@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -96,7 +97,7 @@ class _CostViewState extends State<_CostView> {
       },
       builder: (context, state) {
         return state.maybeWhen(
-          loading: () => const Center(child: CircularProgressIndicator.adaptive()),
+          loading: () => const Center(child: AppLoader()),
           error: (message) => _ErrorView(message: message),
           loaded: (costs, seasonName, members, isAdmin, saving, _) {
             final tab = isAdmin ? _tab : _CostTab.list;
@@ -129,7 +130,7 @@ class _CostViewState extends State<_CostView> {
               ],
             );
           },
-          orElse: () => const Center(child: CircularProgressIndicator.adaptive()),
+          orElse: () => const Center(child: AppLoader()),
         );
       },
     );

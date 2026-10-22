@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/app_constants.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
@@ -73,7 +74,7 @@ class _MembershipGateState extends State<MembershipGate> {
       child: BlocBuilder<MembershipCubit, MembershipState>(
         builder: (context, state) {
           return switch (state) {
-            MembershipLoading() => const Scaffold(body: Center(child: CircularProgressIndicator.adaptive())),
+            MembershipLoading() => const Scaffold(body: Center(child: AppLoader())),
             MembershipError(:final message) => _MembershipError(message: message),
             MembershipLoaded(:final status) =>
               _hasMess(status) && !widget.allowConnected ? widget.connectedChild : _NoCurrentMess(status: status, connected: _hasMess(status)),
@@ -418,7 +419,7 @@ class _AvailableMessCard extends StatelessWidget {
           TextField(controller: searchController, textInputAction: TextInputAction.search, onSubmitted: (_) => onSearch(), decoration: InputDecoration(labelText: 'Find a mess', hintText: 'Search by mess name or ID', suffixIcon: IconButton(onPressed: loading ? null : onSearch, icon: const Icon(Icons.search_rounded)))),
           const SizedBox(height: Dimensions.paddingSizeLarge),
           if (loading)
-            const Center(child: CircularProgressIndicator.adaptive())
+            const Center(child: AppLoader())
           else if (error != null)
             Column(children: [Text(error!, textAlign: TextAlign.center), const SizedBox(height: Dimensions.paddingSizeDefault), OutlinedButton.icon(onPressed: onSearch, icon: const Icon(Icons.refresh_rounded), label: const Text('Try again'))])
           else if (messPage == null || messPage!.messes.isEmpty)

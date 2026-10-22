@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -78,7 +79,7 @@ class _MealEntryViewState extends State<_MealEntryView> {
         },
         builder: (context, state) {
           return state.maybeWhen(
-            loading: () => const Center(child: CircularProgressIndicator.adaptive()),
+            loading: () => const Center(child: AppLoader()),
             error: (message) => _ErrorView(message: message),
             loaded: (data, _, _, busy) => Stack(
               children: [
@@ -86,7 +87,7 @@ class _MealEntryViewState extends State<_MealEntryView> {
                 if (busy) const Positioned(top: 0, left: 0, right: 0, child: LinearProgressIndicator(minHeight: 2)),
               ],
             ),
-            orElse: () => const Center(child: CircularProgressIndicator.adaptive()),
+            orElse: () => const Center(child: AppLoader()),
           );
         },
       ),

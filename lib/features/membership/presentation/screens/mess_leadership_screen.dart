@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
@@ -106,7 +107,7 @@ class _MessLeadershipScreenState extends State<MessLeadershipScreen> {
       body: MainPageBody(
         title: context.local.transferLeadership,
         child: _loading
-          ? const Center(child: CircularProgressIndicator.adaptive())
+          ? const Center(child: AppLoader())
           : ListView(
               padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
               children: [

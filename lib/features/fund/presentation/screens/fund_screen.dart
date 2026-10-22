@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
@@ -59,11 +60,11 @@ class _FundView extends StatelessWidget {
       },
       builder: (context, state) {
         return state.maybeWhen(
-          loading: () => const Center(child: CircularProgressIndicator.adaptive()),
+          loading: () => const Center(child: AppLoader()),
           error: (message) => _ErrorView(message: message),
           loaded: (funds, dateFilter, selectedDate, isAdmin, selectedRange, saving) =>
               _FundBody(funds: funds, dateFilter: dateFilter, selectedDate: selectedDate, isAdmin: isAdmin, selectedRange: selectedRange, saving: saving),
-          orElse: () => const Center(child: CircularProgressIndicator.adaptive()),
+          orElse: () => const Center(child: AppLoader()),
         );
       },
     );

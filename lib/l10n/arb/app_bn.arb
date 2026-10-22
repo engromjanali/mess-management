@@ -435,5 +435,6 @@
   "opinionMessages": "মতামত",
   "currentSeasonLabel": "বর্তমান সিজন",
   "opinionAnonymousOnly": "শুধু নাম প্রকাশ না করে",
-  "opinionBothModes": "নাম প্রকাশ না করে এবং নামসহ"
+  "opinionBothModes": "নাম প্রকাশ না করে এবং নামসহ",
+  "loading": "লোড হচ্ছে…"
 }

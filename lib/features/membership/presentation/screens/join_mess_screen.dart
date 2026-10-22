@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:clean_boilerplate/core/di/injection.dart';
 import 'package:clean_boilerplate/core/network/api_client.dart';
 import 'package:clean_boilerplate/features/membership/data/membership_api_service.dart';
@@ -14,7 +15,7 @@ class JoinMessScreen extends StatelessWidget {
     return BlocProvider<MembershipCubit>(
       create: (_) => MembershipCubit(MembershipApiService(getIt<ApiClient>()))..load(),
       // Connected users may join or create another mess too.
-      child: const MembershipGate(allowConnected: true, connectedChild: Scaffold(body: Center(child: CircularProgressIndicator.adaptive()))),
+      child: const MembershipGate(allowConnected: true, connectedChild: Scaffold(body: Center(child: AppLoader()))),
     );
   }
 }

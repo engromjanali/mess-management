@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
@@ -55,7 +56,7 @@ class _FaqScreenState extends State<FaqScreen> {
         child: _error != null && faqs == null
             ? AppInfoErrorView(message: _error!, onRetry: _load)
             : faqs == null
-            ? const Center(child: CircularProgressIndicator.adaptive())
+            ? const Center(child: AppLoader())
             : RefreshIndicator(onRefresh: _load, child: _FaqList(faqs: faqs)),
       ),
     );

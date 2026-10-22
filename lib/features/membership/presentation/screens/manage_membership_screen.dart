@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
@@ -511,7 +512,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                           _filterField(_ManagementSection.memberships),
                           const SizedBox(height: Dimensions.paddingSizeLarge),
                           if (_loading && _status == null)
-                            const Center(child: CircularProgressIndicator.adaptive())
+                            const Center(child: AppLoader())
                           else if ((_status?.memberships ?? const []).isEmpty)
                             Text(context.local.noMembershipsYet, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
                           else if (!_status!.memberships.any((membership) => _matchesFilter(_ManagementSection.memberships, membership.status)))
@@ -650,7 +651,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                         ),
                         const SizedBox(height: Dimensions.paddingSizeLarge),
                         if (_loading)
-                          const Center(child: CircularProgressIndicator.adaptive())
+                          const Center(child: AppLoader())
                         else if (_visibleInvitations.isEmpty)
                           Text(context.local.noMatchingRecords, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
                         else
@@ -673,7 +674,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                           _filterField(_ManagementSection.messRequests),
                           const SizedBox(height: Dimensions.paddingSizeLarge),
                           if (_loading)
-                            const Center(child: CircularProgressIndicator.adaptive())
+                            const Center(child: AppLoader())
                           else if (!_requests.any((request) => _matchesFilter(_ManagementSection.messRequests, request['status'] as String?)))
                             Text(context.local.noMatchingRecords, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
                           else
@@ -715,7 +716,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                           _filterField(_ManagementSection.members),
                           const SizedBox(height: Dimensions.paddingSizeLarge),
                           if (_loading)
-                            const Center(child: CircularProgressIndicator.adaptive())
+                            const Center(child: AppLoader())
                           else if (_visibleMembers.isEmpty)
                             Text(context.local.noMatchingRecords, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
                           else

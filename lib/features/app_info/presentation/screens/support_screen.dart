@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
@@ -22,7 +23,7 @@ class SupportScreen extends StatelessWidget {
         title: context.local.support,
         child: BlocBuilder<SplashBloc, SplashState>(
           builder: (context, state) => state.when(
-            loading: () => const Center(child: CircularProgressIndicator.adaptive()),
+            loading: () => const Center(child: AppLoader()),
             error: (message) => AppInfoErrorView(message: message, onRetry: () => context.read<SplashBloc>().add(const SplashEvent.getConfig())),
             loaded: (config) => RefreshIndicator(
               onRefresh: () async {

@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
@@ -51,7 +52,7 @@ class _MessDetailsView extends StatelessWidget {
 
     final content = BlocBuilder<MessDetailsCubit, MessDetailsState>(
       builder: (context, state) => switch (state) {
-        MessDetailsLoading() => const Center(child: CircularProgressIndicator.adaptive()),
+        MessDetailsLoading() => const Center(child: AppLoader()),
         MessDetailsError(:final message) => _ErrorView(message: message),
         MessDetailsLoaded() => _MessBody(state: state),
       },

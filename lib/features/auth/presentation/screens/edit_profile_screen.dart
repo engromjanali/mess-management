@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/di/injection.dart';
@@ -24,7 +25,7 @@ class EditProfileScreen extends StatelessWidget {
     final user = context.select<AuthBloc, UserEntity?>((bloc) => bloc.state.maybeWhen(authenticated: (user) => user, orElse: () => null));
     return Scaffold(
       appBar: AppBar(title: Text(context.local.editProfile)),
-      body: user == null ? const Center(child: CircularProgressIndicator.adaptive()) : _EditProfileForm(user: user),
+      body: user == null ? const Center(child: AppLoader()) : _EditProfileForm(user: user),
     );
   }
 }

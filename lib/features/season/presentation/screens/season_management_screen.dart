@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -69,7 +70,7 @@ class _SeasonView extends StatelessWidget {
       builder: (context, state) => state.maybeWhen(
         error: (message) => _ErrorView(message: message),
         loaded: (overview, busy) => _SeasonBody(overview: overview, busy: busy),
-        orElse: () => const Center(child: CircularProgressIndicator.adaptive()),
+        orElse: () => const Center(child: AppLoader()),
       ),
     );
 

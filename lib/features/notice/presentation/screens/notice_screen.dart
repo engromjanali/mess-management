@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -58,7 +59,7 @@ class _NoticeView extends StatelessWidget {
         return state.maybeWhen(
           error: (message) => _ErrorView(message: message),
           loaded: (notices, isAdmin, busy) => _NoticeBody(notices: notices, isAdmin: isAdmin, busy: busy),
-          orElse: () => const Center(child: CircularProgressIndicator.adaptive()),
+          orElse: () => const Center(child: AppLoader()),
         );
       },
     );
