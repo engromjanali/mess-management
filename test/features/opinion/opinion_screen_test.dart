@@ -16,7 +16,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OpinionTestAuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
-  OpinionTestAuthBloc() : super(const AuthState.authenticated(UserEntity(id: '1', email: 'member@example.com', name: 'Member', activeMessId: 99))) {
+  OpinionTestAuthBloc({bool admin = false}) : super(AuthState.authenticated(UserEntity(id: '1', email: 'member@example.com', name: 'Member', activeMessId: 99, role: admin ? 'manager' : 'member'))) {
     on<AuthEvent>((event, emit) {});
   }
 
@@ -72,8 +72,8 @@ void main() {
           canWrite = true;
           expired = false;
           visibility = 'after_publish';
-          final role = RoleCubit()..setRole(admin ? UserRole.admin : UserRole.user);
-          final auth = OpinionTestAuthBloc();
+          final auth = OpinionTestAuthBloc(admin: admin);
+          final role = RoleCubit(auth);
           final localization = OpinionTestLocaleBloc(language);
           await tester.pumpWidget(MultiBlocProvider(
             providers: [BlocProvider<RoleCubit>.value(value: role), BlocProvider<AuthBloc>.value(value: auth), BlocProvider<LocalizationBloc>.value(value: localization)],

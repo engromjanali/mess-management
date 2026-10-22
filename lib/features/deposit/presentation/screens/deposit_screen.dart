@@ -56,7 +56,7 @@ class _DepositView extends StatelessWidget {
   Widget build(BuildContext context) {
     final showWebAppBar = ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context);
 
-    // Re-load when the global role switcher flips between user / admin.
+    // Reload when the authenticated role changes.
     return BlocListener<RoleCubit, UserRole>(
       listenWhen: (prev, curr) => prev != curr,
       listener: (context, role) => context.read<DepositBloc>().add(DepositEvent.started(isAdmin: role.isAdmin)),

@@ -69,7 +69,7 @@ class _FundView extends StatelessWidget {
       },
     );
 
-    // Re-load when the global role switcher flips between user / admin.
+    // Reload when the authenticated role changes.
     return BlocListener<RoleCubit, UserRole>(
       listenWhen: (prev, curr) => prev != curr,
       listener: (context, role) => context.read<FundBloc>().add(FundEvent.started(isAdmin: role.isAdmin)),

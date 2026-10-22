@@ -1,7 +1,6 @@
 import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
-import 'package:clean_boilerplate/core/role/role_cubit.dart';
 import 'package:clean_boilerplate/features/auth/domain/entities/user_entity.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_event.dart';
@@ -85,9 +84,8 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  /// On success: sync the previewed role from the backend, greet, and go home.
+  /// On success: greet the authenticated user and go home.
   void _onAuthenticated(UserEntity user) {
-    context.read<RoleCubit>().setRole(user.isManager ? UserRole.admin : UserRole.user);
     context.showSuccessSnackBar(context.local.welcome(user.name));
     final destination = GoRouterState.of(context).uri.queryParameters['redirect'] ?? AppRoutes.home;
     context.go(AppRoutes.startupRoute(destination));

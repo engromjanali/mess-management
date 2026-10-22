@@ -1,7 +1,6 @@
 import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
-import 'package:clean_boilerplate/core/role/role_cubit.dart';
 import 'package:clean_boilerplate/features/auth/domain/entities/user_entity.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_event.dart';
@@ -62,7 +61,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   /// On success the backend returns tokens, so we sign the user straight in.
   void _onAuthenticated(UserEntity user) {
-    context.read<RoleCubit>().setRole(user.isManager ? UserRole.admin : UserRole.user);
     context.showSuccessSnackBar(context.local.welcome(user.name));
     context.go(AppRoutes.home);
   }

@@ -49,8 +49,8 @@ class _MembershipGateState extends State<MembershipGate> {
     _seenStatus = true;
     _knownCurrentId = currentId;
 
-    final activeMessId = context.read<AuthBloc>().state.maybeWhen(authenticated: (user) => user.activeMessId, orElse: () => null);
-    if (changed || activeMessId != status.current?.messId) {
+    final user = context.read<AuthBloc>().state.maybeWhen(authenticated: (user) => user, orElse: () => null);
+    if (changed || user?.activeMessId != status.current?.messId || user?.role != (status.current?.role ?? 'member')) {
       try {
         await context.read<AuthBloc>().refreshProfile();
       } catch (error) {

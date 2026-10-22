@@ -48,6 +48,11 @@ class DashboardTopBar extends StatelessWidget {
     final colors = context.customThemeColors;
     final user = context.watch<AuthBloc>().state.maybeWhen(authenticated: (user) => user, orElse: () => null);
     final resolvedUserName = userName ?? user?.name ?? context.local.roleUser;
+    final roleLabel = switch (user?.role) {
+      'manager' => context.local.roleManager,
+      'acting_manager' => context.local.roleActingManager,
+      _ => context.local.roleMember,
+    };
     final resolvedNavItems = navItems ?? [
       if (!hiddenSections.contains(DashboardSection.home)) DashboardNavItem(label: context.local.home, icon: Icons.home_rounded, active: active == DashboardSection.home, onTap: () => context.go(AppRoutes.home)),
       if (!hiddenSections.contains(DashboardSection.meals)) DashboardNavItem(label: context.local.meals, icon: Icons.restaurant_rounded, active: active == DashboardSection.meals, onTap: () => context.go(AppRoutes.meals)),
@@ -108,7 +113,7 @@ class DashboardTopBar extends StatelessWidget {
                       if (showLocale) const _LocaleMenu(),
                       if (showProfile) ...[
                         const SizedBox(width: Dimensions.paddingSizeDefault),
-                        _ProfileChip(userName: resolvedUserName, profileImageUrl: user?.photoUrl, showText: showProfileText, onTap: onProfileTap ?? () => Scaffold.of(context).openEndDrawer()),
+                        _ProfileChip(roleLabel: roleLabel, userName: resolvedUserName, profileImageUrl: user?.photoUrl, showText: showProfileText, onTap: onProfileTap ?? () => Scaffold.of(context).openEndDrawer()),
                       ],
                     ],
                   );
@@ -279,7 +284,8 @@ class _ActionIcon extends StatelessWidget {
 }
 
 class _ProfileChip extends StatelessWidget {
-  const _ProfileChip({required this.userName, required this.profileImageUrl, required this.showText, required this.onTap});
+  const _ProfileChip({required this.roleLabel, required this.userName, required this.profileImageUrl, required this.showText, required this.onTap});
+  final String roleLabel;
   final String userName;
   final String? profileImageUrl;
   final bool showText;
@@ -331,7 +337,7 @@ class _ProfileChip extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(userName, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor)),
-                      Text('Member', style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: colors.textSecondaryColor)),
+                      Text(roleLabel, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: colors.textSecondaryColor)),
                     ],
                   ),
                 ),

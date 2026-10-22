@@ -11,7 +11,6 @@ import 'package:clean_boilerplate/core/di/injection.dart';
 import 'package:clean_boilerplate/core/helpers/auth_helper.dart';
 import 'package:clean_boilerplate/core/network/api_client.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
-import 'package:clean_boilerplate/core/role/role_switcher_fab.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_event.dart';
 import 'package:clean_boilerplate/features/settings/presentation/bloc/localization/localization_bloc.dart';
@@ -75,7 +74,7 @@ class _MyAppState extends State<MyApp> {
           if (AuthHelper.isLogin()) authBloc.add(const AuthEvent.checkAuthStatus());
           return authBloc;
         }),
-        BlocProvider(create: (context) => RoleCubit()),
+        BlocProvider(create: (context) => RoleCubit(context.read<AuthBloc>())),
       ],
       child: BlocBuilder<LocalizationBloc, LocalizationState>(
         builder: (context, localeState) {
@@ -100,7 +99,7 @@ class _MyAppState extends State<MyApp> {
                   },
                   child: FocusTraversalGroup(
                     policy: _focusTraversalPolicy,
-                    child: RoleSwitcherOverlay(child: child ?? const SizedBox.shrink()),
+                    child: child ?? const SizedBox.shrink(),
                   ),
                 ),
                 localizationsDelegates: AppLocalizations.localizationsDelegates,

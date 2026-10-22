@@ -23,8 +23,8 @@ class AppConstants {
 
   // Auth
   static const String loginEndpoint = '/api/v1/auth/sign-in';
-  static const String registerEndpoint = '/api/v1/auth/sign-up';
   static const String logoutEndpoint = '/api/v1/auth/logout';
+  static const String registerEndpoint = '/api/v1/auth/sign-up';
   static const String refreshTokenEndpoint = '/api/auth/refresh';
   static const String profileEndpoint = '/api/v1/auth/update-profile';
   static const String forgotPasswordEndpoint = '/api/v1/auth/forgot-password';

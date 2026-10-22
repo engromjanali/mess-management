@@ -74,7 +74,7 @@ class _SeasonView extends StatelessWidget {
       ),
     );
 
-    // Load when the global role switcher turns admin on.
+    // Load when the authenticated user gains manager access.
     return BlocListener<RoleCubit, UserRole>(
       listenWhen: (prev, curr) => prev != curr && curr.isAdmin,
       listener: (context, _) => context.read<SeasonBloc>().add(const SeasonEvent.started()),

@@ -7,7 +7,6 @@ import 'package:clean_boilerplate/core/di/injection.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
 import 'package:clean_boilerplate/core/network/api_client.dart';
-import 'package:clean_boilerplate/core/role/role_cubit.dart';
 import 'package:clean_boilerplate/core/usecase/usecase.dart';
 import 'package:clean_boilerplate/core/widgets/code_picker_widget.dart';
 import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
@@ -155,20 +154,19 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
 
   /// After the current membership changed every screen must show the new
   /// mess and season: match the role view to it and start again from home.
-  void _openCurrentMembership(String role) {
-    context.read<RoleCubit>().setRole(const {'manager', 'acting_manager'}.contains(role) ? UserRole.admin : UserRole.user);
+  void _openCurrentMembership() {
     context.go(AppRoutes.home);
   }
 
   Future<void> _switchTo(MembershipSummaryEntity membership) async {
     final switched = await _runUserAction('switch:${membership.messId}:${membership.seasonId}', () => _service.switchMembership(membership), context.local.switchedMembership(membership.messName, membership.seasonName), refreshProfile: true);
-    if (switched && mounted) _openCurrentMembership(membership.role);
+    if (switched && mounted) _openCurrentMembership();
   }
 
   Future<void> _acceptInvite(InviteSummaryEntity invite) async {
     // Joining makes the new membership current.
     final joined = await _runUserAction('invite:${invite.id}', () => _service.joinInvite(invite.inviteCode), context.local.joinedMess(invite.messName), refreshProfile: true);
-    if (joined && mounted) _openCurrentMembership('member');
+    if (joined && mounted) _openCurrentMembership();
   }
 
   Future<void> _declineInvite(InviteSummaryEntity invite) async {
@@ -446,8 +444,9 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
       if (!mounted) return;
       context.showSuccessSnackBar(success);
       if (action == MemberAction.makePrimaryManager) {
-        // No longer the manager: drop to the member view.
-        context.read<RoleCubit>().setRole(UserRole.user);
+        // Refresh the role after ownership changes.
+        await context.read<AuthBloc>().refreshProfile();
+        if (!mounted) return;
         context.go(AppRoutes.home);
         return;
       }

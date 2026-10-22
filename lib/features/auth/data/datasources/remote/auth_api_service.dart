@@ -33,8 +33,9 @@ class AuthApiService {
   Future<void> logout() async {
     try {
       await _apiClient.post(AppConstants.logoutEndpoint);
+    } on Exception {
+      // Local sign-out still succeeds when the server is unavailable.
     } finally {
-      // Tokens are cleared regardless of whether the network call succeeds.
       await _apiClient.clearTokens();
     }
   }

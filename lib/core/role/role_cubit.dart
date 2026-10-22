@@ -1,7 +1,10 @@
+import 'dart:async';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// The two roles the app supports while we preview each experience.
+/// The two role-based experiences supported by the app.
 enum UserRole {
   user,
   admin;
@@ -13,14 +16,19 @@ enum UserRole {
   IconData get icon => this == UserRole.admin ? Icons.admin_panel_settings_rounded : Icons.person_rounded;
 }
 
-/// Holds the currently previewed [UserRole].
-///
-/// Temporary dev affordance: a global floating button toggles this so we can
-/// see the app rendered for each role without a real auth/role backend.
+/// Derives the UI role from the authenticated server profile.
 class RoleCubit extends Cubit<UserRole> {
-  RoleCubit() : super(UserRole.user);
+  RoleCubit(AuthBloc authBloc) : super(_roleFrom(authBloc.state)) {
+    _subscription = authBloc.stream.listen((state) => emit(_roleFrom(state)));
+  }
 
-  void toggle() => emit(state.isAdmin ? UserRole.user : UserRole.admin);
+  late final StreamSubscription<AuthState> _subscription;
 
-  void setRole(UserRole role) => emit(role);
+  static UserRole _roleFrom(AuthState state) => state.maybeWhen(authenticated: (user) => user.isManager ? UserRole.admin : UserRole.user, orElse: () => UserRole.user);
+
+  @override
+  Future<void> close() async {
+    await _subscription.cancel();
+    return super.close();
+  }
 }

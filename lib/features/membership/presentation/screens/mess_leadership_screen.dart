@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
@@ -6,7 +7,6 @@ import 'package:clean_boilerplate/core/di/injection.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
 import 'package:clean_boilerplate/core/network/api_client.dart';
-import 'package:clean_boilerplate/core/role/role_cubit.dart';
 import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
 import 'package:clean_boilerplate/features/membership/data/membership_api_service.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/main_page_body.dart';
@@ -84,8 +84,9 @@ class _MessLeadershipScreenState extends State<MessLeadershipScreen> {
       if (!mounted) return;
       context.showSuccessSnackBar(context.local.leadershipUpdated);
       if (transferOwnership) {
-        // No longer the manager: drop to the member view.
-        context.read<RoleCubit>().setRole(UserRole.user);
+        // Refresh the role after ownership changes.
+        await context.read<AuthBloc>().refreshProfile();
+        if (!mounted) return;
         context.go(AppRoutes.home);
       } else {
         Navigator.of(context).pop();
