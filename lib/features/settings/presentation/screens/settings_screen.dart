@@ -1,3 +1,5 @@
+import 'package:clean_boilerplate/features/home/presentation/widgets/main_page_body.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
@@ -17,9 +19,13 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final showWebAppBar = MainPageBody.showWebAppBar(context);
     return Scaffold(
-      appBar: AppBar(leading: const HomeBackButton(), title: Text(context.local.settings)),
-      body: Center(
+      endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
+      appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.settings)),
+      body: MainPageBody(
+        title: context.local.settings,
+        child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
           child: ListView(
@@ -86,6 +92,7 @@ class SettingsScreen extends StatelessWidget {
             ],
           ),
         ),
+      ),
       ),
     );
   }

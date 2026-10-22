@@ -332,7 +332,10 @@ class _ProfileChip extends StatelessWidget {
                 avatar,
                 const SizedBox(width: Dimensions.paddingSizeSmall),
                 Flexible(
-                  child: Column(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: AlignmentDirectional.centerStart,
+                    child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -340,6 +343,7 @@ class _ProfileChip extends StatelessWidget {
                       Text(roleLabel, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: colors.textSecondaryColor)),
                     ],
                   ),
+                ),
                 ),
                 const SizedBox(width: Dimensions.paddingSizeExtraSmall),
                 Icon(Icons.keyboard_arrow_left_rounded, size: Dimensions.iconSizeSmall, color: colors.textSecondaryColor),

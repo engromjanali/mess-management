@@ -1,3 +1,6 @@
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_event.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
 import 'package:clean_boilerplate/config/theme/app_theme.dart';
 import 'package:clean_boilerplate/features/settings/presentation/bloc/localization/localization_bloc.dart';
 import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_bloc.dart';
@@ -17,11 +20,20 @@ class _LocaleBloc extends Bloc<LocalizationEvent, LocalizationState> implements 
   _LocaleBloc() : super(const LocalizationState.loaded(Locale('en')));
 }
 
+class _AuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
+  _AuthBloc() : super(const AuthState.initial());
+
+  @override
+  Future<void> refreshProfile() async {}
+}
+
 void main() {
   testWidgets('Settings and language overlay fit narrow, large text and RTL layouts', (tester) async {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
+    final auth = _AuthBloc();
+    addTearDown(auth.close);
     final theme = _ThemeBloc();
     final locale = _LocaleBloc();
     addTearDown(theme.close);
@@ -30,6 +42,7 @@ void main() {
       for (final width in [320.0, 1440.0]) {
         tester.view.physicalSize = Size(width, 800);
         await tester.pumpWidget(MultiBlocProvider(providers: [
+          BlocProvider<AuthBloc>.value(value: auth),
           BlocProvider<ThemeBloc>.value(value: theme),
           BlocProvider<LocalizationBloc>.value(value: locale),
         ], child: MaterialApp(

@@ -1,3 +1,5 @@
+import 'package:clean_boilerplate/features/home/presentation/widgets/main_page_body.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
@@ -23,9 +25,11 @@ class EditProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = context.select<AuthBloc, UserEntity?>((bloc) => bloc.state.maybeWhen(authenticated: (user) => user, orElse: () => null));
+    final showWebAppBar = MainPageBody.showWebAppBar(context);
     return Scaffold(
-      appBar: AppBar(title: Text(context.local.editProfile)),
-      body: user == null ? const Center(child: AppLoader()) : _EditProfileForm(user: user),
+      endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
+      appBar: showWebAppBar ? null : AppBar(title: Text(context.local.editProfile)),
+      body: MainPageBody(title: context.local.editProfile, child: user == null ? const Center(child: AppLoader()) : _EditProfileForm(user: user)),
     );
   }
 }

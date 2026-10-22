@@ -1,3 +1,5 @@
+import 'package:clean_boilerplate/features/home/presentation/widgets/main_page_body.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
 import 'package:clean_boilerplate/features/membership/presentation/widgets/mess_formatters.dart';
 import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
@@ -163,16 +165,20 @@ class _NoCurrentMessState extends State<_NoCurrentMess> {
     final user = context.watch<AuthBloc>().state.maybeWhen(authenticated: (user) => user, orElse: () => null);
     final colors = context.customThemeColors;
     final location = GoRouterState.of(context).uri.path;
+    final showWebAppBar = MainPageBody.showWebAppBar(context);
 
     return Scaffold(
-      appBar: AppBar(
+      endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
+      appBar: showWebAppBar ? null : AppBar(
         leading: widget.connected ? const HomeBackButton() : null,
         title: const Text('Mess Pilot'),
         actions: [
           IconButton(onPressed: () => confirmSignOut(context), icon: const Icon(Icons.logout_rounded), tooltip: context.local.logout),
         ],
       ),
-      body: RefreshIndicator(
+      body: MainPageBody(
+        title: context.local.joinMess,
+        child: RefreshIndicator(
         onRefresh: () => context.read<MembershipCubit>().load(),
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -224,6 +230,7 @@ class _NoCurrentMessState extends State<_NoCurrentMess> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

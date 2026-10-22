@@ -1,3 +1,5 @@
+import 'package:clean_boilerplate/features/home/presentation/widgets/main_page_body.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
 import 'package:clean_boilerplate/core/widgets/app_user_avatar.dart';
 import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
@@ -60,10 +62,14 @@ class _MealEntryViewState extends State<_MealEntryView> {
 
   @override
   Widget build(BuildContext context) {
+    final showWebAppBar = MainPageBody.showWebAppBar(context);
     return Scaffold(
+      endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
       backgroundColor: context.theme.scaffoldBackgroundColor,
-      appBar: AppBar(title: Text(context.local.addMeal)),
-      body: BlocConsumer<MealAdminBloc, MealAdminState>(
+      appBar: showWebAppBar ? null : AppBar(title: Text(context.local.addMeal)),
+      body: MainPageBody(
+        title: context.local.addMeal,
+        child: BlocConsumer<MealAdminBloc, MealAdminState>(
         listener: (context, state) {
           state.maybeWhen(
             loaded: (data, _, _, _) {
@@ -92,6 +98,7 @@ class _MealEntryViewState extends State<_MealEntryView> {
             orElse: () => const Center(child: AppLoader()),
           );
         },
+      ),
       ),
     );
   }
