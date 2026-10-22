@@ -89,8 +89,13 @@ class _HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final showDesktopBar = ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context);
     return Scaffold(
       backgroundColor: context.theme.scaffoldBackgroundColor,
+      appBar: showDesktopBar ? PreferredSize(
+        preferredSize: const Size.fromHeight(DashboardTopBar.height),
+        child: Builder(builder: (context) => DashboardTopBar(active: DashboardSection.home, onProfileTap: () => Scaffold.of(context).openEndDrawer())),
+      ) : null,
       endDrawer: ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context) ? const WebProfileDrawer() : null,
       body: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
@@ -286,21 +291,8 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
   @override
   Widget build(BuildContext context) {
     final dashboard = widget.dashboard;
-    final navItems = <DashboardNavItem>[
-      DashboardNavItem(
-        label: 'Home',
-        icon: Icons.home_rounded,
-        active: true,
-        onTap: () => _scrollController.animateTo(0, duration: const Duration(milliseconds: 400), curve: Curves.easeInOutCubic),
-      ),
-      DashboardNavItem(label: 'Meals', icon: Icons.restaurant_rounded, onTap: () => context.go(AppRoutes.meals)),
-      DashboardNavItem(label: 'Deposits', icon: Icons.account_balance_wallet_rounded, onTap: () => context.go(AppRoutes.deposits)),
-      DashboardNavItem(label: 'Cost', icon: Icons.shopping_cart_rounded, onTap: () => context.go(AppRoutes.costs)),
-    ];
-
     return Column(
       children: [
-        DashboardTopBar(userName: dashboard.userName, onProfileTap: () => Scaffold.of(context).openEndDrawer(), navItems: navItems),
         Expanded(
           child: Scrollbar(
             controller: _scrollController,
