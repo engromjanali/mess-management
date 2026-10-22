@@ -70,7 +70,7 @@ class _MemberMealFormSheetState extends State<_MemberMealFormSheet> {
     for (final member in widget.members) {
       if (member.id == _memberId) return member.name;
     }
-    return 'Member';
+    return context.local.roleMember;
   }
 
   Future<void> _pickDate() async {
@@ -94,30 +94,30 @@ class _MemberMealFormSheetState extends State<_MemberMealFormSheet> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          widget.mealOnlyEdit && _isEdit ? 'Edit $_memberName meal' : _isEdit ? 'Edit meal' : 'Add meal',
+          widget.mealOnlyEdit && _isEdit ? context.local.uiEditMemberMeal(_memberName) : _isEdit ? context.local.uiEditMeal : context.local.addMeal,
           style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
         ),
         const SizedBox(height: Dimensions.paddingSizeLarge),
         if (!widget.mealOnlyEdit) ...[
-          _FieldLabel(label: 'Member'),
+          _FieldLabel(label: context.local.roleMember),
           const SizedBox(height: Dimensions.paddingSizeSmall),
           _MemberField(members: widget.members, memberId: _memberId, enabled: !_isEdit, onChanged: (id) => setState(() => _memberId = id)),
           const SizedBox(height: Dimensions.paddingSizeLarge),
-          _FieldLabel(label: 'Date'),
+          _FieldLabel(label: context.local.date),
           const SizedBox(height: Dimensions.paddingSizeSmall),
           _DateField(date: _date, enabled: !_isEdit, onTap: _pickDate),
           const SizedBox(height: Dimensions.paddingSizeLarge),
         ],
-        _StepperRow(icon: Icons.free_breakfast_rounded, label: 'Breakfast', accent: colors.warningColor, value: _breakfast, onChanged: (v) => setState(() => _breakfast = v)),
+        _StepperRow(icon: Icons.free_breakfast_rounded, label: context.local.uiBreakfast, accent: colors.warningColor, value: _breakfast, onChanged: (v) => setState(() => _breakfast = v)),
         const Divider(height: Dimensions.paddingSizeLarge),
-        _StepperRow(icon: Icons.lunch_dining_rounded, label: 'Lunch', accent: colors.primaryColor, value: _lunch, onChanged: (v) => setState(() => _lunch = v)),
+        _StepperRow(icon: Icons.lunch_dining_rounded, label: context.local.uiLunch, accent: colors.primaryColor, value: _lunch, onChanged: (v) => setState(() => _lunch = v)),
         const Divider(height: Dimensions.paddingSizeLarge),
-        _StepperRow(icon: Icons.dinner_dining_rounded, label: 'Dinner', accent: colors.infoColor, value: _dinner, onChanged: (v) => setState(() => _dinner = v)),
+        _StepperRow(icon: Icons.dinner_dining_rounded, label: context.local.uiDinner, accent: colors.infoColor, value: _dinner, onChanged: (v) => setState(() => _dinner = v)),
         const SizedBox(height: Dimensions.paddingSizeLarge),
         Row(
           children: [
             Text(
-              'Total',
+              context.local.total,
               style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textSecondaryColor),
             ),
             const Spacer(),
@@ -130,7 +130,7 @@ class _MemberMealFormSheetState extends State<_MemberMealFormSheet> {
         const SizedBox(height: Dimensions.paddingSizeLarge),
         SizedBox(
           height: 50,
-          child: ElevatedButton.icon(onPressed: _total > 0 ? _submit : null, icon: const Icon(Icons.check_rounded), label: Text(_isEdit ? 'Save changes' : 'Add meal')),
+          child: ElevatedButton.icon(onPressed: _total > 0 ? _submit : null, icon: const Icon(Icons.check_rounded), label: Text(_isEdit ? context.local.saveChanges : context.local.addMeal)),
         ),
       ],
     );
@@ -216,7 +216,7 @@ class _DateField extends StatelessWidget {
             Icon(Icons.event_rounded, size: Dimensions.iconSizeDefault, color: colors.primaryColor),
             const SizedBox(width: Dimensions.paddingSizeDefault),
             Text(
-              MealFormatters.dayLabel(date),
+              MealFormatters.dayLabel(date, locale: Localizations.localeOf(context).toLanguageTag()),
               style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
             ),
             const Spacer(),

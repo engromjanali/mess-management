@@ -70,7 +70,7 @@ class DashboardHeroBanner extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Welcome back,',
+            context.local.uiWelcomeBack,
             style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.85), fontSize: Dimensions.fontSizeDefault),
           ),
           Text(
@@ -81,13 +81,13 @@ class DashboardHeroBanner extends StatelessWidget {
           ),
           const SizedBox(height: Dimensions.paddingSizeExtraLarge),
           Text(
-            'Total balance',
+            context.local.uiTotalBalance,
             style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.78), fontSize: Dimensions.fontSizeSmall),
           ),
           const SizedBox(height: Dimensions.paddingSizeExtraSmall),
           FittedBox(
             fit: BoxFit.scaleDown,
-            alignment: Alignment.centerLeft,
+            alignment: AlignmentDirectional.centerStart,
             child: Text.rich(TextSpan(style: const TextStyle(color: Colors.white, fontSize: 36, fontWeight: FontWeight.w700, height: 1.15), children: [TextSpan(text: '৳'), TextSpan(text: DashboardFormatters.number(totalBalance), style: AppTextStyles.sfProRoundedBold)])),
           ),
         ],

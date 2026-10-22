@@ -65,7 +65,7 @@ class _HistoryRow extends StatelessWidget {
               children: [
                 Flexible(
                   child: Text(
-                    MealFormatters.dayLabel(day.date),
+                    MealFormatters.dayLabel(day.date, locale: Localizations.localeOf(context).toLanguageTag()),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
@@ -77,7 +77,7 @@ class _HistoryRow extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: 2),
                     decoration: BoxDecoration(color: colors.primaryColor.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(Dimensions.radiusSmall)),
                     child: Text(
-                      'Today',
+                      context.local.uiToday,
                       style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: colors.primaryColor),
                     ),
                   ),
@@ -91,9 +91,9 @@ class _HistoryRow extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _Mini(label: 'B', value: day.breakfast, accent: colors.warningColor),
-                _Mini(label: 'L', value: day.lunch, accent: colors.primaryColor),
-                _Mini(label: 'D', value: day.dinner, accent: colors.infoColor),
+                _Mini(label: context.local.uiB, value: day.breakfast, accent: colors.warningColor),
+                _Mini(label: context.local.uiL, value: day.lunch, accent: colors.primaryColor),
+                _Mini(label: context.local.uiD, value: day.dinner, accent: colors.infoColor),
               ],
             ),
           ),

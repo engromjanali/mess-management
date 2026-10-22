@@ -22,4 +22,16 @@ class MessFormatters {
     if (parts.isEmpty) return '?';
     return parts.take(2).map((p) => p.characters.first.toUpperCase()).join();
   }
+  static String status(BuildContext context, String status) => switch (status) {
+    'pending' => context.local.statusPending,
+    'accepted' => context.local.statusAccepted,
+    'declined' => context.local.statusDeclined,
+    'cancelled' => context.local.statusCancelled,
+    'approved' => context.local.statusApproved,
+    'rejected' => context.local.statusRejected,
+    'active' => context.local.statusActive,
+    'expired' => context.local.statusExpired,
+    'disabled' => context.local.disabled,
+    _ => context.local.uiPrevious,
+  };
 }

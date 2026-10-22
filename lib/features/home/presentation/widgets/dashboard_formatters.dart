@@ -15,5 +15,5 @@ class DashboardFormatters {
   static String number(double value) => _count.format(value);
 
   /// Notice timestamp, e.g. `9:30 AM · 01 Jun 2026`.
-  static String noticeTime(DateTime time) => _noticeDate.format(time);
+  static String noticeTime(DateTime time, {String? locale}) => DateFormat(_noticeDate.pattern, locale).format(time);
 }

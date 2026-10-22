@@ -54,7 +54,7 @@ class _MealAdminView extends StatelessWidget {
           title: context.local.manageMeals,
           icon: Icons.manage_accounts_rounded,
           showViewAll: showViewAll,
-          toolTipsLabel: 'See all members',
+          toolTipsLabel: context.local.uiSeeAllMembers,
           viewAllAction: showViewAll ? () => context.push(AppRoutes.mealList) : null,
         ),
         BlocConsumer<MealAdminBloc, MealAdminState>(
@@ -119,15 +119,15 @@ class _ManageCard extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete meal?'),
+        title: Text(context.local.uiDeleteMeal),
         content: Text(
           '${data.memberName(entry.memberId)} · '
-          '${MealFormatters.dayLabel(entry.date)}\n'
-          'This removes the recorded meal for that day.',
+          '${MealFormatters.dayLabel(entry.date, locale: Localizations.localeOf(context).toLanguageTag())}\n'
+          + context.local.uiThisRemovesTheRecordedMealForThatDay,
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: const Text('Delete')),
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: Text(context.local.cancel)),
+          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: Text(context.local.delete)),
         ],
       ),
     );
@@ -241,13 +241,13 @@ class _Filters extends StatelessWidget {
                 isExpanded: true,
                 icon: Icon(Icons.expand_more_rounded, color: colors.textHintColor),
                 hint: Text(
-                  'All members',
+                  context.local.uiAllMembers,
                   style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textSecondaryColor),
                 ),
                 items: [
                   DropdownMenuItem<String?>(
                     child: Text(
-                      'All members',
+                      context.local.uiAllMembers,
                       style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
                     ),
                   ),
@@ -284,7 +284,7 @@ class _Filters extends StatelessWidget {
                   const SizedBox(width: Dimensions.paddingSizeSmall),
                   Expanded(
                     child: Text(
-                      selectedDate == null ? 'All dates' : MealFormatters.dayLabel(selectedDate!),
+                      selectedDate == null ? context.local.uiAllDates : MealFormatters.dayLabel(selectedDate!, locale: Localizations.localeOf(context).toLanguageTag()),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: selectedDate == null ? colors.textSecondaryColor : colors.textPrimaryColor),
@@ -339,7 +339,7 @@ class _EntryRow extends StatelessWidget {
                     style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
                   ),
                 Text(
-                  MealFormatters.dayLabel(entry.date),
+                  MealFormatters.dayLabel(entry.date, locale: Localizations.localeOf(context).toLanguageTag()),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.sfProRoundedMedium.copyWith(
@@ -355,9 +355,9 @@ class _EntryRow extends StatelessWidget {
             child: Wrap(
               alignment: WrapAlignment.center,
               children: [
-                _Mini(label: 'B', value: entry.breakfast, accent: colors.warningColor),
-                _Mini(label: 'L', value: entry.lunch, accent: colors.primaryColor),
-                _Mini(label: 'D', value: entry.dinner, accent: colors.infoColor),
+                _Mini(label: context.local.uiB, value: entry.breakfast, accent: colors.warningColor),
+                _Mini(label: context.local.uiL, value: entry.lunch, accent: colors.primaryColor),
+                _Mini(label: context.local.uiD, value: entry.dinner, accent: colors.infoColor),
               ],
             ),
           ),
@@ -380,7 +380,7 @@ class _EntryRow extends StatelessWidget {
           // Edit / delete actions.
           if (showActionMenu)
             PopupMenuButton<_MealAction>(
-              tooltip: 'Options',
+              tooltip: context.local.options,
               enabled: onEdit != null,
               icon: Icon(Icons.more_vert_rounded, color: colors.textSecondaryColor),
               onSelected: (action) {
@@ -391,26 +391,26 @@ class _EntryRow extends StatelessWidget {
                     onDelete?.call();
                 }
               },
-              itemBuilder: (context) => const [
+              itemBuilder: (context) => [
                 PopupMenuItem(
                   value: _MealAction.edit,
-                  child: ListTile(dense: true, contentPadding: EdgeInsets.zero, leading: Icon(Icons.edit_rounded), title: Text('Edit')),
+                  child: ListTile(dense: true, contentPadding: EdgeInsets.zero, leading: Icon(Icons.edit_rounded), title: Text(context.local.edit)),
                 ),
                 PopupMenuItem(
                   value: _MealAction.delete,
-                  child: ListTile(dense: true, contentPadding: EdgeInsets.zero, leading: Icon(Icons.delete_outline_rounded), title: Text('Delete')),
+                  child: ListTile(dense: true, contentPadding: EdgeInsets.zero, leading: Icon(Icons.delete_outline_rounded), title: Text(context.local.delete)),
                 ),
               ],
             )
           else ...[
             IconButton(
-              tooltip: 'Edit',
+              tooltip: context.local.edit,
               visualDensity: VisualDensity.compact,
               onPressed: onEdit,
               icon: Icon(Icons.edit_rounded, size: Dimensions.iconSizeDefault, color: onEdit == null ? colors.textHintColor : colors.primaryColor),
             ),
             IconButton(
-              tooltip: 'Delete',
+              tooltip: context.local.delete,
               visualDensity: VisualDensity.compact,
               onPressed: onDelete,
               icon: Icon(Icons.delete_outline_rounded, size: Dimensions.iconSizeDefault, color: onDelete == null ? colors.textHintColor : colors.errorColor),

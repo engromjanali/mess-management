@@ -67,8 +67,8 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
         children: [
           // Full name
           CommonLabeledInputItemWidget(
-            label: 'Full Name',
-            hintText: 'Enter your full name',
+            label: context.local.fullName,
+            hintText: context.local.uiEnterYourFullName,
             controller: widget.nameController,
             keyboardType: TextInputType.name,
             focusNode: _nameFocus,
@@ -99,8 +99,8 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
 
           // Phone with country code
           CommonLabeledInputItemWidget(
-            label: 'Phone',
-            hintText: 'Phone number',
+            label: context.local.supportChannelPhone,
+            hintText: context.local.phoneNumber,
             controller: widget.phoneController,
             keyboardType: TextInputType.phone,
             focusNode: _phoneFocus,
@@ -142,7 +142,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                       width: Dimensions.iconSizeDefault,
                       child: CircularProgressIndicator(strokeWidth: 2.4, color: Colors.white),
                     )
-                  : Text('Create account', style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
+                  : Text(context.local.uiCreateAccount, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
             ),
           ),
         ],

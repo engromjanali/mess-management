@@ -46,13 +46,13 @@ class FundFilterBar extends StatelessWidget {
       children: [
         _SelectChip(label: context.local.allTime, selected: dateFilter == FundDateFilter.allTime, onTap: () => _bloc(context).add(const FundEvent.changeDateFilter(FundDateFilter.allTime))),
         _SelectChip(
-          label: dateFilter == FundDateFilter.day ? FundFormatters.shortDate(selectedDate) : context.local.day,
+          label: dateFilter == FundDateFilter.day ? FundFormatters.shortDate(selectedDate, locale: Localizations.localeOf(context).toLanguageTag()) : context.local.day,
           icon: Icons.event_rounded,
           selected: dateFilter == FundDateFilter.day,
           onTap: () => _pickDay(context),
         ),
         _SelectChip(
-          label: dateFilter == FundDateFilter.range && selectedRange != null ? FundFormatters.rangeLabel(selectedRange!.start, selectedRange!.end) : context.local.range,
+          label: dateFilter == FundDateFilter.range && selectedRange != null ? FundFormatters.rangeLabel(selectedRange!.start, selectedRange!.end, locale: Localizations.localeOf(context).toLanguageTag()) : context.local.range,
           icon: Icons.date_range_rounded,
           selected: dateFilter == FundDateFilter.range,
           onTap: () => _pickRange(context),

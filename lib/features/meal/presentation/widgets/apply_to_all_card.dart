@@ -61,11 +61,11 @@ class _ApplyToAllCardState extends State<ApplyToAllCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Set meal for everyone',
+                      context.local.uiSetMealForEveryone,
                       style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
                     ),
                     Text(
-                      widget.dateLabel == null ? 'Save one grouped meal entry for all ${widget.memberCount} members' : 'Save one grouped meal entry for ${widget.dateLabel}',
+                      widget.dateLabel == null ? context.local.uiGroupMealMembers(widget.memberCount) : context.local.uiGroupMealDate(widget.dateLabel ?? ''),
                       style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
                     ),
                   ],
@@ -74,11 +74,11 @@ class _ApplyToAllCardState extends State<ApplyToAllCard> {
             ],
           ),
           const SizedBox(height: Dimensions.paddingSizeLarge),
-          _StepRow(icon: Icons.free_breakfast_rounded, label: 'Breakfast', accent: colors.warningColor, value: widget.breakfast, onChanged: (v) => widget.onChanged(v, widget.lunch, widget.dinner)),
+          _StepRow(icon: Icons.free_breakfast_rounded, label: context.local.uiBreakfast, accent: colors.warningColor, value: widget.breakfast, onChanged: (v) => widget.onChanged(v, widget.lunch, widget.dinner)),
           const SizedBox(height: Dimensions.paddingSizeSmall),
-          _StepRow(icon: Icons.lunch_dining_rounded, label: 'Lunch', accent: colors.primaryColor, value: widget.lunch, onChanged: (v) => widget.onChanged(widget.breakfast, v, widget.dinner)),
+          _StepRow(icon: Icons.lunch_dining_rounded, label: context.local.uiLunch, accent: colors.primaryColor, value: widget.lunch, onChanged: (v) => widget.onChanged(widget.breakfast, v, widget.dinner)),
           const SizedBox(height: Dimensions.paddingSizeSmall),
-          _StepRow(icon: Icons.dinner_dining_rounded, label: 'Dinner', accent: colors.infoColor, value: widget.dinner, onChanged: (v) => widget.onChanged(widget.breakfast, widget.lunch, v)),
+          _StepRow(icon: Icons.dinner_dining_rounded, label: context.local.uiDinner, accent: colors.infoColor, value: widget.dinner, onChanged: (v) => widget.onChanged(widget.breakfast, widget.lunch, v)),
           const SizedBox(height: Dimensions.paddingSizeLarge),
           SizedBox(
             width: double.infinity,
@@ -87,7 +87,7 @@ class _ApplyToAllCardState extends State<ApplyToAllCard> {
               onPressed: _total == 0 ? null : widget.onApplyToAll,
               style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge))),
               icon: const Icon(Icons.done_all_rounded),
-              label: Text('Apply to all', style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
+              label: Text(context.local.uiApplyToAll, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
             ),
           ),
         ],

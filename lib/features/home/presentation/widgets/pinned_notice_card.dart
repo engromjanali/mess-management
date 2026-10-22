@@ -38,7 +38,7 @@ class PinnedNoticeCard extends StatelessWidget {
               Icon(Icons.push_pin_rounded, size: Dimensions.iconSizeSmall, color: colors.primaryColor),
               const SizedBox(width: Dimensions.paddingSizeSmall),
               Text(
-                'Pinned notice',
+                context.local.uiPinnedNotice,
                 style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.primaryColor),
               ),
               const Spacer(),
@@ -52,7 +52,7 @@ class PinnedNoticeCard extends StatelessWidget {
           const SizedBox(height: Dimensions.paddingSizeDefault),
           if (notice == null)
             Text(
-              'No notice pinned right now.',
+              context.local.uiNoNoticePinnedRightNow,
               style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textSecondaryColor),
             )
           else ...[
@@ -75,7 +75,7 @@ class PinnedNoticeCard extends StatelessWidget {
                 Icon(Icons.schedule_rounded, size: Dimensions.fontSizeDefault, color: colors.textHintColor),
                 const SizedBox(width: Dimensions.paddingSizeExtraSmall),
                 Text(
-                  DashboardFormatters.noticeTime(notice!.createdAt),
+                  DashboardFormatters.noticeTime(notice!.createdAt, locale: Localizations.localeOf(context).toLanguageTag()),
                   style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textHintColor),
                 ),
               ],

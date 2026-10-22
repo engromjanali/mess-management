@@ -193,7 +193,7 @@ class _MealBody extends StatelessWidget {
     final c = context.customThemeColors;
     return [
       _Stat('My Meals', MealFormatters.count(overview.totalMeals), Icons.restaurant_menu_rounded, c.primaryColor),
-      _Stat('Meal Rate', DashboardFormatters.taka(overview.mealRate), Icons.sell_rounded, c.secondaryColor),
+      _Stat(context.local.mealRate, DashboardFormatters.taka(overview.mealRate), Icons.sell_rounded, c.secondaryColor),
       _Stat('My Cost', DashboardFormatters.taka(overview.mealCost), Icons.account_balance_wallet_rounded, c.infoColor),
       _Stat('Avg / Day', overview.averagePerDay.toStringAsFixed(1), Icons.trending_up_rounded, c.successColor),
     ];
@@ -245,7 +245,7 @@ class _MealBody extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            const SectionTitle(title: 'Today', icon: Icons.today_rounded),
+                            SectionTitle(title: context.local.uiToday, icon: Icons.today_rounded),
                             todayCard(),
                             const SizedBox(height: Dimensions.paddingSizeLarge),
                             weekChart(),
@@ -258,7 +258,7 @@ class _MealBody extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            const SectionTitle(title: 'History', icon: Icons.history_rounded),
+                            SectionTitle(title: context.local.uiHistory, icon: Icons.history_rounded),
                             history(),
                           ],
                         ),
@@ -266,11 +266,11 @@ class _MealBody extends StatelessWidget {
                     ],
                   )
                 else ...[
-                  const SectionTitle(title: 'Today', icon: Icons.today_rounded),
+                  SectionTitle(title: context.local.uiToday, icon: Icons.today_rounded),
                   todayCard(),
                   const SizedBox(height: Dimensions.paddingSizeLarge),
                   weekChart(),
-                  const SectionTitle(title: 'History', icon: Icons.history_rounded),
+                  SectionTitle(title: context.local.uiHistory, icon: Icons.history_rounded),
                   history(),
                 ],
                 SizedBox(height: context.bottomPadding),

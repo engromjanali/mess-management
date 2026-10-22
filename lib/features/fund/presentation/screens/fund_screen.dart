@@ -151,7 +151,7 @@ class _FundBody extends StatelessWidget {
           context.local.deleteFundConfirm(
             (fund.isCredit ? context.local.credit : context.local.debit).toLowerCase(),
             FundFormatters.taka(fund.absoluteAmount),
-            FundFormatters.date(fund.date),
+            FundFormatters.date(fund.date, locale: Localizations.localeOf(context).toLanguageTag()),
           ),
         ),
         actions: [
@@ -213,10 +213,10 @@ class _FundBody extends StatelessWidget {
       case FundDateFilter.allTime:
         return context.local.allFunds;
       case FundDateFilter.day:
-        return context.local.fundsInPeriod(FundFormatters.shortDate(selectedDate));
+        return context.local.fundsInPeriod(FundFormatters.shortDate(selectedDate, locale: Localizations.localeOf(context).toLanguageTag()));
       case FundDateFilter.range:
         final r = selectedRange;
-        return r == null ? context.local.allFunds : context.local.fundsInPeriod(FundFormatters.rangeLabel(r.start, r.end));
+        return r == null ? context.local.allFunds : context.local.fundsInPeriod(FundFormatters.rangeLabel(r.start, r.end, locale: Localizations.localeOf(context).toLanguageTag()));
     }
   }
 }

@@ -27,8 +27,8 @@ class DepositTile extends StatelessWidget {
     final isCredit = deposit.isCredit;
     final accent = isCredit ? colors.successColor : colors.errorColor;
 
-    final title = showMember ? deposit.memberName : DepositFormatters.date(deposit.date);
-    final subtitle = showMember ? DepositFormatters.date(deposit.date) : (deposit.note?.isNotEmpty ?? false ? deposit.note! : null);
+    final title = showMember ? deposit.memberName : DepositFormatters.date(deposit.date, locale: Localizations.localeOf(context).toLanguageTag());
+    final subtitle = showMember ? DepositFormatters.date(deposit.date, locale: Localizations.localeOf(context).toLanguageTag()) : (deposit.note?.isNotEmpty ?? false ? deposit.note! : null);
 
     return Container(
       padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
@@ -64,7 +64,7 @@ class DepositTile extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: Dimensions.paddingSizeSmall),
-                    _StatusBadge(label: deposit.type.label, accent: accent),
+                    _StatusBadge(label: deposit.isCredit ? context.local.credit : context.local.debit, accent: accent),
                   ],
                 ),
                 if (subtitle != null) ...[
@@ -88,13 +88,13 @@ class DepositTile extends StatelessWidget {
           if (showActions) ...[
             const SizedBox(width: Dimensions.paddingSizeExtraSmall),
             IconButton(
-              tooltip: 'Edit',
+              tooltip: context.local.edit,
               visualDensity: VisualDensity.compact,
               icon: Icon(Icons.edit_rounded, size: Dimensions.iconSizeDefault, color: colors.infoColor),
               onPressed: onEdit,
             ),
             IconButton(
-              tooltip: 'Delete',
+              tooltip: context.local.delete,
               visualDensity: VisualDensity.compact,
               icon: Icon(Icons.delete_outline_rounded, size: Dimensions.iconSizeDefault, color: colors.errorColor),
               onPressed: onDelete,

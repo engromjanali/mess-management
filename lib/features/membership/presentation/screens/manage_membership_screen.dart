@@ -600,15 +600,15 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                     )
                   else if (_section == _ManagementSection.messInvitations) ...[
                     _ManagePanel(
-                    title: 'Invite a member',
+                    title: context.local.uiInviteAMember,
                     icon: Icons.person_add_alt_1_rounded,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         LayoutBuilder(
                           builder: (context, constraints) {
-                            final field = TextField(controller: _emailController, focusNode: _memberFocusNode, keyboardType: TextInputType.emailAddress, onSubmitted: (_) => _findMember(), decoration: InputDecoration(labelText: 'Member email or phone', hintText: 'Enter exact account details', prefixIcon: _isPhoneQuery ? Padding(padding: const EdgeInsets.only(left: Dimensions.paddingSizeSmall), child: CodePickerWidget(onChanged: (code) => _dialCode = code.dialCode ?? _dialCode, initialSelection: _dialCode, favorite: [_dialCode], showDropDownButton: true, showFlagMain: true, dialogBackgroundColor: context.theme.scaffoldBackgroundColor)) : null));
-                            final button = FilledButton.icon(onPressed: _findingMember ? null : _findMember, icon: _findingMember ? const SizedBox(width: Dimensions.iconSizeSmall, height: Dimensions.iconSizeSmall, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.search_rounded), label: const Text('Find member'));
+                            final field = TextField(controller: _emailController, focusNode: _memberFocusNode, keyboardType: TextInputType.emailAddress, onSubmitted: (_) => _findMember(), decoration: InputDecoration(labelText: context.local.uiMemberEmailOrPhone, hintText: context.local.uiEnterExactAccountDetails, prefixIcon: _isPhoneQuery ? Padding(padding: const EdgeInsets.only(left: Dimensions.paddingSizeSmall), child: CodePickerWidget(onChanged: (code) => _dialCode = code.dialCode ?? _dialCode, initialSelection: _dialCode, favorite: [_dialCode], showDropDownButton: true, showFlagMain: true, dialogBackgroundColor: context.theme.scaffoldBackgroundColor)) : null));
+                            final button = FilledButton.icon(onPressed: _findingMember ? null : _findMember, icon: _findingMember ? const SizedBox(width: Dimensions.iconSizeSmall, height: Dimensions.iconSizeSmall, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.search_rounded), label: Text(context.local.uiFindMember));
                             if (constraints.maxWidth >= 560) return Row(children: [Expanded(child: field), const SizedBox(width: Dimensions.paddingSizeDefault), button]);
                             return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [field, const SizedBox(height: Dimensions.paddingSizeDefault), button]);
                           },
@@ -631,19 +631,19 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                     ),
                     const SizedBox(height: Dimensions.spaceLarge),
                     _ManagePanel(
-                    title: 'Invitation list',
+                    title: context.local.uiInvitationList,
                     icon: Icons.mail_outline_rounded,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         LayoutBuilder(
                           builder: (context, constraints) {
-                            final search = TextField(controller: _searchController, decoration: const InputDecoration(prefixIcon: Icon(Icons.search_rounded), labelText: 'Search invitations'));
+                            final search = TextField(controller: _searchController, decoration: InputDecoration(prefixIcon: Icon(Icons.search_rounded), labelText: context.local.uiSearchInvitations));
                             final status = _filterField(_ManagementSection.messInvitations);
                             final sort = DropdownButtonFormField<String>(
                               initialValue: _sort,
-                              decoration: const InputDecoration(labelText: 'Sort by'),
-                              items: const [DropdownMenuItem(value: 'newest', child: Text('Newest')), DropdownMenuItem(value: 'oldest', child: Text('Oldest')), DropdownMenuItem(value: 'name', child: Text('Name'))],
+                              decoration: InputDecoration(labelText: context.local.uiSortBy),
+                              items: [DropdownMenuItem(value: 'newest', child: Text(context.local.uiNewest)), DropdownMenuItem(value: 'oldest', child: Text(context.local.uiOldest)), DropdownMenuItem(value: 'name', child: Text(context.local.uiName))],
                               onChanged: (value) => setState(() => _sort = value ?? 'newest'),
                             );
                             if (constraints.maxWidth >= 680) return Row(children: [Expanded(flex: 2, child: search), const SizedBox(width: Dimensions.paddingSizeDefault), Expanded(child: status), const SizedBox(width: Dimensions.paddingSizeDefault), Expanded(child: sort)]);
@@ -709,7 +709,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                     )
                   else
                     _ManagePanel(
-                      title: 'Existing members',
+                      title: context.local.uiExistingMembers,
                       icon: Icons.groups_rounded,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,

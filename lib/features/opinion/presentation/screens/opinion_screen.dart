@@ -218,7 +218,7 @@ class _OpinionScreenState extends State<OpinionScreen> {
     ));
     final content = isAdmin && !_loading
         ? Column(children: [
-            Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth), child: Padding(padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, 0), child: SegmentedTabBar<_OpinionPageTab>(tabs: const [PillTab(value: _OpinionPageTab.opinions, label: 'Opinions'), PillTab(value: _OpinionPageTab.create, label: 'Create')], selected: _tab, onChanged: (value) => context.go(value == _OpinionPageTab.create ? AppRoutes.createOpinionPeriod : AppRoutes.opinions))))),
+            Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth), child: Padding(padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, 0), child: SegmentedTabBar<_OpinionPageTab>(tabs: [PillTab(value: _OpinionPageTab.opinions, label: context.local.opinionMessages), PillTab(value: _OpinionPageTab.create, label: context.local.create)], selected: _tab, onChanged: (value) => context.go(value == _OpinionPageTab.create ? AppRoutes.createOpinionPeriod : AppRoutes.opinions))))),
             Expanded(child: _tab == _OpinionPageTab.opinions ? opinionContent : OpinionPeriodFormScreen(embedded: true, onSubmitted: _createPeriodResult)),
           ])
         : opinionContent;
@@ -230,7 +230,7 @@ class _OpinionScreenState extends State<OpinionScreen> {
       backgroundColor: context.theme.scaffoldBackgroundColor,
       endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
       appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.shareYourOpinions), actions: [IconButton(tooltip: context.local.refresh, onPressed: _busy || _refreshing ? null : () => _load(), icon: const Icon(Icons.refresh_rounded))]),
-      floatingActionButton: isAdmin && _canCreate && _tab == _OpinionPageTab.opinions ? FloatingActionButton.extended(onPressed: _busy || _refreshing ? null : () => context.go(AppRoutes.createOpinionPeriod), icon: const Icon(Icons.add_rounded), label: const Text('Open period')) : null,
+      floatingActionButton: isAdmin && _canCreate && _tab == _OpinionPageTab.opinions ? FloatingActionButton.extended(onPressed: _busy || _refreshing ? null : () => context.go(AppRoutes.createOpinionPeriod), icon: const Icon(Icons.add_rounded), label: Text(context.local.uiOpenPeriod)) : null,
       body: showWebAppBar
           ? Builder(
               builder: (context) => Column(
@@ -326,12 +326,12 @@ class _OpinionPeriodFormScreenState extends State<OpinionPeriodFormScreen> {
             Container(
               padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
               decoration: BoxDecoration(color: colors.primaryColor.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(Dimensions.radiusLarge)),
-              child: Row(children: [Icon(Icons.forum_rounded, color: colors.primaryColor), const SizedBox(width: Dimensions.paddingSizeDefault), Expanded(child: Text('Create a period where members can share their opinions.', style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textPrimaryColor, height: 1.4)))]),
+              child: Row(children: [Icon(Icons.forum_rounded, color: colors.primaryColor), const SizedBox(width: Dimensions.paddingSizeDefault), Expanded(child: Text(context.local.uiCreateAPeriodWhereMembersCanShareTheirOpinions, style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textPrimaryColor, height: 1.4)))]),
             ),
             const SizedBox(height: Dimensions.paddingSizeLarge),
-            TextFormField(controller: _titleController, maxLength: 120, textInputAction: TextInputAction.next, decoration: const InputDecoration(labelText: 'Title', prefixIcon: Icon(Icons.title_rounded)), validator: (value) => value == null || value.trim().isEmpty ? 'Title is required' : null),
+            TextFormField(controller: _titleController, maxLength: 120, textInputAction: TextInputAction.next, decoration: InputDecoration(labelText: context.local.noticeTitle, prefixIcon: Icon(Icons.title_rounded)), validator: (value) => value == null || value.trim().isEmpty ? context.local.uiTitleIsRequired : null),
             const SizedBox(height: Dimensions.paddingSizeSmall),
-            TextFormField(controller: _detailsController, maxLength: 1000, minLines: 4, maxLines: 7, decoration: const InputDecoration(labelText: 'Details', alignLabelWithHint: true, prefixIcon: Icon(Icons.notes_rounded)), validator: (value) => value == null || value.trim().isEmpty ? 'Details are required' : null),
+            TextFormField(controller: _detailsController, maxLength: 1000, minLines: 4, maxLines: 7, decoration: InputDecoration(labelText: context.local.uiDetails, alignLabelWithHint: true, prefixIcon: Icon(Icons.notes_rounded)), validator: (value) => value == null || value.trim().isEmpty ? context.local.uiDetailsAreRequired : null),
             const SizedBox(height: Dimensions.paddingSizeSmall),
               DropdownButtonFormField<OpinionVisibility>(
                 initialValue: _visibility,
@@ -344,22 +344,22 @@ class _OpinionPeriodFormScreenState extends State<OpinionPeriodFormScreen> {
                 onChanged: (value) { if (value != null) setState(() => _visibility = value); },
               ),
               const SizedBox(height: Dimensions.paddingSizeLarge),
-              Text('Allowed identity', style: AppTextStyles.sfProRoundedBold.copyWith(color: colors.textPrimaryColor)),
+              Text(context.local.uiAllowedIdentity, style: AppTextStyles.sfProRoundedBold.copyWith(color: colors.textPrimaryColor)),
               const SizedBox(height: Dimensions.paddingSizeSmall),
-              _SubmissionModeCheckTile(title: 'Name hidden', subtitle: 'Members submit anonymously', value: OpinionSubmissionMode.anonymousOnly, selected: _submissionMode, onChanged: (value) => setState(() => _submissionMode = value)),
-              _SubmissionModeCheckTile(title: 'Name revealed', subtitle: 'Every opinion shows the member identity', value: OpinionSubmissionMode.namedOnly, selected: _submissionMode, onChanged: (value) => setState(() => _submissionMode = value)),
-              _SubmissionModeCheckTile(title: 'All', subtitle: 'Members choose anonymous or named', value: OpinionSubmissionMode.all, selected: _submissionMode, onChanged: (value) => setState(() => _submissionMode = value)),
+              _SubmissionModeCheckTile(title: context.local.uiNameHidden, subtitle: context.local.uiMembersSubmitAnonymously, value: OpinionSubmissionMode.anonymousOnly, selected: _submissionMode, onChanged: (value) => setState(() => _submissionMode = value)),
+              _SubmissionModeCheckTile(title: context.local.uiNameRevealed, subtitle: context.local.uiEveryOpinionShowsTheMemberIdentity, value: OpinionSubmissionMode.namedOnly, selected: _submissionMode, onChanged: (value) => setState(() => _submissionMode = value)),
+              _SubmissionModeCheckTile(title: context.local.filterAll, subtitle: context.local.uiMembersChooseAnonymousOrNamed, value: OpinionSubmissionMode.all, selected: _submissionMode, onChanged: (value) => setState(() => _submissionMode = value)),
               const SizedBox(height: Dimensions.paddingSizeLarge),
               LayoutBuilder(builder: (context, constraints) {
                 final dateButtons = [
-                  _DateButton(label: 'Start date', date: _startDate, onTap: _selectStartDate),
-                  _DateButton(label: 'End date', date: _endDate, onTap: _selectEndDate),
+                  _DateButton(label: context.local.seasonStartDate, date: _startDate, onTap: _selectStartDate),
+                  _DateButton(label: context.local.seasonEndDate, date: _endDate, onTap: _selectEndDate),
                 ];
                 if (constraints.maxWidth < 520) return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [dateButtons.first, const SizedBox(height: Dimensions.paddingSizeSmall), dateButtons.last]);
                 return Row(children: [Expanded(child: dateButtons.first), const SizedBox(width: Dimensions.paddingSizeDefault), Expanded(child: dateButtons.last)]);
               }),
             const SizedBox(height: Dimensions.paddingSizeExtraLarge),
-            FilledButton.icon(onPressed: _submitting ? null : _submit, icon: const Icon(Icons.add_circle_outline_rounded), label: const Text('Open period')),
+            FilledButton.icon(onPressed: _submitting ? null : _submit, icon: const Icon(Icons.add_circle_outline_rounded), label: Text(context.local.uiOpenPeriod)),
             const SizedBox(height: Dimensions.paddingSizeExtraLarge32),
           ]),
         ),
@@ -370,11 +370,11 @@ class _OpinionPeriodFormScreenState extends State<OpinionPeriodFormScreen> {
 
     return Scaffold(
       endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
-      appBar: showWebAppBar ? null : AppBar(leading: const BackButton(), title: const Text('Open opinion period')),
+      appBar: showWebAppBar ? null : AppBar(leading: const BackButton(), title: Text(context.local.uiOpenOpinionPeriod)),
       body: showWebAppBar
           ? Builder(builder: (context) => Column(children: [
               const MainTopBar(),
-              const WebPageTitleBar(title: 'Open opinion period'),
+              WebPageTitleBar(title: context.local.uiOpenOpinionPeriod),
               Expanded(child: SingleChildScrollView(child: Column(children: [Padding(padding: const EdgeInsets.all(Dimensions.paddingSizeLarge), child: form), const AppFooter()]))),
             ]))
           : SafeArea(child: SingleChildScrollView(padding: const EdgeInsets.all(Dimensions.paddingSizeLarge), child: form)),
@@ -538,7 +538,7 @@ class _PeriodCard extends StatelessWidget {
     final colors = context.customThemeColors;
     final active = period.isActiveAt(DateTime.now());
     final inDateRange = period.isWithinDateRangeAt(DateTime.now());
-    final status = !inDateRange ? 'Closed' : period.acceptingMessages ? 'Open' : 'Paused';
+    final status = !inDateRange ? context.local.uiClosed : period.acceptingMessages ? context.local.uiOpen : context.local.uiPaused;
     final opinionColors = [colors.primaryColor, colors.infoColor];
     final managerButtonStyle = OutlinedButton.styleFrom(minimumSize: const Size(0, 36), padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall), iconSize: 18);
 
@@ -561,16 +561,16 @@ class _PeriodCard extends StatelessWidget {
           const SizedBox(height: Dimensions.paddingSizeSmall),
           Text(period.seasonName, style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.primaryColor)),
           const SizedBox(height: Dimensions.paddingSizeSmall),
-          Text('${_date(period.startDate)} – ${_date(period.endDate)}  •  Period ID: ${period.id}', style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textHintColor)),
+          Text(context.local.uiPeriodDates(_date(period.startDate), _date(period.endDate), period.id), style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textHintColor)),
           if (isAdmin) ...[
             const SizedBox(height: Dimensions.paddingSizeDefault),
             Wrap(
               spacing: Dimensions.paddingSizeSmall,
               runSpacing: Dimensions.paddingSizeSmall,
               children: [
-                OutlinedButton.icon(style: managerButtonStyle, onPressed: busy ? null : onToggleSending, icon: Icon(period.acceptingMessages ? Icons.pause_rounded : Icons.play_arrow_rounded), label: Text(period.acceptingMessages ? 'Pause messages' : 'Enable messages')),
-                OutlinedButton.icon(style: managerButtonStyle, onPressed: busy ? null : onToggleNamedOpinions, icon: Icon(period.submissionMode == OpinionSubmissionMode.anonymousOnly ? Icons.visibility_off_outlined : period.submissionMode == OpinionSubmissionMode.namedOnly ? Icons.person_rounded : Icons.people_alt_outlined), label: Text(period.submissionMode == OpinionSubmissionMode.anonymousOnly ? 'Name hidden' : period.submissionMode == OpinionSubmissionMode.namedOnly ? 'Name revealed' : 'All identity modes')),
-                OutlinedButton.icon(style: managerButtonStyle, onPressed: busy ? null : onChangeEndDate, icon: const Icon(Icons.event_rounded), label: const Text('Change end date')),
+                OutlinedButton.icon(style: managerButtonStyle, onPressed: busy ? null : onToggleSending, icon: Icon(period.acceptingMessages ? Icons.pause_rounded : Icons.play_arrow_rounded), label: Text(period.acceptingMessages ? context.local.uiPauseMessages : context.local.uiEnableMessages)),
+                OutlinedButton.icon(style: managerButtonStyle, onPressed: busy ? null : onToggleNamedOpinions, icon: Icon(period.submissionMode == OpinionSubmissionMode.anonymousOnly ? Icons.visibility_off_outlined : period.submissionMode == OpinionSubmissionMode.namedOnly ? Icons.person_rounded : Icons.people_alt_outlined), label: Text(period.submissionMode == OpinionSubmissionMode.anonymousOnly ? context.local.uiNameHidden : period.submissionMode == OpinionSubmissionMode.namedOnly ? context.local.uiNameRevealed : context.local.uiAllIdentityModes)),
+                OutlinedButton.icon(style: managerButtonStyle, onPressed: busy ? null : onChangeEndDate, icon: const Icon(Icons.event_rounded), label: Text(context.local.uiChangeEndDate)),
                 OutlinedButton.icon(style: managerButtonStyle, onPressed: busy ? null : onPublish, icon: Icon(period.visibility == OpinionVisibility.realtime ? Icons.public_rounded : Icons.lock_outline_rounded), label: Text(period.visibility == OpinionVisibility.realtime ? context.local.opinionPublic : context.local.opinionPrivate)),
               ],
             ),
@@ -584,7 +584,7 @@ class _PeriodCard extends StatelessWidget {
                 if (period.submissionMode == OpinionSubmissionMode.all)
                   SwitchListTile.adaptive(value: !submitAnonymously, onChanged: busy ? null : (shareName) => onSubmissionTypeChanged(!shareName), contentPadding: EdgeInsets.zero, secondary: Icon(submitAnonymously ? Icons.visibility_off_outlined : Icons.person_outline_rounded), title: Text(submitAnonymously ? context.local.opinionAnonymous : context.local.opinionNamed), subtitle: Text(submitAnonymously ? context.local.opinionAnonymousHint : context.local.opinionNamedHint, maxLines: 2, overflow: TextOverflow.ellipsis))
                 else
-                  Row(children: [Icon(period.submissionMode == OpinionSubmissionMode.namedOnly ? Icons.person_outline_rounded : Icons.visibility_off_outlined, size: Dimensions.iconSizeSmall), const SizedBox(width: Dimensions.paddingSizeSmall), Expanded(child: Text(period.submissionMode == OpinionSubmissionMode.namedOnly ? 'Your name will be revealed' : context.local.opinionAnonymousOnly, maxLines: 1, overflow: TextOverflow.ellipsis))]),
+                  Row(children: [Icon(period.submissionMode == OpinionSubmissionMode.namedOnly ? Icons.person_outline_rounded : Icons.visibility_off_outlined, size: Dimensions.iconSizeSmall), const SizedBox(width: Dimensions.paddingSizeSmall), Expanded(child: Text(period.submissionMode == OpinionSubmissionMode.namedOnly ? context.local.uiYourNameWillBeRevealed : context.local.opinionAnonymousOnly, maxLines: 1, overflow: TextOverflow.ellipsis))]),
                 const SizedBox(height: Dimensions.paddingSizeDefault),
                 TextField(controller: messageController, enabled: !busy, maxLength: 2000, minLines: 3, maxLines: 6, decoration: InputDecoration(labelText: context.local.opinionMessageHint, hintText: period.submissionMode == OpinionSubmissionMode.anonymousOnly || period.submissionMode == OpinionSubmissionMode.all && submitAnonymously ? context.local.opinionAnonymousHint : context.local.opinionNamedHint, alignLabelWithHint: true)),
                 Align(alignment: Alignment.centerRight, child: FilledButton.icon(onPressed: busy ? null : onSubmit, icon: const Icon(Icons.send_rounded), label: Text(context.local.submitOpinion))),
@@ -599,7 +599,7 @@ class _PeriodCard extends StatelessWidget {
             Text('${context.local.opinionMessages} (${isAdmin || period.visibility == OpinionVisibility.realtime ? period.opinionCount : opinions.length})', style: AppTextStyles.sfProRoundedBold.copyWith(color: colors.textPrimaryColor)),
             const SizedBox(height: Dimensions.paddingSizeSmall),
             if (opinions.isEmpty)
-              Text('No messages submitted in this period.', style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
+              Text(context.local.uiNoMessagesSubmittedInThisPeriod, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
             else
               for (final (index, opinion) in opinions.indexed)
                 _OpinionCard(opinion: opinion, accentColor: opinionColors[index % opinionColors.length]),
@@ -665,7 +665,7 @@ class _DateButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton.icon(onPressed: onTap, icon: const Icon(Icons.calendar_month_rounded), label: Text('$label: ${date.day}/${date.month}/${date.year}'));
+    return OutlinedButton.icon(onPressed: onTap, icon: const Icon(Icons.calendar_month_rounded), label: Text('$label: ${MaterialLocalizations.of(context).formatMediumDate(date)}'));
   }
 }
 

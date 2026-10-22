@@ -32,7 +32,7 @@ class MealWeekChart extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'This week',
+            context.local.uiThisWeek,
             style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
           ),
           const SizedBox(height: Dimensions.paddingSizeLarge),
@@ -46,7 +46,7 @@ class MealWeekChart extends StatelessWidget {
                     child: _Bar(
                       heightFactor: day.total / denominator,
                       value: day.total,
-                      label: MealFormatters.weekdayInitial(day.date),
+                      label: MealFormatters.weekdayInitial(day.date, locale: Localizations.localeOf(context).toLanguageTag()),
                       isToday: day.date.year == now.year && day.date.month == now.month && day.date.day == now.day,
                     ),
                   ),

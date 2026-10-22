@@ -60,15 +60,15 @@ class _MessLeadershipScreenState extends State<MessLeadershipScreen> {
     final membershipId = int.tryParse(_selectedUserId ?? '');
     if (membershipId == null || _saving) return;
     final member = _members.where((item) => item['membership_id'] == membershipId).firstOrNull;
-    final roleName = _role == 'manager' ? 'manager' : 'acting manager';
+    final roleName = _role == 'manager' ? context.local.roleManager : context.local.roleActingManager;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text(_role == 'manager' ? 'Transfer manager role?' : 'Assign acting manager?'),
-        content: Text('${member?['name'] ?? 'This member'} will become the $roleName. ${_role == 'manager' ? 'You will no longer be the primary manager.' : ''}'),
+        title: Text(_role == 'manager' ? context.local.uiTransferManagerRole : context.local.uiAssignActingManager),
+        content: Text('${context.local.uiLeadershipConfirm(member?['name'] ?? context.local.uiThisMember, roleName)} ${_role == 'manager' ? context.local.uiYouWillNoLongerBeThePrimaryManager : ''}'),
         actions: [
-          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: const Text('Confirm')),
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: Text(context.local.cancel)),
+          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: Text(context.local.confirm)),
         ],
       ),
     );
@@ -118,30 +118,30 @@ class _MessLeadershipScreenState extends State<MessLeadershipScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text('Current leadership', style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
+                        Text(context.local.uiCurrentLeadership, style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
                         const SizedBox(height: Dimensions.paddingSizeSmall),
-                        Text('Manager: ${_mess?.manager?.name ?? 'Not assigned'}', maxLines: 2, overflow: TextOverflow.ellipsis),
-                        Text('Acting manager: ${_mess?.actingManager?.name ?? 'Not assigned'}', maxLines: 2, overflow: TextOverflow.ellipsis),
+                        Text('${context.local.roleManager}: ${_mess?.manager?.name ?? context.local.notAssigned}', maxLines: 2, overflow: TextOverflow.ellipsis),
+                        Text('${context.local.roleActingManager}: ${_mess?.actingManager?.name ?? context.local.notAssigned}', maxLines: 2, overflow: TextOverflow.ellipsis),
                         const SizedBox(height: Dimensions.spaceLarge),
                         DropdownButtonFormField<String>(
                           initialValue: _role,
-                          decoration: const InputDecoration(labelText: 'Leadership role'),
-                          items: const [DropdownMenuItem(value: 'act_manager', child: Text('Acting manager')), DropdownMenuItem(value: 'manager', child: Text('Primary manager'))],
+                          decoration: InputDecoration(labelText: context.local.uiLeadershipRole),
+                          items: [DropdownMenuItem(value: 'act_manager', child: Text(context.local.roleActingManager)), DropdownMenuItem(value: 'manager', child: Text(context.local.uiPrimaryManager))],
                           onChanged: (value) => setState(() => _role = value ?? 'act_manager'),
                         ),
                         const SizedBox(height: Dimensions.paddingSizeDefault),
                         DropdownButtonFormField<String>(
                           initialValue: _selectedUserId,
                           isExpanded: true,
-                          decoration: const InputDecoration(labelText: 'Select active member'),
+                          decoration: InputDecoration(labelText: context.local.uiSelectActiveMember),
                           // The primary manager can't hand leadership to themselves.
-                          items: _members.where((member) => member['role'] != 'manager').map((member) => DropdownMenuItem<String>(value: '${member['membership_id']}', child: Text('${member['name'] ?? 'Member'} · ${member['email'] ?? ''}', maxLines: 1, overflow: TextOverflow.ellipsis))).toList(),
+                          items: _members.where((member) => member['role'] != 'manager').map((member) => DropdownMenuItem<String>(value: '${member['membership_id']}', child: Text('${member['name'] ?? context.local.roleMember} · ${member['email'] ?? ''}', maxLines: 1, overflow: TextOverflow.ellipsis))).toList(),
                           onChanged: (value) => setState(() => _selectedUserId = value),
                         ),
                         const SizedBox(height: Dimensions.paddingSizeSmall),
-                        Text('Only active members of this mess can receive leadership.', style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor, fontSize: Dimensions.fontSizeSmall)),
+                        Text(context.local.uiOnlyActiveMembersOfThisMessCanReceiveLeadership, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor, fontSize: Dimensions.fontSizeSmall)),
                         const SizedBox(height: Dimensions.spaceLarge),
-                        FilledButton.icon(onPressed: _selectedUserId == null || _saving ? null : _transfer, icon: _saving ? const SizedBox(width: Dimensions.iconSizeSmall, height: Dimensions.iconSizeSmall, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.swap_horiz_rounded), label: const Text('Transfer leadership')),
+                        FilledButton.icon(onPressed: _selectedUserId == null || _saving ? null : _transfer, icon: _saving ? const SizedBox(width: Dimensions.iconSizeSmall, height: Dimensions.iconSizeSmall, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.swap_horiz_rounded), label: Text(context.local.transferLeadership)),
                       ],
                     ),
                   ),

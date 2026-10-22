@@ -48,22 +48,22 @@ class _Stat {
 List<_Stat> _messStats(BuildContext context, DashboardEntity d) {
   final c = context.customThemeColors;
   return [
-    _Stat('Total Balance', DashboardFormatters.taka(d.totalBalance), Icons.account_balance_wallet_rounded, c.primaryColor),
-    _Stat('Meal Balance', DashboardFormatters.taka(d.mealBalance), Icons.restaurant_rounded, c.secondaryColor),
-    _Stat('Fund Balance', DashboardFormatters.taka(d.fundBalance), Icons.savings_rounded, c.infoColor),
-    _Stat('Total Deposit', DashboardFormatters.taka(d.totalDeposit), Icons.payments_rounded, c.successColor),
-    _Stat('Cost Cost', DashboardFormatters.taka(d.bazerCost), Icons.shopping_cart_rounded, c.warningColor),
-    _Stat('Total Meal', DashboardFormatters.number(d.totalMeal), Icons.set_meal_rounded, c.infoColor),
-    _Stat('Meal Rate', DashboardFormatters.taka(d.mealRate), Icons.sell_rounded, c.secondaryColor),
+    _Stat(context.local.uiTotalBalance, DashboardFormatters.taka(d.totalBalance), Icons.account_balance_wallet_rounded, c.primaryColor),
+    _Stat(context.local.uiMealBalance, DashboardFormatters.taka(d.mealBalance), Icons.restaurant_rounded, c.secondaryColor),
+    _Stat(context.local.fundBalance, DashboardFormatters.taka(d.fundBalance), Icons.savings_rounded, c.infoColor),
+    _Stat(context.local.uiTotalDeposit, DashboardFormatters.taka(d.totalDeposit), Icons.payments_rounded, c.successColor),
+    _Stat(context.local.uiCostCost, DashboardFormatters.taka(d.bazerCost), Icons.shopping_cart_rounded, c.warningColor),
+    _Stat(context.local.uiTotalMeal, DashboardFormatters.number(d.totalMeal), Icons.set_meal_rounded, c.infoColor),
+    _Stat(context.local.mealRate, DashboardFormatters.taka(d.mealRate), Icons.sell_rounded, c.secondaryColor),
   ];
 }
 
 List<_Stat> _myStats(BuildContext context, DashboardEntity d) {
   final c = context.customThemeColors;
   return [
-    _Stat('My Total Meal', DashboardFormatters.number(d.myTotalMeal), Icons.restaurant_menu_rounded, c.primaryColor),
-    _Stat('My Deposit', DashboardFormatters.taka(d.myDeposit), Icons.account_balance_wallet_rounded, c.successColor),
-    _Stat('My Remaining', DashboardFormatters.taka(d.myRemaining), Icons.account_balance_rounded, d.myRemaining < 0 ? c.errorColor : c.successColor),
+    _Stat(context.local.uiMyTotalMeal, DashboardFormatters.number(d.myTotalMeal), Icons.restaurant_menu_rounded, c.primaryColor),
+    _Stat(context.local.uiMyDeposit, DashboardFormatters.taka(d.myDeposit), Icons.account_balance_wallet_rounded, c.successColor),
+    _Stat(context.local.uiMyRemaining, DashboardFormatters.taka(d.myRemaining), Icons.account_balance_rounded, d.myRemaining < 0 ? c.errorColor : c.successColor),
   ];
 }
 
@@ -175,7 +175,7 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
                 HomeSliverAppBar(userName: dashboard.userName, photoUrl: photoUrl, currentSeasonName: dashboard.currentSeasonName, totalBalance: dashboard.totalBalance, expandedHeight: 200),
                 SliverPersistentHeader(
                   pinned: true,
-                  delegate: PinnedSectionHeader(title: 'Mess Section', icon: Icons.groups_rounded),
+                  delegate: PinnedSectionHeader(title: context.local.uiMessSection, icon: Icons.groups_rounded),
                 ),
                 _StatSliverGrid(stats: _messStats(context, dashboard)),
                 SliverPadding(
@@ -185,7 +185,7 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
                 SliverToBoxAdapter(child: SizedBox(key: _statsAnchor, height: 0)),
                 SliverPersistentHeader(
                   pinned: true,
-                  delegate: PinnedSectionHeader(title: 'My Section', icon: Icons.person_rounded),
+                  delegate: PinnedSectionHeader(title: context.local.uiMySection, icon: Icons.person_rounded),
                 ),
                 if (dashboard.isMember)
                   _StatSliverGrid(stats: _myStats(context, dashboard))
@@ -197,7 +197,7 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
                 if (dashboard.isManager) ...[
                   SliverPersistentHeader(
                     pinned: true,
-                    delegate: PinnedSectionHeader(title: 'Members', icon: Icons.bar_chart_rounded),
+                    delegate: PinnedSectionHeader(title: context.local.members, icon: Icons.bar_chart_rounded),
                   ),
                   SliverPadding(
                     padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge),
@@ -295,7 +295,7 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
                         const SizedBox(height: Dimensions.paddingSizeSmall),
 
                         // Mess section — wide grid.
-                        const SectionTitle(title: 'Mess Section', icon: Icons.groups_rounded),
+                        SectionTitle(title: context.local.uiMessSection, icon: Icons.groups_rounded),
                         _StatBoxGrid(stats: _messStats(context, dashboard), maxCrossAxisExtent: 230),
                         const SizedBox(height: Dimensions.paddingSizeDefault),
                         AnimatedEntrance(child: _MessDetailsCard(dashboard: dashboard)),
@@ -310,7 +310,7 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  const SectionTitle(title: 'My Section', icon: Icons.person_rounded),
+                                  SectionTitle(title: context.local.uiMySection, icon: Icons.person_rounded),
                                   if (dashboard.isMember)
                                     _StatBoxGrid(stats: _myStats(context, dashboard), maxCrossAxisExtent: 230)
                                   else
@@ -324,7 +324,7 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  const SectionTitle(title: 'Pinned Notice', icon: Icons.push_pin_rounded),
+                                  SectionTitle(title: context.local.uiPinnedNotice, icon: Icons.push_pin_rounded),
                                   AnimatedEntrance(child: PinnedNoticeCard(notice: dashboard.pinnedNotice)),
                                 ],
                               ),
@@ -334,7 +334,7 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
 
                         if (dashboard.isManager) ...[
                           const SizedBox(height: Dimensions.paddingSizeLarge),
-                          const SectionTitle(title: 'Members', icon: Icons.bar_chart_rounded),
+                          SectionTitle(title: context.local.members, icon: Icons.bar_chart_rounded),
                           AnimatedEntrance(
                             child: MemberStatsTable(members: dashboard.members, mealRate: dashboard.mealRate),
                           ),
@@ -443,9 +443,9 @@ class _MessDetailsCardState extends State<_MessDetailsCard> {
                 runSpacing: Dimensions.paddingSizeLarge,
                 children: [
                   if ([dashboard.managerName, dashboard.managerEmail, dashboard.managerPhone].any((value) => value.isNotEmpty))
-                    SizedBox(width: contactWidth, child: _MessContact(title: 'Manager', name: dashboard.managerName, email: dashboard.managerEmail, phone: dashboard.managerPhone)),
+                    SizedBox(width: contactWidth, child: _MessContact(title: context.local.roleManager, name: dashboard.managerName, email: dashboard.managerEmail, phone: dashboard.managerPhone)),
                   if ([dashboard.actingManagerName, dashboard.actingManagerEmail, dashboard.actingManagerPhone].any((value) => value.isNotEmpty))
-                    SizedBox(width: contactWidth, child: _MessContact(title: 'Acting manager', name: dashboard.actingManagerName, email: dashboard.actingManagerEmail, phone: dashboard.actingManagerPhone)),
+                    SizedBox(width: contactWidth, child: _MessContact(title: context.local.roleActingManager, name: dashboard.actingManagerName, email: dashboard.actingManagerEmail, phone: dashboard.actingManagerPhone)),
                 ],
               ),
               if (dashboard.messAddress.isNotEmpty) ...[

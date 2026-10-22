@@ -22,11 +22,11 @@ class CostFormatters {
   }
 
   /// Header stamp, e.g. `04:32 PM 21-08-2025`.
-  static String stamp(DateTime value) => _stamp.format(value);
+  static String stamp(DateTime value, {String? locale}) => DateFormat(_stamp.pattern, locale).format(value);
 
   /// Time only, e.g. `4:31 PM`.
-  static String time(DateTime value) => _time.format(value);
+  static String time(DateTime value, {String? locale}) => DateFormat(_time.pattern, locale).format(value);
 
   /// Date only, e.g. `21/08/2025`.
-  static String date(DateTime value) => _date.format(value);
+  static String date(DateTime value, {String? locale}) => DateFormat(_date.pattern, locale).format(value);
 }

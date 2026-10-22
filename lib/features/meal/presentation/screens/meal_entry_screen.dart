@@ -161,7 +161,7 @@ class _BodyState extends State<_Body> {
 
   void _saveAll(BuildContext context) {
     if (_dayHasMeals) {
-      context.showErrorSnackBar(context.local.mealsAlreadyAdded(MealFormatters.dayLabel(widget.date)));
+      context.showErrorSnackBar(context.local.mealsAlreadyAdded(MealFormatters.dayLabel(widget.date, locale: Localizations.localeOf(context).toLanguageTag())));
       return;
     }
 
@@ -215,7 +215,7 @@ class _BodyState extends State<_Body> {
                       breakfast: _breakfast,
                       lunch: _lunch,
                       dinner: _dinner,
-                      dateLabel: MealFormatters.dayLabel(widget.date),
+                      dateLabel: MealFormatters.dayLabel(widget.date, locale: Localizations.localeOf(context).toLanguageTag()),
                       onChanged: _changeMeal,
                       onApplyToAll: () => _applyToAll(context),
                     ),
@@ -224,7 +224,7 @@ class _BodyState extends State<_Body> {
                   final membersColumn = Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const SectionTitle(title: 'Members', icon: Icons.people_alt_rounded),
+                      SectionTitle(title: context.local.members, icon: Icons.people_alt_rounded),
                       for (var i = 0; i < members.length; i++)
                         Padding(
                           padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeDefault),
@@ -250,7 +250,7 @@ class _BodyState extends State<_Body> {
                       AnimatedEntrance(
                         child: _DateSelectorCard(date: widget.date, onTap: widget.onPickDate),
                       ),
-                      if (_dayHasMeals) ...[const SizedBox(height: Dimensions.paddingSizeDefault), _AlreadyAddedNotice(message: context.local.mealsAlreadyAdded(MealFormatters.dayLabel(widget.date)))],
+                      if (_dayHasMeals) ...[const SizedBox(height: Dimensions.paddingSizeDefault), _AlreadyAddedNotice(message: context.local.mealsAlreadyAdded(MealFormatters.dayLabel(widget.date, locale: Localizations.localeOf(context).toLanguageTag())))],
                       const SizedBox(height: Dimensions.paddingSizeSmall),
                       if (wide)
                         Row(
@@ -261,7 +261,7 @@ class _BodyState extends State<_Body> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  const SectionTitle(title: 'Bulk set', icon: Icons.edit_calendar_rounded),
+                                  SectionTitle(title: context.local.uiBulkSet, icon: Icons.edit_calendar_rounded),
                                   applyCard,
                                 ],
                               ),
@@ -271,7 +271,7 @@ class _BodyState extends State<_Body> {
                           ],
                         )
                       else ...[
-                        const SectionTitle(title: 'Bulk set', icon: Icons.edit_calendar_rounded),
+                        SectionTitle(title: context.local.uiBulkSet, icon: Icons.edit_calendar_rounded),
                         applyCard,
                         const SizedBox(height: Dimensions.paddingSizeSmall),
                         membersColumn,
@@ -397,7 +397,7 @@ class _DateSelectorCard extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: Dimensions.paddingSizeDefault),
-                        FilledButton.icon(onPressed: onTap, icon: const Icon(Icons.edit_calendar_rounded, size: 18), label: const Text('Change date')),
+                        FilledButton.icon(onPressed: onTap, icon: const Icon(Icons.edit_calendar_rounded, size: 18), label: Text(context.local.changeDate)),
                       ],
                     )
                   : Row(
@@ -408,7 +408,7 @@ class _DateSelectorCard extends StatelessWidget {
                           child: _DateText(isToday: isToday, date: date),
                         ),
                         const SizedBox(width: Dimensions.paddingSizeSmall),
-                        FilledButton.icon(onPressed: onTap, icon: const Icon(Icons.edit_calendar_rounded, size: 18), label: const Text('Change')),
+                        FilledButton.icon(onPressed: onTap, icon: const Icon(Icons.edit_calendar_rounded, size: 18), label: Text(context.local.uiChange)),
                       ],
                     ),
             ),
@@ -448,14 +448,14 @@ class _DateText extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          isToday ? 'Today meal entry' : 'Meal entry date',
+          isToday ? context.local.uiTodayMealEntry : context.local.uiMealEntryDate,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
         ),
         const SizedBox(height: 4),
         Text(
-          MealFormatters.dayLabel(date),
+          MealFormatters.dayLabel(date, locale: Localizations.localeOf(context).toLanguageTag()),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textSecondaryColor),
@@ -517,22 +517,22 @@ class _MemberRow extends StatelessWidget {
                         Wrap(
                           spacing: 2,
                           children: [
-                            _Badge(label: 'B', value: record?.breakfast ?? 0, accent: colors.warningColor),
-                            _Badge(label: 'L', value: record?.lunch ?? 0, accent: colors.primaryColor),
-                            _Badge(label: 'D', value: record?.dinner ?? 0, accent: colors.infoColor),
+                            _Badge(label: context.local.uiB, value: record?.breakfast ?? 0, accent: colors.warningColor),
+                            _Badge(label: context.local.uiL, value: record?.lunch ?? 0, accent: colors.primaryColor),
+                            _Badge(label: context.local.uiD, value: record?.dinner ?? 0, accent: colors.infoColor),
                           ],
                         ),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              tooltip: 'Edit $name',
+                              tooltip: context.local.uiEditMember(name),
                               visualDensity: VisualDensity.compact,
                               icon: Icon(Icons.edit_rounded, size: Dimensions.iconSizeDefault, color: colors.infoColor),
                               onPressed: onEdit,
                             ),
                             IconButton(
-                              tooltip: 'Clear $name',
+                              tooltip: context.local.uiClearMember(name),
                               visualDensity: VisualDensity.compact,
                               icon: Icon(Icons.highlight_remove_sharp, size: Dimensions.iconSizeDefault, color: colors.errorColor),
                               onPressed: hasMeal ? onDelete : null,
@@ -551,18 +551,18 @@ class _MemberRow extends StatelessWidget {
                       child: _MemberMealText(name: name, total: total, hasMeal: hasMeal),
                     ),
                     const SizedBox(width: Dimensions.paddingSizeSmall),
-                    _Badge(label: 'B', value: record?.breakfast ?? 0, accent: colors.warningColor),
-                    _Badge(label: 'L', value: record?.lunch ?? 0, accent: colors.primaryColor),
-                    _Badge(label: 'D', value: record?.dinner ?? 0, accent: colors.infoColor),
+                    _Badge(label: context.local.uiB, value: record?.breakfast ?? 0, accent: colors.warningColor),
+                    _Badge(label: context.local.uiL, value: record?.lunch ?? 0, accent: colors.primaryColor),
+                    _Badge(label: context.local.uiD, value: record?.dinner ?? 0, accent: colors.infoColor),
                     const SizedBox(width: Dimensions.paddingSizeExtraSmall),
                     IconButton(
-                      tooltip: 'Edit $name',
+                      tooltip: context.local.uiEditMember(name),
                       visualDensity: VisualDensity.compact,
                       icon: Icon(Icons.edit_rounded, size: Dimensions.iconSizeDefault, color: colors.infoColor),
                       onPressed: onEdit,
                     ),
                     IconButton(
-                      tooltip: 'Clear $name',
+                      tooltip: context.local.uiClearMember(name),
                       visualDensity: VisualDensity.compact,
                       icon: Icon(Icons.highlight_remove_sharp, size: Dimensions.iconSizeDefault, color: colors.errorColor),
                       onPressed: hasMeal ? onDelete : null,
@@ -597,7 +597,7 @@ class _MemberMealText extends StatelessWidget {
         ),
         const SizedBox(height: 2),
         Text(
-          hasMeal ? '${MealFormatters.count(total)} meals' : 'No meal added',
+          hasMeal ? '${MealFormatters.count(total)} meals' : context.local.uiNoMealAdded,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: hasMeal ? colors.textSecondaryColor : colors.textHintColor),

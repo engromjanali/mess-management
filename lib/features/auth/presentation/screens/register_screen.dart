@@ -81,9 +81,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         return AuthScaffold(
           icon: Icons.person_add_alt_1_rounded,
           logoShadow: true,
-          title: 'Create account',
-          subtitle: 'Join and start managing your mess',
-          footer: AuthFooterPrompt(promptText: 'Already have an account? ', actionText: context.local.login, onTap: _goToLogin),
+          title: context.local.uiCreateAccount,
+          subtitle: context.local.uiJoinAndStartManagingYourMess,
+          footer: AuthFooterPrompt(promptText: context.local.uiHaveAccountPrompt, actionText: context.local.login, onTap: _goToLogin),
           child: RegisterFormWidget(
             formKey: _formKey,
             nameController: _nameController,

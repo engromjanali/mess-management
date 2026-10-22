@@ -112,7 +112,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
             child: TextButton(
               onPressed: widget.onForgotPassword,
               child: Text(
-                'Forgot password?',
+                context.local.uiForgotPassword,
                 style: AppTextStyles.sfProRoundedMedium.copyWith(color: context.primaryColor, fontSize: Dimensions.fontSizeDefault),
               ),
             ),

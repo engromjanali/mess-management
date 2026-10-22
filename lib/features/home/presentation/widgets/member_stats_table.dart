@@ -53,7 +53,7 @@ class _MemberStatsTableState extends State<MemberStatsTable> {
             TextButton.icon(
               onPressed: () => setState(() => _expanded = !_expanded),
               icon: Icon(_expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded),
-              label: Text(_expanded ? 'Show less' : 'Show all members'),
+              label: Text(_expanded ? context.local.uiShowLess : context.local.uiShowAllMembers),
             ),
         ],
       ),
@@ -68,15 +68,15 @@ class _MemberStatsTableState extends State<MemberStatsTable> {
       child: Row(
         children: [
           SizedBox(width: 36, child: Text('#', style: style)),
-          Expanded(flex: 3, child: Text('Member', style: style)),
+          Expanded(flex: 3, child: Text(context.local.roleMember, style: style)),
           Expanded(
-            child: Text('Deposit', style: style, textAlign: TextAlign.end),
+            child: Text(context.local.uiDeposit, style: style, textAlign: TextAlign.end),
           ),
           Expanded(
-            child: Text('Meal', style: style, textAlign: TextAlign.end),
+            child: Text(context.local.uiMeal, style: style, textAlign: TextAlign.end),
           ),
           Expanded(
-            child: Text('Remaining', style: style, textAlign: TextAlign.end),
+            child: Text(context.local.uiRemaining, style: style, textAlign: TextAlign.end),
           ),
         ],
       ),

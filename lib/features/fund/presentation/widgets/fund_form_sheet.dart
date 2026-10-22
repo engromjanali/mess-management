@@ -123,7 +123,7 @@ class _FundFormSheetState extends State<_FundFormSheet> {
                   Icon(Icons.calendar_today_rounded, size: Dimensions.iconSizeSmall, color: colors.textSecondaryColor),
                   const SizedBox(width: Dimensions.paddingSizeSmall),
                   Text(
-                    FundFormatters.date(_date),
+                    FundFormatters.date(_date, locale: Localizations.localeOf(context).toLanguageTag()),
                     style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
                   ),
                 ],

@@ -34,11 +34,11 @@ class MealTodayCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Today's meals",
+                    context.local.uiTodaySMeals,
                     style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
                   ),
                   Text(
-                    MealFormatters.dayLabel(today.date),
+                    MealFormatters.dayLabel(today.date, locale: Localizations.localeOf(context).toLanguageTag()),
                     style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
                   ),
                 ],
@@ -48,11 +48,11 @@ class MealTodayCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: Dimensions.paddingSizeLarge),
-          _MealRow(icon: Icons.free_breakfast_rounded, label: 'Breakfast', accent: colors.warningColor, value: today.breakfast),
+          _MealRow(icon: Icons.free_breakfast_rounded, label: context.local.uiBreakfast, accent: colors.warningColor, value: today.breakfast),
           const Divider(height: Dimensions.paddingSizeLarge),
-          _MealRow(icon: Icons.lunch_dining_rounded, label: 'Lunch', accent: colors.primaryColor, value: today.lunch),
+          _MealRow(icon: Icons.lunch_dining_rounded, label: context.local.uiLunch, accent: colors.primaryColor, value: today.lunch),
           const Divider(height: Dimensions.paddingSizeLarge),
-          _MealRow(icon: Icons.dinner_dining_rounded, label: 'Dinner', accent: colors.infoColor, value: today.dinner),
+          _MealRow(icon: Icons.dinner_dining_rounded, label: context.local.uiDinner, accent: colors.infoColor, value: today.dinner),
           const SizedBox(height: Dimensions.paddingSizeLarge),
           Container(
             padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
@@ -62,7 +62,7 @@ class MealTodayCard extends StatelessWidget {
                 Icon(Icons.payments_rounded, size: Dimensions.iconSizeSmall, color: colors.primaryColor),
                 const SizedBox(width: Dimensions.paddingSizeSmall),
                 Text(
-                  "Today's cost",
+                  context.local.uiTodaySCost,
                   style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textSecondaryColor),
                 ),
                 const Spacer(),

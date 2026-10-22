@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/features/splash/presentation/screens/maintenance_screen.dart';
 import 'package:clean_boilerplate/features/splash/presentation/screens/splash_screeen.dart';
 import 'package:clean_boilerplate/features/splash/presentation/screens/update_required_screen.dart';
@@ -192,5 +193,5 @@ final router = GoRouter(
   ],
 
   // Error handling
-  errorBuilder: (context, state) => Scaffold(body: Center(child: Text('Page not found: ${state.matchedLocation}'))),
+  errorBuilder: (context, state) => Scaffold(body: Center(child: Text(context.local.uiPageNotFound(state.matchedLocation)))),
 );

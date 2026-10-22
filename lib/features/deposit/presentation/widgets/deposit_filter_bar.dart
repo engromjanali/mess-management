@@ -53,8 +53,8 @@ class DepositFilterBar extends StatelessWidget {
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         // Mode selector.
-        _SelectChip(label: 'By member', icon: Icons.person_rounded, selected: byMember, onTap: () => _bloc(context).add(const DepositEvent.changeMode(DepositViewMode.byMember))),
-        _SelectChip(label: 'By date', icon: Icons.calendar_today_rounded, selected: byDate, onTap: () => _bloc(context).add(const DepositEvent.changeMode(DepositViewMode.byDate))),
+        _SelectChip(label: context.local.uiByMember, icon: Icons.person_rounded, selected: byMember, onTap: () => _bloc(context).add(const DepositEvent.changeMode(DepositViewMode.byMember))),
+        _SelectChip(label: context.local.uiByDate, icon: Icons.calendar_today_rounded, selected: byDate, onTap: () => _bloc(context).add(const DepositEvent.changeMode(DepositViewMode.byDate))),
         // A manager is also a member — let them list only their own deposits.
         _SelectChip(label: context.local.mine, icon: Icons.account_circle_outlined, selected: mode == DepositViewMode.mine, onTap: () => _bloc(context).add(const DepositEvent.changeMode(DepositViewMode.mine))),
 
@@ -65,15 +65,15 @@ class DepositFilterBar extends StatelessWidget {
         if (byMember)
           _MemberMenuChip(members: members, selectedMember: selectedMember, onSelected: (id) => _bloc(context).add(DepositEvent.selectMember(id)))
         else if (byDate) ...[
-          _SelectChip(label: 'All time', selected: dateFilter == DepositDateFilter.allTime, onTap: () => _bloc(context).add(const DepositEvent.changeDateFilter(DepositDateFilter.allTime))),
+          _SelectChip(label: context.local.allTime, selected: dateFilter == DepositDateFilter.allTime, onTap: () => _bloc(context).add(const DepositEvent.changeDateFilter(DepositDateFilter.allTime))),
           _SelectChip(
-            label: dateFilter == DepositDateFilter.day ? DepositFormatters.shortDate(selectedDate) : 'Day',
+            label: dateFilter == DepositDateFilter.day ? DepositFormatters.shortDate(selectedDate, locale: Localizations.localeOf(context).toLanguageTag()) : context.local.day,
             icon: Icons.event_rounded,
             selected: dateFilter == DepositDateFilter.day,
             onTap: () => _pickDay(context),
           ),
           _SelectChip(
-            label: dateFilter == DepositDateFilter.range && selectedRange != null ? DepositFormatters.rangeLabel(selectedRange!.start, selectedRange!.end) : 'Range',
+            label: dateFilter == DepositDateFilter.range && selectedRange != null ? DepositFormatters.rangeLabel(selectedRange!.start, selectedRange!.end, locale: Localizations.localeOf(context).toLanguageTag()) : context.local.range,
             icon: Icons.date_range_rounded,
             selected: dateFilter == DepositDateFilter.range,
             onTap: () => _pickRange(context),
@@ -141,14 +141,14 @@ class _MemberMenuChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
-    final label = selectedMember?.name ?? 'All members';
+    final label = selectedMember?.name ?? context.local.uiAllMembers;
 
     return PopupMenuButton<String>(
-      tooltip: 'Filter by member',
+      tooltip: context.local.uiFilterByMember,
       onSelected: (value) => onSelected(value == _allMembers ? null : value),
       position: PopupMenuPosition.under,
       itemBuilder: (context) => [
-        const PopupMenuItem<String>(value: _allMembers, child: Text('All members')),
+        PopupMenuItem<String>(value: _allMembers, child: Text(context.local.uiAllMembers)),
         const PopupMenuDivider(),
         for (final m in members) PopupMenuItem<String>(value: m.id, child: Text(m.name)),
       ],

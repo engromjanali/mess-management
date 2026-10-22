@@ -63,12 +63,12 @@ class _DepositView extends StatelessWidget {
       child: Scaffold(
         backgroundColor: context.theme.scaffoldBackgroundColor,
         endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
-        appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: const Text('Deposits')),
+        appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.deposits)),
         floatingActionButton: BlocBuilder<DepositBloc, DepositState>(
           builder: (context, state) {
             final canAdd = state.maybeWhen(loaded: (_, _, _, _, _, isAdmin, _, _, _, _) => isAdmin, orElse: () => false);
             if (!canAdd) return const SizedBox.shrink();
-            return FloatingActionButton.extended(onPressed: () => _openAdd(context, state), icon: const Icon(Icons.add_rounded), label: const Text('Add deposit'));
+            return FloatingActionButton.extended(onPressed: () => _openAdd(context, state), icon: const Icon(Icons.add_rounded), label: Text(context.local.uiAddDeposit));
           },
         ),
         body: BlocConsumer<DepositBloc, DepositState>(
@@ -159,10 +159,10 @@ class _DepositBody extends StatelessWidget {
     final c = context.customThemeColors;
     final net = deposits.net;
     return [
-      _Stat('Total Credit', DepositFormatters.taka(deposits.totalCredit), Icons.south_west_rounded, c.successColor),
-      _Stat('Total Debit', DepositFormatters.taka(deposits.totalDebit), Icons.north_east_rounded, c.errorColor),
-      _Stat('Net Balance', DepositFormatters.signedTaka(net), Icons.account_balance_wallet_rounded, net < 0 ? c.errorColor : c.primaryColor),
-      _Stat('Entries', '${deposits.length}', Icons.receipt_long_rounded, c.infoColor),
+      _Stat(context.local.totalCredit, DepositFormatters.taka(deposits.totalCredit), Icons.south_west_rounded, c.successColor),
+      _Stat(context.local.totalDebit, DepositFormatters.taka(deposits.totalDebit), Icons.north_east_rounded, c.errorColor),
+      _Stat(context.local.netBalance, DepositFormatters.signedTaka(net), Icons.account_balance_wallet_rounded, net < 0 ? c.errorColor : c.primaryColor),
+      _Stat(context.local.entries, '${deposits.length}', Icons.receipt_long_rounded, c.infoColor),
     ];
   }
 
@@ -181,15 +181,13 @@ class _DepositBody extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete deposit'),
+        title: Text(context.local.uiDeleteDeposit),
         content: Text(
-          'Delete this ${deposit.type.label.toLowerCase()} of '
-          '${DepositFormatters.taka(deposit.absoluteAmount)} for '
-          '${deposit.memberName}?',
+          context.local.uiDeleteDepositConfirmation(deposit.isCredit ? context.local.credit : context.local.debit, DepositFormatters.taka(deposit.absoluteAmount), deposit.memberName),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.of(ctx).pop(true), child: const Text('Delete')),
+          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: Text(context.local.cancel)),
+          FilledButton(onPressed: () => Navigator.of(ctx).pop(true), child: Text(context.local.delete)),
         ],
       ),
     );
@@ -232,7 +230,7 @@ class _DepositBody extends StatelessWidget {
                       DepositFilterBar(mode: mode, members: members, selectedMember: selectedMember, dateFilter: dateFilter, selectedDate: selectedDate, selectedRange: selectedRange),
                       const SizedBox(height: Dimensions.paddingSizeDefault),
                     ],
-                    SectionTitle(title: _listTitle(), icon: Icons.receipt_long_rounded),
+                    SectionTitle(title: _listTitle(context), icon: Icons.receipt_long_rounded),
                     if (deposits.isEmpty)
                       const _EmptyView()
                     else
@@ -254,22 +252,22 @@ class _DepositBody extends StatelessWidget {
     );
   }
 
-  String _listTitle() {
+  String _listTitle(BuildContext context) {
     switch (mode) {
       case DepositViewMode.byMember:
-        return selectedMember == null ? 'All members' : '${selectedMember!.name}\'s deposits';
+        return selectedMember == null ? context.local.uiAllMembers : context.local.uiMemberDeposits(selectedMember!.name);
       case DepositViewMode.byDate:
         switch (dateFilter) {
           case DepositDateFilter.allTime:
-            return 'All deposits';
+            return context.local.uiAllDeposits;
           case DepositDateFilter.day:
-            return 'Deposits · ${DepositFormatters.shortDate(selectedDate)}';
+            return context.local.uiDepositsForDate(DepositFormatters.shortDate(selectedDate, locale: Localizations.localeOf(context).toLanguageTag()));
           case DepositDateFilter.range:
             final r = selectedRange;
-            return r == null ? 'All deposits' : 'Deposits · ${DepositFormatters.rangeLabel(r.start, r.end)}';
+            return r == null ? context.local.uiAllDeposits : context.local.uiDepositsForDate(DepositFormatters.rangeLabel(r.start, r.end, locale: Localizations.localeOf(context).toLanguageTag()));
         }
       case DepositViewMode.mine:
-        return 'My deposits';
+        return context.local.myDeposits;
     }
   }
 }

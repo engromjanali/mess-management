@@ -159,11 +159,11 @@ class _CostEntryFormState extends State<CostEntryForm> {
           Row(
             children: [
               Expanded(
-                child: _PickerField(label: context.local.costDate, icon: Icons.calendar_today_rounded, value: CostFormatters.date(_date), onTap: _pickDate),
+                child: _PickerField(label: context.local.costDate, icon: Icons.calendar_today_rounded, value: CostFormatters.date(_date, locale: Localizations.localeOf(context).toLanguageTag()), onTap: _pickDate),
               ),
               const SizedBox(width: Dimensions.paddingSizeDefault),
               Expanded(
-                child: _PickerField(label: context.local.costTime, icon: Icons.access_time_rounded, value: CostFormatters.time(_date), onTap: _pickTime),
+                child: _PickerField(label: context.local.costTime, icon: Icons.access_time_rounded, value: CostFormatters.time(_date, locale: Localizations.localeOf(context).toLanguageTag()), onTap: _pickTime),
               ),
             ],
           ),
@@ -173,11 +173,11 @@ class _CostEntryFormState extends State<CostEntryForm> {
           Row(
             children: [
               Expanded(child: _Label(context.local.products)),
-              TextButton.icon(
+              Flexible(child: TextButton.icon(
                 onPressed: _addRow,
                 icon: const Icon(Icons.add_rounded, size: Dimensions.iconSizeSmall),
-                label: Text(context.local.addProduct),
-              ),
+                label: Text(context.local.addProduct, textAlign: TextAlign.center),
+              )),
             ],
           ),
           const SizedBox(height: Dimensions.paddingSizeExtraSmall),
@@ -230,14 +230,14 @@ class _CostEntryFormState extends State<CostEntryForm> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                Expanded(child: Text(
                   context.local.total,
                   style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
-                ),
-                Text(
+                )),
+                Flexible(child: FittedBox(fit: BoxFit.scaleDown, child: Text(
                   CostFormatters.taka(_total),
                   style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.primaryColor),
-                ),
+                ))),
               ],
             ),
           ),

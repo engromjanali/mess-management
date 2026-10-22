@@ -7,6 +7,7 @@ import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_event.dar
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
 import 'package:clean_boilerplate/features/auth/presentation/widgets/auth_scaffold.dart';
 import 'package:clean_boilerplate/features/auth/presentation/widgets/login_form_widget.dart';
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -66,9 +67,9 @@ class _LoginScreenState extends State<LoginScreen> {
           icon: Icons.restaurant_menu_rounded,
           logoShadow: true,
           title: context.local.welcomeBack,
-          subtitle: 'Sign in to continue managing your mess',
-          action: IconButton(tooltip: 'Fill demo credentials', icon: const Icon(Icons.info_outline_rounded), onPressed: _fillDemoCredentials),
-          footer: AuthFooterPrompt(promptText: "Don't have an account? ", actionText: 'Sign up', onTap: () => context.push(AppRoutes.register)),
+          subtitle: context.local.uiSignInToContinueManagingYourMess,
+          action: IconButton(tooltip: context.local.uiFillDemoCredentials, icon: const Icon(CupertinoIcons.pencil_circle), onPressed: _fillDemoCredentials),
+          footer: AuthFooterPrompt(promptText: context.local.uiNoAccountPrompt, actionText: context.local.uiSignUp, onTap: () => context.push(AppRoutes.register)),
           child: LoginFormWidget(
             formKey: _formKey,
             emailController: _emailController,

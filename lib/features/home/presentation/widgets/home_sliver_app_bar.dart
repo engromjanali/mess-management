@@ -30,7 +30,7 @@ class HomeSliverAppBar extends StatelessWidget {
       elevation: 0,
       shape: const Border(),
       actions: [
-        IconButton(tooltip: 'Notifications', onPressed: () => context.push(AppRoutes.notices), icon: const Icon(Icons.notifications_outlined)),
+        IconButton(tooltip: context.local.uiNotifications, onPressed: () => context.push(AppRoutes.notices), icon: const Icon(Icons.notifications_outlined)),
       ],
       flexibleSpace: LayoutBuilder(
         builder: (context, constraints) {
@@ -99,7 +99,7 @@ class _HeaderBackground extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
               Text(
-                'Welcome back,',
+                context.local.uiWelcomeBack,
                 style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.85), fontSize: Dimensions.fontSizeDefault),
               ),
               Text(
@@ -113,12 +113,12 @@ class _HeaderBackground extends StatelessWidget {
             const SizedBox(height: Dimensions.paddingSizeSmall),
             const Spacer(),
             Text(
-              'Total balance',
+              context.local.uiTotalBalance,
               style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.78), fontSize: Dimensions.fontSizeSmall),
             ),
             FittedBox(
               fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: Text(DashboardFormatters.taka(totalBalance), style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: 32)),
             ),
             if (currentSeasonName.isNotEmpty)
@@ -168,7 +168,7 @@ class _CollapsedIdentity extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Welcome back', style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.75), fontSize: Dimensions.fontSizeExtraSmall)),
+              Text(context.local.uiWelcomeBackText, style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.75), fontSize: Dimensions.fontSizeExtraSmall)),
               Text(userName, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeLarge)),
             ],
           ),

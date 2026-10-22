@@ -21,7 +21,7 @@ class MealListScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: context.theme.scaffoldBackgroundColor,
       endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
-      appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: const Text('Meal list')),
+      appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.uiMealList)),
       body: showWebAppBar
           ? Column(
               children: const [

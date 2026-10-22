@@ -38,7 +38,7 @@ class AppFooter extends StatelessWidget {
                 padding: const EdgeInsets.all(Dimensions.paddingSizeExtraLarge32),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    final columns = constraints.maxWidth >= 1000 ? 5 : 2;
+                    final columns = constraints.maxWidth >= 1000 ? 5 : constraints.maxWidth >= 480 ? 2 : 1;
                     final itemWidth = (constraints.maxWidth - (Dimensions.spaceLarge * (columns - 1))) / columns;
 
                     return Wrap(
@@ -49,11 +49,11 @@ class AppFooter extends StatelessWidget {
                         SizedBox(
                           width: itemWidth,
                           child: _FooterSection(
-                            title: 'Explore',
+                            title: context.local.uiExplore,
                             links: [
-                              _FooterLink(label: 'Home', route: AppRoutes.home),
-                              _FooterLink(label: 'Meals', route: AppRoutes.meals),
-                              _FooterLink(label: 'Deposits', route: AppRoutes.deposits),
+                              _FooterLink(label: context.local.home, route: AppRoutes.home),
+                              _FooterLink(label: context.local.meals, route: AppRoutes.meals),
+                              _FooterLink(label: context.local.deposits, route: AppRoutes.deposits),
                               _FooterLink(label: context.local.shareYourOpinions, route: AppRoutes.opinions),
                             ],
                           ),
@@ -61,21 +61,21 @@ class AppFooter extends StatelessWidget {
                         SizedBox(
                           width: itemWidth,
                           child: _FooterSection(
-                            title: 'Management',
+                            title: context.local.uiManagement,
                             links: [
-                              _FooterLink(label: 'Fund', route: AppRoutes.funds),
-                              _FooterLink(label: 'Costs', route: AppRoutes.costs),
-                              _FooterLink(label: 'Notices', route: AppRoutes.notices),
+                              _FooterLink(label: context.local.fund, route: AppRoutes.funds),
+                              _FooterLink(label: context.local.uiCosts, route: AppRoutes.costs),
+                              _FooterLink(label: context.local.notices, route: AppRoutes.notices),
                             ],
                           ),
                         ),
                         SizedBox(
                           width: itemWidth,
                           child: _FooterSection(
-                            title: 'Account',
+                            title: context.local.uiAccount,
                             links: [
-                              _FooterLink(label: 'Profile', route: AppRoutes.profile),
-                              _FooterLink(label: 'Settings', route: AppRoutes.settings),
+                              _FooterLink(label: context.local.profile, route: AppRoutes.profile),
+                              _FooterLink(label: context.local.settings, route: AppRoutes.settings),
                             ],
                           ),
                         ),
@@ -91,7 +91,7 @@ class AppFooter extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault),
             child: Text(
-              '© Copyright ${DateTime.now().year} Mess Pilot. All rights reserved.',
+              context.local.uiCopyright(DateTime.now().year),
               textAlign: TextAlign.center,
               style: AppTextStyles.sfProRoundedRegular.copyWith(color: _mutedTextColor, fontSize: Dimensions.fontSizeSmall),
             ),
@@ -131,7 +131,7 @@ class _FooterBrand extends StatelessWidget {
         ),
         const SizedBox(height: Dimensions.paddingSizeDefault),
         Text(
-          'Simple, transparent mess management for every member.',
+          context.local.uiSimpleTransparentMessManagementForEveryMember,
           style: AppTextStyles.sfProRoundedRegular.copyWith(color: AppFooter._mutedTextColor, fontSize: Dimensions.fontSizeDefault, height: 1.5),
         ),
       ],
@@ -181,11 +181,11 @@ class _AppInstallSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Get the app', maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedBold.copyWith(color: AppFooter._textColor, fontSize: Dimensions.fontSizeDefault)),
+        Text(context.local.uiGetTheApp, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedBold.copyWith(color: AppFooter._textColor, fontSize: Dimensions.fontSizeDefault)),
         const SizedBox(height: Dimensions.paddingSizeDefault),
-        _StoreButton(icon: Icons.android_rounded, caption: 'GET IT ON', title: 'Google Play', onTap: onAndroidInstall ?? () => _showComingSoon(context, 'Android')),
+        _StoreButton(icon: Icons.android_rounded, caption: context.local.uiGetItOn, title: 'Google Play', onTap: onAndroidInstall ?? () => _showComingSoon(context, 'Android')),
         const SizedBox(height: Dimensions.paddingSizeSmall),
-        _StoreButton(icon: Icons.apple, caption: 'Download on the', title: 'App Store', onTap: onAppleInstall ?? () => _showComingSoon(context, 'iOS')),
+        _StoreButton(icon: Icons.apple, caption: context.local.uiDownloadOnThe, title: 'App Store', onTap: onAppleInstall ?? () => _showComingSoon(context, 'iOS')),
       ],
     );
   }

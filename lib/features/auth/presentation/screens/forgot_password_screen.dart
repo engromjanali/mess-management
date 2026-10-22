@@ -91,11 +91,11 @@ class _ForgotPasswordViewState extends State<_ForgotPasswordView> {
         return AuthScaffold(
           icon: Icons.lock_reset_rounded,
           logoShadow: true,
-          title: 'Reset password',
+          title: context.local.uiResetPassword,
           subtitle: isResetStep
-              ? 'Enter the code we sent to $email and choose a new password'
-              : 'Enter your email and we\'ll send you a reset code',
-          footer: AuthFooterPrompt(promptText: 'Remembered it? ', actionText: context.local.login, onTap: _goBack),
+              ? context.local.uiResetInstructions(email)
+              : context.local.uiEnterYourEmailAndWeLlSendYouAResetCode,
+          footer: AuthFooterPrompt(promptText: context.local.uiRememberedPrompt, actionText: context.local.login, onTap: _goBack),
           child: isResetStep
               ? _buildResetForm(context, email, isLoading)
               : _buildEmailForm(context, isLoading),
@@ -123,7 +123,7 @@ class _ForgotPasswordViewState extends State<_ForgotPasswordView> {
             isRequired: true,
           ),
           const SizedBox(height: Dimensions.spaceLarge),
-          _primaryButton(context, label: 'Send reset code', isLoading: isLoading, onPressed: _requestOtp),
+          _primaryButton(context, label: context.local.uiSendResetCode, isLoading: isLoading, onPressed: _requestOtp),
         ],
       ),
     );
@@ -136,8 +136,8 @@ class _ForgotPasswordViewState extends State<_ForgotPasswordView> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CommonLabeledInputItemWidget(
-            label: 'Reset code',
-            hintText: '6-digit code',
+            label: context.local.uiResetCode,
+            hintText: context.local.ui6DigitCode,
             controller: _otpController,
             keyboardType: TextInputType.number,
             textInputAction: TextInputAction.next,
@@ -148,7 +148,7 @@ class _ForgotPasswordViewState extends State<_ForgotPasswordView> {
           ),
           const SizedBox(height: Dimensions.spaceDefault),
           CommonLabeledInputItemWidget(
-            label: 'New password',
+            label: context.local.uiNewPassword,
             hintText: context.local.password,
             controller: _passwordController,
             keyboardType: TextInputType.visiblePassword,
@@ -161,11 +161,11 @@ class _ForgotPasswordViewState extends State<_ForgotPasswordView> {
             passwordLength: 6,
           ),
           const SizedBox(height: Dimensions.spaceLarge),
-          _primaryButton(context, label: 'Reset password', isLoading: isLoading, onPressed: () => _submitReset(email)),
+          _primaryButton(context, label: context.local.uiResetPassword, isLoading: isLoading, onPressed: () => _submitReset(email)),
           TextButton(
             onPressed: isLoading ? null : () => context.read<PasswordResetBloc>().add(const PasswordResetEvent.restarted()),
             child: Text(
-              'Use a different email',
+              context.local.uiUseADifferentEmail,
               style: AppTextStyles.sfProRoundedMedium.copyWith(color: context.primaryColor, fontSize: Dimensions.fontSizeDefault),
             ),
           ),

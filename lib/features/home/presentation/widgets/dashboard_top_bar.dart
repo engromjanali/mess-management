@@ -104,10 +104,10 @@ class DashboardTopBar extends StatelessWidget {
                         )),
                       ],
                       if (resolvedNavItems.isEmpty) const Spacer(),
-                      if (showNotifications) _ActionIcon(icon: Icons.notifications_outlined, tooltip: 'Notifications', onPressed: () => context.push(AppRoutes.notices)),
+                      if (showNotifications) _ActionIcon(icon: Icons.notifications_outlined, tooltip: context.local.uiNotifications, onPressed: () => context.push(AppRoutes.notices)),
                       if (showTheme) _ActionIcon(
                         icon: themeIcon,
-                        tooltip: 'Theme: ${themeMode.displayName}',
+                        tooltip: context.local.uiThemeDescription(switch (themeMode) { AppThemeMode.light => context.local.uiLightMode, AppThemeMode.dark => context.local.darkMode, AppThemeMode.system => context.local.uiSystemDefault }),
                         onPressed: () => context.read<ThemeBloc>().add(ThemeEvent.changeThemeMode(themeMode.next)),
                       ),
                       if (showLocale) const _LocaleMenu(),
@@ -311,7 +311,7 @@ class _ProfileChip extends StatelessWidget {
     );
 
     if (!showText) {
-      return IconButton(tooltip: 'Profile menu', onPressed: onTap, icon: avatar);
+      return IconButton(tooltip: context.local.uiProfileMenu, onPressed: onTap, icon: avatar);
     }
 
     final radius = BorderRadius.circular(Dimensions.radiusExtra2Large);

@@ -35,7 +35,7 @@ class PinnedSectionHeader extends SliverPersistentHeaderDelegate {
         color: pinned ? context.theme.scaffoldBackgroundColor : context.theme.scaffoldBackgroundColor.withValues(alpha: 0),
         boxShadow: pinned ? [BoxShadow(color: colors.shadowColor, blurRadius: 8, offset: const Offset(0, 4))] : null,
       ),
-      alignment: Alignment.centerLeft,
+      alignment: AlignmentDirectional.centerStart,
       child: Row(
         children: [
           Container(

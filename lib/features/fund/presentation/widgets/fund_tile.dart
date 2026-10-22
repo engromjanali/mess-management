@@ -48,7 +48,7 @@ class FundTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  FundFormatters.date(fund.date),
+                  FundFormatters.date(fund.date, locale: Localizations.localeOf(context).toLanguageTag()),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
