@@ -1,14 +1,13 @@
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
-import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
 import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
 import 'package:clean_boilerplate/features/settings/domain/entities/locale_entity.dart';
 import 'package:clean_boilerplate/features/settings/domain/entities/theme_mode.dart';
 import 'package:clean_boilerplate/features/settings/presentation/bloc/localization/localization_bloc.dart';
 import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_bloc.dart';
 import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_event.dart';
-import 'package:clean_boilerplate/features/settings/presentation/widgets/language_bottom_sheet.dart';
+import 'package:clean_boilerplate/features/settings/presentation/widgets/language_selection_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -23,55 +22,106 @@ class SettingsScreen extends StatelessWidget {
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
-          child: Padding(
+          child: ListView(
             padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Language Section
-                Text(context.local.language, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge)),
-                const SizedBox(height: Dimensions.spaceDefault),
-                BlocBuilder<LocalizationBloc, LocalizationState>(
+            children: [
+              _SettingsSection(
+                title: context.local.language,
+                icon: Icons.translate_rounded,
+                child: BlocBuilder<LocalizationBloc, LocalizationState>(
                   builder: (context, state) {
-                    final currentLocale = state.locale;
-                    final languageName = AppLocale.getLanguageName(currentLocale);
-
                     return ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(context.local.selectLanguage, style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault)),
-                      subtitle: Text(languageName, style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
-                      trailing: const Icon(Icons.language),
-                      onTap: () => context.showCustomBottomSheet(child: LanguageBottomSheet(currentLocale: currentLocale)),
-                    );
-                  },
-                ),
-                const SizedBox(height: Dimensions.spaceLarge),
-                const Divider(),
-                const SizedBox(height: Dimensions.spaceLarge),
-                // Theme Section
-                Text(context.local.theme, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge)),
-                const SizedBox(height: Dimensions.spaceDefault),
-                BlocBuilder<ThemeBloc, ThemeState>(
-                  builder: (context, state) {
-                    final isLight = state.value;
-
-                    return SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(context.local.darkMode, style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault)),
-                      subtitle: Text(isLight ? context.local.disabled : context.local.enabled, style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
-                      value: !isLight, // Invert because value represents light
-                      onChanged: (isDark) {
-                        // Toggle theme by passing the new mode
-                        final newMode = isDark ? AppThemeMode.dark : AppThemeMode.light;
-                        context.read<ThemeBloc>().add(ThemeEvent.changeThemeMode(newMode));
+                      contentPadding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeSmall),
+                      title: Text(context.local.selectLanguage, style: AppTextStyles.sfProRoundedMedium),
+                      subtitle: Text(AppLocale.getLanguageName(state.locale)),
+                      trailing: const Icon(Icons.chevron_right_rounded),
+                      onTap: () async {
+                        final bloc = context.read<LocalizationBloc>();
+                        final locale = await showDialog<Locale>(
+                          context: context,
+                          builder: (_) => LanguageSelectionOverlay(currentLocale: state.locale),
+                        );
+                        if (locale != null && !bloc.isClosed) {
+                          bloc.add(LocalizationEvent.changeLocale(locale.languageCode));
+                        }
                       },
                     );
                   },
                 ),
+              ),
+              const SizedBox(height: Dimensions.spaceLarge),
+              _SettingsSection(
+                title: context.local.theme,
+                icon: Icons.palette_outlined,
+                child: BlocBuilder<ThemeBloc, ThemeState>(
+                  builder: (context, state) {
+                    final selected = state.when(light: (_) => AppThemeMode.light, dark: (_) => AppThemeMode.dark, system: (_) => AppThemeMode.system);
+                    return Column(
+                      children: AppThemeMode.values.map((mode) {
+                        final label = switch (mode) {
+                          AppThemeMode.light => context.local.uiLightMode,
+                          AppThemeMode.dark => context.local.darkMode,
+                          AppThemeMode.system => context.local.uiSystemDefault,
+                        };
+                        final icon = switch (mode) {
+                          AppThemeMode.light => Icons.light_mode_outlined,
+                          AppThemeMode.dark => Icons.dark_mode_outlined,
+                          AppThemeMode.system => Icons.sunny_snowing,
+                        };
+                        final isSelected = selected == mode;
+                        return ListTile(
+                          selected: isSelected,
+                          selectedTileColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeSmall),
+                          leading: Icon(icon),
+                          title: Text(label, style: AppTextStyles.sfProRoundedMedium),
+                          trailing: Icon(isSelected ? Icons.check_circle_rounded : Icons.circle_outlined),
+                          onTap: isSelected ? null : () => context.read<ThemeBloc>().add(ThemeEvent.changeThemeMode(mode)),
+                        );
+                      }).toList(),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SettingsSection extends StatelessWidget {
+  const _SettingsSection({required this.title, required this.icon, required this.child});
+
+  final String title;
+  final IconData icon;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Card(
+      margin: EdgeInsets.zero,
+      elevation: 0,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge), side: BorderSide(color: Theme.of(context).dividerColor.withValues(alpha: 0.15))),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+            child: Row(
+              children: [
+                Icon(icon, color: colors.primary),
+                const SizedBox(width: Dimensions.spaceDefault),
+                Expanded(child: Text(title, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge))),
               ],
             ),
           ),
-        ),
+          const Divider(height: 1),
+          child,
+        ],
       ),
     );
   }

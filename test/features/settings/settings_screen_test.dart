@@ -1,0 +1,57 @@
+import 'package:clean_boilerplate/config/theme/app_theme.dart';
+import 'package:clean_boilerplate/features/settings/presentation/bloc/localization/localization_bloc.dart';
+import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_bloc.dart';
+import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_event.dart';
+import 'package:clean_boilerplate/features/settings/presentation/screens/settings_screen.dart';
+import 'package:clean_boilerplate/features/settings/presentation/widgets/language_selection_overlay.dart';
+import 'package:clean_boilerplate/l10n/gen/app_localizations.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+class _ThemeBloc extends Bloc<ThemeEvent, ThemeState> implements ThemeBloc {
+  _ThemeBloc() : super(const ThemeState.system());
+}
+
+class _LocaleBloc extends Bloc<LocalizationEvent, LocalizationState> implements LocalizationBloc {
+  _LocaleBloc() : super(const LocalizationState.loaded(Locale('en')));
+}
+
+void main() {
+  testWidgets('Settings and language overlay fit narrow, large text and RTL layouts', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final theme = _ThemeBloc();
+    final locale = _LocaleBloc();
+    addTearDown(theme.close);
+    addTearDown(locale.close);
+    for (final language in ['en', 'bn', 'ar']) {
+      for (final width in [320.0, 1440.0]) {
+        tester.view.physicalSize = Size(width, 800);
+        await tester.pumpWidget(MultiBlocProvider(providers: [
+          BlocProvider<ThemeBloc>.value(value: theme),
+          BlocProvider<LocalizationBloc>.value(value: locale),
+        ], child: MaterialApp(
+          theme: AppTheme.light,
+          locale: Locale(language),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          builder: (context, child) => MediaQuery(data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)), child: child!),
+          home: const SettingsScreen(),
+        )));
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull, reason: '$language $width settings');
+        final local = AppLocalizations.of(tester.element(find.byType(SettingsScreen)));
+        await tester.tap(find.text(local.selectLanguage));
+        await tester.pumpAndSettle();
+        expect(find.byType(LanguageSelectionOverlay), findsOneWidget);
+        expect(find.byType(BottomSheet), findsNothing);
+        expect(tester.takeException(), isNull, reason: '$language $width overlay');
+        Navigator.of(tester.element(find.byType(LanguageSelectionOverlay))).pop();
+        await tester.pumpAndSettle();
+      }
+    }
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+}
