@@ -50,7 +50,9 @@ class $AssetsImagesSvgFlagsGen {
   List<SvgGenImage> get values => [ar, bn, en];
 }
 
-abstract final class Assets {
+class Assets {
+  const Assets._();
+
   static const $AssetsImagesGen images = $AssetsImagesGen();
   static const String shorebird = 'shorebird.yaml';
 

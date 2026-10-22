@@ -1,7 +1,7 @@
 PODS:
   - Firebase/CoreOnly (12.19.0):
     - FirebaseCore (~> 12.19.0)
-  - firebase_core (4.15.0):
+  - firebase_core (5.0.0):
     - Firebase/CoreOnly (= 12.19.0)
     - Flutter
   - FirebaseCore (12.19.0):
@@ -74,7 +74,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Firebase: 7ca191e43724142f79fae653547b3382c45413cc
-  firebase_core: 55de508663ceda7d1dc369a32b327a5655019ae2
+  firebase_core: aa2923f301f5b09667356bb91e59308e6e2e38d3
   FirebaseCore: c990214798d7c568ad436a15ba7da25c7a278c9a
   FirebaseCoreInternal: 656b1c2fd5a1c5976183dc54b73deda78fb26ee3
   Flutter: 71a624a5bc0c04062bf19101d501e466baf2fb47
@@ -82,9 +82,9 @@ SPEC CHECKSUMS:
   google_maps_flutter_ios: 17552876e72723da1d41accc22f03b5f7afbde69
   GoogleMaps: 0608099d4870cac8754bdba9b6953db543432438
   GoogleUtilities: 7dc09b3fa9ecb5c2298b952313d14628b61b9da3
-  image_picker_ios: e0ece4aa2a75771a7de3fa735d26d90817041326
+  image_picker_ios: c06ac6fe6dc36476da54dbe860dbf2a1ef20fe1e
   package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
-  shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
+  shared_preferences_foundation: a7c3904f2dedb3701dd1903cb152ef5e7df92422
   url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
 
 PODFILE CHECKSUM: 3ba3a73b1b12adcf321a227a745625fe0888cc82
