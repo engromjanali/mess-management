@@ -18,9 +18,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class MembershipGate extends StatefulWidget {
-  const MembershipGate({required this.connectedChild, this.allowConnected = false, super.key});
+  const MembershipGate({required this.connectedChild, this.allowConnected = false, this.loadingChild, super.key});
 
   final Widget connectedChild;
+  final Widget? loadingChild;
 
   /// Join screen mode: a user may belong to several messes, so connected users
   /// also see the join / create UI and go home only once their current
@@ -75,7 +76,7 @@ class _MembershipGateState extends State<MembershipGate> {
       child: BlocBuilder<MembershipCubit, MembershipState>(
         builder: (context, state) {
           return switch (state) {
-            MembershipLoading() => const Scaffold(body: Center(child: AppLoader())),
+            MembershipLoading() => widget.loadingChild ?? const Scaffold(body: Center(child: AppLoader())),
             MembershipError(:final message) => _MembershipError(message: message),
             MembershipLoaded(:final status) =>
               _hasMess(status) && !widget.allowConnected ? widget.connectedChild : _NoCurrentMess(status: status, connected: _hasMess(status)),

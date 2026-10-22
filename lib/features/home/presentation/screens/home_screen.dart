@@ -1,5 +1,5 @@
 import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
-import 'package:clean_boilerplate/core/widgets/app_loader.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/home_dashboard_shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -78,9 +78,18 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<MembershipCubit>(
-      create: (_) => MembershipCubit(MembershipApiService(getIt<ApiClient>()))..load(),
-      child: MembershipGate(connectedChild: BlocProvider<HomeBloc>(create: (_) => getIt<HomeBloc>()..add(const HomeEvent.loadDashboard()), child: const _HomeView())),
+    final showDesktopBar = ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context);
+    return Scaffold(
+      backgroundColor: context.theme.scaffoldBackgroundColor,
+      appBar: showDesktopBar ? PreferredSize(
+        preferredSize: const Size.fromHeight(DashboardTopBar.height),
+        child: Builder(builder: (context) => DashboardTopBar(active: DashboardSection.home, onProfileTap: () => Scaffold.of(context).openEndDrawer())),
+      ) : null,
+      endDrawer: ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context) ? const WebProfileDrawer() : null,
+      body: BlocProvider<MembershipCubit>(
+        create: (_) => MembershipCubit(MembershipApiService(getIt<ApiClient>()))..load(),
+        child: MembershipGate(loadingChild: const HomeDashboardShimmer(), connectedChild: BlocProvider<HomeBloc>(create: (_) => getIt<HomeBloc>()..add(const HomeEvent.loadDashboard()), child: const _HomeView())),
+      ),
     );
   }
 }
@@ -90,15 +99,7 @@ class _HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showDesktopBar = ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context);
-    return Scaffold(
-      backgroundColor: context.theme.scaffoldBackgroundColor,
-      appBar: showDesktopBar ? PreferredSize(
-        preferredSize: const Size.fromHeight(DashboardTopBar.height),
-        child: Builder(builder: (context) => DashboardTopBar(active: DashboardSection.home, onProfileTap: () => Scaffold.of(context).openEndDrawer())),
-      ) : null,
-      endDrawer: ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context) ? const WebProfileDrawer() : null,
-      body: BlocBuilder<HomeBloc, HomeState>(
+    return BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
           return state.when(
             initial: _loading,
@@ -117,11 +118,10 @@ class _HomeView extends StatelessWidget {
             },
           );
         },
-      ),
     );
   }
 
-  Widget _loading() => const Center(child: AppLoader());
+  Widget _loading() => const HomeDashboardShimmer();
 }
 
 class _ErrorView extends StatelessWidget {
