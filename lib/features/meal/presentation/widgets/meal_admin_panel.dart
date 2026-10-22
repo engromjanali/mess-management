@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -86,19 +87,7 @@ class _ErrorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.customThemeColors;
-    return _Card(
-      child: Row(
-        children: [
-          Icon(Icons.error_outline_rounded, color: colors.errorColor),
-          const SizedBox(width: Dimensions.paddingSizeDefault),
-          Expanded(
-            child: Text(message, style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor)),
-          ),
-          TextButton(onPressed: () => context.read<MealAdminBloc>().add(const MealAdminEvent.load()), child: const Text('Retry')),
-        ],
-      ),
-    );
+    return AppErrorState(error: message, onRetry: () => context.read<MealAdminBloc>().add(const MealAdminEvent.load()));
   }
 }
 
@@ -441,21 +430,7 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.customThemeColors;
-    return Padding(
-      padding: const EdgeInsets.all(Dimensions.paddingSizeExtraLarge24),
-      child: Column(
-        children: [
-          Icon(Icons.no_meals_rounded, size: Dimensions.iconSizeLarge, color: colors.textHintColor),
-          const SizedBox(height: Dimensions.paddingSizeDefault),
-          Text(
-            filtered ? 'No meals match these filters.' : 'No meals recorded yet. Tap "Add meal" to start.',
-            textAlign: TextAlign.center,
-            style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textSecondaryColor),
-          ),
-        ],
-      ),
-    );
+    return AppEmptyState(title: filtered ? context.local.stateNoMatchingMeals : context.local.noMealsYet, icon: Icons.no_meals_rounded);
   }
 }
 

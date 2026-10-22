@@ -436,5 +436,15 @@
   "currentSeasonLabel": "বর্তমান সিজন",
   "opinionAnonymousOnly": "শুধু নাম প্রকাশ না করে",
   "opinionBothModes": "নাম প্রকাশ না করে এবং নামসহ",
-  "loading": "লোড হচ্ছে…"
+  "loading": "লোড হচ্ছে…",
+  "stateOfflineTitle": "ইন্টারনেট সংযোগ নেই",
+  "stateErrorTitle": "কিছু একটা সমস্যা হয়েছে",
+  "stateTimeoutTitle": "প্রত্যাশার চেয়ে বেশি সময় লাগছে",
+  "stateServiceTitle": "সেবা শীঘ্রই ফিরে আসবে",
+  "stateAccessTitle": "প্রবেশাধিকার সীমিত",
+  "stateSessionTitle": "আবার সাইন ইন করুন",
+  "stateEmptyHint": "নতুন কার্যক্রম থাকলে এখানে দেখা যাবে।",
+  "stateNoDeposits": "এখনও কোনো জমা নেই",
+  "stateNoOpinionPeriod": "এখনও কোনো মতামত পর্ব খোলা হয়নি",
+  "stateNoMatchingMeals": "এই ফিল্টারের সাথে কোনো মিল মেলেনি।"
 }

@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'dart:async';
 
@@ -6,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
-import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/di/injection.dart';
 import 'package:clean_boilerplate/core/errors/failures.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
@@ -173,10 +173,7 @@ class _SeasonBodyState extends State<_SeasonBody> {
                       CurrentSeasonCard(season: overview.current),
                       const SizedBox(height: Dimensions.paddingSizeDefault),
                       if (overview.seasons.isEmpty)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeLarge),
-                          child: Text(context.local.noSeasons, textAlign: TextAlign.center, style: AppTextStyles.sfProRoundedMedium.copyWith(color: context.customThemeColors.textSecondaryColor)),
-                        )
+                        AppEmptyState(title: context.local.noSeasons, icon: Icons.calendar_month_outlined)
                       else
                         for (final season in overview.seasons)
                           Padding(
@@ -324,26 +321,7 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.customThemeColors;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(Dimensions.paddingSizeExtraLarge24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.error_outline_rounded, size: Dimensions.iconSizeExtraLarge, color: colors.errorColor),
-            const SizedBox(height: Dimensions.paddingSizeDefault),
-            Text(message, textAlign: TextAlign.center, style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor)),
-            const SizedBox(height: Dimensions.paddingSizeLarge),
-            ElevatedButton.icon(
-              onPressed: () => context.read<SeasonBloc>().add(const SeasonEvent.started()),
-              icon: const Icon(Icons.refresh_rounded),
-              label: Text(context.local.tryAgain),
-            ),
-          ],
-        ),
-      ),
-    );
+    return AppErrorState(error: message, onRetry: () => context.read<SeasonBloc>().add(const SeasonEvent.started()));
   }
 }
 
@@ -352,19 +330,6 @@ class _AdminOnlyView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.customThemeColors;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(Dimensions.paddingSizeExtraLarge24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.lock_outline_rounded, size: Dimensions.iconSizeExtraLarge, color: colors.textHintColor),
-            const SizedBox(height: Dimensions.paddingSizeDefault),
-            Text(context.local.seasonManagementAdminOnly, textAlign: TextAlign.center, style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor)),
-          ],
-        ),
-      ),
-    );
+    return AppStateView(title: context.local.stateAccessTitle, message: context.local.seasonManagementAdminOnly, icon: Icons.lock_outline_rounded);
   }
 }

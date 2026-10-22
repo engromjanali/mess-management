@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/app_constants.dart';
@@ -92,23 +93,7 @@ class _MembershipError extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(Dimensions.paddingSizeExtraLarge24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.cloud_off_rounded, size: Dimensions.iconSizeExtraLarge, color: context.customThemeColors.errorColor),
-              const SizedBox(height: Dimensions.paddingSizeDefault),
-              Text(message, textAlign: TextAlign.center),
-              const SizedBox(height: Dimensions.paddingSizeLarge),
-              FilledButton.icon(onPressed: () => context.read<MembershipCubit>().load(), icon: const Icon(Icons.refresh_rounded), label: const Text('Try again')),
-            ],
-          ),
-        ),
-      ),
-    );
+    return Scaffold(body: AppErrorState(error: message, onRetry: () => context.read<MembershipCubit>().load()));
   }
 }
 
@@ -421,9 +406,9 @@ class _AvailableMessCard extends StatelessWidget {
           if (loading)
             const Center(child: AppLoader())
           else if (error != null)
-            Column(children: [Text(error!, textAlign: TextAlign.center), const SizedBox(height: Dimensions.paddingSizeDefault), OutlinedButton.icon(onPressed: onSearch, icon: const Icon(Icons.refresh_rounded), label: const Text('Try again'))])
+            AppErrorState(error: error!, onRetry: onSearch)
           else if (messPage == null || messPage!.messes.isEmpty)
-            const Text('No mess found.', textAlign: TextAlign.center)
+            AppEmptyState(title: context.local.noMatchingRecords, icon: Icons.search_off_rounded)
           else ...[
             for (final mess in messPage!.messes)
                   ListTile(

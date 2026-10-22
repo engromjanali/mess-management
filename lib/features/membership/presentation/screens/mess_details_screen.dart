@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
@@ -91,34 +92,7 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.customThemeColors;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(Dimensions.paddingSizeExtraLarge24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.home_work_outlined, size: Dimensions.iconSizeExtraLarge, color: colors.textHintColor),
-            const SizedBox(height: Dimensions.paddingSizeDefault),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor),
-            ),
-            const SizedBox(height: Dimensions.paddingSizeLarge),
-            Wrap(
-              spacing: Dimensions.paddingSizeSmall,
-              runSpacing: Dimensions.paddingSizeSmall,
-              alignment: WrapAlignment.center,
-              children: [
-                ElevatedButton.icon(onPressed: () => context.read<MessDetailsCubit>().load(), icon: const Icon(Icons.refresh_rounded), label: Text(context.local.tryAgain)),
-                OutlinedButton.icon(onPressed: () => context.go(AppRoutes.joinMess), icon: const Icon(Icons.group_add_rounded), label: Text(context.local.joinMess)),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
+    return AppErrorState(error: message, onRetry: () => context.read<MessDetailsCubit>().load(), secondaryAction: OutlinedButton.icon(onPressed: () => context.go(AppRoutes.joinMess), icon: const Icon(Icons.group_add_rounded), label: Text(context.local.joinMess)));
   }
 }
 

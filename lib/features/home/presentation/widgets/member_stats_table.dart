@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
@@ -41,7 +42,7 @@ class _MemberStatsTableState extends State<MemberStatsTable> {
           _buildHeaderRow(context),
           Divider(height: 1, color: colors.dividerColor.withValues(alpha: 0.4)),
           if (widget.members.isEmpty)
-            Padding(padding: const EdgeInsets.all(Dimensions.paddingSizeLarge), child: Text(context.local.noMembers)),
+            AppEmptyState(title: context.local.noMembers, icon: Icons.people_outline_rounded),
           AnimatedSize(
             duration: const Duration(milliseconds: 250),
             curve: Curves.easeInOut,

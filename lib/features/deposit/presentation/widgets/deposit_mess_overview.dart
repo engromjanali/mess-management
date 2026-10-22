@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
@@ -93,10 +94,7 @@ class _MemberBalanceList extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(color: colors.backgroundColor, borderRadius: radius, border: Border.all(color: colors.borderColor)),
       child: balances.isEmpty
-          ? Padding(
-              padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
-              child: Text(context.local.noMembers, textAlign: TextAlign.center, style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor)),
-            )
+          ? AppEmptyState(title: context.local.noMembers, icon: Icons.people_outline_rounded)
           : LayoutBuilder(
               builder: (context, constraints) {
                 final wide = constraints.maxWidth >= 560;

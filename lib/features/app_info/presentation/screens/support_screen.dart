@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
@@ -40,7 +41,7 @@ class SupportScreen extends StatelessWidget {
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 820),
                       child: config.availableSupportChannels.isEmpty
-                          ? Padding(padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraLarge32), child: Text(context.local.noSupportChannels, textAlign: TextAlign.center))
+                          ? AppEmptyState(title: context.local.noSupportChannels, icon: Icons.support_agent_rounded)
                           : SupportChannelsView(channels: config.availableSupportChannels),
                     ),
                   ),

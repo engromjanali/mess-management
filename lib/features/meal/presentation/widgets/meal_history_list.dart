@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
@@ -31,20 +32,7 @@ class MealHistoryList extends StatelessWidget {
       child: Column(
         children: [
           if (days.isEmpty)
-            Padding(
-              padding: const EdgeInsets.all(Dimensions.paddingSizeExtraLarge24),
-              child: Column(
-                children: [
-                  Icon(Icons.no_meals_rounded, size: Dimensions.iconSizeLarge, color: colors.textHintColor),
-                  const SizedBox(height: Dimensions.paddingSizeDefault),
-                  Text(
-                    context.local.noMealsYet,
-                    textAlign: TextAlign.center,
-                    style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textSecondaryColor),
-                  ),
-                ],
-              ),
-            ),
+            AppEmptyState(title: context.local.noMealsYet, icon: Icons.no_meals_rounded),
           for (var i = 0; i < days.length; i++) ...[
             if (i > 0) Divider(height: 1, color: colors.dividerColor.withValues(alpha: 0.3)),
             _HistoryRow(day: days[i], mealRate: mealRate, isToday: days[i].date.year == now.year && days[i].date.month == now.month && days[i].date.day == now.day),

@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -83,10 +84,7 @@ class _FaqList extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (faqs.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraLarge32),
-                    child: Text(context.local.noFaqs, textAlign: TextAlign.center, style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor)),
-                  )
+                  AppEmptyState(title: context.local.noFaqs, icon: Icons.quiz_outlined)
                 else
                   for (final faq in faqs)
                     Padding(

@@ -436,5 +436,15 @@
   "currentSeasonLabel": "الموسم الحالي",
   "opinionAnonymousOnly": "مجهول الهوية فقط",
   "opinionBothModes": "مجهول الهوية وبالاسم",
-  "loading": "جارٍ التحميل…"
+  "loading": "جارٍ التحميل…",
+  "stateOfflineTitle": "لا يوجد اتصال بالإنترنت",
+  "stateErrorTitle": "حدث خطأ ما",
+  "stateTimeoutTitle": "يستغرق وقتًا أطول من المتوقع",
+  "stateServiceTitle": "سنعود قريبًا",
+  "stateAccessTitle": "الوصول مقيّد",
+  "stateSessionTitle": "يرجى تسجيل الدخول مجددًا",
+  "stateEmptyHint": "سيظهر النشاط الجديد هنا عندما يتوفر.",
+  "stateNoDeposits": "لا توجد إيداعات بعد",
+  "stateNoOpinionPeriod": "لم تُفتح فترة آراء بعد",
+  "stateNoMatchingMeals": "لا توجد وجبات تطابق هذه المرشحات."
 }

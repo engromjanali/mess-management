@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
@@ -514,9 +515,9 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                           if (_loading && _status == null)
                             const Center(child: AppLoader())
                           else if ((_status?.memberships ?? const []).isEmpty)
-                            Text(context.local.noMembershipsYet, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
+                            AppEmptyState(title: context.local.noMembershipsYet, icon: Icons.groups_outlined)
                           else if (!_status!.memberships.any((membership) => _matchesFilter(_ManagementSection.memberships, membership.status)))
-                            Text(context.local.noMatchingRecords, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
+                            AppEmptyState(title: context.local.noMatchingRecords, icon: Icons.search_off_rounded)
                           else
                             for (final membership in _status!.memberships.where((membership) => _matchesFilter(_ManagementSection.memberships, membership.status)))
                               Padding(
@@ -545,9 +546,9 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                           _filterField(_ManagementSection.invitations),
                           const SizedBox(height: Dimensions.paddingSizeLarge),
                           if ((_status?.invites ?? const []).isEmpty)
-                            Text(context.local.noInvitationsForYou, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
+                            AppEmptyState(title: context.local.noInvitationsForYou, icon: Icons.mail_outline_rounded)
                           else if (!_status!.invites.any((invite) => _matchesFilter(_ManagementSection.invitations, invite.status)))
-                            Text(context.local.noMatchingRecords, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
+                            AppEmptyState(title: context.local.noMatchingRecords, icon: Icons.search_off_rounded)
                           else
                             for (final invite in _status!.invites.where((invite) => _matchesFilter(_ManagementSection.invitations, invite.status)))
                               MessItemTile(
@@ -577,9 +578,9 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                           _filterField(_ManagementSection.requests),
                           const SizedBox(height: Dimensions.paddingSizeLarge),
                           if ((_status?.joinRequests ?? const []).isEmpty)
-                            Text(context.local.noJoinRequestsSent, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
+                            AppEmptyState(title: context.local.noJoinRequestsSent, icon: Icons.person_add_alt_rounded)
                           else if (!_status!.joinRequests.any((request) => _matchesFilter(_ManagementSection.requests, request.status)))
-                            Text(context.local.noMatchingRecords, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
+                            AppEmptyState(title: context.local.noMatchingRecords, icon: Icons.search_off_rounded)
                           else
                             for (final request in _status!.joinRequests.where((request) => _matchesFilter(_ManagementSection.requests, request.status)))
                               MessItemTile(
@@ -653,7 +654,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                         if (_loading)
                           const Center(child: AppLoader())
                         else if (_visibleInvitations.isEmpty)
-                          Text(context.local.noMatchingRecords, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
+                          AppEmptyState(title: context.local.noMatchingRecords, icon: Icons.search_off_rounded)
                         else
                           for (final invite in _visibleInvitations)
                             _InvitationTile(
@@ -676,7 +677,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                           if (_loading)
                             const Center(child: AppLoader())
                           else if (!_requests.any((request) => _matchesFilter(_ManagementSection.messRequests, request['status'] as String?)))
-                            Text(context.local.noMatchingRecords, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
+                            AppEmptyState(title: context.local.noMatchingRecords, icon: Icons.search_off_rounded)
                           else
                             for (final request in _requests.where((request) => _matchesFilter(_ManagementSection.messRequests, request['status'] as String?)))
                               ListTile(
@@ -718,7 +719,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                           if (_loading)
                             const Center(child: AppLoader())
                           else if (_visibleMembers.isEmpty)
-                            Text(context.local.noMatchingRecords, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor))
+                            AppEmptyState(title: context.local.noMatchingRecords, icon: Icons.search_off_rounded)
                           else
                             for (final (i, member) in _visibleMembers.indexed) ...[
                               if (i > 0) Divider(height: 1, color: colors.dividerColor.withValues(alpha: 0.3)),

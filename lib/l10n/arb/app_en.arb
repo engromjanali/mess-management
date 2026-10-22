@@ -945,5 +945,15 @@
   "currentSeasonLabel": "Current season",
   "opinionAnonymousOnly": "Anonymous only",
   "opinionBothModes": "Anonymous and named",
-  "loading": "Loading…"
+  "loading": "Loading…",
+  "stateOfflineTitle": "You’re offline",
+  "stateErrorTitle": "Something went wrong",
+  "stateTimeoutTitle": "Taking longer than expected",
+  "stateServiceTitle": "We’ll be back shortly",
+  "stateAccessTitle": "Access restricted",
+  "stateSessionTitle": "Let’s sign you in again",
+  "stateEmptyHint": "New activity will appear here when it’s available.",
+  "stateNoDeposits": "No deposits yet",
+  "stateNoOpinionPeriod": "No opinion period is open yet",
+  "stateNoMatchingMeals": "No meals match these filters."
 }

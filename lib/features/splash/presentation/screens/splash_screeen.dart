@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
@@ -46,22 +47,7 @@ class _SplashScreenState extends State<SplashScreen> {
           backgroundColor: colors.backgroundColor,
           body: Center(
             child: state.maybeWhen(
-              error: (message) => Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.wifi_off_rounded, size: 48),
-                  const SizedBox(height: 12),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
-                    child: Text(message, textAlign: TextAlign.center),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => context.read<SplashBloc>().add(const SplashEvent.getConfig()),
-                    child: Text(context.local.tryAgain),
-                  ),
-                ],
-              ),
+              error: (message) => AppErrorState(error: message, onRetry: () => context.read<SplashBloc>().add(const SplashEvent.getConfig())),
               orElse: () => Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [

@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'dart:async';
 
@@ -5,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:clean_boilerplate/config/util/dimensions.dart';
-import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/di/injection.dart';
 import 'package:clean_boilerplate/core/errors/failures.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
@@ -119,31 +119,8 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.customThemeColors;
     final isAdmin = context.read<RoleCubit>().state.isAdmin;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(Dimensions.paddingSizeExtraLarge24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.error_outline_rounded, size: Dimensions.iconSizeExtraLarge, color: colors.errorColor),
-            const SizedBox(height: Dimensions.paddingSizeDefault),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor),
-            ),
-            const SizedBox(height: Dimensions.paddingSizeLarge),
-            ElevatedButton.icon(
-              onPressed: () => context.read<NoticeBloc>().add(NoticeEvent.started(isAdmin: isAdmin)),
-              icon: const Icon(Icons.refresh_rounded),
-              label: Text(context.local.tryAgain),
-            ),
-          ],
-        ),
-      ),
-    );
+    return AppErrorState(error: message, onRetry: () => context.read<NoticeBloc>().add(NoticeEvent.started(isAdmin: isAdmin)));
   }
 }
 
@@ -344,16 +321,6 @@ class _EmptyView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.customThemeColors;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraLarge32 * 3),
-      child: Column(
-        children: [
-          Icon(Icons.campaign_outlined, size: Dimensions.iconSizeExtraLarge, color: colors.textHintColor),
-          const SizedBox(height: Dimensions.paddingSizeDefault),
-          Text(context.local.noNoticesYet, style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor)),
-        ],
-      ),
-    );
+    return AppEmptyState(title: context.local.noNoticesYet, icon: Icons.campaign_outlined);
   }
 }

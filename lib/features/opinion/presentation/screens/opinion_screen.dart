@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -196,7 +197,7 @@ class _OpinionScreenState extends State<OpinionScreen> {
     final showWebAppBar = ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context);
     final isAdmin = context.watch<RoleCubit>().state.isAdmin && _canManage;
     final opinionContent = _loading ? const Center(child: AppLoader()) : _error != null && _periods.isEmpty
-        ? Center(child: Padding(padding: const EdgeInsets.all(Dimensions.paddingSizeLarge), child: Column(mainAxisSize: MainAxisSize.min, children: [Text(userErrorMessage(_error!, context.local), textAlign: TextAlign.center), TextButton.icon(onPressed: () => _load(), icon: const Icon(Icons.refresh_rounded), label: Text(context.local.tryAgain))])))
+        ? AppErrorState(error: _error!, onRetry: () => _load())
         : RefreshIndicator(onRefresh: () => _load(), child: _OpinionBody(
       periods: _periods,
       isAdmin: isAdmin,
@@ -673,15 +674,6 @@ class _EmptyOpinionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 80),
-      child: Column(
-        children: [
-          Icon(Icons.forum_outlined, size: 64, color: context.customThemeColors.textHintColor),
-          const SizedBox(height: Dimensions.paddingSizeLarge),
-          const Text('No opinion period is open yet', textAlign: TextAlign.center),
-        ],
-      ),
-    );
+    return AppEmptyState(title: context.local.stateNoOpinionPeriod, icon: Icons.forum_outlined);
   }
 }

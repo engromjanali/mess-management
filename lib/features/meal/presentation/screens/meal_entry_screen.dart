@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -101,26 +102,7 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.customThemeColors;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(Dimensions.paddingSizeExtraLarge24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.error_outline_rounded, size: Dimensions.iconSizeExtraLarge, color: colors.errorColor),
-            const SizedBox(height: Dimensions.paddingSizeDefault),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor),
-            ),
-            const SizedBox(height: Dimensions.paddingSizeLarge),
-            ElevatedButton.icon(onPressed: () => context.read<MealAdminBloc>().add(const MealAdminEvent.load()), icon: const Icon(Icons.refresh_rounded), label: Text(context.local.tryAgain)),
-          ],
-        ),
-      ),
-    );
+    return AppErrorState(error: message, onRetry: () => context.read<MealAdminBloc>().add(const MealAdminEvent.load()));
   }
 }
 

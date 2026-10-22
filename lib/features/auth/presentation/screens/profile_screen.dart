@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
@@ -235,21 +236,6 @@ class _SignedOutView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.customThemeColors;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(Dimensions.paddingSizeExtraLarge),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.person_off_outlined, size: Dimensions.iconSizeExtraLarge, color: colors.textHintColor),
-            const SizedBox(height: Dimensions.paddingSizeDefault),
-            Text(context.local.notSignedIn, textAlign: TextAlign.center, style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor)),
-            const SizedBox(height: Dimensions.spaceLarge),
-            ElevatedButton.icon(onPressed: () => context.go(AppRoutes.getLoginRoute()), icon: const Icon(Icons.login_rounded), label: Text(context.local.login)),
-          ],
-        ),
-      ),
-    );
+    return AppStateView(title: context.local.notSignedIn, message: context.local.signInAgain, icon: Icons.person_outline_rounded, onAction: () => context.go(AppRoutes.getLoginRoute()), actionLabel: context.local.login, actionIcon: Icons.login_rounded);
   }
 }
