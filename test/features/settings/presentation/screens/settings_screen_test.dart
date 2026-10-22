@@ -1,11 +1,12 @@
 import 'package:clean_boilerplate/config/theme/custom_theme_colors.dart';
+import 'package:clean_boilerplate/features/settings/domain/entities/theme_mode.dart';
 import 'package:clean_boilerplate/config/util/app_constants.dart';
 
 import 'package:clean_boilerplate/features/settings/presentation/bloc/localization/localization_bloc.dart';
 import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_bloc.dart';
 import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_event.dart';
 import 'package:clean_boilerplate/features/settings/presentation/screens/settings_screen.dart';
-import 'package:clean_boilerplate/features/settings/presentation/widgets/language_bottom_sheet.dart';
+import 'package:clean_boilerplate/features/settings/presentation/widgets/language_selection_overlay.dart';
 import 'package:clean_boilerplate/l10n/gen/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,8 +14,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 // Manual Mock ThemeBloc
 class MockThemeBloc extends Bloc<ThemeEvent, ThemeState> implements ThemeBloc {
+  ThemeEvent? lastEvent;
+
   MockThemeBloc() : super(const ThemeState.light()) {
-    on<ThemeEvent>((event, emit) {});
+    on<ThemeEvent>((event, emit) { lastEvent = event; });
   }
 }
 
@@ -74,41 +77,26 @@ void main() {
     // Check initial values (English is default, Light mode is default)
     expect(find.text('English'), findsOneWidget); 
     
-    // Note: SettingsScreen logic:
-    // isLight = state.value;
-    // subtitle: isLight ? context.local.disabled : context.local.enabled
-    // value: !isLight
-    // If Light: isLight=true -> subtitle='Disabled' -> value=false.
-    
-    // MockThemeBloc initial is Light -> isLight=true.
-    // Subtitle should be 'Disabled'.
-    expect(find.text('Disabled'), findsOneWidget);
+    final local = AppLocalizations.of(tester.element(find.byType(SettingsScreen)));
+    expect(find.text(local.uiLightMode), findsOneWidget);
+    expect(find.text(local.uiSystemDefault), findsOneWidget);
   });
 
-  testWidgets('Tapping Language tile opens bottom sheet',
+  testWidgets('Tapping Language tile opens overlay',
       (WidgetTester tester) async {
     await tester.pumpWidget(createWidgetUnderTest());
 
     await tester.tap(find.widgetWithText(ListTile, 'Select Language'));
     await tester.pumpAndSettle();
 
-    expect(find.byType(LanguageBottomSheet), findsOneWidget);
+    expect(find.byType(LanguageSelectionOverlay), findsOneWidget);
   });
 
-  testWidgets('Toggling Theme switch adds ChangeThemeMode event',
+  testWidgets('Selecting dark theme sends the requested mode',
       (WidgetTester tester) async {
-    // We cannot easily verify added events with manual mock without extra logic, 
-    // but we can ensure UI interaction works.
-    
     await tester.pumpWidget(createWidgetUnderTest());
-    
-    // Initial: Light Mode (Switch is OFF)
-    // Tap switch to turn ON (Dark Mode)
-    await tester.tap(find.byType(Switch));
+    await tester.tap(find.widgetWithText(ListTile, 'Dark Mode'));
     await tester.pump();
-    
-    // No visual change expected unless bloc emits new state, 
-    // but ensuring no crash is good.
-    expect(find.byType(SettingsScreen), findsOneWidget);
+    expect(mockThemeBloc.lastEvent, const ThemeEvent.changeThemeMode(AppThemeMode.dark));
   });
 }

@@ -30,11 +30,11 @@ const _routes = [AppRoutes.home, AppRoutes.meals, AppRoutes.deposits, AppRoutes.
 GoRouter _createRouter({String initialLocation = AppRoutes.home}) => GoRouter(
   initialLocation: initialLocation,
   routes: [
-    ShellRoute(
-      builder: (context, state, child) => MainNavigationShell(location: state.uri.path, child: child),
-      routes: [
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) => MainNavigationShell(navigationShell: navigationShell),
+      branches: [
         for (final route in _routes)
-          GoRoute(path: route, builder: (context, state) => Scaffold(body: SizedBox.expand(key: ValueKey(route)))),
+          StatefulShellBranch(routes: [GoRoute(path: route, builder: (context, state) => Scaffold(body: SizedBox.expand(key: ValueKey(route))))]),
       ],
     ),
     GoRoute(path: AppRoutes.settings, builder: (context, state) => const Scaffold(body: Text('Settings page'))),

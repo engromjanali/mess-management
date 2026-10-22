@@ -50,14 +50,14 @@ void main() {
       requests.add(options);
       handler.resolve(Response(requestOptions: options, statusCode: 200));
     }));
-    await api.submitOpinion(periodId: '10', message: 'Anonymous feedback');
-    await api.createPeriod(title: 'Feedback', details: 'Details', startDate: DateTime(2026, 10), endDate: DateTime(2026, 10, 31), visibility: OpinionVisibility.afterPublish);
+    await api.submitOpinion(periodId: '10', message: 'Anonymous feedback', anonymous: true);
+    await api.createPeriod(title: 'Feedback', details: 'Details', startDate: DateTime(2026, 10), endDate: DateTime(2026, 10, 31), visibility: OpinionVisibility.afterPublish, submissionMode: OpinionSubmissionMode.anonymousOnly);
     await api.setMessageSending(periodId: '10', enabled: false);
     await api.setVisibility(periodId: '10', visibility: OpinionVisibility.realtime);
     await api.publishOpinions(periodId: '10');
     expect(requests.first.path, '/api/v1/user/opinions/10/messages');
-    expect(requests.first.data, {'message': 'Anonymous feedback'});
-    expect(requests[1].data, {'title': 'Feedback', 'details': 'Details', 'start_date': '2026-10-01', 'end_date': '2026-10-31', 'visibility': 'after_publish'});
+    expect(requests.first.data, {'message': 'Anonymous feedback', 'anonymous': true});
+    expect(requests[1].data, {'title': 'Feedback', 'details': 'Details', 'start_date': '2026-10-01', 'end_date': '2026-10-31', 'visibility': 'after_publish', 'submission_mode': 'anonymous_only'});
     expect(requests[2].method, 'PATCH');
     expect(requests[2].data, {'accepting_messages': false});
     expect(requests[3].data, {'visibility': 'realtime'});
