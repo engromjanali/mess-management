@@ -145,7 +145,7 @@ class _Brand extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Mess Manager',
+                'Mess Pilot',
                 style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
               ),
             ],

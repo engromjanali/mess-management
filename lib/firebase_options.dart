@@ -67,6 +67,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '139665999955',
     projectId: 'mess-management-2600a',
     storageBucket: 'mess-management-2600a.firebasestorage.app',
-    iosBundleId: 'com.example.cleanBoilerplate',
+    iosBundleId: 'com.goraso.messpilot',
   );
 }

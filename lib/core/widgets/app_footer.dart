@@ -91,7 +91,7 @@ class AppFooter extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault),
             child: Text(
-              '© Copyright ${DateTime.now().year} Mess Manager. All rights reserved.',
+              '© Copyright ${DateTime.now().year} Mess Pilot. All rights reserved.',
               textAlign: TextAlign.center,
               style: AppTextStyles.sfProRoundedRegular.copyWith(color: _mutedTextColor, fontSize: Dimensions.fontSizeSmall),
             ),
@@ -125,7 +125,7 @@ class _FooterBrand extends StatelessWidget {
             ),
             const SizedBox(width: Dimensions.paddingSizeDefault),
             Expanded(
-              child: Text('Mess Manager', maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedBold.copyWith(color: AppFooter._textColor, fontSize: Dimensions.fontSizeExtraLarge)),
+              child: Text('Mess Pilot', maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedBold.copyWith(color: AppFooter._textColor, fontSize: Dimensions.fontSizeExtraLarge)),
             ),
           ],
         ),

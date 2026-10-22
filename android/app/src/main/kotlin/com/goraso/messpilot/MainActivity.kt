@@ -1,4 +1,4 @@
-package com.example.clean_boilerplate
+package com.goraso.messpilot
 
 import io.flutter.embedding.android.FlutterActivity
 

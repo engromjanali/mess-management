@@ -179,7 +179,7 @@ class _NoCurrentMessState extends State<_NoCurrentMess> {
     return Scaffold(
       appBar: AppBar(
         leading: widget.connected ? const HomeBackButton() : null,
-        title: const Text('Mess Manager'),
+        title: const Text('Mess Pilot'),
         actions: [
           IconButton(onPressed: () => confirmSignOut(context), icon: const Icon(Icons.logout_rounded), tooltip: context.local.logout),
         ],

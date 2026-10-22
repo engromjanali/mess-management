@@ -5,7 +5,7 @@ class AppConstants {
   AppConstants._();
 
   // App info
-  static const String appName = 'Clean Boilerplate';
+  static const String appName = 'Mess Pilot';
   static const String appVersion = '1.0.0';
 
   static const String baseUrl = 'http://127.0.0.1:8000';

@@ -1,11 +1,11 @@
 {
-    "name": "clean_boilerplate",
-    "short_name": "clean_boilerplate",
+    "name": "Mess Pilot",
+    "short_name": "Mess Pilot",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Simple, transparent mess management for every member.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

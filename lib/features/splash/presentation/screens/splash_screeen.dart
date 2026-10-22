@@ -70,7 +70,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     child: const AppLogo(size: 120, shape: BoxShape.circle),
                   ),
                   const SizedBox(height: 24),
-                  Text('Mess Manager', style: AppTextStyles.sfProRoundedBold.copyWith(color: colors.textPrimaryColor, fontSize: 28)),
+                  Text('Mess Pilot', style: AppTextStyles.sfProRoundedBold.copyWith(color: colors.textPrimaryColor, fontSize: 28)),
                   const SizedBox(height: 24),
                   SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2.5, color: colors.primaryColor)),
                 ],
