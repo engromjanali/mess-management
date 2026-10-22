@@ -14,13 +14,14 @@ enum DepositType {
 
 /// A member that can have deposits recorded against them.
 class DepositMemberEntity extends Equatable {
+  final String? photoUrl;
   final String id;
   final String name;
 
-  const DepositMemberEntity({required this.id, required this.name});
+  const DepositMemberEntity({required this.id, required this.name, this.photoUrl});
 
   @override
-  List<Object?> get props => [id, name];
+  List<Object?> get props => [photoUrl, id, name];
 }
 
 /// A single deposit record for one member.

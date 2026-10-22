@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_user_avatar.dart';
 import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
@@ -65,13 +66,6 @@ class _DrawerHeader extends StatelessWidget {
   final UserEntity? user;
   final VoidCallback onTap;
 
-  String get _initials {
-    final parts = user?.name.trim().split(RegExp(r'\s+')) ?? [];
-    if (parts.isEmpty || parts.first.isEmpty) return '?';
-    if (parts.length == 1) return parts.first.characters.first.toUpperCase();
-    return (parts.first.characters.first + parts.last.characters.first).toUpperCase();
-  }
-
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
@@ -92,11 +86,7 @@ class _DrawerHeader extends StatelessWidget {
                   padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
                   child: Row(
                     children: [
-                      CircleAvatar(
-                        radius: 28,
-                        backgroundColor: colors.primaryColor.withValues(alpha: 0.15),
-                        child: Text(_initials, style: AppTextStyles.sfProRoundedBold.copyWith(color: colors.primaryColor, fontSize: Dimensions.fontSizeExtraLarge)),
-                      ),
+                      AppUserAvatar(name: user?.name ?? '', photoUrl: user?.photoUrl, radius: 28),
                       const SizedBox(width: Dimensions.paddingSizeDefault),
                       Expanded(
                         child: Column(

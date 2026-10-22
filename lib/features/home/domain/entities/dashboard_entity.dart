@@ -97,18 +97,19 @@ class DashboardEntity extends Equatable {
 
 /// Per-member statistics rendered in the manager member table.
 class MemberStatEntity extends Equatable {
+  final String? photoUrl;
   final String id;
   final String name;
   final double deposit;
   final double meal;
 
-  const MemberStatEntity({required this.id, required this.name, required this.deposit, required this.meal});
+  const MemberStatEntity({required this.id, required this.name, required this.deposit, required this.meal, this.photoUrl});
 
   /// Remaining balance for a member given the current meal rate.
   double remaining(double mealRate) => deposit - (meal * mealRate);
 
   @override
-  List<Object?> get props => [id, name, deposit, meal];
+  List<Object?> get props => [photoUrl, id, name, deposit, meal];
 }
 
 /// A pinned notice shown on the home screen.

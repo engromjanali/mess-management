@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_user_avatar.dart';
 import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:clean_boilerplate/config/route/app_router.dart';
@@ -727,6 +728,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                                   final isMe = member['id'] == myUserId;
                                   return ManagedMemberTile(
                                     name: member['name'] as String? ?? '',
+                                    photoUrl: member['photo'] as String?,
                                     email: member['email'] as String? ?? '',
                                     phone: member['phone'] as String? ?? '',
                                     role: member['role'] as String? ?? 'member',
@@ -817,7 +819,6 @@ class _InvitationTile extends StatelessWidget {
     final colors = context.customThemeColors;
     final invitationStatus = invite['status'] as String? ?? 'pending';
     final status = invitationStatus.isEmpty ? 'pending' : invitationStatus;
-    final statusColor = _statusColor(context, status);
     final season = invite['season_name'] as String?;
     return Container(
       margin: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
@@ -825,7 +826,7 @@ class _InvitationTile extends StatelessWidget {
       decoration: BoxDecoration(border: Border.all(color: colors.borderColor), borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
       child: Row(
         children: [
-          CircleAvatar(backgroundColor: statusColor.withValues(alpha: 0.12), child: Icon(Icons.person_outline_rounded, color: statusColor)),
+          AppUserAvatar(name: invite['user_name'] as String? ?? '', photoUrl: invite['user_photo'] as String?, radius: 20),
           const SizedBox(width: Dimensions.paddingSizeDefault),
           Expanded(
             child: Column(
@@ -951,7 +952,7 @@ class _MemberPreview extends StatelessWidget {
         children: [
           Row(
             children: [
-              CircleAvatar(radius: 26, backgroundColor: colors.primaryColor.withValues(alpha: 0.15), child: Icon(Icons.person_rounded, color: colors.primaryColor)),
+              AppUserAvatar(name: member['name'] as String? ?? '', photoUrl: member['photo'] as String?, radius: 26),
               const SizedBox(width: Dimensions.paddingSizeDefault),
               Expanded(
                 child: Column(

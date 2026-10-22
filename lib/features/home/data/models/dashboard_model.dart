@@ -84,14 +84,15 @@ class DashboardModel {
 }
 
 class MemberStatModel {
+  final String? photoUrl;
   final String id;
   final String name;
   final double deposit;
   final double meal;
 
-  const MemberStatModel({required this.id, required this.name, required this.deposit, required this.meal});
+  const MemberStatModel({required this.id, required this.name, required this.deposit, required this.meal, this.photoUrl});
 
-  MemberStatEntity toEntity() => MemberStatEntity(id: id, name: name, deposit: deposit, meal: meal);
+  MemberStatEntity toEntity() => MemberStatEntity(photoUrl: photoUrl, id: id, name: name, deposit: deposit, meal: meal);
 }
 
 class NoticeModel {

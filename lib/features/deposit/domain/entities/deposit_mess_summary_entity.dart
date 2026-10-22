@@ -3,19 +3,20 @@ import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_entit
 
 /// One member's deposit totals within the mess.
 class DepositMemberBalanceEntity extends Equatable {
+  final String? photoUrl;
   final String memberId;
   final String memberName;
   final double credit;
   final double debit;
   final int entries;
 
-  const DepositMemberBalanceEntity({required this.memberId, required this.memberName, required this.credit, required this.debit, required this.entries});
+  const DepositMemberBalanceEntity({required this.memberId, required this.memberName, required this.credit, required this.debit, required this.entries, this.photoUrl});
 
   /// Credits minus debits (signed).
   double get net => credit - debit;
 
   @override
-  List<Object?> get props => [memberId, memberName, credit, debit, entries];
+  List<Object?> get props => [photoUrl, memberId, memberName, credit, debit, entries];
 }
 
 /// Mess-wide deposit totals (admin view), independent of the list filter.
@@ -36,13 +37,14 @@ class DepositMessSummaryEntity extends Equatable {
   /// and the manager's own balance from [myDeposits] when given.
   factory DepositMessSummaryEntity.fromDeposits(List<DepositEntity> deposits, List<DepositMemberEntity> members, {List<DepositEntity>? myDeposits}) {
     final byMember = <String, DepositMemberBalanceEntity>{
-      for (final m in members) m.id: DepositMemberBalanceEntity(memberId: m.id, memberName: m.name, credit: 0, debit: 0, entries: 0),
+      for (final m in members) m.id: DepositMemberBalanceEntity(memberId: m.id, memberName: m.name, photoUrl: m.photoUrl, credit: 0, debit: 0, entries: 0),
     };
     for (final d in deposits) {
       final current = byMember[d.memberId] ?? DepositMemberBalanceEntity(memberId: d.memberId, memberName: d.memberName, credit: 0, debit: 0, entries: 0);
       byMember[d.memberId] = DepositMemberBalanceEntity(
         memberId: current.memberId,
         memberName: current.memberName,
+        photoUrl: current.photoUrl,
         credit: current.credit + (d.isCredit ? d.amount : 0),
         debit: current.debit + (d.isDebit ? d.absoluteAmount : 0),
         entries: current.entries + 1,

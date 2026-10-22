@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_user_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
@@ -54,7 +55,7 @@ class _CostTileState extends State<CostTile> {
               padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
               child: Row(
                 children: [
-                  _IndexBadge(index: widget.index),
+                  AppUserAvatar(name: cost.personName, photoUrl: cost.personPhotoUrl),
                   const SizedBox(width: Dimensions.paddingSizeDefault),
                   Expanded(
                     child: Column(
@@ -124,24 +125,6 @@ class _CostTileState extends State<CostTile> {
 
 enum _CostAction { edit, delete }
 
-class _IndexBadge extends StatelessWidget {
-  const _IndexBadge({required this.index});
-  final int index;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.customThemeColors;
-    return CircleAvatar(
-      radius: 18,
-      backgroundColor: colors.errorColor,
-      child: Text(
-        '$index',
-        style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: Colors.white),
-      ),
-    );
-  }
-}
-
 /// The expandable breakdown — meta lines + a product/price table.
 class _Details extends StatelessWidget {
   const _Details({required this.cost, required this.maskCost});
@@ -178,17 +161,17 @@ class _Details extends StatelessWidget {
           ),
           const SizedBox(height: Dimensions.paddingSizeSmall),
           // Table header.
-          _Row(sl: context.local.serialNo, product: context.local.product, price: context.local.price, bold: true, color: colors.textPrimaryColor),
+          Padding(padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall), child: _Row(sl: context.local.serialNo, product: context.local.product, price: context.local.price, bold: true, color: colors.textPrimaryColor)),
           const SizedBox(height: Dimensions.paddingSizeExtraSmall),
           for (var i = 0; i < cost.items.length; i++)
             Container(
-              color: i.isEven ? colors.warningColor.withValues(alpha: 0.10) : colors.successColor.withValues(alpha: 0.10),
-              padding: const EdgeInsets.symmetric(vertical: 6),
+              decoration: BoxDecoration(color: i.isEven ? colors.warningColor.withValues(alpha: 0.10) : colors.successColor.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(Dimensions.radiusSmall)),
+              padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: 6),
               child: _Row(sl: '${i + 1}.', product: cost.items[i].product, price: _price(cost.items[i].price), color: colors.textPrimaryColor),
             ),
           const SizedBox(height: Dimensions.paddingSizeSmall),
           // Total row.
-          _Row(sl: '', product: context.local.total, price: maskCost ? '••••' : CostFormatters.number(cost.total), bold: true, color: colors.primaryColor),
+          Padding(padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall), child: _Row(sl: '', product: context.local.total, price: maskCost ? '••••' : CostFormatters.number(cost.total), bold: true, color: colors.primaryColor)),
         ],
       ),
     );

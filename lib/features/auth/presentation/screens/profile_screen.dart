@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_user_avatar.dart';
 import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:clean_boilerplate/config/route/app_router.dart';
@@ -78,13 +79,6 @@ class _ProfileHeader extends StatelessWidget {
   const _ProfileHeader({required this.user});
   final UserEntity user;
 
-  String get _initials {
-    final parts = user.name.trim().split(RegExp(r'\s+'));
-    if (parts.isEmpty || parts.first.isEmpty) return '?';
-    if (parts.length == 1) return parts.first.characters.first.toUpperCase();
-    return (parts.first.characters.first + parts.last.characters.first).toUpperCase();
-  }
-
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
@@ -105,17 +99,7 @@ class _ProfileHeader extends StatelessWidget {
       ),
       child: Column(
         children: [
-          CircleAvatar(
-            radius: 40,
-            backgroundColor: colors.primaryColor.withValues(alpha: 0.15),
-            backgroundImage: (user.photoUrl?.isNotEmpty ?? false) ? NetworkImage(user.photoUrl!) : null,
-            child: (user.photoUrl?.isNotEmpty ?? false)
-                ? null
-                : Text(
-                    _initials,
-                    style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.iconSizeLarge, color: colors.primaryColor),
-                  ),
-          ),
+          AppUserAvatar(name: user.name, photoUrl: user.photoUrl, radius: 40),
           const SizedBox(height: Dimensions.spaceDefault),
           Text(
             user.name,

@@ -24,11 +24,15 @@ class CostEntryForm extends StatefulWidget {
 class _ItemRow {
   final TextEditingController product;
   final TextEditingController price;
+  final FocusNode productFocus = FocusNode();
+  final FocusNode priceFocus = FocusNode();
   _ItemRow({String product = '', String price = ''}) : product = TextEditingController(text: product), price = TextEditingController(text: price);
 
   void dispose() {
     product.dispose();
     price.dispose();
+    productFocus.dispose();
+    priceFocus.dispose();
   }
 }
 
@@ -65,7 +69,31 @@ class _CostEntryFormState extends State<CostEntryForm> {
     return sum;
   }
 
-  void _addRow() => setState(() => _rows.add(_ItemRow()));
+  void _addRow() {
+    final row = _ItemRow();
+    setState(() => _rows.add(row));
+    _focusProduct(row);
+  }
+
+  void _focusProduct(_ItemRow row) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_rows.contains(row)) return;
+      row.productFocus.requestFocus();
+      final fieldContext = row.productFocus.context;
+      if (fieldContext != null) Scrollable.ensureVisible(fieldContext, duration: const Duration(milliseconds: 200), alignment: 0.5);
+    });
+  }
+
+  void _nextProduct(_ItemRow row) {
+    final index = _rows.indexOf(row);
+    if (index < 0) return;
+    if (index == _rows.length - 1) {
+      if (row.product.text.trim().isEmpty || (double.tryParse(row.price.text.trim()) ?? 0) <= 0) return;
+      _addRow();
+    } else {
+      _focusProduct(_rows[index + 1]);
+    }
+  }
 
   void _removeRow(int i) {
     setState(() {
@@ -156,12 +184,16 @@ class _CostEntryFormState extends State<CostEntryForm> {
           for (var i = 0; i < _rows.length; i++)
             Padding(
               padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
+              key: ObjectKey(_rows[i]),
               child: Row(
                 children: [
                   Expanded(
                     flex: 3,
                     child: TextFormField(
                       controller: _rows[i].product,
+                      focusNode: _rows[i].productFocus,
+                      textInputAction: TextInputAction.next,
+                      onFieldSubmitted: (_) => _rows[i].priceFocus.requestFocus(),
                       textCapitalization: TextCapitalization.words,
                       decoration: _decoration(context, hint: context.local.product),
                     ),
@@ -171,6 +203,9 @@ class _CostEntryFormState extends State<CostEntryForm> {
                     flex: 2,
                     child: TextFormField(
                       controller: _rows[i].price,
+                      focusNode: _rows[i].priceFocus,
+                      textInputAction: TextInputAction.next,
+                      onFieldSubmitted: (_) => _nextProduct(_rows[i]),
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
                       decoration: _decoration(context, hint: context.local.price),

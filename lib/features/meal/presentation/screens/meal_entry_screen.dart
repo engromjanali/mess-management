@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_user_avatar.dart';
 import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:flutter/material.dart';
@@ -232,6 +233,7 @@ class _BodyState extends State<_Body> {
                             child: _MemberRow(
                               index: i + 1,
                               name: members[i].name,
+                              photoUrl: members[i].photoUrl,
                               record: _mealFor(members[i].id),
                               mealRate: widget.data.mealRate,
                               onEdit: () => _edit(context, members[i]),
@@ -465,9 +467,10 @@ class _DateText extends StatelessWidget {
 
 /// One member's row for the selected day, with edit / delete actions.
 class _MemberRow extends StatelessWidget {
-  const _MemberRow({required this.index, required this.name, required this.record, required this.mealRate, required this.onEdit, required this.onDelete});
+  const _MemberRow({required this.index, required this.name, required this.record, required this.mealRate, required this.onEdit, required this.onDelete, this.photoUrl});
 
   final int index;
+  final String? photoUrl;
   final String name;
   final MemberMealEntity? record;
   final double mealRate;
@@ -497,7 +500,7 @@ class _MemberRow extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        _MemberIndex(index: index),
+                        AppUserAvatar(name: name, photoUrl: photoUrl),
                         const SizedBox(width: Dimensions.paddingSizeDefault),
                         Expanded(
                           child: _MemberMealText(name: name, total: total, hasMeal: hasMeal),
@@ -542,7 +545,7 @@ class _MemberRow extends StatelessWidget {
                 )
               : Row(
                   children: [
-                    _MemberIndex(index: index),
+                    AppUserAvatar(name: name, photoUrl: photoUrl),
                     const SizedBox(width: Dimensions.paddingSizeDefault),
                     Expanded(
                       child: _MemberMealText(name: name, total: total, hasMeal: hasMeal),
@@ -572,24 +575,6 @@ class _MemberRow extends StatelessWidget {
   }
 }
 
-class _MemberIndex extends StatelessWidget {
-  const _MemberIndex({required this.index});
-  final int index;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.customThemeColors;
-
-    return CircleAvatar(
-      radius: 18,
-      backgroundColor: colors.primaryColor.withValues(alpha: 0.15),
-      child: Text(
-        '$index',
-        style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.primaryColor),
-      ),
-    );
-  }
-}
 
 class _MemberMealText extends StatelessWidget {
   const _MemberMealText({required this.name, required this.total, required this.hasMeal});

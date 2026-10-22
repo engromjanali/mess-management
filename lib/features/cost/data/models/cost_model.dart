@@ -24,19 +24,20 @@ class CostMemberModel {
 
 /// Data-layer DTO for a Cost/cost entry.
 class CostModel {
+  final String? personPhotoUrl;
   final String id;
   final String personId;
   final String personName;
   final DateTime date;
   final List<CostItemModel> items;
 
-  const CostModel({required this.id, required this.personId, required this.personName, required this.date, required this.items});
+  const CostModel({required this.id, required this.personId, required this.personName, required this.date, required this.items, this.personPhotoUrl});
 
   CostModel copyWith({String? personId, String? personName, DateTime? date, List<CostItemModel>? items}) {
-    return CostModel(id: id, personId: personId ?? this.personId, personName: personName ?? this.personName, date: date ?? this.date, items: items ?? this.items);
+    return CostModel(personPhotoUrl: personPhotoUrl, id: id, personId: personId ?? this.personId, personName: personName ?? this.personName, date: date ?? this.date, items: items ?? this.items);
   }
 
-  CostEntity toEntity() => CostEntity(id: id, personId: personId, personName: personName, date: date, items: items.map((i) => i.toEntity()).toList());
+  CostEntity toEntity() => CostEntity(personPhotoUrl: personPhotoUrl, id: id, personId: personId, personName: personName, date: date, items: items.map((i) => i.toEntity()).toList());
 }
 
 /// Data-layer DTO for one season's cost entries.

@@ -73,6 +73,7 @@ class CostRemoteDataSourceImpl implements CostDataSource {
       id: '${json['id']}',
       personId: '${json['member_id']}',
       personName: json['member_name'] as String? ?? '',
+      personPhotoUrl: json['member_photo'] as String?,
       date: time == null ? day : DateTime(day.year, day.month, day.day, int.parse(time[0]), int.parse(time[1])),
       items: ((json['items'] as List<dynamic>?) ?? const []).map((item) {
         final i = item as Map<String, dynamic>;

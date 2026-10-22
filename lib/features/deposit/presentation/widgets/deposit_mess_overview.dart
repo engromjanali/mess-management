@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_user_avatar.dart';
 import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
@@ -154,11 +155,7 @@ class _BalanceRow extends StatelessWidget {
 
     final name = Row(
       children: [
-        CircleAvatar(
-          radius: 16,
-          backgroundColor: c.primaryColor.withValues(alpha: 0.12),
-          child: Text(balance.memberName.isEmpty ? '?' : balance.memberName.characters.first.toUpperCase(), style: AppTextStyles.sfProRoundedBold.copyWith(color: c.primaryColor)),
-        ),
+        AppUserAvatar(name: balance.memberName, photoUrl: balance.photoUrl, radius: 16),
         const SizedBox(width: Dimensions.paddingSizeSmall),
         Expanded(child: Text(balance.memberName, maxLines: 1, overflow: TextOverflow.ellipsis, style: nameStyle)),
       ],

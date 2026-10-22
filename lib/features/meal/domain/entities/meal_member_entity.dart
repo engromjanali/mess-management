@@ -5,14 +5,15 @@ import 'package:equatable/equatable.dart';
 /// [active] is false for someone who left but still has meals this season:
 /// their records stay listed, but new meals can't be added for them.
 class MealMemberEntity extends Equatable {
+  final String? photoUrl;
   final String id;
   final String name;
   final bool active;
 
-  const MealMemberEntity({required this.id, required this.name, this.active = true});
+  const MealMemberEntity({required this.id, required this.name, this.active = true, this.photoUrl});
 
   @override
-  List<Object?> get props => [id, name, active];
+  List<Object?> get props => [photoUrl, id, name, active];
 }
 
 /// One member's meal record for a single day (breakfast / lunch / dinner).

@@ -2,12 +2,13 @@ import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_entit
 
 /// Data-layer DTO for a selectable member.
 class DepositMemberModel {
+  final String? photoUrl;
   final String id;
   final String name;
 
-  const DepositMemberModel({required this.id, required this.name});
+  const DepositMemberModel({required this.id, required this.name, this.photoUrl});
 
-  DepositMemberEntity toEntity() => DepositMemberEntity(id: id, name: name);
+  DepositMemberEntity toEntity() => DepositMemberEntity(photoUrl: photoUrl, id: id, name: name);
 }
 
 /// Data-layer DTO for a single deposit record.

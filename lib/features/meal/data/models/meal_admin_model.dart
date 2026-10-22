@@ -2,17 +2,18 @@ import 'package:clean_boilerplate/features/meal/domain/entities/meal_member_enti
 
 /// Data-layer DTO for a mess member.
 class MealMemberModel {
+  final String? photoUrl;
   final String id;
   final String name;
   final bool active;
 
-  const MealMemberModel({required this.id, required this.name, this.active = true});
+  const MealMemberModel({required this.id, required this.name, this.active = true, this.photoUrl});
 
   factory MealMemberModel.fromJson(Map<String, dynamic> json) {
-    return MealMemberModel(id: '${json['id']}', name: json['name'] as String? ?? '', active: json['active'] as bool? ?? true);
+    return MealMemberModel(photoUrl: json['photo'] as String?, id: '${json['id']}', name: json['name'] as String? ?? '', active: json['active'] as bool? ?? true);
   }
 
-  MealMemberEntity toEntity() => MealMemberEntity(id: id, name: name, active: active);
+  MealMemberEntity toEntity() => MealMemberEntity(photoUrl: photoUrl, id: id, name: name, active: active);
 }
 
 /// Data-layer DTO for one member's single-day meal record.

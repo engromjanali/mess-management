@@ -22,7 +22,7 @@ class DepositRemoteDataSourceImpl implements DepositDataSource {
     final response = await _apiClient.get<List<dynamic>>(AppConstants.managerMembersEndpoint);
     return (response.data ?? []).map((item) {
       final json = item as Map<String, dynamic>;
-      return DepositMemberModel(id: '${json['membership_id']}', name: json['name'] as String? ?? '');
+      return DepositMemberModel(photoUrl: json['photo'] as String?, id: '${json['membership_id']}', name: json['name'] as String? ?? '');
     }).toList();
   }
 

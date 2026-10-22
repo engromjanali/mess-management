@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_user_avatar.dart';
 import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
@@ -93,14 +94,7 @@ class _MemberStatsTableState extends State<MemberStatsTable> {
       padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 14,
-            backgroundColor: colors.primaryColor.withValues(alpha: 0.15),
-            child: Text(
-              '${index + 1}',
-              style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: colors.primaryColor),
-            ),
-          ),
+          AppUserAvatar(name: m.name, photoUrl: m.photoUrl, radius: 14),
           const SizedBox(width: Dimensions.paddingSizeSmall),
           Expanded(
             flex: 3,

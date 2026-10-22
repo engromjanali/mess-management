@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
-import 'package:clean_boilerplate/features/membership/presentation/widgets/mess_avatar.dart';
+import 'package:clean_boilerplate/core/widgets/app_user_avatar.dart';
 import 'package:clean_boilerplate/features/membership/presentation/widgets/mess_formatters.dart';
 
 /// What a manager can do to a member from the members list.
@@ -23,9 +23,11 @@ class ManagedMemberTile extends StatelessWidget {
     required this.busy,
     required this.onAction,
     this.left = false,
+    this.photoUrl,
     super.key,
   });
 
+  final String? photoUrl;
   final String name;
   final String email;
   final String phone;
@@ -58,7 +60,7 @@ class ManagedMemberTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
       child: Row(
         children: [
-          Opacity(opacity: inactive ? 0.6 : 1, child: MessAvatar(name: name, color: accent, size: 44)),
+          Opacity(opacity: inactive ? 0.6 : 1, child: AppUserAvatar(name: name, photoUrl: photoUrl, radius: 22)),
           const SizedBox(width: Dimensions.paddingSizeDefault),
           Expanded(
             child: Column(

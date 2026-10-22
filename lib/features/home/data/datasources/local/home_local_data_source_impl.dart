@@ -30,7 +30,7 @@ class HomeLocalDataSourceImpl implements HomeDataSource {
     final mealRate = (stats['meal_rate'] as num).toDouble();
     final members = (json['member_stats'] as List<dynamic>? ?? const []).map((item) {
       final member = item as Map<String, dynamic>;
-      return MemberStatModel(id: '${member['id']}', name: member['name'] as String, deposit: (member['deposit'] as num).toDouble(), meal: (member['meal'] as num).toDouble());
+      return MemberStatModel(photoUrl: member['photo'] as String?, id: '${member['id']}', name: member['name'] as String, deposit: (member['deposit'] as num).toDouble(), meal: (member['meal'] as num).toDouble());
     }).toList();
 
     final totalDeposit = (stats['total_deposit'] as num).toDouble();

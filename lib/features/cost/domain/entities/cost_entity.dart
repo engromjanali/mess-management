@@ -25,13 +25,14 @@ class CostMemberEntity extends Equatable {
 /// One Cost/cost entry: who did the shopping, when, and the list of products
 /// bought with their prices. The [total] is the sum of every line item.
 class CostEntity extends Equatable {
+  final String? personPhotoUrl;
   final String id;
   final String personId;
   final String personName;
   final DateTime date;
   final List<CostItemEntity> items;
 
-  const CostEntity({required this.id, required this.personId, required this.personName, required this.date, required this.items});
+  const CostEntity({required this.id, required this.personId, required this.personName, required this.date, required this.items, this.personPhotoUrl});
 
   /// Sum of every line item's price.
   double get total => items.fold<double>(0, (sum, i) => sum + i.price);
@@ -39,7 +40,7 @@ class CostEntity extends Equatable {
   int get itemCount => items.length;
 
   @override
-  List<Object?> get props => [id, personId, personName, date, items];
+  List<Object?> get props => [personPhotoUrl, id, personId, personName, date, items];
 }
 
 /// The cost entries of one season (the active season), newest first.
