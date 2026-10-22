@@ -20,6 +20,12 @@ class NoticeRemoteDataSourceImpl implements NoticeDataSource {
   }
 
   @override
+  Future<NoticeModel> getNotice(String id) async {
+    final response = await _apiClient.get<Map<String, dynamic>>('${AppConstants.noticesEndpoint}/${Uri.encodeComponent(id)}');
+    return NoticeModel.fromJson(response.data!);
+  }
+
+  @override
   Future<NoticeModel> addNotice({required String title, required String description}) async {
     final response = await _apiClient.post<Map<String, dynamic>>(AppConstants.adminNoticesEndpoint, data: {'title': title, 'description': description});
     return NoticeModel.fromJson(response.data!);

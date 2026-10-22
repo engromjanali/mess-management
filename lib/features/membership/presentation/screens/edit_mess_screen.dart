@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_page_scroll_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
@@ -177,7 +178,7 @@ class _EditMessScreenState extends State<EditMessScreen> {
           : Form(
               key: _formKey,
               autovalidateMode: AutovalidateMode.onUserInteraction,
-              child: ListView(
+              child: AppPageScrollView(
                 padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
                 children: [
                   Center(

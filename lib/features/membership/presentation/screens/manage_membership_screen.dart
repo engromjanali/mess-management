@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_page_scroll_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_user_avatar.dart';
 import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
@@ -485,7 +486,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
       ),
       body: MainPageBody(
         title: context.local.membership,
-        child: ListView(
+        child: AppPageScrollView(
         padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
         children: [
           Center(

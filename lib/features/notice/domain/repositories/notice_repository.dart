@@ -6,6 +6,8 @@ abstract class NoticeRepository {
   /// Every notice (newest first).
   ResultFuture<List<NoticeEntity>> getNotices();
 
+  ResultFuture<NoticeEntity> getNotice(String id);
+
   /// Publishes a new notice.
   ResultFuture<NoticeEntity> addNotice({required String title, required String description});
 

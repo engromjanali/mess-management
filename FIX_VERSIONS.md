@@ -1,52 +1,59 @@
-# Package Version Compatibility Guide
+# Dependency and generated-code troubleshooting
 
-## ✅ Final Working Versions
+Use the constraints in [pubspec.yaml](pubspec.yaml) and the resolved versions in
+[pubspec.lock](pubspec.lock). The old Freezed 2 / Retrofit 4 compatibility recipes
+no longer apply; this app uses handwritten Dio services.
 
-These are the exact versions that work together:
+## Start with the actual failure
 
-```yaml
-dependencies:
-  # Network
-  retrofit: 4.1.0
-
-dev_dependencies:
-  # Code Generation
-  freezed: ^2.5.7
-  retrofit_generator: 8.1.0
-```
-
-## Version Compatibility Rules
-
-1. **retrofit_generator 8.1.0** requires **retrofit ^4.1.0** (4.1.0 or higher)
-2. **freezed ^2.5.7** is compatible with **source_gen ^2.0.0**
-3. **retrofit_generator 8.x** is compatible with **source_gen ^2.0.0**
-
-## Commands to Run
-
-```bash
-# Clean everything
-flutter clean
-rm -rf .dart_tool
-rm -rf pubspec.lock
-
-# Install dependencies
+```sh
+flutter --version
+flutter doctor
 flutter pub get
+```
 
-# Generate code
+Read the first dependency solver error before changing constraints. Keep
+`pubspec.lock` to reproduce the app's resolved packages.
+
+## Missing or conflicting generated files
+
+Stop any running build_runner watcher, then run:
+
+```sh
 dart run build_runner build --delete-conflicting-outputs
-
-# Generate localizations
 flutter gen-l10n
-
-# Run app
-flutter run
 ```
 
-## If Issues Persist
+If the generator's incremental state is inconsistent:
 
-Try clearing the pub cache:
-```bash
-flutter pub cache repair
+```sh
+dart run build_runner clean
+dart run build_runner build --delete-conflicting-outputs
 ```
 
-Then run the commands above again.
+A watcher that reports `wrote 0 outputs` is waiting normally, not stuck. Stop it
+with Ctrl+C when you need the terminal prompt.
+
+## Stale platform build outputs
+
+Use this only when the failure points to stale build artifacts:
+
+```sh
+flutter clean
+flutter pub get
+dart run build_runner build --delete-conflicting-outputs
+flutter gen-l10n
+```
+
+Do not routinely delete the lockfile, repair the entire pub cache, or downgrade
+packages to historical versions. Those actions can hide the original problem.
+
+## Validate the result
+
+```sh
+flutter analyze --no-fatal-infos --no-fatal-warnings
+flutter test --concurrency=1
+flutter build web --release
+```
+
+Also build the affected native target after changing Android/iOS configuration.

@@ -18,7 +18,7 @@ void main() {
   });
 
   const tThemeKey = 'theme_mode';
-  const tLocaleKey = 'locale_code';
+  const tLocaleKey = AppConstants.languageCodeKey;
   const tDefaultTheme = 'light';
 
   group('getThemeMode', () {
@@ -77,6 +77,12 @@ void main() {
       expect(result, AppConstants.languages.first.code);
       verify(mockSharedPreferences.getString(tLocaleKey));
     });
+  });
+
+  test('Existing locale_code preference is preserved during migration', () async {
+    when(mockSharedPreferences.getString(AppConstants.languageCodeKey)).thenReturn(null);
+    when(mockSharedPreferences.getString('locale_code')).thenReturn('bn');
+    expect(await dataSource.getLocale(), 'bn');
   });
 
   group('saveLocale', () {

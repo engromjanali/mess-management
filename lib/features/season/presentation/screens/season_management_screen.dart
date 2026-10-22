@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_page_scroll_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'dart:async';
@@ -130,7 +131,7 @@ class _SeasonBodyState extends State<_SeasonBody> {
             ),
             Expanded(child: RefreshIndicator(
           onRefresh: () => _refresh(context),
-          child: ListView(
+          child: AppPageScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, 0, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge),
             children: [

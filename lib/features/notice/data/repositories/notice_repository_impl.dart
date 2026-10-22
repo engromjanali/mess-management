@@ -20,6 +20,9 @@ class NoticeRepositoryImpl implements NoticeRepository {
   });
 
   @override
+  ResultFuture<NoticeEntity> getNotice(String id) => _guard(() async => (await _dataSource.getNotice(id)).toEntity());
+
+  @override
   ResultFuture<NoticeEntity> addNotice({required String title, required String description}) => _guard(() async {
     final model = await _dataSource.addNotice(title: title, description: description);
     return model.toEntity();

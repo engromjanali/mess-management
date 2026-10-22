@@ -18,10 +18,16 @@ void main() {
     var isMember = true;
     var deposit = 2200;
     dio.interceptors.add(InterceptorsWrapper(onRequest: (options, handler) {
+      if (options.path == '/api/v1/user/notices') {
+        handler.resolve(Response(requestOptions: options, statusCode: 200, data: {'data': []}));
+        return;
+      }
       expect(options.path, '/api/v1/user/mess');
       expect(options.queryParameters, isEmpty);
       expect(options.extra['sensitive'], isTrue);
       handler.resolve(Response(requestOptions: options, statusCode: 200, data: {
+        'season': {'name': 'Current season'},
+        'my_stats': {'meal': 2.5, 'deposit': deposit, 'remaining': deposit - 250},
         'my_role': role,
         'is_member': isMember,
         'stats': {'meal_rate': 100, 'total_deposit': deposit, 'total_meals': 2.5, 'total_cost': 250, 'fund_balance': 800},
@@ -31,6 +37,9 @@ void main() {
     final source = HomeLocalDataSourceImpl(ApiClient(dio: dio, sharedPreferences: await SharedPreferences.getInstance()));
     final initial = (await source.getDashboard()).toEntity();
     expect(initial.isManager, isTrue);
+    expect(initial.myTotalMeal, 2.5);
+    expect(initial.myDeposit, 2200);
+    expect(initial.myRemaining, 1950);
     expect(initial.members.single.name, 'Actual member');
     expect(initial.members.single.remaining(initial.mealRate), 1950);
     deposit = 2500;
@@ -41,6 +50,28 @@ void main() {
     expect(member.isManager, isFalse);
     expect(member.isMember, isFalse);
     expect(member.members, isEmpty);
+  });
+
+  test('Notice service failure does not hide live dashboard totals', () async {
+    SharedPreferences.setMockInitialValues({});
+    final dio = Dio();
+    addTearDown(dio.close);
+    dio.interceptors.add(InterceptorsWrapper(onRequest: (request, handler) {
+      if (request.path == '/api/v1/user/notices') {
+        handler.reject(DioException(requestOptions: request, response: Response<dynamic>(requestOptions: request, statusCode: 503), type: DioExceptionType.badResponse), true);
+      } else {
+        handler.resolve(Response(requestOptions: request, statusCode: 200, data: {
+          'season': {'name': 'Current'},
+          'stats': {'meal_rate': 50, 'total_deposit': 900, 'total_meals': 4, 'total_cost': 200, 'fund_balance': 0},
+          'my_stats': {'meal': 4, 'deposit': 900, 'remaining': 700},
+        }));
+      }
+    }));
+    final source = HomeLocalDataSourceImpl(ApiClient(dio: dio, sharedPreferences: await SharedPreferences.getInstance()));
+    final dashboard = await source.getDashboard();
+    expect(dashboard.myRemaining, 700);
+    expect(dashboard.totalDeposit, 900);
+    expect(dashboard.pinnedNotice, isNull);
   });
 
   testWidgets('Member totals fit small screens, translations and large text', (tester) async {
@@ -61,7 +92,8 @@ void main() {
           ));
           await tester.pumpAndSettle();
           expect(find.text('A long member name 4'), findsNothing);
-          await tester.tap(find.text('Show all members'));
+          final local = AppLocalizations.of(tester.element(find.byType(MemberStatsTable)));
+          await tester.tap(find.text(local.uiShowAllMembers));
           await tester.pumpAndSettle();
           expect(find.text('A long member name 5'), findsOneWidget);
           expect(tester.takeException(), isNull, reason: '$width $language $scale');

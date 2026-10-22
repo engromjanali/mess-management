@@ -12,7 +12,7 @@ import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
 import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
 import 'package:clean_boilerplate/core/network/api_client.dart';
 import 'package:clean_boilerplate/core/role/role_cubit.dart';
-import 'package:clean_boilerplate/core/widgets/app_footer.dart';
+import 'package:clean_boilerplate/core/widgets/app_page_scroll_view.dart';
 import 'package:clean_boilerplate/core/widgets/stat_card.dart';
 import 'package:clean_boilerplate/core/widgets/mess_google_map_sheet.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
@@ -278,7 +278,7 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
         Expanded(
           child: Scrollbar(
             controller: _scrollController,
-            child: SingleChildScrollView(
+            child: AppPageScrollView(
               controller: _scrollController,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -345,7 +345,6 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
                       ),
                     ),
                   ),
-                  if (ResponsiveHelper.isDesktop(context)) const AppFooter(),
                 ],
               ),
             ),

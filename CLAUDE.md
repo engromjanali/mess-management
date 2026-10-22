@@ -4,7 +4,7 @@ Shared rules for everyone (and every AI assistant) working on this Flutter app. 
 
 ## Desktop view app bar
 
-Every screen must have a desktop view app bar.
+Application screens must have a desktop view app bar. Authentication, splash, maintenance, and forced-update screens retain their dedicated layouts.
 
 - On desktop / big tablet (`ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)`), show the shared `DashboardTopBar` (`lib/features/home/presentation/widgets/dashboard_top_bar.dart`) at the top of the body instead of the Material `AppBar`, and set `endDrawer: const WebProfileDrawer()`.
 - On phone / small tablet keep the normal `AppBar`.
@@ -25,6 +25,13 @@ return Scaffold(
 ```
 
 `Scaffold.of(context)` needs a context below the `Scaffold` (use a `Builder` or the body's own context).
+
+## Page footers
+
+- Use `AppPageScrollView` (`lib/core/widgets/app_page_scroll_view.dart`) for application pages with a desktop footer.
+- Keep content padding and width constraints inside the scroll layout; the footer spans the viewport width.
+- A short page keeps the footer at the viewport bottom; long content scrolls before it. Avoid duplicate footers or nesting an independently scrolling page inside this widget.
+- Preserve scroll controllers and pull-to-refresh physics when adapting an existing page, and check short/tall desktop windows, large tablets, narrow phones, and large text.
 
 ## Routes
 
@@ -51,7 +58,7 @@ The app supports English, Bengali and Arabic (`lib/l10n/arb/app_en.arb`, `app_bn
 
 ## Roles: the manager is also a member
 
-A mess manager / acting manager (admin role) is also a regular member: they eat meals, deposit money and have their own balance.
+A mess manager / acting manager with a personal season membership also has meals, deposits, and a balance. Leadership can access historical seasons without creating a personal membership; show zero personal totals in that case.
 
 - Every admin view must also show the manager's **own** data (my meals, my deposits, my balance), not only mess-wide or other members' data.
 - On screens with admin and user branches (deposits, meals, costs, funds, home), never replace the personal "mine" view with the admin view — show both (e.g. admin overview + a "My …" section, or a "Mine" filter for admins).
@@ -61,7 +68,7 @@ A mess manager / acting manager (admin role) is also a regular member: they eat 
 Every error shown to the user must state the **specific** reason (e.g. "A user with this phone already exists.", "This mess has no active season."). A generic message ("Something went wrong") is only acceptable when the cause really can't be known (no response, unknown exception).
 
 - Let the backend message flow through `DioExceptionX.toAppException` → `Failure.message` → UI (snack bar / error view). Don't replace it with hard-coded text in blocs or cubits; use a fallback only when the failure has no message.
-- Don't swallow errors with `catch (_)` and show fixed text — show the real message.
+- Preserve specific, safe validation messages. Do not expose raw exceptions, tracebacks, database details, tokens, or server HTML; use the shared safe fallback for unknown failures.
 - Form field errors from the backend go to the matching form field, not a generic toast.
 - If a specific message needs a backend change, change the backend too (`mm_backend` is usually in the same workspace). If it isn't available, say exactly what the backend must change (endpoint, field, message) instead of hiding it in the app.
 

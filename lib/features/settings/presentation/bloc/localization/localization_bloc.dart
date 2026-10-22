@@ -33,8 +33,9 @@ class LocalizationBloc extends Bloc<LocalizationEvent, LocalizationState> {
   Future<void> _handleLoadLocale(Emitter<LocalizationState> emit) async {
     final result = await _getLocaleUseCase(const NoParams());
 
-    result.when(
-      success: (success) {
+    await result.when(
+      success: (success) async {
+        await _updateApiLocaleUseCase(UpdateApiLocaleParams(localeCode: success.data));
         final locale = AppLocale.fromCode(success.data);
         emit(LocalizationState.loaded(locale));
       },

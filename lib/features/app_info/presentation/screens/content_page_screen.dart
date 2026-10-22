@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_page_scroll_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -76,7 +77,7 @@ class _PageBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
     final updated = DateFormat.yMMMd(Localizations.localeOf(context).toLanguageTag()).format(page.updatedAt);
-    return ListView(
+    return AppPageScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
       children: [

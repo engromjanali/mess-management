@@ -1,7 +1,9 @@
+import 'package:clean_boilerplate/core/widgets/app_footer.dart';
 import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/config/util/styles.dart';
 import 'package:clean_boilerplate/core/di/injection.dart';
+import 'package:clean_boilerplate/core/errors/failures.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
@@ -35,18 +37,26 @@ class _NoticeDetailsScreenState extends State<NoticeDetailsScreen> {
     if (_notice == null) _load();
   }
 
+  @override
+  void didUpdateWidget(covariant NoticeDetailsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.noticeId != widget.noticeId || oldWidget.notice != widget.notice) {
+      _notice = widget.notice;
+      _error = null;
+      _loading = false;
+      if (_notice == null) _load();
+    }
+  }
+
   Future<void> _load() async {
+    final id = widget.noticeId;
     setState(() { _loading = true; _error = null; });
-    final result = await getIt<NoticeRepository>().getNotices();
-    if (!mounted) return;
+    final result = await getIt<NoticeRepository>().getNotice(id ?? '');
+    if (!mounted || id != widget.noticeId) return;
     setState(() {
       _loading = false;
       result.when(
-        success: (value) {
-          for (final notice in value.data) {
-            if (notice.id == widget.noticeId) { _notice = notice; break; }
-          }
-        },
+        success: (value) => _notice = value.data,
         failure: (failure) => _error = failure.error,
       );
     });
@@ -59,13 +69,22 @@ class _NoticeDetailsScreenState extends State<NoticeDetailsScreen> {
     final colors = context.customThemeColors;
     final content = _loading
         ? const Center(child: AppLoader())
-        : _error != null
+        : _error is ServerFailure && (_error as ServerFailure).statusCode == 404
+            ? AppEmptyState(title: context.local.noticeUnavailable, icon: Icons.campaign_outlined)
+            : _error != null
             ? AppErrorState(error: _error!, onRetry: _load)
             : notice == null
-                ? AppEmptyState(title: context.local.noNoticesYet, icon: Icons.campaign_outlined)
-                : SingleChildScrollView(
-                    padding: EdgeInsets.all(web ? Dimensions.paddingSizeExtraLarge32 : Dimensions.paddingSizeLarge),
-                    child: Center(
+                ? AppEmptyState(title: context.local.noticeUnavailable, icon: Icons.campaign_outlined)
+                : LayoutBuilder(
+                    builder: (context, viewport) => SingleChildScrollView(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(minHeight: viewport.maxHeight),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(web ? Dimensions.paddingSizeExtraLarge32 : Dimensions.paddingSizeLarge),
+                          child: Center(
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                         child: SelectionArea(
@@ -88,12 +107,18 @@ class _NoticeDetailsScreenState extends State<NoticeDetailsScreen> {
                             ],
                             Text(notice.title, style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: web ? Dimensions.fontSizeExtraOverLarge : Dimensions.fontSizeOverLarge, color: colors.textPrimaryColor)),
                             const SizedBox(height: Dimensions.spaceDefault),
-                            Text(NoticeFormatters.time(notice.createdAt), style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textHintColor)),
+                            Text(NoticeFormatters.time(notice.createdAt, locale: Localizations.localeOf(context).toLanguageTag()), style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textHintColor)),
                             const Padding(padding: EdgeInsets.symmetric(vertical: Dimensions.spaceDefault), child: Divider()),
                             Text(notice.description, style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeLarge, height: 1.7, color: colors.textSecondaryColor)),
                           ],
                         ),
                       ),
+                        ),
+                      ),
+                    ),
+                        ),
+                        if (web) const AppFooter(),
+                      ],
                         ),
                       ),
                     ),

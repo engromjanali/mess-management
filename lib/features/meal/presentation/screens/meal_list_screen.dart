@@ -4,7 +4,7 @@ import 'package:clean_boilerplate/config/util/dimensions.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/screen_matres_extensions.dart';
 import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
-import 'package:clean_boilerplate/core/widgets/app_footer.dart';
+import 'package:clean_boilerplate/core/widgets/app_page_scroll_view.dart';
 import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
 
 import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_top_bar.dart';
@@ -39,7 +39,7 @@ class _MealListBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return AppPageScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -58,7 +58,6 @@ class _MealListBody extends StatelessWidget {
               ),
             ),
           ),
-          if (ResponsiveHelper.isDesktop(context)) const AppFooter(),
         ],
       ),
     );

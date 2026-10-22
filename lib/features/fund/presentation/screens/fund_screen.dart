@@ -174,7 +174,7 @@ class _FundBody extends StatelessWidget {
             child: ConstrainedBox(
               constraints: BoxConstraints(minHeight: viewportConstraints.maxHeight),
               child: Column(
-                mainAxisAlignment: ResponsiveHelper.isDesktop(context) ? MainAxisAlignment.spaceBetween : MainAxisAlignment.start,
+                mainAxisAlignment: (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)) ? MainAxisAlignment.spaceBetween : MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Center(
@@ -197,7 +197,7 @@ class _FundBody extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (ResponsiveHelper.isDesktop(context)) const AppFooter(),
+                  if (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)) const AppFooter(),
                 ],
               ),
             ),

@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_page_scroll_view.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/main_page_body.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
@@ -111,12 +112,10 @@ class _EditProfileFormState extends State<_EditProfileForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
-        child: Form(
+    return Form(
           key: _formKey,
-          child: ListView(
+          child: AppPageScrollView(
+            maxWidth: Dimensions.webMaxWidth,
             padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
             children: [
               Center(child: _PhotoPicker(photoUrl: widget.user.photoUrl, pickedBytes: _photoBytes, onTap: _saving ? null : _pickPhoto)),
@@ -183,8 +182,6 @@ class _EditProfileFormState extends State<_EditProfileForm> {
               ),
             ],
           ),
-        ),
-      ),
     );
   }
 }

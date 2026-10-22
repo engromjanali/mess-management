@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/config/util/app_constants.dart';
 import 'package:clean_boilerplate/config/route/app_router.dart';
 import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
@@ -68,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
           logoShadow: true,
           title: context.local.welcomeBack,
           subtitle: context.local.uiSignInToContinueManagingYourMess,
-          action: IconButton(tooltip: context.local.uiFillDemoCredentials, icon: const Icon(CupertinoIcons.pencil_circle), onPressed: _fillDemoCredentials),
+          action: AppConstants.enableDemoLogin ? IconButton(tooltip: context.local.uiFillDemoCredentials, icon: const Icon(CupertinoIcons.pencil_circle), onPressed: _fillDemoCredentials) : null,
           footer: AuthFooterPrompt(promptText: context.local.uiNoAccountPrompt, actionText: context.local.uiSignUp, onTap: () => context.push(AppRoutes.register)),
           child: LoginFormWidget(
             formKey: _formKey,

@@ -9,7 +9,7 @@ class SettingsLocalDataSourceImpl implements SettingsDataSource {
   final SharedPreferences _prefs;
 
   static const String _themeKey = 'theme_mode';
-  static const String _localeKey = 'locale_code';
+  static const String _localeKey = AppConstants.languageCodeKey;
   static const String _defaultTheme = 'light';
 
   SettingsLocalDataSourceImpl(this._prefs);
@@ -27,7 +27,7 @@ class SettingsLocalDataSourceImpl implements SettingsDataSource {
   @override
   Future<String> getLocale() async {
     // Use first language from AppConstants.languages as default
-    return _prefs.getString(_localeKey) ?? AppConstants.languages.first.code;
+    return _prefs.getString(_localeKey) ?? _prefs.getString('locale_code') ?? AppConstants.languages.first.code;
   }
 
   @override

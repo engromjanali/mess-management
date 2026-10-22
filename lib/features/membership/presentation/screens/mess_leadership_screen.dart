@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_page_scroll_view.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:clean_boilerplate/config/route/app_router.dart';
@@ -109,7 +110,7 @@ class _MessLeadershipScreenState extends State<MessLeadershipScreen> {
         title: context.local.transferLeadership,
         child: _loading
           ? const Center(child: AppLoader())
-          : ListView(
+          : AppPageScrollView(
               padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
               children: [
                 Center(

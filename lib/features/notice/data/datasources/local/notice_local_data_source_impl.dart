@@ -37,6 +37,9 @@ class NoticeLocalDataSourceImpl implements NoticeDataSource {
     ),
   ];
 
+  @override
+  Future<NoticeModel> getNotice(String id) async => _notices.firstWhere((notice) => notice.id == id, orElse: () => throw ServerException(message: 'Notice unavailable', statusCode: 404));
+
   /// Monotonic counter for generating new ids within the session.
   int _seq = 100;
 

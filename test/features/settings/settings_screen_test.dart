@@ -1,3 +1,5 @@
+import 'package:clean_boilerplate/core/widgets/app_footer.dart';
+import 'package:clean_boilerplate/features/splash/presentation/bloc/splash_bloc.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_event.dart';
 import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
@@ -27,6 +29,10 @@ class _AuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
   Future<void> refreshProfile() async {}
 }
 
+class _SplashBloc extends Bloc<SplashEvent, SplashState> implements SplashBloc {
+  _SplashBloc() : super(const SplashState.loading());
+}
+
 void main() {
   testWidgets('Settings and language overlay fit narrow, large text and RTL layouts', (tester) async {
     tester.view.devicePixelRatio = 1;
@@ -39,9 +45,11 @@ void main() {
     addTearDown(theme.close);
     addTearDown(locale.close);
     for (final language in ['en', 'bn', 'ar']) {
-      for (final width in [320.0, 1440.0]) {
-        tester.view.physicalSize = Size(width, 800);
+      for (final size in [const Size(320, 800), const Size(1440, 600), const Size(1440, 1600)]) {
+        final width = size.width;
+        tester.view.physicalSize = size;
         await tester.pumpWidget(MultiBlocProvider(providers: [
+          BlocProvider<SplashBloc>(create: (_) => _SplashBloc()),
           BlocProvider<AuthBloc>.value(value: auth),
           BlocProvider<ThemeBloc>.value(value: theme),
           BlocProvider<LocalizationBloc>.value(value: locale),
@@ -55,6 +63,15 @@ void main() {
         )));
         await tester.pumpAndSettle();
         expect(tester.takeException(), isNull, reason: '$language $width settings');
+        if (width == 1440) {
+          expect(tester.getSize(find.byType(AppFooter)).width, width);
+          final position = Scrollable.of(tester.element(find.byType(AppFooter))).position;
+          position.jumpTo(position.maxScrollExtent);
+          await tester.pumpAndSettle();
+          expect(tester.getRect(find.byType(AppFooter)).bottom, closeTo(size.height, 1));
+          position.jumpTo(0);
+          await tester.pumpAndSettle();
+        }
         final local = AppLocalizations.of(tester.element(find.byType(SettingsScreen)));
         await tester.tap(find.text(local.selectLanguage));
         await tester.pumpAndSettle();

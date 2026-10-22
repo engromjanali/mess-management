@@ -1119,5 +1119,6 @@
   "uiSignUp": "Sign up",
   "uiTodayMealEntry": "Today meal entry",
   "uiMealEntryDate": "Meal entry date",
-  "uiMessId": "ID: {id}"
+  "uiMessId": "ID: {id}",
+  "noticeUnavailable": "This notice is no longer available."
 }

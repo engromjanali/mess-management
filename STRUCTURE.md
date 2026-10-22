@@ -1,174 +1,86 @@
-# Project Structure
+# Project structure
 
-```
-clean_boilerplate/
-│
-├── lib/
-│   ├── core/                          # Shared core functionality
-│   │   ├── di/                        # Dependency Injection
-│   │   │   ├── injection.dart         # DI configuration
-│   │   │   ├── injection.config.dart  # Generated DI (don't edit)
-│   │   │   ├── network_module.dart    # Network DI module
-│   │   │   └── data_source_module.dart # DataSource DI module
-│   │   │
-│   │   ├── errors/                    # Error handling
-│   │   │   ├── failures.dart          # Failure classes
-│   │   │   └── exceptions.dart        # Exception classes
-│   │   │
-│   │   ├── network/                   # Network configuration
-│   │   │   └── network_module.dart    # Dio setup
-│   │   │
-│   │   ├── routes/                    # Routing
-│   │   │   └── app_router.dart        # Go Router configuration
-│   │   │
-│   │   ├── theme/                     # Theming
-│   │   │   └── app_theme.dart         # App theme config
-│   │   │
-│   │   └── usecase/                   # Base classes
-│   │       └── usecase.dart           # UseCase abstract class
-│   │
-│   ├── features/                       # Feature modules
-│   │   │
-│   │   └── auth/                       # Authentication feature
-│   │       │
-│   │       ├── domain/                 # 🔵 DOMAIN LAYER (Business Logic)
-│   │       │   │
-│   │       │   ├── entities/           # Pure business objects
-│   │       │   │   └── user_entity.dart
-│   │       │   │
-│   │       │   ├── repositories/       # Repository contracts (interfaces)
-│   │       │   │   └── auth_repository.dart
-│   │       │   │
-│   │       │   └── usecases/           # Business use cases
-│   │       │       ├── login_usecase.dart
-│   │       │       ├── logout_usecase.dart
-│   │       │       └── get_current_user_usecase.dart
-│   │       │
-│   │       ├── data/                   # 🟢 DATA LAYER (Data Access)
-│   │       │   │
-│   │       │   ├── models/             # Data models (DTOs)
-│   │       │   │   ├── user_model.dart
-│   │       │   │   ├── user_model.freezed.dart  # Generated
-│   │       │   │   └── user_model.g.dart        # Generated
-│   │       │   │
-│   │       │   ├── datasources/        # Data sources
-│   │       │   │   └── remote/
-│   │       │   │       ├── auth_api_service.dart
-│   │       │   │       ├── auth_api_service.g.dart  # Generated
-│   │       │   │       ├── auth_remote_data_source.dart
-│   │       │   │       └── auth_remote_data_source_impl.dart
-│   │       │   │
-│   │       │   └── repositories/       # Repository implementations
-│   │       │       └── auth_repository_impl.dart
-│   │       │
-│   │       └── presentation/           # 🟡 PRESENTATION LAYER (UI)
-│   │           │
-│   │           ├── bloc/               # BLoC state management
-│   │           │   ├── auth_bloc.dart
-│   │           │   ├── auth_event.dart
-│   │           │   └── auth_state.dart
-│   │           │
-│   │           ├── screens/            # Screen widgets
-│   │           │   └── login_screen.dart
-│   │           │
-│   │           └── widgets/            # Reusable widgets
-│   │
-│   ├── l10n/                           # Localization
-│   │   ├── arb/                        # Translation files
-│   │   │   ├── app_en.arb             # English
-│   │   │   └── app_*.arb              # Other languages
-│   │   │
-│   │   └── gen/                        # Generated localizations
-│   │       └── app_localizations.dart
-│   │
-│   └── main.dart                       # App entry point
-│
-├── assets/                             # Static assets
-│   ├── images/
-│   └── icons/
-│
-├── test/                               # Tests mirror lib/ structure
-│   └── features/
-│       └── auth/
-│           ├── domain/
-│           ├── data/
-│           └── presentation/
-│
-├── .env                                # Environment variables (gitignored)
-├── .gitignore
-├── analysis_options.yaml               # Linting rules
-├── build.yaml                          # Build configuration
-├── l10n.yaml                           # Localization config
-├── pubspec.yaml                        # Dependencies
-├── README.md                           # Main documentation
-└── SETUP.md                            # Setup commands
+The app is named Mess Pilot; its Dart package remains `clean_boilerplate`.
+
+```text
+lib/
+├── config/
+│   ├── route/app_router.dart       # AppRoutes and GoRouter
+│   ├── theme/                      # Light/dark themes and custom colors
+│   └── util/                       # Constants, dimensions, styles, Result
+├── core/
+│   ├── assets/                     # Generated asset/font references
+│   ├── di/                         # Injectable/GetIt setup and generated registrations
+│   ├── errors/                     # Exceptions, failures, safe user messages
+│   ├── extensions/                 # Context/localization and UI helpers
+│   ├── helpers/                    # Responsive helpers
+│   ├── network/                    # ApiClient, Dio module, authentication refresh
+│   ├── role/                       # Role derived from authenticated profile
+│   ├── usecase/                    # Base use-case contracts
+│   └── widgets/                    # Widgets shared across features
+├── features/
+│   ├── app_info/
+│   ├── auth/
+│   ├── cost/
+│   ├── deposit/
+│   ├── fund/
+│   ├── home/
+│   ├── meal/
+│   ├── membership/
+│   ├── notice/
+│   ├── opinion/
+│   ├── season/
+│   ├── settings/
+│   └── splash/
+├── l10n/
+│   ├── arb/                        # app_en.arb, app_bn.arb, app_ar.arb
+│   └── gen/                        # Generated translations
+├── firebase_options.dart           # FlutterFire configuration
+└── main.dart                       # Startup, providers, router, theme and locale
 ```
 
-## Layer Communication Flow
+Feature modules generally contain:
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    PRESENTATION LAYER                   │
-│  ┌─────────┐  ┌──────────┐  ┌─────────────────────┐   │
-│  │ Screens │→ │   BLoC   │→ │ Use Cases (Domain)  │   │
-│  └─────────┘  └──────────┘  └─────────────────────┘   │
-└────────────────────────────────┬────────────────────────┘
-                                 ↓
-┌─────────────────────────────────────────────────────────┐
-│                     DOMAIN LAYER                        │
-│  ┌──────────┐  ┌───────────────┐  ┌─────────────────┐ │
-│  │ Entities │  │ Use Cases     │  │  Repository     │ │
-│  │          │  │ (Business     │  │  Interfaces     │ │
-│  │          │  │  Logic)       │  │  (Contracts)    │ │
-│  └──────────┘  └───────────────┘  └─────────────────┘ │
-└────────────────────────────────┬────────────────────────┘
-                                 ↓
-┌─────────────────────────────────────────────────────────┐
-│                      DATA LAYER                         │
-│  ┌─────────┐  ┌────────────────┐  ┌─────────────────┐ │
-│  │ Models  │  │ Data Sources   │  │  Repository     │ │
-│  │ (DTOs)  │  │ (API, Local)   │  │ Implementation  │ │
-│  └─────────┘  └────────────────┘  └─────────────────┘ │
-└─────────────────────────────────────────────────────────┘
-                         ↓
-                   External APIs
+```text
+feature/
+├── data/
+│   ├── datasources/{interfaces,remote,local}/
+│   ├── models/
+│   └── repositories/
+├── domain/
+│   ├── entities/
+│   ├── repositories/
+│   └── usecases/
+└── presentation/
+    ├── bloc/
+    ├── screens/
+    └── widgets/
 ```
 
-## Dependency Flow
+Some features use direct API services (for example `membership/data/membership_api_service.dart`
+and `opinion/data/opinion_api_service.dart`). The existing splash repository folder
+is spelled `data/repositrories/`; check actual paths before adding imports.
+`HomeLocalDataSourceImpl` retains its historical name but calls live APIs.
+Other unregistered local sources provide demo fixtures.
 
-```
-Presentation ──depends on──→ Domain ←──implements── Data
-                              ↑
-                          Independent
-                      (No dependencies)
-```
+## Supporting directories
 
-## File Naming Conventions
+- `assets/`: images, SVG flags, and fonts declared in `pubspec.yaml`.
+- `test/`: unit, widget, routing, and layout regression tests.
+- `web/`: HTML launch page and web icons; release output is `build/web/`.
+- `android/`, `ios/`: native integration and launcher artwork.
+- `.github/workflows/`: live and preview Firebase Hosting deployment.
 
-- **Entities**: `*_entity.dart` (e.g., `user_entity.dart`)
-- **Models**: `*_model.dart` (e.g., `user_model.dart`)
-- **Repositories (Interface)**: `*_repository.dart`
-- **Repositories (Implementation)**: `*_repository_impl.dart`
-- **Use Cases**: `*_usecase.dart` (e.g., `login_usecase.dart`)
-- **BLoC**: `*_bloc.dart`, `*_event.dart`, `*_state.dart`
-- **Screens**: `*_screen.dart`
-- **Widgets**: `*_widget.dart`
-- **Data Sources**: `*_data_source.dart`, `*_data_source_impl.dart`
-- **API Services**: `*_api_service.dart`
+## Layer boundaries and generated files
 
-## Generated Files (Don't Edit)
+Presentation calls domain use cases; data implementations fulfill repository
+contracts and map API models to entities. Repository operations use the custom
+`Result` type in `config/util/result.dart`.
 
-- `*.g.dart` - JSON serialization
-- `*.freezed.dart` - Freezed models
-- `*.config.dart` - Injectable DI
-- `gen/**` - Generated code (assets, localization)
+Generated files include `*.freezed.dart`, `*.g.dart`, `*.mocks.dart`,
+`core/di/injection.config.dart`, `core/assets/assets.gen.dart`,
+`core/assets/fonts.gen.dart`, and `l10n/gen/`. Regenerate instead of editing them.
 
-## Adding a New Feature
-
-1. Create feature folder: `lib/features/your_feature/`
-2. Add three layers: `domain/`, `data/`, `presentation/`
-3. Start with domain (entities, repository interface, use cases)
-4. Implement data layer (models, data sources, repository)
-5. Build presentation (BLoC, screens, widgets)
-6. Run code generation
-7. Register in DI (automatically handled by injectable)
+Shared page layout belongs in `core/widgets/`; feature-specific widgets stay
+with their feature. Follow [AGENTS.md](AGENTS.md) and [CLAUDE.md](CLAUDE.md), and
+use the commands in [SETUP.md](SETUP.md) when adding registrations or models.

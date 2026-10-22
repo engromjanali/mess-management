@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_page_scroll_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:dio/dio.dart';
@@ -366,7 +367,7 @@ class _OpinionPeriodFormScreenState extends State<OpinionPeriodFormScreen> {
       ),
     );
 
-    if (widget.embedded) return SingleChildScrollView(child: Column(children: [Padding(padding: const EdgeInsets.all(Dimensions.paddingSizeLarge), child: form), if (showWebAppBar) const AppFooter()]));
+    if (widget.embedded) return AppPageScrollView(padding: const EdgeInsets.all(Dimensions.paddingSizeLarge), child: form);
 
     return Scaffold(
       endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
@@ -375,7 +376,7 @@ class _OpinionPeriodFormScreenState extends State<OpinionPeriodFormScreen> {
           ? Builder(builder: (context) => Column(children: [
               const MainTopBar(),
               WebPageTitleBar(title: context.local.uiOpenOpinionPeriod),
-              Expanded(child: SingleChildScrollView(child: Column(children: [Padding(padding: const EdgeInsets.all(Dimensions.paddingSizeLarge), child: form), const AppFooter()]))),
+              Expanded(child: AppPageScrollView(padding: const EdgeInsets.all(Dimensions.paddingSizeLarge), child: form)),
             ]))
           : SafeArea(child: SingleChildScrollView(padding: const EdgeInsets.all(Dimensions.paddingSizeLarge), child: form)),
     );
@@ -451,7 +452,7 @@ class _OpinionBody extends StatelessWidget {
         child: ConstrainedBox(
           constraints: BoxConstraints(minHeight: viewportConstraints.maxHeight),
           child: Column(
-            mainAxisAlignment: ResponsiveHelper.isDesktop(context) ? MainAxisAlignment.spaceBetween : MainAxisAlignment.start,
+            mainAxisAlignment: (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)) ? MainAxisAlignment.spaceBetween : MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Center(
@@ -505,7 +506,7 @@ class _OpinionBody extends StatelessWidget {
                   ),
                 ),
               ),
-              if (ResponsiveHelper.isDesktop(context)) const AppFooter(),
+              if (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)) const AppFooter(),
             ],
           ),
         ),

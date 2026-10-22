@@ -18,12 +18,60 @@ class ApiClient {
   String? _refreshToken;
   String? _guestUserId;
   String? _languageCode;
+  Future<void>? _refreshing;
+  int _authGeneration = 0;
 
   /// Called once when an authenticated request gets a 401, after the tokens are cleared.
   VoidCallback? onUnauthorized;
 
   ApiClient({required Dio dio, required SharedPreferences sharedPreferences}) : _dio = dio, _sharedPreferences = sharedPreferences {
     _initializeHeaders();
+    _dio.interceptors.add(InterceptorsWrapper(onRequest: (request, handler) {
+      request.extra.putIfAbsent('authGeneration', () => _authGeneration);
+      handler.next(request);
+    }, onError: (error, handler) async {
+      final request = error.requestOptions;
+      final authorization = request.headers['Authorization'];
+      final excluded = [AppConstants.loginEndpoint, AppConstants.registerEndpoint, AppConstants.refreshTokenEndpoint, AppConstants.logoutEndpoint];
+      if (request.extra['authGeneration'] != _authGeneration || error.response?.statusCode != 401 || request.extra['authRetried'] == true || excluded.contains(request.path) || authorization == null || _token == null || _refreshToken == null) {
+        handler.next(error);
+        return;
+      }
+      try {
+        if (authorization == 'Bearer $_token') {
+          await (_refreshing ??= _refreshTokens().whenComplete(() => _refreshing = null));
+        }
+        if (_token == null) { handler.next(error); return; }
+        final data = request.data;
+        final response = await _dio.fetch<dynamic>(request.copyWith(
+          headers: {...request.headers, 'Authorization': 'Bearer $_token'},
+          extra: {...request.extra, 'authRetried': true},
+          data: data is FormData ? data.clone() : data,
+        ));
+        handler.resolve(response);
+      } on DioException catch (failure) {
+        handler.reject(failure);
+      } catch (_) {
+        handler.next(error);
+      }
+    }));
+  }
+
+  Future<void> _refreshTokens() async {
+    final session = _authGeneration;
+    final response = await _dio.post<Map<String, dynamic>>(
+      AppConstants.refreshTokenEndpoint,
+      data: {'refresh_token': _refreshToken},
+      options: Options(headers: {'Authorization': null}, extra: {'sensitive': true}),
+    );
+    if (_authGeneration != session) throw DioException(requestOptions: response.requestOptions, type: DioExceptionType.cancel);
+    final access = response.data?['access_token'];
+    final refresh = response.data?['refresh_token'];
+    if (access is! String || access.isEmpty || refresh is! String || refresh.isEmpty) {
+      throw DioException(requestOptions: response.requestOptions, response: Response<dynamic>(requestOptions: response.requestOptions, statusCode: 401), type: DioExceptionType.badResponse);
+    }
+    await _persistToken(access);
+    await updateRefreshToken(refresh);
   }
 
   /// Initialize headers from SharedPreferences
@@ -31,7 +79,7 @@ class ApiClient {
     _token = _sharedPreferences.getString(AppConstants.tokenKey);
     _refreshToken = _sharedPreferences.getString(AppConstants.refreshTokenKey);
     _guestUserId = _sharedPreferences.getString(AppConstants.guestUserIdKey);
-    _languageCode = _sharedPreferences.getString(AppConstants.languageCodeKey) ?? 'en';
+    _languageCode = _sharedPreferences.getString(AppConstants.languageCodeKey) ?? _sharedPreferences.getString('locale_code') ?? 'en';
 
     _updateHeaders();
   }
@@ -62,6 +110,11 @@ class ApiClient {
 
   /// Update authentication token
   Future<void> updateToken(String? token) async {
+    _authGeneration++;
+    await _persistToken(token);
+  }
+
+  Future<void> _persistToken(String? token) async {
     _token = token;
     if (token != null && token.isNotEmpty) {
       await _sharedPreferences.setString(AppConstants.tokenKey, token);
@@ -120,7 +173,7 @@ class ApiClient {
     try {
       if (kDebugMode) {
         print('=====> GET: $path');
-        print('=====> Query Parameters: $queryParameters');
+        print('=====> Query Parameters: ${options?.extra?['sensitive'] == true ? '[REDACTED]' : _formatLogValue(queryParameters)}');
       }
 
       final response = await _dio.get<T>(path, queryParameters: queryParameters, options: options, cancelToken: cancelToken, onReceiveProgress: onReceiveProgress);
@@ -317,7 +370,7 @@ class ApiClient {
 
   Exception _handleError(DioException error) {
     // `_token` guard: parallel 401s trigger the logout/redirect only once.
-    if (error.response?.statusCode == 401 && _token != null) {
+    if (error.response?.statusCode == 401 && _token != null && error.requestOptions.extra['authGeneration'] == _authGeneration && ![AppConstants.loginEndpoint, AppConstants.registerEndpoint].contains(error.requestOptions.path)) {
       unawaited(clearTokens());
       onUnauthorized?.call();
     }
@@ -326,7 +379,7 @@ class ApiClient {
 
   void _logResponse(Response<dynamic> response) {
     if (!kDebugMode) return;
-    debugPrint('=====> Response [${response.statusCode}] ${response.requestOptions.method}: ${response.requestOptions.uri}');
+    debugPrint('=====> Response [${response.statusCode}] ${response.requestOptions.method}: ${response.requestOptions.uri.replace(query: '')}');
     debugPrint('=====> Data: ${response.requestOptions.extra['sensitive'] == true ? '[REDACTED]' : _formatLogValue(response.data)}');
   }
 
@@ -344,7 +397,7 @@ class ApiClient {
 
   dynamic _sanitizeLogValue(dynamic value, [String? key]) {
     final normalizedKey = key?.toLowerCase().replaceAll('-', '_');
-    if (normalizedKey != null && (normalizedKey.contains('password') || normalizedKey.contains('token') || normalizedKey.contains('secret') || normalizedKey.contains('authorization') || normalizedKey.contains('api_key'))) return '[REDACTED]';
+    if (normalizedKey != null && (normalizedKey.contains('password') || normalizedKey.contains('token') || normalizedKey.contains('secret') || normalizedKey.contains('authorization') || normalizedKey.contains('api_key') || normalizedKey.contains('otp') || normalizedKey.contains('email') || normalizedKey.contains('phone') || normalizedKey.contains('address') || normalizedKey.contains('name') || normalizedKey == 'lat' || normalizedKey == 'long' || normalizedKey == 'latitude' || normalizedKey == 'longitude' || normalizedKey == 'photo' || normalizedKey == 'query' || normalizedKey == 'q' || normalizedKey == 'search')) return '[REDACTED]';
     if (value is Map) return value.map((key, value) => MapEntry(key.toString(), _sanitizeLogValue(value, key.toString())));
     if (value is List) return value.map((item) => _sanitizeLogValue(item)).toList();
     if (value is FormData) return '[FormData]';

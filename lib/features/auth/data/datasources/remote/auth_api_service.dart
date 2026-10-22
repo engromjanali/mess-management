@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:clean_boilerplate/config/util/app_constants.dart';
 import 'package:clean_boilerplate/core/network/api_client.dart';
 import 'package:clean_boilerplate/features/auth/data/models/user_model.dart';
@@ -41,7 +42,7 @@ class AuthApiService {
   }
 
   Future<UserModel> getCurrentUser() async {
-    final response = await _apiClient.get(AppConstants.profileEndpoint);
+    final response = await _apiClient.get(AppConstants.profileEndpoint, options: Options(extra: {'sensitive': true}));
     return UserModel.fromJson(response.data as Map<String, dynamic>);
   }
 

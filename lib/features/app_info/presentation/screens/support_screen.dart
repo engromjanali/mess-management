@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_page_scroll_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
@@ -33,7 +34,7 @@ class SupportScreen extends StatelessWidget {
                 bloc.add(const SplashEvent.getConfig());
                 await refreshed;
               },
-              child: ListView(
+              child: AppPageScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
                 children: [

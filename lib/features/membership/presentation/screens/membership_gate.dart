@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_page_scroll_view.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/main_page_body.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
 import 'package:clean_boilerplate/features/membership/presentation/widgets/mess_formatters.dart';
@@ -180,7 +181,7 @@ class _NoCurrentMessState extends State<_NoCurrentMess> {
         title: context.local.joinMess,
         child: RefreshIndicator(
         onRefresh: () => context.read<MembershipCubit>().load(),
-        child: ListView(
+        child: AppPageScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
           children: [

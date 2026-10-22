@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_page_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -36,7 +37,7 @@ class DeleteAccountScreen extends StatelessWidget {
       appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.deleteAccount)),
       body: MainPageBody(
         title: context.local.deleteAccount,
-        child: ListView(
+        child: AppPageScrollView(
           padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
           children: [
             Center(

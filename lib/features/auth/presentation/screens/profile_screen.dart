@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_page_scroll_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_user_avatar.dart';
 import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:clean_boilerplate/core/widgets/app_loader.dart';
@@ -51,10 +52,8 @@ class _ProfileBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
-        child: ListView(
+    return AppPageScrollView(
+          maxWidth: Dimensions.webMaxWidth,
           padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
           children: [
             _ProfileHeader(user: user),
@@ -68,8 +67,6 @@ class _ProfileBody extends StatelessWidget {
             const SizedBox(height: Dimensions.paddingSizeSmall),
             _ProfileTile(icon: Icons.logout_rounded, title: context.local.logout, subtitle: context.local.logoutSubtitle, danger: true, onTap: () => confirmSignOut(context)),
           ],
-        ),
-      ),
     );
   }
 }

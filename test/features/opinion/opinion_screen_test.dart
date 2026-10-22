@@ -1,3 +1,6 @@
+import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_bloc.dart';
+import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_event.dart';
+import 'package:clean_boilerplate/features/splash/presentation/bloc/splash_bloc.dart';
 import 'package:clean_boilerplate/config/theme/app_theme.dart';
 import 'package:clean_boilerplate/core/di/injection.dart';
 import 'package:clean_boilerplate/core/network/api_client.dart';
@@ -28,6 +31,14 @@ class OpinionTestLocaleBloc extends Bloc<LocalizationEvent, LocalizationState> i
   OpinionTestLocaleBloc(String language) : super(LocalizationState.initial(Locale(language))) {
     on<LocalizationEvent>((event, emit) {});
   }
+}
+
+class OpinionTestThemeBloc extends Bloc<ThemeEvent, ThemeState> implements ThemeBloc {
+  OpinionTestThemeBloc() : super(const ThemeState.light());
+}
+
+class OpinionTestSplashBloc extends Bloc<SplashEvent, SplashState> implements SplashBloc {
+  OpinionTestSplashBloc() : super(const SplashState.loading());
 }
 
 void main() {
@@ -76,7 +87,7 @@ void main() {
           final role = RoleCubit(auth);
           final localization = OpinionTestLocaleBloc(language);
           await tester.pumpWidget(MultiBlocProvider(
-            providers: [BlocProvider<RoleCubit>.value(value: role), BlocProvider<AuthBloc>.value(value: auth), BlocProvider<LocalizationBloc>.value(value: localization)],
+            providers: [BlocProvider<ThemeBloc>(create: (_) => OpinionTestThemeBloc()), BlocProvider<SplashBloc>(create: (_) => OpinionTestSplashBloc()), BlocProvider<RoleCubit>.value(value: role), BlocProvider<AuthBloc>.value(value: auth), BlocProvider<LocalizationBloc>.value(value: localization)],
             child: MaterialApp(
               theme: admin ? AppTheme.dark : AppTheme.light,
               locale: Locale(language),
@@ -90,8 +101,8 @@ void main() {
           expect(find.text('Private feedback'), admin ? findsOneWidget : findsNothing);
           expect(find.byType(FloatingActionButton), admin ? findsOneWidget : findsNothing);
           final input = tester.widget<TextField>(find.byType(TextField));
-          expect(input.minLines, 2);
-          expect(input.maxLines, 5);
+          expect(input.minLines, 3);
+          expect(input.maxLines, 6);
           if (admin) {
             final local = AppLocalizations.of(tester.element(find.byType(OpinionScreen)));
             expect(find.widgetWithText(OutlinedButton, local.opinionPrivate), findsOneWidget);

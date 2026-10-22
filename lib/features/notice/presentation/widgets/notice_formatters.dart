@@ -7,5 +7,5 @@ class NoticeFormatters {
   static final DateFormat _stamp = DateFormat('h:mm a · dd MMM yyyy');
 
   /// Notice timestamp, e.g. `9:30 AM · 22 Jun 2026`.
-  static String time(DateTime value) => _stamp.format(value);
+  static String time(DateTime value, {String? locale}) => DateFormat(_stamp.pattern, locale).format(value);
 }

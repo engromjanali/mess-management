@@ -1,185 +1,102 @@
-# Clean Architecture Boilerplate - Setup Commands
+# Mess Pilot setup
 
-## Quick Start in 5 Steps
+Run these commands from the Flutter project directory. SDK constraints are in
+[pubspec.yaml](pubspec.yaml); toolchain references are in [VERSIONS.md](VERSIONS.md).
 
-```bash
-# 1. Install dependencies
+## First run
+
+```sh
+flutter doctor
 flutter pub get
-
-# 2. Generate code (DI, Freezed, JSON, Retrofit)
-flutter pub run build_runner build --delete-conflicting-outputs
-
-# 3. Generate localizations
+dart run build_runner build --delete-conflicting-outputs
 flutter gen-l10n
-
-# 4. Create .env file
-echo "BASE_URL=https://api.example.com" > .env
-echo "API_KEY=your_api_key" >> .env
-
-# 5. Run the app
-flutter run
+flutter devices
+flutter run -d chrome --web-port=54302
 ```
 
-## Development Workflow
+The package name is `clean_boilerplate`. Keep package imports consistent with it.
+The app uses handwritten Dio services, not Retrofit-generated services.
 
-### When You Create New Models/APIs
+## Backend connection
 
-```bash
-# Watch mode (auto-regenerate on file changes)
-flutter pub run build_runner watch --delete-conflicting-outputs
+Start the sibling Django backend separately. The app reads `API_BASE_URL` through
+`String.fromEnvironment`, not a Flutter `.env` file.
+
+```sh
+# Local browser / iOS simulator
+flutter run --dart-define=API_BASE_URL=http://127.0.0.1:8000
+
+# Android emulator
+flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000
 ```
 
-### Clean Build (if issues occur)
+For a physical device, use the development computer's reachable LAN address.
+The backend must listen on that interface and allow the requested host/origin.
+Release defaults and demo-login flags are documented in [README.md](README.md#api-environments).
 
-```bash
-# Clean generated files
-flutter pub run build_runner clean
+## Code generation
 
-# Clean Flutter build
-flutter clean
+```sh
+# One build after changing models, registrations, mocks, or asset declarations
+dart run build_runner build --delete-conflicting-outputs
 
-# Reinstall dependencies
-flutter pub get
+# Regenerate as files change
+dart run build_runner watch --delete-conflicting-outputs
 
-# Regenerate everything
-flutter pub run build_runner build --delete-conflicting-outputs
+# Translations
+flutter gen-l10n
 ```
 
-## Testing
+Watch mode keeps the terminal occupied while waiting for changes. A successful
+`wrote 0 outputs` message means no generated files needed updating. Press Ctrl+C
+to stop watching, or use another terminal for Flutter commands.
 
-```bash
-# Run all tests
-flutter test
+Generated outputs include `*.freezed.dart`, `*.g.dart`, `*.mocks.dart`,
+`lib/core/di/injection.config.dart`, `lib/core/assets/assets.gen.dart`, and
+`lib/l10n/gen/`. Do not edit generated files manually.
 
-# Run tests with coverage
+## Assets and localization
+
+1. Add assets under the directories declared in `pubspec.yaml`.
+2. Run the build_runner command above to regenerate FlutterGen asset references.
+3. Add translation keys at the end of all three `lib/l10n/arb/app_*.arb` files.
+4. Run `flutter gen-l10n` and use `context.local.<key>` in widgets.
+5. Check English, Bengali, Arabic/RTL, narrow layouts, and large text for overflow.
+
+Changing `assets/images/logo.png` alone does not regenerate native launcher icons;
+review the Android, iOS, and web artwork separately.
+
+## Platforms
+
+```sh
+# Choose a listed Android emulator or iOS simulator ID
+flutter devices
+flutter run -d <device-id>
+```
+
+On macOS, install iOS dependencies from `ios/` with `pod install`, then return to
+the project root. Use `ios/Runner.xcworkspace` for Xcode work.
+
+Android map configuration reads `GOOGLE_MAPS_API_KEY` from a Gradle project property
+or environment variable; see `android/app/build.gradle.kts`.
+
+## Verification and release builds
+
+```sh
+flutter analyze --no-fatal-infos --no-fatal-warnings
+flutter test --concurrency=1
 flutter test --coverage
-
-# View coverage (requires lcov)
-genhtml coverage/lcov.info -o coverage/html
-open coverage/html/index.html
-```
-
-## Platform-Specific Commands
-
-### iOS
-```bash
-cd ios
-pod install
-cd ..
-flutter run -d ios
-```
-
-### Android
-```bash
-flutter run -d android
-```
-
-### Web
-```bash
-flutter run -d chrome
-```
-
-## Code Generation Explained
-
-### What Gets Generated?
-
-1. **Freezed** (`*.freezed.dart`)
-   - Immutable models
-   - copyWith methods
-   - Equality operators
-   - toString methods
-
-2. **JSON Serializable** (`*.g.dart`)
-   - fromJson methods
-   - toJson methods
-
-3. **Injectable** (`injection.config.dart`)
-   - Dependency injection setup
-   - GetIt registration
-
-4. **Retrofit** (`*_service.g.dart`)
-   - API service implementations
-
-5. **Flutter Gen** (`gen/assets.gen.dart`)
-   - Type-safe asset access
-
-### Useful Flags
-
-```bash
-# Delete conflicting outputs (recommended)
---delete-conflicting-outputs
-
-# Watch for changes
-watch
-
-# Clean before building
-clean
-```
-
-## Asset Management
-
-Add assets to `pubspec.yaml`:
-```yaml
-flutter:
-  assets:
-    - assets/images/
-    - assets/icons/
-```
-
-Then run:
-```bash
-flutter pub run flutter_gen_runner
-```
-
-Access assets type-safely:
-```dart
-Image.asset(Assets.images.logo.path)
-```
-
-## Localization
-
-1. Add translations in `lib/l10n/arb/app_*.arb`
-2. Run: `flutter gen-l10n`
-3. Use in code:
-```dart
-AppLocalizations.of(context)!.yourKey
-```
-
-## Troubleshooting
-
-### "No implementation found for X"
-```bash
-flutter pub run build_runner clean
-flutter pub run build_runner build --delete-conflicting-outputs
-```
-
-### "Part file doesn't exist"
-Run code generation
-
-### "BuildRunner stuck"
-Kill the process and run:
-```bash
-flutter pub run build_runner build --delete-conflicting-outputs
-```
-
-## Production Build
-
-### Android APK
-```bash
+flutter build web --release
 flutter build apk --release
-```
-
-### Android App Bundle
-```bash
 flutter build appbundle --release
-```
-
-### iOS
-```bash
 flutter build ios --release
 ```
 
-### Web
-```bash
-flutter build web --release
-```
+Android release builds currently use the debug signing configuration. Configure
+release signing before distributing through an app store. iOS distribution also
+requires the project's signing/provisioning configuration.
+
+## Troubleshooting
+
+Use [FIX_VERSIONS.md](FIX_VERSIONS.md). Keep `pubspec.lock`; deleting it changes
+resolved dependencies instead of reproducing the existing build.

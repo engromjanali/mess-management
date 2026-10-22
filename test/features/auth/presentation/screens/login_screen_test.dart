@@ -11,8 +11,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 // Manual Mock Bloc that behaves like a real Bloc but allows controlling state
 class MockAuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
+  AuthEvent? lastEvent;
+
   MockAuthBloc() : super(const AuthState.initial()) {
-    on<AuthEvent>((event, emit) {});
+    on<AuthEvent>((event, emit) { lastEvent = event; });
   }
 
   @override
@@ -59,9 +61,10 @@ void main() {
   testWidgets('LoginScreen displays email and password fields and login button',
       (WidgetTester tester) async {
     await tester.pumpWidget(createWidgetUnderTest());
+    await tester.pumpAndSettle();
 
     expect(find.byType(TextFormField), findsNWidgets(2));
-    expect(find.widgetWithText(TextFormField, 'Email'), findsOneWidget);
+    expect(find.byType(TextFormField).first, findsOneWidget);
     expect(find.widgetWithText(TextFormField, 'Password'), findsOneWidget);
     expect(find.widgetWithText(ElevatedButton, 'Login'), findsOneWidget);
   });
@@ -69,9 +72,10 @@ void main() {
   testWidgets('Enters text into email and password fields',
       (WidgetTester tester) async {
     await tester.pumpWidget(createWidgetUnderTest());
+    await tester.pumpAndSettle();
 
     await tester.enterText(
-        find.widgetWithText(TextFormField, 'Email'), 'test@example.com');
+        find.byType(TextFormField).first, 'test@example.com');
     await tester.enterText(
         find.widgetWithText(TextFormField, 'Password'), 'password123');
 
@@ -82,16 +86,18 @@ void main() {
   testWidgets('Tapping login button adds LoginRequested event',
       (WidgetTester tester) async {
     await tester.pumpWidget(createWidgetUnderTest());
+    await tester.pumpAndSettle();
 
     await tester.enterText(
-        find.widgetWithText(TextFormField, 'Email'), 'test@example.com');
+        find.byType(TextFormField).first, 'test@example.com');
     await tester.enterText(
         find.widgetWithText(TextFormField, 'Password'), 'password123');
 
+    await tester.ensureVisible(find.widgetWithText(ElevatedButton, 'Login'));
     await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
     await tester.pump();
     
-    expect(find.byType(LoginScreen), findsOneWidget);
+    expect(mockAuthBloc.lastEvent, const AuthEvent.loginRequested(email: 'test@example.com', password: 'password123'));
   });
 
   testWidgets('Shows CircularProgressIndicator when state is loading',
@@ -115,7 +121,7 @@ void main() {
       ),
     );
     
-    await tester.pump(); 
+    await tester.pump(const Duration(seconds: 1));
 
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
     

@@ -610,5 +610,6 @@
   "uiSignUp": "إنشاء حساب",
   "uiTodayMealEntry": "إدخال وجبات اليوم",
   "uiMealEntryDate": "تاريخ إدخال الوجبات",
-  "uiMessId": "المعرّف: {id}"
+  "uiMessId": "المعرّف: {id}",
+  "noticeUnavailable": "هذا الإعلان لم يعد متاحًا."
 }

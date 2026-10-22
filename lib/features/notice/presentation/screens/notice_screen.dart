@@ -198,7 +198,7 @@ class _NoticeBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDesktop = ResponsiveHelper.isDesktop(context);
+    final isDesktop = ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context);
 
     return Stack(
       children: [

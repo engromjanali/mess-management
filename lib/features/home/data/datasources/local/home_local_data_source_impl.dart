@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/errors/exceptions.dart';
 import 'package:injectable/injectable.dart';
 import 'package:dio/dio.dart';
 import 'package:clean_boilerplate/config/util/app_constants.dart';
@@ -5,7 +6,7 @@ import 'package:clean_boilerplate/core/network/api_client.dart';
 import 'package:clean_boilerplate/features/home/data/models/dashboard_model.dart';
 import 'package:clean_boilerplate/features/home/data/datasources/interfaces/home_data_source.dart';
 
-/// Live mess/member totals with the remaining dashboard placeholders.
+/// Live mess, personal and member totals for the selected season.
 @LazySingleton(as: HomeDataSource)
 class HomeLocalDataSourceImpl implements HomeDataSource {
   HomeLocalDataSourceImpl(this._apiClient);
@@ -16,15 +17,19 @@ class HomeLocalDataSourceImpl implements HomeDataSource {
   Future<DashboardModel> getDashboard() async {
     final responses = await Future.wait([
       _apiClient.get<Map<String, dynamic>>(AppConstants.messDetailsEndpoint, options: Options(extra: {'sensitive': true})),
-      _apiClient.get<Map<String, dynamic>>(AppConstants.noticesEndpoint),
+      _apiClient.get<Map<String, dynamic>>(AppConstants.noticesEndpoint).then<Map<String, dynamic>?>((response) => response.data, onError: (Object error) {
+        if (error is UnauthorizedException) throw error;
+        return null;
+      }),
     ]);
-    final response = responses[0];
-    final noticesResponse = responses[1];
+    final response = responses[0] as Response<Map<String, dynamic>>;
+    final noticesResponse = responses[1] as Map<String, dynamic>?;
     final json = response.data!;
+    final myStats = json['my_stats'] as Map<String, dynamic>? ?? const {};
     final manager = json['manager'] as Map<String, dynamic>?;
     final actingManager = json['acting_manager'] as Map<String, dynamic>?;
     final season = json['season'] as Map<String, dynamic>;
-    final notices = noticesResponse.data!['data'] as List<dynamic>? ?? [];
+    final notices = noticesResponse?['data'] as List<dynamic>? ?? [];
     final pinnedNoticeJson = notices.cast<Map<String, dynamic>>().where((notice) => notice['pinned'] == true).firstOrNull;
     final stats = json['stats'] as Map<String, dynamic>;
     final mealRate = (stats['meal_rate'] as num).toDouble();
@@ -41,7 +46,7 @@ class HomeLocalDataSourceImpl implements HomeDataSource {
     final totalBalance = mealBalance + fundBalance;
 
     return DashboardModel(
-      userName: 'Romjan',
+      userName: '',
       isManager: const ['manager', 'acting_manager'].contains(json['my_role']),
       isMember: json['is_member'] as bool? ?? true,
       totalBalance: totalBalance,
@@ -59,9 +64,9 @@ class HomeLocalDataSourceImpl implements HomeDataSource {
       actingManagerPhone: actingManager?['phone'] as String? ?? '',
       messAddress: json['address'] as String? ?? '',
       currentSeasonName: season['name'] as String? ?? '',
-      myTotalMeal: 41,
-      myDeposit: 3000,
-      myRemaining: 3000 - (41 * mealRate),
+      myTotalMeal: (myStats['meal'] as num?)?.toDouble() ?? 0,
+      myDeposit: (myStats['deposit'] as num?)?.toDouble() ?? 0,
+      myRemaining: (myStats['remaining'] as num?)?.toDouble() ?? 0,
       members: members,
       pinnedNotice: pinnedNoticeJson == null ? null : NoticeModel(noticeId: '${pinnedNoticeJson['id']}', title: pinnedNoticeJson['title'] as String, description: pinnedNoticeJson['description'] as String, createdAt: DateTime.parse(pinnedNoticeJson['created_at'] as String).toLocal()),
     );

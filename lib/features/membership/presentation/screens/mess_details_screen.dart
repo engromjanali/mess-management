@@ -104,7 +104,7 @@ class _MessBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mess = state.mess;
-    final isDesktop = ResponsiveHelper.isDesktop(context);
+    final isDesktop = ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context);
     final user = context.watch<AuthBloc>().state.maybeWhen(authenticated: (user) => user, orElse: () => null);
     final myUserId = int.tryParse(user?.id ?? '');
 

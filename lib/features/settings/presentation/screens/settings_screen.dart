@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_footer.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/main_page_body.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
 import 'package:clean_boilerplate/config/util/dimensions.dart';
@@ -25,12 +26,21 @@ class SettingsScreen extends StatelessWidget {
       appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.settings)),
       body: MainPageBody(
         title: context.local.settings,
-        child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
-          child: ListView(
-            padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
-            children: [
+        child: LayoutBuilder(
+          builder: (context, viewport) => SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: viewport.maxHeight),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
               _SettingsSection(
                 title: context.local.language,
                 icon: Icons.translate_rounded,
@@ -89,10 +99,17 @@ class SettingsScreen extends StatelessWidget {
                   },
                 ),
               ),
-            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (showWebAppBar) const AppFooter(),
+                ],
+              ),
+            ),
           ),
         ),
-      ),
       ),
     );
   }

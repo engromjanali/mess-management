@@ -610,5 +610,6 @@
   "uiSignUp": "নিবন্ধন করুন",
   "uiTodayMealEntry": "আজকের মিল এন্ট্রি",
   "uiMealEntryDate": "মিল এন্ট্রির তারিখ",
-  "uiMessId": "আইডি: {id}"
+  "uiMessId": "আইডি: {id}",
+  "noticeUnavailable": "এই নোটিশটি আর পাওয়া যাচ্ছে না।"
 }

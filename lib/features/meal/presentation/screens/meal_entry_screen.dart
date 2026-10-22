@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/widgets/app_page_scroll_view.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/main_page_body.dart';
 import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
 import 'package:clean_boilerplate/core/widgets/app_user_avatar.dart';
@@ -206,8 +207,10 @@ class _BodyState extends State<_Body> {
     // While saving, taps are blocked so the day can't be changed or re-sent.
     return AbsorbPointer(
       absorbing: widget.saving,
-      child: SingleChildScrollView(
-        child: Center(
+      child: AppPageScrollView(
+        child: Column(
+          children: [
+            Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
             child: Padding(
@@ -292,6 +295,8 @@ class _BodyState extends State<_Body> {
               ),
             ),
           ),
+        ),
+          ],
         ),
       ),
     );
