@@ -8,11 +8,13 @@ import 'package:clean_boilerplate/features/notice/presentation/widgets/notice_fo
 /// One notice: title, description, time and — for the manager — pin, edit
 /// and delete actions.
 class NoticeCard extends StatelessWidget {
-  const NoticeCard({required this.notice, required this.showActions, this.onEdit, this.onDelete, this.onTogglePin, super.key});
+  const NoticeCard({required this.notice, required this.showActions, this.onEdit, this.onDelete, this.onTogglePin, this.onTap, this.preview = true, super.key});
 
   final NoticeEntity notice;
 
   final bool showActions;
+  final bool preview;
+  final VoidCallback? onTap;
 
   /// Null callbacks disable their button (e.g. while another action runs).
   final VoidCallback? onEdit;
@@ -24,7 +26,12 @@ class NoticeCard extends StatelessWidget {
     final colors = context.customThemeColors;
     final pinned = notice.pinned;
 
-    return Container(
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge),
+        child: Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeDefault),
       decoration: BoxDecoration(
@@ -54,6 +61,8 @@ class NoticeCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   notice.title,
+                  maxLines: preview ? 2 : null,
+                  overflow: preview ? TextOverflow.ellipsis : null,
                   style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
                 ),
               ),
@@ -62,19 +71,28 @@ class NoticeCard extends StatelessWidget {
           const SizedBox(height: Dimensions.paddingSizeSmall),
           Text(
             notice.description,
+            maxLines: preview ? 3 : null,
+            overflow: preview ? TextOverflow.ellipsis : null,
             style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textSecondaryColor, height: 1.4),
           ),
           const SizedBox(height: Dimensions.paddingSizeDefault),
-          Row(
+          Wrap(
+            spacing: Dimensions.paddingSizeSmall,
+            runSpacing: Dimensions.paddingSizeSmall,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              Icon(Icons.schedule_rounded, size: Dimensions.fontSizeDefault, color: colors.textHintColor),
-              const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-              Text(
-                NoticeFormatters.time(notice.createdAt),
-                style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textHintColor),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.schedule_rounded, size: Dimensions.fontSizeDefault, color: colors.textHintColor),
+                  const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                  Flexible(child: Text(
+                    NoticeFormatters.time(notice.createdAt),
+                    style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textHintColor),
+                  )),
+                ],
               ),
               if (showActions) ...[
-                const Spacer(),
                 _NoticeActionButton(
                   icon: pinned ? Icons.push_pin_outlined : Icons.push_pin_rounded,
                   tooltip: pinned ? context.local.unpin : context.local.pin,
@@ -90,6 +108,8 @@ class NoticeCard extends StatelessWidget {
             ],
           ),
         ],
+      ),
+        ),
       ),
     );
   }

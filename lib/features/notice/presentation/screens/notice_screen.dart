@@ -25,6 +25,8 @@ import 'package:clean_boilerplate/features/notice/presentation/bloc/notice_bloc.
 import 'package:clean_boilerplate/features/notice/presentation/bloc/notice_event.dart';
 import 'package:clean_boilerplate/features/notice/presentation/bloc/notice_state.dart';
 import 'package:clean_boilerplate/features/notice/presentation/widgets/notice_card.dart';
+import 'package:clean_boilerplate/config/route/app_router.dart';
+import 'package:go_router/go_router.dart';
 import 'package:clean_boilerplate/features/notice/presentation/widgets/notice_form_sheet.dart';
 
 /// Notice board.
@@ -267,6 +269,7 @@ class _NoticeList extends StatelessWidget {
               child: NoticeCard(
                 notice: notices[i],
                 showActions: isAdmin,
+                onTap: () => context.go(AppRoutes.getNoticeDetailsRoute(notices[i].id), extra: notices[i]),
                 onEdit: onEdit == null ? null : () => onEdit!(notices[i]),
                 onDelete: onDelete == null ? null : () => onDelete!(notices[i]),
                 onTogglePin: onTogglePin == null ? null : () => onTogglePin!(notices[i]),

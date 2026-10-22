@@ -28,6 +28,8 @@ import 'package:clean_boilerplate/features/membership/presentation/screens/mess_
 import 'package:clean_boilerplate/features/membership/presentation/screens/edit_mess_screen.dart';
 import 'package:clean_boilerplate/features/membership/presentation/screens/mess_leadership_screen.dart';
 import 'package:clean_boilerplate/features/notice/presentation/screens/notice_screen.dart';
+import 'package:clean_boilerplate/features/notice/presentation/screens/notice_details_screen.dart';
+import 'package:clean_boilerplate/features/notice/domain/entities/notice_entity.dart';
 import 'package:clean_boilerplate/features/opinion/presentation/screens/opinion_screen.dart';
 import 'package:clean_boilerplate/features/season/presentation/screens/season_management_screen.dart';
 import 'package:clean_boilerplate/features/settings/presentation/screens/settings_screen.dart';
@@ -57,6 +59,8 @@ class AppRoutes {
   static const String funds = '/funds';
   static const String costs = '/costs';
   static const String notices = '/notices';
+  static const String noticeDetails = '/notices/:id';
+  static String getNoticeDetailsRoute(String id) => '$notices/${Uri.encodeComponent(id)}';
   static const String opinions = '/opinions';
   static const String createOpinionPeriod = '/opinions/create';
   static const String profile = '/profile';
@@ -152,7 +156,9 @@ final router = GoRouter(
     GoRoute(path: AppRoutes.funds, name: 'funds', builder: (context, state) => const FundScreen()),
 
     // Notice route (role-aware: admin manages, user views the list)
-    GoRoute(path: AppRoutes.notices, name: 'notices', builder: (context, state) => const NoticeScreen()),
+    GoRoute(path: AppRoutes.notices, name: 'notices', builder: (context, state) => const NoticeScreen(), routes: [
+      GoRoute(path: ':id', name: 'noticeDetails', builder: (context, state) => NoticeDetailsScreen(noticeId: state.pathParameters['id'], notice: state.extra is NoticeEntity ? state.extra as NoticeEntity : null)),
+    ]),
 
     GoRoute(path: AppRoutes.opinions, name: 'opinions', pageBuilder: (context, state) => const NoTransitionPage(key: ValueKey('opinions-page'), child: OpinionScreen())),
     GoRoute(path: AppRoutes.createOpinionPeriod, name: 'createOpinionPeriod', pageBuilder: (context, state) => const NoTransitionPage(key: ValueKey('opinions-page'), child: OpinionScreen(showCreateTab: true))),
