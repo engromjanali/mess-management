@@ -1,3 +1,7 @@
+import 'package:clean_boilerplate/core/helpers/notification_helper.dart';
+
+import 'package:clean_boilerplate/core/notifications/season_notification_service.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
 import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_event.dart';
 import 'package:clean_boilerplate/features/splash/presentation/bloc/splash_bloc.dart';
 import 'package:flutter/foundation.dart';
@@ -28,9 +32,12 @@ void main() async {
 
   // Configure dependency injection
   await configureDependencies();
+  await NotificationHelper.instance.initialize();
+  SeasonNotificationService.instance = SeasonNotificationService(getIt<ApiClient>())..start();
 
   // Session expired or token rejected: send the user back to login.
   getIt<ApiClient>().onUnauthorized = () {
+    SeasonNotificationService.instance?.signOut();
     final path = router.routerDelegate.currentConfiguration.uri.path;
     const authRoutes = [AppRoutes.register, AppRoutes.forgotPassword];
     if (path == AppRoutes.getLoginRoute() || authRoutes.contains(path)) return;
@@ -53,6 +60,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    NotificationHelper.instance.start();
     if (kIsWeb) {
       // Browser focus can arrive before the router overlay has a layout.
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -76,7 +84,15 @@ class _MyAppState extends State<MyApp> {
         }),
         BlocProvider(create: (context) => RoleCubit(context.read<AuthBloc>())),
       ],
-      child: BlocBuilder<LocalizationBloc, LocalizationState>(
+      child: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          state.maybeWhen(
+            authenticated: (_) => SeasonNotificationService.instance?.setAuthenticated(true),
+            unauthenticated: () => SeasonNotificationService.instance?.signOut(),
+            orElse: () {},
+          );
+        },
+        child: BlocBuilder<LocalizationBloc, LocalizationState>(
         builder: (context, localeState) {
           return BlocBuilder<ThemeBloc, ThemeState>(
             builder: (context, themeState) {
@@ -109,6 +125,14 @@ class _MyAppState extends State<MyApp> {
           );
         },
       ),
+      ),
     );
+  }
+
+  @override
+  void dispose() {
+    NotificationHelper.instance.dispose();
+    SeasonNotificationService.instance?.dispose();
+    super.dispose();
   }
 }

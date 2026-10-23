@@ -61,6 +61,7 @@ class AppRoutes {
   static const String notices = '/notices';
   static const String noticeDetails = '/notices/:id';
   static String getNoticeDetailsRoute(String id) => '$notices/${Uri.encodeComponent(id)}';
+
   static const String opinions = '/opinions';
   static const String createOpinionPeriod = '/opinions/create';
   static const String profile = '/profile';
@@ -105,7 +106,7 @@ class AppRoutes {
   }
 }
 
-final String initialDestination = _initialDestination();
+String initialDestination = _initialDestination();
 
 String _initialDestination() {
   if (kIsWeb) {

@@ -23,8 +23,10 @@ watch mode, testing, and release commands.
 ## API environments
 
 [AppConstants](lib/config/util/app_constants.dart) reads `API_BASE_URL` at build time.
-Debug and profile builds default to `http://127.0.0.1:8000`; release builds default
-to `https://mm-backend-kappa.vercel.app`.
+Debug and profile builds default to `http://10.0.2.2:8000` on Android (emulator)
+and `http://127.0.0.1:8000` on other platforms. Release builds default to
+`https://mm-backend-kappa.vercel.app`. Local HTTP is allowed in Android debug/profile builds.
+Restart the app fully after changing these settings.
 
 ```sh
 # Android emulator reaching the development computer

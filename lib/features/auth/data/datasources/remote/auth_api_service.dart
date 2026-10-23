@@ -1,3 +1,4 @@
+import 'package:clean_boilerplate/core/notifications/season_notification_service.dart';
 import 'package:dio/dio.dart';
 import 'package:clean_boilerplate/config/util/app_constants.dart';
 import 'package:clean_boilerplate/core/network/api_client.dart';
@@ -32,6 +33,7 @@ class AuthApiService {
   }
 
   Future<void> logout() async {
+    await SeasonNotificationService.instance?.signOut();
     try {
       await _apiClient.post(AppConstants.logoutEndpoint);
     } on Exception {
