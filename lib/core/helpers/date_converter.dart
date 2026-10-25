@@ -4,7 +4,7 @@ class DateConverter {
   const DateConverter._();
 
   static String orderDateTime(DateTime dateTime) {
-    return DateFormat('d MMM, yyyy h:mm a').format(dateTime);
+    return DateFormat('d MMM, yyyy h:mm a', 'en_US').format(dateTime);
   }
 
   static String timeAgoLocalized(String? time, dynamic local, {String defaultText = ''}) {

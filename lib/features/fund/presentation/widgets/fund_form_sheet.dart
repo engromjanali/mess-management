@@ -56,7 +56,7 @@ class _FundFormSheetState extends State<_FundFormSheet> {
   }
 
   Future<void> _pickDate() async {
-    final picked = await showDatePicker(context: context, initialDate: _date, firstDate: DateTime(_date.year - 2), lastDate: DateTime(_date.year + 2));
+    final picked = await showDatePicker(context: context, locale: const Locale('en'), initialDate: _date, firstDate: DateTime(_date.year - 2), lastDate: DateTime(_date.year + 2));
     if (picked != null) setState(() => _date = picked);
   }
 
@@ -123,7 +123,7 @@ class _FundFormSheetState extends State<_FundFormSheet> {
                   Icon(Icons.calendar_today_rounded, size: Dimensions.iconSizeSmall, color: colors.textSecondaryColor),
                   const SizedBox(width: Dimensions.paddingSizeSmall),
                   Text(
-                    FundFormatters.date(_date, locale: Localizations.localeOf(context).toLanguageTag()),
+                    FundFormatters.date(_date),
                     style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
                   ),
                 ],

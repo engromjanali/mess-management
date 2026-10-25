@@ -2,7 +2,13 @@ import 'package:mess_pilot/config/theme/app_theme.dart';
 import 'package:mess_pilot/core/widgets/app_footer.dart';
 import 'package:mess_pilot/features/cost/domain/entities/cost_entity.dart';
 import 'package:mess_pilot/features/cost/presentation/widgets/cost_entry_form.dart';
+import 'package:mess_pilot/features/cost/presentation/widgets/cost_formatters.dart';
+import 'package:mess_pilot/features/deposit/presentation/widgets/deposit_formatters.dart';
 import 'package:mess_pilot/features/fund/presentation/widgets/fund_formatters.dart';
+import 'package:mess_pilot/features/home/presentation/widgets/dashboard_formatters.dart';
+import 'package:mess_pilot/features/meal/presentation/widgets/meal_formatters.dart';
+import 'package:mess_pilot/features/notice/presentation/widgets/notice_formatters.dart';
+import 'package:mess_pilot/features/season/presentation/widgets/season_formatters.dart';
 import 'package:mess_pilot/features/splash/presentation/bloc/splash_bloc.dart';
 import 'package:mess_pilot/l10n/gen/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -44,12 +50,19 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
-  test('Date labels follow the explicitly selected locale', () async {
+  test('Numbers and dates stay English with Latin digits in every app locale', () async {
     for (final language in ['en', 'bn', 'ar']) {
       await AppLocalizations.delegate.load(Locale(language));
+      final date = DateTime(2026, 7, 1, 9, 5);
+      expect(FundFormatters.date(date), '01 Jul 2026');
+      expect(FundFormatters.taka(1234.5), '৳1,234.5');
+      expect(DepositFormatters.date(date), '01 Jul 2026');
+      expect(CostFormatters.date(date), '01/07/2026');
+      expect(CostFormatters.time(date), '9:05 AM');
+      expect(MealFormatters.dayLabel(date), 'Wed, 01 Jul');
+      expect(NoticeFormatters.time(date), '9:05 AM · 01 Jul 2026');
+      expect(DashboardFormatters.noticeTime(date), '9:05 AM · 01 Jul 2026');
+      expect(SeasonFormatters.date(date), '1 Jul 2026');
     }
-    final date = DateTime(2026, 7, 1);
-    expect(FundFormatters.date(date, locale: 'bn'), contains('জুল'));
-    expect(FundFormatters.date(date, locale: 'ar'), contains('يوليو'));
   });
 }

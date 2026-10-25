@@ -103,14 +103,14 @@ class _CostEntryFormState extends State<CostEntryForm> {
   }
 
   Future<void> _pickDate() async {
-    final picked = await showDatePicker(context: context, initialDate: _date, firstDate: DateTime(_date.year - 2), lastDate: DateTime(_date.year + 2));
+    final picked = await showDatePicker(context: context, locale: const Locale('en'), initialDate: _date, firstDate: DateTime(_date.year - 2), lastDate: DateTime(_date.year + 2));
     if (picked != null) {
       setState(() => _date = DateTime(picked.year, picked.month, picked.day, _date.hour, _date.minute));
     }
   }
 
   Future<void> _pickTime() async {
-    final picked = await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(_date));
+    final picked = await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(_date), builder: (context, child) => Localizations.override(context: context, locale: const Locale('en'), child: child ?? const SizedBox.shrink()));
     if (picked != null) {
       setState(() => _date = DateTime(_date.year, _date.month, _date.day, picked.hour, picked.minute));
     }
@@ -159,11 +159,11 @@ class _CostEntryFormState extends State<CostEntryForm> {
           Row(
             children: [
               Expanded(
-                child: _PickerField(label: context.local.costDate, icon: Icons.calendar_today_rounded, value: CostFormatters.date(_date, locale: Localizations.localeOf(context).toLanguageTag()), onTap: _pickDate),
+                child: _PickerField(label: context.local.costDate, icon: Icons.calendar_today_rounded, value: CostFormatters.date(_date), onTap: _pickDate),
               ),
               const SizedBox(width: Dimensions.paddingSizeDefault),
               Expanded(
-                child: _PickerField(label: context.local.costTime, icon: Icons.access_time_rounded, value: CostFormatters.time(_date, locale: Localizations.localeOf(context).toLanguageTag()), onTap: _pickTime),
+                child: _PickerField(label: context.local.costTime, icon: Icons.access_time_rounded, value: CostFormatters.time(_date), onTap: _pickTime),
               ),
             ],
           ),

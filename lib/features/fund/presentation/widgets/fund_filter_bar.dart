@@ -23,7 +23,7 @@ class FundFilterBar extends StatelessWidget {
   FundBloc _bloc(BuildContext context) => context.read<FundBloc>();
 
   Future<void> _pickDay(BuildContext context) async {
-    final picked = await showDatePicker(context: context, initialDate: selectedDate, firstDate: DateTime(selectedDate.year - 2), lastDate: DateTime(selectedDate.year + 2));
+    final picked = await showDatePicker(context: context, locale: const Locale('en'), initialDate: selectedDate, firstDate: DateTime(selectedDate.year - 2), lastDate: DateTime(selectedDate.year + 2));
     if (picked != null && context.mounted) {
       _bloc(context).add(FundEvent.selectDate(picked));
     }
@@ -31,7 +31,7 @@ class FundFilterBar extends StatelessWidget {
 
   Future<void> _pickRange(BuildContext context) async {
     final now = DateTime.now();
-    final picked = await showDateRangePicker(context: context, initialDateRange: selectedRange, firstDate: DateTime(now.year - 2), lastDate: DateTime(now.year + 2));
+    final picked = await showDateRangePicker(context: context, locale: const Locale('en'), initialDateRange: selectedRange, firstDate: DateTime(now.year - 2), lastDate: DateTime(now.year + 2));
     if (picked != null && context.mounted) {
       _bloc(context).add(FundEvent.selectRange(start: picked.start, end: picked.end));
     }
@@ -46,13 +46,13 @@ class FundFilterBar extends StatelessWidget {
       children: [
         _SelectChip(label: context.local.allTime, selected: dateFilter == FundDateFilter.allTime, onTap: () => _bloc(context).add(const FundEvent.changeDateFilter(FundDateFilter.allTime))),
         _SelectChip(
-          label: dateFilter == FundDateFilter.day ? FundFormatters.shortDate(selectedDate, locale: Localizations.localeOf(context).toLanguageTag()) : context.local.day,
+          label: dateFilter == FundDateFilter.day ? FundFormatters.shortDate(selectedDate) : context.local.day,
           icon: Icons.event_rounded,
           selected: dateFilter == FundDateFilter.day,
           onTap: () => _pickDay(context),
         ),
         _SelectChip(
-          label: dateFilter == FundDateFilter.range && selectedRange != null ? FundFormatters.rangeLabel(selectedRange!.start, selectedRange!.end, locale: Localizations.localeOf(context).toLanguageTag()) : context.local.range,
+          label: dateFilter == FundDateFilter.range && selectedRange != null ? FundFormatters.rangeLabel(selectedRange!.start, selectedRange!.end) : context.local.range,
           icon: Icons.date_range_rounded,
           selected: dateFilter == FundDateFilter.range,
           onTap: () => _pickRange(context),

@@ -13,8 +13,8 @@ class MessFormatters {
     _ => context.local.roleMember,
   };
 
-  /// A date in the app's language, e.g. `3 Oct 2026`.
-  static String date(BuildContext context, DateTime value) => DateFormat.yMMMd(Localizations.localeOf(context).toLanguageTag()).format(value);
+  /// A date with English month names and Latin digits, e.g. `3 Oct 2026`.
+  static String date(DateTime value) => DateFormat.yMMMd('en_US').format(value);
 
   /// Up to two initials, e.g. `Green House` → `GH`.
   static String initials(String name) {

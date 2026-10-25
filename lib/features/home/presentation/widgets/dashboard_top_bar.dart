@@ -1,3 +1,4 @@
+import 'package:mess_pilot/core/widgets/notification_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -104,7 +105,7 @@ class DashboardTopBar extends StatelessWidget {
                         )),
                       ],
                       if (resolvedNavItems.isEmpty) const Spacer(),
-                      if (showNotifications) _ActionIcon(icon: Icons.notifications_outlined, tooltip: context.local.uiNotifications, onPressed: () => context.push(AppRoutes.notices)),
+                      if (showNotifications) NotificationIconButton(color: colors.textSecondaryColor),
                       if (showTheme) _ActionIcon(
                         icon: themeIcon,
                         tooltip: context.local.uiThemeDescription(switch (themeMode) { AppThemeMode.light => context.local.uiLightMode, AppThemeMode.dark => context.local.darkMode, AppThemeMode.system => context.local.uiSystemDefault }),

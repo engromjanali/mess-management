@@ -17,8 +17,8 @@ class CostRemoteDataSourceImpl implements CostDataSource {
 
   CostRemoteDataSourceImpl(this._apiClient);
 
-  static final DateFormat _day = DateFormat('yyyy-MM-dd');
-  static final DateFormat _time = DateFormat('HH:mm');
+  static final DateFormat _day = DateFormat('yyyy-MM-dd', 'en_US');
+  static final DateFormat _time = DateFormat('HH:mm', 'en_US');
 
   @override
   Future<List<CostMemberModel>> getMembers() async {

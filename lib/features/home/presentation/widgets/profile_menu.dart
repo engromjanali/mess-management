@@ -30,7 +30,8 @@ class ProfileMenuItem {
 List<ProfileMenuItem> profileMenuItems(BuildContext context, {required bool isAdmin, DateTime? deletionScheduledFor}) => [
   ProfileMenuItem(icon: Icons.edit_outlined, title: context.local.editProfile, subtitle: context.local.editProfileSubtitle, route: AppRoutes.editProfile),
   ProfileMenuItem(icon: Icons.savings_outlined, title: context.local.fund, subtitle: context.local.fundSubtitle, route: AppRoutes.funds),
-  ProfileMenuItem(icon: Icons.notifications_outlined, title: context.local.notices, subtitle: context.local.noticesSubtitle, route: AppRoutes.notices),
+  ProfileMenuItem(icon: Icons.notifications_active_outlined, title: context.local.uiNotifications, subtitle: context.local.notificationInboxSubtitle, route: AppRoutes.notifications),
+  ProfileMenuItem(icon: Icons.campaign_outlined, title: context.local.notices, subtitle: context.local.noticesSubtitle, route: AppRoutes.notices),
   ProfileMenuItem(icon: Icons.home_work_outlined, title: context.local.mess, subtitle: context.local.messSubtitle, route: AppRoutes.messDetails),
   // Everyone has memberships; managers also see the mess side there.
   ProfileMenuItem(icon: Icons.manage_accounts_rounded, title: context.local.membership, subtitle: context.local.membershipSubtitle, route: AppRoutes.manageMembership),
@@ -45,7 +46,7 @@ List<ProfileMenuItem> profileMenuItems(BuildContext context, {required bool isAd
     title: context.local.deleteAccount,
     subtitle: deletionScheduledFor == null
         ? context.local.deleteAccountSubtitle
-        : context.local.deletionScheduledBanner(DateFormat.yMMMd(Localizations.localeOf(context).toLanguageTag()).format(deletionScheduledFor)),
+        : context.local.deletionScheduledBanner(DateFormat.yMMMd('en_US').format(deletionScheduledFor)),
     route: AppRoutes.deleteAccount,
     danger: true,
   ),

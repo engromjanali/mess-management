@@ -907,7 +907,7 @@ String _statusLabel(BuildContext context, String status) => switch (status) {
 /// "Expires …" for a pending invitation / join request (they expire 7 days
 /// after being sent), else null.
 String? _expiryLabel(BuildContext context, String? status, DateTime? expiresAt) =>
-    status == 'pending' && expiresAt != null ? context.local.expiresOn(MessFormatters.date(context, expiresAt)) : null;
+    status == 'pending' && expiresAt != null ? context.local.expiresOn(MessFormatters.date(expiresAt)) : null;
 
 /// `expires_at` of an admin invitation / join request map.
 DateTime? _expiresAt(Map<String, dynamic> item) => DateTime.tryParse(item['expires_at'] as String? ?? '')?.toLocal();

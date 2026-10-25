@@ -15,7 +15,7 @@ class DepositRemoteDataSourceImpl implements DepositDataSource {
 
   DepositRemoteDataSourceImpl(this._apiClient);
 
-  static final DateFormat _day = DateFormat('yyyy-MM-dd');
+  static final DateFormat _day = DateFormat('yyyy-MM-dd', 'en_US');
 
   @override
   Future<List<DepositMemberModel>> getMembers() async {

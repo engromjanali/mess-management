@@ -27,8 +27,8 @@ class DepositTile extends StatelessWidget {
     final isCredit = deposit.isCredit;
     final accent = isCredit ? colors.successColor : colors.errorColor;
 
-    final title = showMember ? deposit.memberName : DepositFormatters.date(deposit.date, locale: Localizations.localeOf(context).toLanguageTag());
-    final subtitle = showMember ? DepositFormatters.date(deposit.date, locale: Localizations.localeOf(context).toLanguageTag()) : (deposit.note?.isNotEmpty ?? false ? deposit.note! : null);
+    final title = showMember ? deposit.memberName : DepositFormatters.date(deposit.date);
+    final subtitle = showMember ? DepositFormatters.date(deposit.date) : (deposit.note?.isNotEmpty ?? false ? deposit.note! : null);
 
     return Container(
       padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),

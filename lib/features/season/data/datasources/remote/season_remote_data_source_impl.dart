@@ -12,7 +12,7 @@ class SeasonRemoteDataSourceImpl implements SeasonDataSource {
 
   SeasonRemoteDataSourceImpl(this._apiClient);
 
-  static final DateFormat _day = DateFormat('yyyy-MM-dd');
+  static final DateFormat _day = DateFormat('yyyy-MM-dd', 'en_US');
 
   @override
   Future<SeasonOverviewModel> getSeasons() async {

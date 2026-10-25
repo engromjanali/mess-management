@@ -122,7 +122,7 @@ class _ManageCard extends StatelessWidget {
         title: Text(context.local.uiDeleteMeal),
         content: Text(
           '${data.memberName(entry.memberId)} · '
-          '${MealFormatters.dayLabel(entry.date, locale: Localizations.localeOf(context).toLanguageTag())}\n'
+          '${MealFormatters.dayLabel(entry.date)}\n'
           + context.local.uiThisRemovesTheRecordedMealForThatDay,
         ),
         actions: [
@@ -213,7 +213,7 @@ class _Filters extends StatelessWidget {
 
   Future<void> _pickDate(BuildContext context) async {
     final now = DateTime.now();
-    final picked = await showDatePicker(context: context, initialDate: selectedDate ?? now, firstDate: DateTime(now.year - 1), lastDate: DateTime(now.year + 1, now.month, now.day));
+    final picked = await showDatePicker(context: context, locale: const Locale('en'), initialDate: selectedDate ?? now, firstDate: DateTime(now.year - 1), lastDate: DateTime(now.year + 1, now.month, now.day));
     if (picked != null && context.mounted) {
       context.read<MealAdminBloc>().add(MealAdminEvent.selectDate(picked));
     }
@@ -284,7 +284,7 @@ class _Filters extends StatelessWidget {
                   const SizedBox(width: Dimensions.paddingSizeSmall),
                   Expanded(
                     child: Text(
-                      selectedDate == null ? context.local.uiAllDates : MealFormatters.dayLabel(selectedDate!, locale: Localizations.localeOf(context).toLanguageTag()),
+                      selectedDate == null ? context.local.uiAllDates : MealFormatters.dayLabel(selectedDate!),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: selectedDate == null ? colors.textSecondaryColor : colors.textPrimaryColor),
@@ -339,7 +339,7 @@ class _EntryRow extends StatelessWidget {
                     style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
                   ),
                 Text(
-                  MealFormatters.dayLabel(entry.date, locale: Localizations.localeOf(context).toLanguageTag()),
+                  MealFormatters.dayLabel(entry.date),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.sfProRoundedMedium.copyWith(

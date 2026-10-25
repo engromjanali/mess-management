@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:mess_pilot/config/route/app_router.dart';
 import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
@@ -266,7 +267,7 @@ class _OpinionScreenState extends State<OpinionScreen> {
   }
 
   Future<void> _changeEndDate(OpinionPeriodEntity period) async {
-    final selected = await showDatePicker(context: context, initialDate: period.endDate, firstDate: period.startDate, lastDate: DateTime.now().add(const Duration(days: 3650)));
+    final selected = await showDatePicker(context: context, locale: const Locale('en'), initialDate: period.endDate, firstDate: period.startDate, lastDate: DateTime.now().add(const Duration(days: 3650)));
     if (selected == null || !mounted) return;
     await _mutate(() => _api.updateEndDate(periodId: period.id, endDate: selected));
   }
@@ -383,7 +384,7 @@ class _OpinionPeriodFormScreenState extends State<OpinionPeriodFormScreen> {
   }
 
   Future<void> _selectStartDate() async {
-    final selected = await showDatePicker(context: context, initialDate: _startDate, firstDate: DateTime.now().subtract(const Duration(days: 365)), lastDate: DateTime.now().add(const Duration(days: 3650)));
+    final selected = await showDatePicker(context: context, locale: const Locale('en'), initialDate: _startDate, firstDate: DateTime.now().subtract(const Duration(days: 365)), lastDate: DateTime.now().add(const Duration(days: 3650)));
     if (selected == null || !mounted) return;
     setState(() {
       _startDate = selected;
@@ -392,7 +393,7 @@ class _OpinionPeriodFormScreenState extends State<OpinionPeriodFormScreen> {
   }
 
   Future<void> _selectEndDate() async {
-    final selected = await showDatePicker(context: context, initialDate: _endDate.isBefore(_startDate) ? _startDate : _endDate, firstDate: _startDate, lastDate: DateTime.now().add(const Duration(days: 3650)));
+    final selected = await showDatePicker(context: context, locale: const Locale('en'), initialDate: _endDate.isBefore(_startDate) ? _startDate : _endDate, firstDate: _startDate, lastDate: DateTime.now().add(const Duration(days: 3650)));
     if (selected != null && mounted) setState(() => _endDate = selected);
   }
 
@@ -666,7 +667,7 @@ class _DateButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton.icon(onPressed: onTap, icon: const Icon(Icons.calendar_month_rounded), label: Text('$label: ${MaterialLocalizations.of(context).formatMediumDate(date)}'));
+    return OutlinedButton.icon(onPressed: onTap, icon: const Icon(Icons.calendar_month_rounded), label: Text('$label: ${DateFormat.yMMMd('en_US').format(date)}'));
   }
 }
 

@@ -75,7 +75,7 @@ class _MemberMealFormSheetState extends State<_MemberMealFormSheet> {
 
   Future<void> _pickDate() async {
     final now = DateTime.now();
-    final picked = await showDatePicker(context: context, initialDate: _date, firstDate: DateTime(now.year - 1), lastDate: DateTime(now.year + 1, now.month, now.day));
+    final picked = await showDatePicker(context: context, locale: const Locale('en'), initialDate: _date, firstDate: DateTime(now.year - 1), lastDate: DateTime(now.year + 1, now.month, now.day));
     if (picked != null) {
       setState(() => _date = DateTime(picked.year, picked.month, picked.day));
     }
@@ -216,7 +216,7 @@ class _DateField extends StatelessWidget {
             Icon(Icons.event_rounded, size: Dimensions.iconSizeDefault, color: colors.primaryColor),
             const SizedBox(width: Dimensions.paddingSizeDefault),
             Text(
-              MealFormatters.dayLabel(date, locale: Localizations.localeOf(context).toLanguageTag()),
+              MealFormatters.dayLabel(date),
               style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
             ),
             const Spacer(),

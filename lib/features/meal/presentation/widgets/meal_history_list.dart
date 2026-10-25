@@ -65,7 +65,7 @@ class _HistoryRow extends StatelessWidget {
               children: [
                 Flexible(
                   child: Text(
-                    MealFormatters.dayLabel(day.date, locale: Localizations.localeOf(context).toLanguageTag()),
+                    MealFormatters.dayLabel(day.date),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),

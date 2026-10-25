@@ -1,6 +1,5 @@
+import 'package:mess_pilot/core/widgets/notification_icon_button.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:mess_pilot/config/route/app_router.dart';
 import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
@@ -30,7 +29,7 @@ class HomeSliverAppBar extends StatelessWidget {
       elevation: 0,
       shape: const Border(),
       actions: [
-        IconButton(tooltip: context.local.uiNotifications, onPressed: () => context.push(AppRoutes.notices), icon: const Icon(Icons.notifications_outlined)),
+        const NotificationIconButton(),
       ],
       flexibleSpace: LayoutBuilder(
         builder: (context, constraints) {

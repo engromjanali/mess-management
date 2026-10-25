@@ -24,8 +24,8 @@ class MyMembershipTile extends StatelessWidget {
     final dates = start == null
         ? null
         : m.seasonEndDate == null
-            ? context.local.messSince(MessFormatters.date(context, start))
-            : context.local.seasonDates(MessFormatters.date(context, start), MessFormatters.date(context, m.seasonEndDate!));
+            ? context.local.messSince(MessFormatters.date(start))
+            : context.local.seasonDates(MessFormatters.date(start), MessFormatters.date(m.seasonEndDate!));
     final accent = m.isCurrent ? colors.primaryColor : (m.canSwitch ? colors.infoColor : colors.textHintColor);
 
     return Container(

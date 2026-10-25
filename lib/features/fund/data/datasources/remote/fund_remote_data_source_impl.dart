@@ -17,7 +17,7 @@ class FundRemoteDataSourceImpl implements FundDataSource {
 
   FundRemoteDataSourceImpl(this._apiClient);
 
-  static final DateFormat _day = DateFormat('yyyy-MM-dd');
+  static final DateFormat _day = DateFormat('yyyy-MM-dd', 'en_US');
 
   @override
   Future<List<FundModel>> getAllFunds() => _list(const {});

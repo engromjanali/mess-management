@@ -1120,5 +1120,14 @@
   "uiTodayMealEntry": "Today meal entry",
   "uiMealEntryDate": "Meal entry date",
   "uiMessId": "ID: {id}",
-  "noticeUnavailable": "This notice is no longer available."
+  "noticeUnavailable": "This notice is no longer available.",
+  "notificationInboxTitle": "Your notification inbox",
+  "notificationInboxSubtitle": "All your updates, saved in one place.",
+  "notificationEmpty": "You’re all caught up. New notifications will appear here.",
+  "notificationUnread": "Unread",
+  "notificationLoadMore": "Load more",
+  "notificationLoadFailed": "Could not load notifications. Please try again.",
+  "notificationChangeSeason": "To open this destination, change your current season to the notification’s season, then open this notification again.",
+  "notificationAccessUnavailable": "This destination is unavailable or you no longer have access to its season.",
+  "notificationChooseSeason": "Choose season"
 }

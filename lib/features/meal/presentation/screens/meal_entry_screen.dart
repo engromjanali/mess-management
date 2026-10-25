@@ -55,7 +55,7 @@ class _MealEntryViewState extends State<_MealEntryView> {
 
   Future<void> _pickDate() async {
     // Meals can't be added for a future date (the backend rejects it too).
-    final picked = await showDatePicker(context: context, initialDate: _date, firstDate: DateTime(_date.year - 1), lastDate: _today());
+    final picked = await showDatePicker(context: context, locale: const Locale('en'), initialDate: _date, firstDate: DateTime(_date.year - 1), lastDate: _today());
     if (picked != null) {
       setState(() => _date = DateTime(picked.year, picked.month, picked.day));
     }
@@ -169,7 +169,7 @@ class _BodyState extends State<_Body> {
 
   void _saveAll(BuildContext context) {
     if (_dayHasMeals) {
-      context.showErrorSnackBar(context.local.mealsAlreadyAdded(MealFormatters.dayLabel(widget.date, locale: Localizations.localeOf(context).toLanguageTag())));
+      context.showErrorSnackBar(context.local.mealsAlreadyAdded(MealFormatters.dayLabel(widget.date)));
       return;
     }
 
@@ -225,7 +225,7 @@ class _BodyState extends State<_Body> {
                       breakfast: _breakfast,
                       lunch: _lunch,
                       dinner: _dinner,
-                      dateLabel: MealFormatters.dayLabel(widget.date, locale: Localizations.localeOf(context).toLanguageTag()),
+                      dateLabel: MealFormatters.dayLabel(widget.date),
                       onChanged: _changeMeal,
                       onApplyToAll: () => _applyToAll(context),
                     ),
@@ -260,7 +260,7 @@ class _BodyState extends State<_Body> {
                       AnimatedEntrance(
                         child: _DateSelectorCard(date: widget.date, onTap: widget.onPickDate),
                       ),
-                      if (_dayHasMeals) ...[const SizedBox(height: Dimensions.paddingSizeDefault), _AlreadyAddedNotice(message: context.local.mealsAlreadyAdded(MealFormatters.dayLabel(widget.date, locale: Localizations.localeOf(context).toLanguageTag())))],
+                      if (_dayHasMeals) ...[const SizedBox(height: Dimensions.paddingSizeDefault), _AlreadyAddedNotice(message: context.local.mealsAlreadyAdded(MealFormatters.dayLabel(widget.date)))],
                       const SizedBox(height: Dimensions.paddingSizeSmall),
                       if (wide)
                         Row(
@@ -467,7 +467,7 @@ class _DateText extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          MealFormatters.dayLabel(date, locale: Localizations.localeOf(context).toLanguageTag()),
+          MealFormatters.dayLabel(date),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textSecondaryColor),

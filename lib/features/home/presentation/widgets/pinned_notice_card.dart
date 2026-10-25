@@ -75,7 +75,7 @@ class PinnedNoticeCard extends StatelessWidget {
                 Icon(Icons.schedule_rounded, size: Dimensions.fontSizeDefault, color: colors.textHintColor),
                 const SizedBox(width: Dimensions.paddingSizeExtraSmall),
                 Text(
-                  DashboardFormatters.noticeTime(notice!.createdAt, locale: Localizations.localeOf(context).toLanguageTag()),
+                  DashboardFormatters.noticeTime(notice!.createdAt),
                   style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textHintColor),
                 ),
               ],

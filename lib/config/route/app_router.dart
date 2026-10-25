@@ -1,3 +1,4 @@
+import 'package:mess_pilot/features/notifications/presentation/screens/notification_screen.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
 import 'package:mess_pilot/features/splash/presentation/screens/maintenance_screen.dart';
 import 'package:mess_pilot/features/splash/presentation/screens/splash_screeen.dart';
@@ -58,6 +59,7 @@ class AppRoutes {
   static const String deposits = '/deposits';
   static const String funds = '/funds';
   static const String costs = '/costs';
+  static const String notifications = '/notifications';
   static const String notices = '/notices';
   static const String noticeDetails = '/notices/:id';
   static String getNoticeDetailsRoute(String id) => '$notices/${Uri.encodeComponent(id)}';
@@ -155,6 +157,8 @@ final router = GoRouter(
 
     // Fund route (role-aware: admin manages, user views the list)
     GoRoute(path: AppRoutes.funds, name: 'funds', builder: (context, state) => const FundScreen()),
+
+    GoRoute(path: AppRoutes.notifications, name: 'notifications', builder: (context, state) => NotificationScreen(noticeId: state.uri.queryParameters['notice_id'])),
 
     // Notice route (role-aware: admin manages, user views the list)
     GoRoute(path: AppRoutes.notices, name: 'notices', builder: (context, state) => const NoticeScreen(), routes: [

@@ -1,3 +1,4 @@
+import 'package:mess_pilot/core/notifications/notification_unread_service.dart';
 import 'dart:async';
 
 import 'package:mess_pilot/config/route/app_router.dart';
@@ -26,6 +27,11 @@ class NotificationHelper {
     return AppRoutes.getNoticeDetailsRoute(id);
   }
 
+  static String? _inboxRoute(Map<String, dynamic> data) {
+    if (noticeNotificationRoute(data) == null) return null;
+    return Uri(path: AppRoutes.notifications, queryParameters: {'notice_id': data['notice_id'] as String}).toString();
+  }
+
   Future<void> initialize() async {
     if (kIsWeb || (defaultTargetPlatform != TargetPlatform.android && defaultTargetPlatform != TargetPlatform.iOS)) return;
     try {
@@ -38,7 +44,7 @@ class NotificationHelper {
       await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(alert: true, badge: true, sound: true);
       // FCM handles background display; this resolves a terminated-app tap.
       final message = await FirebaseMessaging.instance.getInitialMessage();
-      if (message != null) initialDestination = noticeNotificationRoute(message.data) ?? initialDestination;
+      if (message != null) initialDestination = _inboxRoute(message.data) ?? initialDestination;
     } catch (_) {
       debugPrint('Initial notification unavailable.');
     }
@@ -48,12 +54,12 @@ class NotificationHelper {
     if (_listening || kIsWeb || (defaultTargetPlatform != TargetPlatform.android && defaultTargetPlatform != TargetPlatform.iOS)) return;
     _listening = true;
     _tapSubscription = FirebaseMessaging.onMessageOpenedApp.listen(_onTap);
-    if (_supported) _foregroundSubscription = FirebaseMessaging.onMessage.listen(show);
+    _foregroundSubscription = FirebaseMessaging.onMessage.listen(show);
     router.routerDelegate.addListener(_openPendingNotification);
   }
 
   void _onTap(RemoteMessage message) {
-    final destination = noticeNotificationRoute(message.data);
+    final destination = _inboxRoute(message.data);
     if (destination == null) return;
     _pendingRoute = destination;
     _openPendingNotification();
@@ -89,10 +95,11 @@ class NotificationHelper {
     await _plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(const AndroidNotificationChannel('notices', 'Notices', importance: Importance.high));
     _initialized = true;
     final launch = await _plugin.getNotificationAppLaunchDetails();
-    return launch?.didNotificationLaunchApp == true ? noticeNotificationRoute(_message(launch?.notificationResponse?.payload).data) : null;
+    return launch?.didNotificationLaunchApp == true ? _inboxRoute(_message(launch?.notificationResponse?.payload).data) : null;
   }
 
   Future<void> show(RemoteMessage message) async {
+    unawaited(NotificationUnreadService.instance.refresh());
     if (!_supported || !_initialized || !AuthHelper.isLogin() || noticeNotificationRoute(message.data) == null) return;
     final notification = message.notification;
     if (notification == null) return;

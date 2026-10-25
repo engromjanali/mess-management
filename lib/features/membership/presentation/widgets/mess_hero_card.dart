@@ -87,10 +87,10 @@ class MessHeroCard extends StatelessWidget {
                 runSpacing: Dimensions.paddingSizeSmall,
                 children: [
                   _HeroChip(icon: Icons.event_note_rounded, label: context.local.seasonName(mess.season.name)),
-                  _HeroChip(icon: Icons.flag_rounded, label: context.local.messSince(MessFormatters.date(context, mess.season.startDate))),
+                  _HeroChip(icon: Icons.flag_rounded, label: context.local.messSince(MessFormatters.date(mess.season.startDate))),
                   if (day > 0) _HeroChip(icon: Icons.timelapse_rounded, label: context.local.seasonDay(day)),
                   _HeroChip(icon: Icons.verified_user_rounded, label: '${context.local.you} · ${MessFormatters.role(context, mess.myRole)}', highlighted: true),
-                  if (mess.joinedAt != null) _HeroChip(icon: Icons.login_rounded, label: context.local.joinedOn(MessFormatters.date(context, mess.joinedAt!))),
+                  if (mess.joinedAt != null) _HeroChip(icon: Icons.login_rounded, label: context.local.joinedOn(MessFormatters.date(mess.joinedAt!))),
                 ],
               ),
             ],

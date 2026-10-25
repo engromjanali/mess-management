@@ -261,10 +261,10 @@ class _DepositBody extends StatelessWidget {
           case DepositDateFilter.allTime:
             return context.local.uiAllDeposits;
           case DepositDateFilter.day:
-            return context.local.uiDepositsForDate(DepositFormatters.shortDate(selectedDate, locale: Localizations.localeOf(context).toLanguageTag()));
+            return context.local.uiDepositsForDate(DepositFormatters.shortDate(selectedDate));
           case DepositDateFilter.range:
             final r = selectedRange;
-            return r == null ? context.local.uiAllDeposits : context.local.uiDepositsForDate(DepositFormatters.rangeLabel(r.start, r.end, locale: Localizations.localeOf(context).toLanguageTag()));
+            return r == null ? context.local.uiAllDeposits : context.local.uiDepositsForDate(DepositFormatters.rangeLabel(r.start, r.end));
         }
       case DepositViewMode.mine:
         return context.local.myDeposits;
