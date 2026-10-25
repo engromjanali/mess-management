@@ -1,7 +1,8 @@
+import 'package:mess_pilot/core/notifications/season_notification_service.dart';
 import 'package:dio/dio.dart';
-import 'package:clean_boilerplate/config/util/app_constants.dart';
-import 'package:clean_boilerplate/core/network/api_client.dart';
-import 'package:clean_boilerplate/features/auth/data/models/user_model.dart';
+import 'package:mess_pilot/config/util/app_constants.dart';
+import 'package:mess_pilot/core/network/api_client.dart';
+import 'package:mess_pilot/features/auth/data/models/user_model.dart';
 
 /// Auth API service using ApiClient.
 ///
@@ -32,6 +33,7 @@ class AuthApiService {
   }
 
   Future<void> logout() async {
+    await SeasonNotificationService.instance?.signOut();
     try {
       await _apiClient.post(AppConstants.logoutEndpoint);
     } on Exception {

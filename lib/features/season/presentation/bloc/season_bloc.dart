@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:clean_boilerplate/config/util/result.dart';
-import 'package:clean_boilerplate/core/errors/failures.dart' as errors;
-import 'package:clean_boilerplate/core/usecase/usecase.dart';
-import 'package:clean_boilerplate/features/season/domain/entities/season_overview_entity.dart';
-import 'package:clean_boilerplate/features/season/domain/usecases/season_usecases.dart';
-import 'package:clean_boilerplate/features/season/presentation/bloc/season_event.dart';
-import 'package:clean_boilerplate/features/season/presentation/bloc/season_state.dart';
+import 'package:mess_pilot/config/util/result.dart';
+import 'package:mess_pilot/core/errors/failures.dart' as errors;
+import 'package:mess_pilot/core/usecase/usecase.dart';
+import 'package:mess_pilot/features/season/domain/entities/season_overview_entity.dart';
+import 'package:mess_pilot/features/season/domain/usecases/season_usecases.dart';
+import 'package:mess_pilot/features/season/presentation/bloc/season_event.dart';
+import 'package:mess_pilot/features/season/presentation/bloc/season_state.dart';
 
 /// Season management BLoC — loads the mess's seasons and runs create / edit /
 /// end / disable / switch / delete / auto-create changes, reloading after each.

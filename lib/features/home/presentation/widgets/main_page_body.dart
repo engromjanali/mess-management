@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
-import 'package:clean_boilerplate/core/widgets/web_page_title_bar.dart';
-import 'package:clean_boilerplate/features/home/presentation/widgets/main_top_bar.dart';
+import 'package:mess_pilot/core/helpers/responsive_helper.dart';
+import 'package:mess_pilot/core/widgets/web_page_title_bar.dart';
+import 'package:mess_pilot/features/home/presentation/widgets/main_top_bar.dart';
 
 /// Scaffold body for a screen outside the main sections. On desktop / big
 /// tablet it puts [MainTopBar] and a [WebPageTitleBar] ([title]) above

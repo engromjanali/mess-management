@@ -1,4 +1,4 @@
-import 'package:clean_boilerplate/features/settings/domain/entities/language_model.dart';
+import 'package:mess_pilot/features/settings/domain/entities/language_model.dart';
 import 'package:flutter/foundation.dart';
 
 /// Application-level constants
@@ -9,7 +9,14 @@ class AppConstants {
   static const String appName = 'Mess Pilot';
   static const String appVersion = '1.0.0';
 
-  static const String baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: kReleaseMode ? 'https://mm-backend-kappa.vercel.app' : 'http://127.0.0.1:8000');
+  // static const String baseUrl = 'https://mm-backend-kappa.vercel.app';
+
+  static String get baseUrl {
+    const configuredUrl = String.fromEnvironment('API_BASE_URL');
+    if (configuredUrl.isNotEmpty) return configuredUrl;
+    if (kReleaseMode) return 'https://mm-backend-kappa.vercel.app';
+    return !kIsWeb && defaultTargetPlatform == TargetPlatform.android ? 'http://10.0.2.2:8000' : 'http://127.0.0.1:8000';
+  }
   static const bool enableDemoLogin = bool.fromEnvironment('ENABLE_DEMO_LOGIN', defaultValue: kDebugMode);
 
   // ───────────────────────── API endpoints ─────────────────────────
@@ -25,6 +32,7 @@ class AppConstants {
   // Auth
   static const String loginEndpoint = '/api/v1/auth/sign-in';
   static const String logoutEndpoint = '/api/v1/auth/logout';
+  static const String pushDeviceEndpoint = '/api/v1/auth/push-device';
   static const String registerEndpoint = '/api/v1/auth/sign-up';
   static const String refreshTokenEndpoint = '/api/v1/auth/refresh-token';
   static const String profileEndpoint = '/api/v1/auth/update-profile';

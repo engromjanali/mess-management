@@ -1,4 +1,4 @@
-import 'package:clean_boilerplate/features/fund/domain/entities/fund_entity.dart';
+import 'package:mess_pilot/features/fund/domain/entities/fund_entity.dart';
 
 /// Data-layer DTO for a single fund record.
 class FundModel {

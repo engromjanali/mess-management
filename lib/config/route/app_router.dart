@@ -1,39 +1,39 @@
-import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
-import 'package:clean_boilerplate/features/splash/presentation/screens/maintenance_screen.dart';
-import 'package:clean_boilerplate/features/splash/presentation/screens/splash_screeen.dart';
-import 'package:clean_boilerplate/features/splash/presentation/screens/update_required_screen.dart';
-import 'package:clean_boilerplate/features/app_info/domain/entities/content_page_entity.dart';
-import 'package:clean_boilerplate/features/app_info/presentation/screens/content_page_screen.dart';
-import 'package:clean_boilerplate/features/app_info/presentation/screens/faq_screen.dart';
-import 'package:clean_boilerplate/features/app_info/presentation/screens/support_screen.dart';
-import 'package:clean_boilerplate/features/auth/presentation/screens/delete_account_screen.dart';
+import 'package:mess_pilot/core/extensions/context_extensions.dart';
+import 'package:mess_pilot/features/splash/presentation/screens/maintenance_screen.dart';
+import 'package:mess_pilot/features/splash/presentation/screens/splash_screeen.dart';
+import 'package:mess_pilot/features/splash/presentation/screens/update_required_screen.dart';
+import 'package:mess_pilot/features/app_info/domain/entities/content_page_entity.dart';
+import 'package:mess_pilot/features/app_info/presentation/screens/content_page_screen.dart';
+import 'package:mess_pilot/features/app_info/presentation/screens/faq_screen.dart';
+import 'package:mess_pilot/features/app_info/presentation/screens/support_screen.dart';
+import 'package:mess_pilot/features/auth/presentation/screens/delete_account_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:clean_boilerplate/features/auth/presentation/screens/forgot_password_screen.dart';
-import 'package:clean_boilerplate/features/auth/presentation/screens/login_screen.dart';
-import 'package:clean_boilerplate/features/auth/presentation/screens/edit_profile_screen.dart';
-import 'package:clean_boilerplate/features/auth/presentation/screens/profile_screen.dart';
-import 'package:clean_boilerplate/features/auth/presentation/screens/register_screen.dart';
-import 'package:clean_boilerplate/features/cost/presentation/screens/cost_screen.dart';
-import 'package:clean_boilerplate/features/deposit/presentation/screens/deposit_screen.dart';
-import 'package:clean_boilerplate/features/fund/presentation/screens/fund_screen.dart';
-import 'package:clean_boilerplate/features/home/presentation/screens/home_screen.dart';
-import 'package:clean_boilerplate/features/meal/presentation/screens/meal_entry_screen.dart';
-import 'package:clean_boilerplate/features/meal/presentation/screens/meal_list_screen.dart';
-import 'package:clean_boilerplate/features/meal/presentation/screens/meal_screen.dart';
-import 'package:clean_boilerplate/features/membership/presentation/screens/manage_membership_screen.dart';
-import 'package:clean_boilerplate/features/membership/presentation/screens/join_mess_screen.dart';
-import 'package:clean_boilerplate/features/membership/presentation/screens/mess_details_screen.dart';
-import 'package:clean_boilerplate/features/membership/presentation/screens/edit_mess_screen.dart';
-import 'package:clean_boilerplate/features/membership/presentation/screens/mess_leadership_screen.dart';
-import 'package:clean_boilerplate/features/notice/presentation/screens/notice_screen.dart';
-import 'package:clean_boilerplate/features/notice/presentation/screens/notice_details_screen.dart';
-import 'package:clean_boilerplate/features/notice/domain/entities/notice_entity.dart';
-import 'package:clean_boilerplate/features/opinion/presentation/screens/opinion_screen.dart';
-import 'package:clean_boilerplate/features/season/presentation/screens/season_management_screen.dart';
-import 'package:clean_boilerplate/features/settings/presentation/screens/settings_screen.dart';
-import 'package:clean_boilerplate/core/widgets/main_navigation_shell.dart';
+import 'package:mess_pilot/features/auth/presentation/screens/forgot_password_screen.dart';
+import 'package:mess_pilot/features/auth/presentation/screens/login_screen.dart';
+import 'package:mess_pilot/features/auth/presentation/screens/edit_profile_screen.dart';
+import 'package:mess_pilot/features/auth/presentation/screens/profile_screen.dart';
+import 'package:mess_pilot/features/auth/presentation/screens/register_screen.dart';
+import 'package:mess_pilot/features/cost/presentation/screens/cost_screen.dart';
+import 'package:mess_pilot/features/deposit/presentation/screens/deposit_screen.dart';
+import 'package:mess_pilot/features/fund/presentation/screens/fund_screen.dart';
+import 'package:mess_pilot/features/home/presentation/screens/home_screen.dart';
+import 'package:mess_pilot/features/meal/presentation/screens/meal_entry_screen.dart';
+import 'package:mess_pilot/features/meal/presentation/screens/meal_list_screen.dart';
+import 'package:mess_pilot/features/meal/presentation/screens/meal_screen.dart';
+import 'package:mess_pilot/features/membership/presentation/screens/manage_membership_screen.dart';
+import 'package:mess_pilot/features/membership/presentation/screens/join_mess_screen.dart';
+import 'package:mess_pilot/features/membership/presentation/screens/mess_details_screen.dart';
+import 'package:mess_pilot/features/membership/presentation/screens/edit_mess_screen.dart';
+import 'package:mess_pilot/features/membership/presentation/screens/mess_leadership_screen.dart';
+import 'package:mess_pilot/features/notice/presentation/screens/notice_screen.dart';
+import 'package:mess_pilot/features/notice/presentation/screens/notice_details_screen.dart';
+import 'package:mess_pilot/features/notice/domain/entities/notice_entity.dart';
+import 'package:mess_pilot/features/opinion/presentation/screens/opinion_screen.dart';
+import 'package:mess_pilot/features/season/presentation/screens/season_management_screen.dart';
+import 'package:mess_pilot/features/settings/presentation/screens/settings_screen.dart';
+import 'package:mess_pilot/core/widgets/main_navigation_shell.dart';
 
 /// App route constants
 class AppRoutes {
@@ -61,6 +61,7 @@ class AppRoutes {
   static const String notices = '/notices';
   static const String noticeDetails = '/notices/:id';
   static String getNoticeDetailsRoute(String id) => '$notices/${Uri.encodeComponent(id)}';
+
   static const String opinions = '/opinions';
   static const String createOpinionPeriod = '/opinions/create';
   static const String profile = '/profile';
@@ -105,7 +106,7 @@ class AppRoutes {
   }
 }
 
-final String initialDestination = _initialDestination();
+String initialDestination = _initialDestination();
 
 String _initialDestination() {
   if (kIsWeb) {

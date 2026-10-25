@@ -1,4 +1,6 @@
-name: clean_boilerplate
+# name: mess_pilot
+# description: A digital solution for your mess.
+name: mess_pilot
 description: A Clean Architecture Flutter boilerplate with BLoC and code generation
 publish_to: 'none'
 version: 1.0.0+0
@@ -59,6 +61,8 @@ dependencies:
   package_info_plus: ^10.2.2
   url_launcher: ^6.3.3
   cupertino_icons: ^2.0.0
+  firebase_messaging: ^17.0.1
+  flutter_local_notifications: ^22.3.2
 
 
 dev_dependencies:

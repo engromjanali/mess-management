@@ -1,9 +1,9 @@
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
-import 'package:clean_boilerplate/config/util/app_constants.dart';
-import 'package:clean_boilerplate/core/network/api_client.dart';
-import 'package:clean_boilerplate/features/deposit/data/models/deposit_model.dart';
-import 'package:clean_boilerplate/features/deposit/data/datasources/interfaces/deposit_data_source.dart';
+import 'package:mess_pilot/config/util/app_constants.dart';
+import 'package:mess_pilot/core/network/api_client.dart';
+import 'package:mess_pilot/features/deposit/data/models/deposit_model.dart';
+import 'package:mess_pilot/features/deposit/data/datasources/interfaces/deposit_data_source.dart';
 
 /// Deposit data source backed by the Django API (active season only).
 ///

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:clean_boilerplate/config/util/dimensions.dart';
-import 'package:clean_boilerplate/config/util/styles.dart';
-import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
-import 'package:clean_boilerplate/features/membership/domain/entities/mess_details_entity.dart';
-import 'package:clean_boilerplate/features/membership/presentation/widgets/mess_formatters.dart';
+import 'package:mess_pilot/config/util/dimensions.dart';
+import 'package:mess_pilot/config/util/styles.dart';
+import 'package:mess_pilot/core/extensions/context_extensions.dart';
+import 'package:mess_pilot/features/membership/domain/entities/mess_details_entity.dart';
+import 'package:mess_pilot/features/membership/presentation/widgets/mess_formatters.dart';
 
 /// Gradient header: mess name and address, the active season (name, start,
 /// day count) and the user's own role and join date.

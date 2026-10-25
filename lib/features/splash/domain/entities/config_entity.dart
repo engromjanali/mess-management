@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:clean_boilerplate/features/splash/domain/entities/support_channel_entity.dart';
+import 'package:mess_pilot/features/splash/domain/entities/support_channel_entity.dart';
 
 /// App-wide settings the admin sets in Django admin (`/api/v1/app/config`).
 class ConfigEntity extends Equatable {

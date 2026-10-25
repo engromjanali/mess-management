@@ -1,11 +1,11 @@
-import 'package:clean_boilerplate/core/widgets/app_user_avatar.dart';
+import 'package:mess_pilot/core/widgets/app_user_avatar.dart';
 import 'package:flutter/material.dart';
-import 'package:clean_boilerplate/config/util/dimensions.dart';
-import 'package:clean_boilerplate/config/util/styles.dart';
-import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
-import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
-import 'package:clean_boilerplate/features/cost/domain/entities/cost_entity.dart';
-import 'package:clean_boilerplate/features/cost/presentation/widgets/cost_formatters.dart';
+import 'package:mess_pilot/config/util/dimensions.dart';
+import 'package:mess_pilot/config/util/styles.dart';
+import 'package:mess_pilot/core/extensions/context_extensions.dart';
+import 'package:mess_pilot/core/helpers/responsive_helper.dart';
+import 'package:mess_pilot/features/cost/domain/entities/cost_entity.dart';
+import 'package:mess_pilot/features/cost/presentation/widgets/cost_formatters.dart';
 
 /// One Cost entry card — an index badge, the timestamp + person, the total
 /// (maskable), a 3-dot menu (admin), and an expandable product breakdown.

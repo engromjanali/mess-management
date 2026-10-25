@@ -1,6 +1,6 @@
-import 'package:clean_boilerplate/core/errors/exceptions.dart';
-import 'package:clean_boilerplate/features/notice/data/models/notice_model.dart';
-import 'package:clean_boilerplate/features/notice/data/datasources/interfaces/notice_data_source.dart';
+import 'package:mess_pilot/core/errors/exceptions.dart';
+import 'package:mess_pilot/features/notice/data/models/notice_model.dart';
+import 'package:mess_pilot/features/notice/data/datasources/interfaces/notice_data_source.dart';
 
 /// In-memory mock for the notice feature.
 ///

@@ -1,7 +1,7 @@
-import 'package:clean_boilerplate/config/util/app_constants.dart';
-import 'package:clean_boilerplate/core/network/api_client.dart';
-import 'package:clean_boilerplate/features/membership/domain/entities/mess_details_entity.dart';
-import 'package:clean_boilerplate/features/membership/domain/entities/membership_status_entity.dart';
+import 'package:mess_pilot/config/util/app_constants.dart';
+import 'package:mess_pilot/core/network/api_client.dart';
+import 'package:mess_pilot/features/membership/domain/entities/mess_details_entity.dart';
+import 'package:mess_pilot/features/membership/domain/entities/membership_status_entity.dart';
 import 'package:dio/dio.dart';
 
 class MembershipApiService {

@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
-import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
-import 'package:clean_boilerplate/core/widgets/app_snackbar_content.dart';
+import 'package:mess_pilot/core/extensions/context_extensions.dart';
+import 'package:mess_pilot/core/helpers/responsive_helper.dart';
+import 'package:mess_pilot/core/widgets/app_snackbar_content.dart';
 import 'package:flutter/material.dart';
 
 class AppDesktopToast extends StatefulWidget {

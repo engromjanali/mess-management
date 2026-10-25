@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
-import 'package:clean_boilerplate/features/membership/domain/entities/mess_details_entity.dart';
-import 'package:clean_boilerplate/features/membership/presentation/widgets/copyable_info_row.dart';
-import 'package:clean_boilerplate/features/membership/presentation/widgets/mess_section_card.dart';
+import 'package:mess_pilot/core/extensions/context_extensions.dart';
+import 'package:mess_pilot/features/membership/domain/entities/mess_details_entity.dart';
+import 'package:mess_pilot/features/membership/presentation/widgets/copyable_info_row.dart';
+import 'package:mess_pilot/features/membership/presentation/widgets/mess_section_card.dart';
 
 /// The mess's own address, email and phone (tap to copy).
 class MessContactCard extends StatelessWidget {

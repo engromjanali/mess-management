@@ -1,4 +1,4 @@
-import 'package:clean_boilerplate/core/assets/assets.gen.dart';
+import 'package:mess_pilot/core/assets/assets.gen.dart';
 import 'package:flutter/material.dart';
 
 class AppLogo extends StatelessWidget {

@@ -1,8 +1,8 @@
-import 'package:clean_boilerplate/config/util/dimensions.dart';
-import 'package:clean_boilerplate/config/util/styles.dart';
-import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
-import 'package:clean_boilerplate/core/widgets/app_logo.dart';
-import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
+import 'package:mess_pilot/config/util/dimensions.dart';
+import 'package:mess_pilot/config/util/styles.dart';
+import 'package:mess_pilot/core/extensions/context_extensions.dart';
+import 'package:mess_pilot/core/widgets/app_logo.dart';
+import 'package:mess_pilot/features/home/presentation/widgets/animated_entrance.dart';
 import 'package:flutter/material.dart';
 
 /// Shared, modern auth shell used by the sign-in and sign-up screens.

@@ -1,4 +1,4 @@
-import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
+import 'package:mess_pilot/core/widgets/app_state_view.dart';
 import 'package:flutter/material.dart';
 
 /// A safe, localized error state with a retry action.

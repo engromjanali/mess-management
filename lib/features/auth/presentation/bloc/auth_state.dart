@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:clean_boilerplate/features/auth/domain/entities/user_entity.dart';
+import 'package:mess_pilot/features/auth/domain/entities/user_entity.dart';
 
 part 'auth_state.freezed.dart';
 

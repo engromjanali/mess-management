@@ -1,13 +1,13 @@
-import 'package:clean_boilerplate/config/theme/custom_theme_colors.dart';
-import 'package:clean_boilerplate/features/settings/domain/entities/theme_mode.dart';
-import 'package:clean_boilerplate/config/util/app_constants.dart';
+import 'package:mess_pilot/config/theme/custom_theme_colors.dart';
+import 'package:mess_pilot/features/settings/domain/entities/theme_mode.dart';
+import 'package:mess_pilot/config/util/app_constants.dart';
 
-import 'package:clean_boilerplate/features/settings/presentation/bloc/localization/localization_bloc.dart';
-import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_bloc.dart';
-import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_event.dart';
-import 'package:clean_boilerplate/features/settings/presentation/screens/settings_screen.dart';
-import 'package:clean_boilerplate/features/settings/presentation/widgets/language_selection_overlay.dart';
-import 'package:clean_boilerplate/l10n/gen/app_localizations.dart';
+import 'package:mess_pilot/features/settings/presentation/bloc/localization/localization_bloc.dart';
+import 'package:mess_pilot/features/settings/presentation/bloc/theme/theme_bloc.dart';
+import 'package:mess_pilot/features/settings/presentation/bloc/theme/theme_event.dart';
+import 'package:mess_pilot/features/settings/presentation/screens/settings_screen.dart';
+import 'package:mess_pilot/features/settings/presentation/widgets/language_selection_overlay.dart';
+import 'package:mess_pilot/l10n/gen/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';

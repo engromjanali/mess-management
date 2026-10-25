@@ -1,10 +1,10 @@
-import 'package:clean_boilerplate/config/theme/custom_theme_colors.dart';
-import 'package:clean_boilerplate/config/util/app_constants.dart';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_event.dart';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
-import 'package:clean_boilerplate/features/auth/presentation/screens/login_screen.dart';
-import 'package:clean_boilerplate/l10n/gen/app_localizations.dart';
+import 'package:mess_pilot/config/theme/custom_theme_colors.dart';
+import 'package:mess_pilot/config/util/app_constants.dart';
+import 'package:mess_pilot/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:mess_pilot/features/auth/presentation/bloc/auth_event.dart';
+import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
+import 'package:mess_pilot/features/auth/presentation/screens/login_screen.dart';
+import 'package:mess_pilot/l10n/gen/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';

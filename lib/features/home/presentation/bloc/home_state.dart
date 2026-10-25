@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:clean_boilerplate/features/home/domain/entities/dashboard_entity.dart';
+import 'package:mess_pilot/features/home/domain/entities/dashboard_entity.dart';
 
 part 'home_state.freezed.dart';
 

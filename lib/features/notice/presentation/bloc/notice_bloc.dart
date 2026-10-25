@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:clean_boilerplate/config/util/result.dart';
-import 'package:clean_boilerplate/core/errors/failures.dart' as errors;
-import 'package:clean_boilerplate/core/usecase/usecase.dart';
-import 'package:clean_boilerplate/features/notice/domain/entities/notice_entity.dart';
-import 'package:clean_boilerplate/features/notice/domain/usecases/notice_usecases.dart';
-import 'package:clean_boilerplate/features/notice/presentation/bloc/notice_event.dart';
-import 'package:clean_boilerplate/features/notice/presentation/bloc/notice_state.dart';
+import 'package:mess_pilot/config/util/result.dart';
+import 'package:mess_pilot/core/errors/failures.dart' as errors;
+import 'package:mess_pilot/core/usecase/usecase.dart';
+import 'package:mess_pilot/features/notice/domain/entities/notice_entity.dart';
+import 'package:mess_pilot/features/notice/domain/usecases/notice_usecases.dart';
+import 'package:mess_pilot/features/notice/presentation/bloc/notice_event.dart';
+import 'package:mess_pilot/features/notice/presentation/bloc/notice_state.dart';
 
 /// Notice BLoC — loads the notice list and runs publish / edit / pin / delete,
 /// reloading the list after each change.

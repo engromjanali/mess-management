@@ -1,6 +1,6 @@
-import 'package:clean_boilerplate/core/assets/fonts.gen.dart';
+import 'package:mess_pilot/core/assets/fonts.gen.dart';
 import 'package:flutter/material.dart';
-import 'package:clean_boilerplate/config/theme/custom_theme_colors.dart';
+import 'package:mess_pilot/config/theme/custom_theme_colors.dart';
 
 /// Light theme data configuration
 ThemeData lightThemeData = ThemeData(

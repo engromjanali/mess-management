@@ -1,34 +1,34 @@
-import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
-import 'package:clean_boilerplate/core/widgets/app_loader.dart';
+import 'package:mess_pilot/core/widgets/app_state_view.dart';
+import 'package:mess_pilot/core/widgets/app_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:clean_boilerplate/config/util/dimensions.dart';
-import 'package:clean_boilerplate/core/di/injection.dart';
-import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
-import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
-import 'package:clean_boilerplate/core/extensions/screen_matres_extensions.dart';
-import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
-import 'package:clean_boilerplate/core/role/role_cubit.dart';
-import 'package:clean_boilerplate/core/widgets/app_footer.dart';
-import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
+import 'package:mess_pilot/config/util/dimensions.dart';
+import 'package:mess_pilot/core/di/injection.dart';
+import 'package:mess_pilot/core/extensions/context_extensions.dart';
+import 'package:mess_pilot/core/extensions/overly_extensions.dart';
+import 'package:mess_pilot/core/extensions/screen_matres_extensions.dart';
+import 'package:mess_pilot/core/helpers/responsive_helper.dart';
+import 'package:mess_pilot/core/role/role_cubit.dart';
+import 'package:mess_pilot/core/widgets/app_footer.dart';
+import 'package:mess_pilot/core/widgets/home_back_button.dart';
 
-import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
-import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_top_bar.dart';
-import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
-import 'package:clean_boilerplate/core/widgets/stat_card.dart';
-import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
-import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_entity.dart';
-import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_bloc.dart';
-import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_event.dart';
-import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_state.dart';
-import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_view_mode.dart';
-import 'package:clean_boilerplate/features/deposit/presentation/widgets/deposit_filter_bar.dart';
-import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_mess_summary_entity.dart';
-import 'package:clean_boilerplate/features/deposit/presentation/widgets/deposit_form_sheet.dart';
-import 'package:clean_boilerplate/features/deposit/presentation/widgets/deposit_mess_overview.dart';
-import 'package:clean_boilerplate/features/deposit/presentation/widgets/deposit_formatters.dart';
-import 'package:clean_boilerplate/features/deposit/presentation/widgets/deposit_tile.dart';
+import 'package:mess_pilot/features/home/presentation/widgets/animated_entrance.dart';
+import 'package:mess_pilot/features/home/presentation/widgets/dashboard_top_bar.dart';
+import 'package:mess_pilot/features/home/presentation/widgets/section_title.dart';
+import 'package:mess_pilot/core/widgets/stat_card.dart';
+import 'package:mess_pilot/features/home/presentation/widgets/web_profile_drawer.dart';
+import 'package:mess_pilot/features/deposit/domain/entities/deposit_entity.dart';
+import 'package:mess_pilot/features/deposit/presentation/bloc/deposit_bloc.dart';
+import 'package:mess_pilot/features/deposit/presentation/bloc/deposit_event.dart';
+import 'package:mess_pilot/features/deposit/presentation/bloc/deposit_state.dart';
+import 'package:mess_pilot/features/deposit/presentation/bloc/deposit_view_mode.dart';
+import 'package:mess_pilot/features/deposit/presentation/widgets/deposit_filter_bar.dart';
+import 'package:mess_pilot/features/deposit/domain/entities/deposit_mess_summary_entity.dart';
+import 'package:mess_pilot/features/deposit/presentation/widgets/deposit_form_sheet.dart';
+import 'package:mess_pilot/features/deposit/presentation/widgets/deposit_mess_overview.dart';
+import 'package:mess_pilot/features/deposit/presentation/widgets/deposit_formatters.dart';
+import 'package:mess_pilot/features/deposit/presentation/widgets/deposit_tile.dart';
 
 /// Deposit screen.
 ///

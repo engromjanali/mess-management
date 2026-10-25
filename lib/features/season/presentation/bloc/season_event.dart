@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:clean_boilerplate/core/errors/failures.dart';
+import 'package:mess_pilot/core/errors/failures.dart';
 
 part 'season_event.freezed.dart';
 

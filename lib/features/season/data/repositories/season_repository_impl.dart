@@ -1,10 +1,10 @@
 import 'package:injectable/injectable.dart';
-import 'package:clean_boilerplate/config/util/result.dart';
-import 'package:clean_boilerplate/core/errors/exceptions.dart';
-import 'package:clean_boilerplate/core/errors/failures.dart';
-import 'package:clean_boilerplate/features/season/data/datasources/interfaces/season_data_source.dart';
-import 'package:clean_boilerplate/features/season/domain/entities/season_overview_entity.dart';
-import 'package:clean_boilerplate/features/season/domain/repositories/season_repository.dart';
+import 'package:mess_pilot/config/util/result.dart';
+import 'package:mess_pilot/core/errors/exceptions.dart';
+import 'package:mess_pilot/core/errors/failures.dart';
+import 'package:mess_pilot/features/season/data/datasources/interfaces/season_data_source.dart';
+import 'package:mess_pilot/features/season/domain/entities/season_overview_entity.dart';
+import 'package:mess_pilot/features/season/domain/repositories/season_repository.dart';
 
 /// Concrete [SeasonRepository] in the data layer.
 @LazySingleton(as: SeasonRepository)

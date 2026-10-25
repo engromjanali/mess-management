@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
-import 'package:clean_boilerplate/features/splash/domain/entities/config_entity.dart';
-import 'package:clean_boilerplate/features/splash/domain/usecases/get_config_usecase.dart';
+import 'package:mess_pilot/features/splash/domain/entities/config_entity.dart';
+import 'package:mess_pilot/features/splash/domain/usecases/get_config_usecase.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 

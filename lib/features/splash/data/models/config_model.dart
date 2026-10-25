@@ -1,5 +1,5 @@
-import 'package:clean_boilerplate/features/splash/domain/entities/config_entity.dart';
-import 'package:clean_boilerplate/features/splash/data/models/support_channel_model.dart';
+import 'package:mess_pilot/features/splash/domain/entities/config_entity.dart';
+import 'package:mess_pilot/features/splash/data/models/support_channel_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'dart:convert';
 

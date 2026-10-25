@@ -14,7 +14,7 @@ flutter devices
 flutter run -d chrome --web-port=54302
 ```
 
-The package name is `clean_boilerplate`. Keep package imports consistent with it.
+The package name is `mess_pilot`. Keep package imports consistent with it.
 The app uses handwritten Dio services, not Retrofit-generated services.
 
 ## Backend connection

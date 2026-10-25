@@ -1,5 +1,5 @@
-import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
-import 'package:clean_boilerplate/core/widgets/app_footer.dart';
+import 'package:mess_pilot/core/helpers/responsive_helper.dart';
+import 'package:mess_pilot/core/widgets/app_footer.dart';
 import 'package:flutter/material.dart';
 
 /// Scrollable page content with a full-width footer at the viewport bottom.

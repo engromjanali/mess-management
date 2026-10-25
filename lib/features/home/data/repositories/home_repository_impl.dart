@@ -1,10 +1,10 @@
 import 'package:injectable/injectable.dart';
-import 'package:clean_boilerplate/config/util/result.dart';
-import 'package:clean_boilerplate/core/errors/exceptions.dart';
-import 'package:clean_boilerplate/core/errors/failures.dart';
-import 'package:clean_boilerplate/features/home/domain/entities/dashboard_entity.dart';
-import 'package:clean_boilerplate/features/home/domain/repositories/home_repository.dart';
-import 'package:clean_boilerplate/features/home/data/datasources/interfaces/home_data_source.dart';
+import 'package:mess_pilot/config/util/result.dart';
+import 'package:mess_pilot/core/errors/exceptions.dart';
+import 'package:mess_pilot/core/errors/failures.dart';
+import 'package:mess_pilot/features/home/domain/entities/dashboard_entity.dart';
+import 'package:mess_pilot/features/home/domain/repositories/home_repository.dart';
+import 'package:mess_pilot/features/home/data/datasources/interfaces/home_data_source.dart';
 
 /// Concrete [HomeRepository] in the data layer.
 @LazySingleton(as: HomeRepository)

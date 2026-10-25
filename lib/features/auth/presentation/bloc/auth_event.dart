@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:clean_boilerplate/features/auth/domain/entities/user_entity.dart';
+import 'package:mess_pilot/features/auth/domain/entities/user_entity.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'auth_event.freezed.dart';

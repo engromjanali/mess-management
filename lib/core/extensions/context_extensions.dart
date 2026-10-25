@@ -1,5 +1,5 @@
-import 'package:clean_boilerplate/config/theme/custom_theme_colors.dart';
-import 'package:clean_boilerplate/l10n/gen/app_localizations.dart';
+import 'package:mess_pilot/config/theme/custom_theme_colors.dart';
+import 'package:mess_pilot/l10n/gen/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 /// Context extensions for common operations

@@ -1,10 +1,10 @@
-import 'package:clean_boilerplate/config/util/result.dart';
-import 'package:clean_boilerplate/core/errors/exceptions.dart';
-import 'package:clean_boilerplate/core/errors/failures.dart' hide Failure;
-import 'package:clean_boilerplate/features/auth/data/datasources/interfaces/auth_data_source.dart';
-import 'package:clean_boilerplate/features/auth/data/models/user_model.dart';
-import 'package:clean_boilerplate/features/auth/data/repositories/auth_repository_impl.dart';
-import 'package:clean_boilerplate/features/auth/domain/entities/user_entity.dart';
+import 'package:mess_pilot/config/util/result.dart';
+import 'package:mess_pilot/core/errors/exceptions.dart';
+import 'package:mess_pilot/core/errors/failures.dart' hide Failure;
+import 'package:mess_pilot/features/auth/data/datasources/interfaces/auth_data_source.dart';
+import 'package:mess_pilot/features/auth/data/models/user_model.dart';
+import 'package:mess_pilot/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:mess_pilot/features/auth/domain/entities/user_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';

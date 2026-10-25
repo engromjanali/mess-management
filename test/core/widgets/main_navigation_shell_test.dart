@@ -1,14 +1,14 @@
 import 'dart:async';
 
-import 'package:clean_boilerplate/config/route/app_router.dart';
-import 'package:clean_boilerplate/config/theme/app_theme.dart';
-import 'package:clean_boilerplate/core/widgets/animated_bottom_nav_bar.dart';
-import 'package:clean_boilerplate/core/widgets/main_navigation_shell.dart';
-import 'package:clean_boilerplate/features/auth/domain/entities/user_entity.dart';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_event.dart';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
-import 'package:clean_boilerplate/l10n/gen/app_localizations.dart';
+import 'package:mess_pilot/config/route/app_router.dart';
+import 'package:mess_pilot/config/theme/app_theme.dart';
+import 'package:mess_pilot/core/widgets/animated_bottom_nav_bar.dart';
+import 'package:mess_pilot/core/widgets/main_navigation_shell.dart';
+import 'package:mess_pilot/features/auth/domain/entities/user_entity.dart';
+import 'package:mess_pilot/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:mess_pilot/features/auth/presentation/bloc/auth_event.dart';
+import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
+import 'package:mess_pilot/l10n/gen/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';

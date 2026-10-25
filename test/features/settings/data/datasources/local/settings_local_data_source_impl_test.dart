@@ -1,5 +1,5 @@
-import 'package:clean_boilerplate/config/util/app_constants.dart';
-import 'package:clean_boilerplate/features/settings/data/datasources/local/settings_local_data_source_impl.dart';
+import 'package:mess_pilot/config/util/app_constants.dart';
+import 'package:mess_pilot/features/settings/data/datasources/local/settings_local_data_source_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
