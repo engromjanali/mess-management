@@ -80,7 +80,7 @@ class _MemberRow extends StatelessWidget {
                 ],
               ),
               Text(
-                context.local.joinedOn(MessFormatters.date(context, member.joinedAt)),
+                context.local.joinedOn(MessFormatters.date(member.joinedAt)),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textHintColor),

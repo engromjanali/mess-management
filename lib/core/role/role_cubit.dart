@@ -4,16 +4,15 @@ import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// The two role-based experiences supported by the app.
+/// The mess roles supported by the app.
 enum UserRole {
-  user,
-  admin;
+  member,
+  manager,
+  actingManager;
 
-  bool get isAdmin => this == UserRole.admin;
+  bool get canManage => this == UserRole.manager || this == UserRole.actingManager;
 
-  String get label => this == UserRole.admin ? 'Admin' : 'User';
-
-  IconData get icon => this == UserRole.admin ? Icons.admin_panel_settings_rounded : Icons.person_rounded;
+  IconData get icon => canManage ? Icons.admin_panel_settings_rounded : Icons.person_rounded;
 }
 
 /// Derives the UI role from the authenticated server profile.
@@ -24,7 +23,14 @@ class RoleCubit extends Cubit<UserRole> {
 
   late final StreamSubscription<AuthState> _subscription;
 
-  static UserRole _roleFrom(AuthState state) => state.maybeWhen(authenticated: (user) => user.isManager ? UserRole.admin : UserRole.user, orElse: () => UserRole.user);
+  static UserRole _roleFrom(AuthState state) => state.maybeWhen(
+    authenticated: (user) => switch (user.role) {
+      'manager' => UserRole.manager,
+      'acting_manager' => UserRole.actingManager,
+      _ => UserRole.member,
+    },
+    orElse: () => UserRole.member,
+  );
 
   @override
   Future<void> close() async {

@@ -21,7 +21,7 @@ class WebProfileDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = context.watch<AuthBloc>().state.maybeWhen(authenticated: (user) => user, orElse: () => null);
-    final isAdmin = context.watch<RoleCubit>().state.isAdmin;
+    final canManage = context.watch<RoleCubit>().state.canManage;
 
     return Drawer(
       width: 380,
@@ -34,7 +34,7 @@ class WebProfileDrawer extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
                 children: [
-                  for (final item in profileMenuItems(context, isAdmin: isAdmin, deletionScheduledFor: user?.deletionScheduledFor))
+                  for (final item in profileMenuItems(context, canManage: canManage, deletionScheduledFor: user?.deletionScheduledFor))
                     _DrawerItem(icon: item.icon, label: item.title, danger: item.danger, onTap: () => _navigate(context, item.route)),
                 ],
               ),
@@ -69,7 +69,11 @@ class _DrawerHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
-    final roleLabel = context.watch<RoleCubit>().state.isAdmin ? context.local.roleAdmin : context.local.roleUser;
+    final roleLabel = switch (user?.role) {
+      'manager' => context.local.roleManager,
+      'acting_manager' => context.local.roleActingManager,
+      _ => context.local.roleMember,
+    };
 
     return Padding(
       padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
@@ -93,7 +97,7 @@ class _DrawerHeader extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              user?.name ?? context.local.roleUser,
+                              user?.name ?? context.local.roleMember,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: AppTextStyles.sfProRoundedBold.copyWith(color: colors.textPrimaryColor, fontSize: Dimensions.fontSizeLarge),

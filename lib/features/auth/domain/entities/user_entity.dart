@@ -22,7 +22,7 @@ class UserEntity extends Equatable {
 
   const UserEntity({required this.id, required this.email, required this.name, this.phone, this.photoUrl, this.currentSeason, this.role = 'member', this.activeMessId, this.address, this.deletionScheduledFor});
 
-  /// Whether this user manages a mess (maps to the admin experience).
+  /// Whether this user is the manager or acting manager of a mess.
   bool get isManager => role == 'manager' || role == 'acting_manager';
 
   @override

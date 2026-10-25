@@ -87,7 +87,7 @@ class NoticeCard extends StatelessWidget {
                   Icon(Icons.schedule_rounded, size: Dimensions.fontSizeDefault, color: colors.textHintColor),
                   const SizedBox(width: Dimensions.paddingSizeExtraSmall),
                   Flexible(child: Text(
-                    NoticeFormatters.time(notice.createdAt, locale: Localizations.localeOf(context).toLanguageTag()),
+                    NoticeFormatters.time(notice.createdAt),
                     style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textHintColor),
                   )),
                 ],

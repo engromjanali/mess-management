@@ -54,7 +54,7 @@ class DeleteAccountScreen extends StatelessWidget {
 }
 
 /// Long local date, e.g. "3 December 2026".
-String _longDate(BuildContext context, DateTime date) => DateFormat.yMMMMd(Localizations.localeOf(context).toLanguageTag()).format(date);
+String _longDate(DateTime date) => DateFormat.yMMMMd('en_US').format(date);
 
 class _DeleteForm extends StatefulWidget {
   const _DeleteForm();
@@ -225,7 +225,7 @@ class _DeleteFormState extends State<_DeleteForm> {
       builder: (dialogContext) => AlertDialog(
         icon: Icon(Icons.event_busy_rounded, color: context.customThemeColors.errorColor),
         title: Text(context.local.deletionScheduledTitle),
-        content: Text(context.local.deletionScheduledMessage(_longDate(context, scheduledFor))),
+        content: Text(context.local.deletionScheduledMessage(_longDate(scheduledFor))),
         actions: [FilledButton(onPressed: () => Navigator.of(dialogContext).pop(), child: Text(context.local.done))],
       ),
     );
@@ -265,7 +265,7 @@ class _ScheduledViewState extends State<_ScheduledView> {
         children: [
           Icon(Icons.event_busy_rounded, size: Dimensions.iconSizeExtraLarge, color: colors.warningColor),
           const SizedBox(height: Dimensions.paddingSizeDefault),
-          Text(context.local.deletionScheduledBanner(_longDate(context, widget.scheduledFor)), style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor)),
+          Text(context.local.deletionScheduledBanner(_longDate(widget.scheduledFor)), style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor)),
           const SizedBox(height: Dimensions.paddingSizeSmall),
           Text(context.local.keepAccountHint, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor)),
           const SizedBox(height: Dimensions.paddingSizeLarge),

@@ -46,7 +46,7 @@ class MealWeekChart extends StatelessWidget {
                     child: _Bar(
                       heightFactor: day.total / denominator,
                       value: day.total,
-                      label: MealFormatters.weekdayInitial(day.date, locale: Localizations.localeOf(context).toLanguageTag()),
+                      label: MealFormatters.weekdayInitial(day.date),
                       isToday: day.date.year == now.year && day.date.month == now.month && day.date.day == now.day,
                     ),
                   ),

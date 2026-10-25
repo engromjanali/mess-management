@@ -38,7 +38,7 @@ class MealTodayCard extends StatelessWidget {
                     style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
                   ),
                   Text(
-                    MealFormatters.dayLabel(today.date, locale: Localizations.localeOf(context).toLanguageTag()),
+                    MealFormatters.dayLabel(today.date),
                     style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
                   ),
                 ],

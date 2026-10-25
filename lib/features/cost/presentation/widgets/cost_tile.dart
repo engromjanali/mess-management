@@ -62,7 +62,7 @@ class _CostTileState extends State<CostTile> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          CostFormatters.stamp(cost.date, locale: Localizations.localeOf(context).toLanguageTag()),
+                          CostFormatters.stamp(cost.date),
                           style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
                         ),
                         const SizedBox(height: 2),
@@ -150,8 +150,8 @@ class _Details extends StatelessWidget {
             runSpacing: Dimensions.paddingSizeSmall,
             children: [
               _MetaChip(icon: Icons.tag_rounded, text: context.local.costEntryId(cost.id)),
-              _MetaChip(icon: Icons.calendar_today_rounded, text: context.local.costDateValue(CostFormatters.date(cost.date, locale: Localizations.localeOf(context).toLanguageTag()))),
-              _MetaChip(icon: Icons.access_time_rounded, text: context.local.costTimeValue(CostFormatters.time(cost.date, locale: Localizations.localeOf(context).toLanguageTag()))),
+              _MetaChip(icon: Icons.calendar_today_rounded, text: context.local.costDateValue(CostFormatters.date(cost.date))),
+              _MetaChip(icon: Icons.access_time_rounded, text: context.local.costTimeValue(CostFormatters.time(cost.date))),
             ],
           ),
           const SizedBox(height: Dimensions.paddingSizeDefault),

@@ -108,7 +108,7 @@ class _HomeView extends StatelessWidget {
             loaded: (dashboard) {
               final user = context.watch<AuthBloc>().state.maybeWhen(authenticated: (user) => user, orElse: () => null);
               final role = context.watch<RoleCubit>().state;
-              final scoped = dashboard.copyWith(userName: user?.name, isManager: role.isAdmin);
+              final scoped = dashboard.copyWith(userName: user?.name, isManager: role.canManage);
 
               if (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)) {
                 return _DesktopDashboard(dashboard: scoped);

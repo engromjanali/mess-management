@@ -1,3 +1,4 @@
+import 'package:mess_pilot/core/notifications/notification_unread_service.dart';
 import 'package:mess_pilot/core/helpers/notification_helper.dart';
 
 import 'package:mess_pilot/core/notifications/season_notification_service.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:mess_pilot/config/route/app_router.dart';
 import 'package:mess_pilot/config/theme/app_theme.dart';
 import 'package:mess_pilot/core/di/injection.dart';
@@ -24,6 +26,7 @@ import 'package:mess_pilot/l10n/gen/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Intl.defaultLocale = 'en_US';
 
   usePathUrlStrategy();
 
@@ -37,6 +40,7 @@ void main() async {
 
   // Session expired or token rejected: send the user back to login.
   getIt<ApiClient>().onUnauthorized = () {
+    NotificationUnreadService.instance.setUser(null);
     SeasonNotificationService.instance?.signOut();
     final path = router.routerDelegate.currentConfiguration.uri.path;
     const authRoutes = [AppRoutes.register, AppRoutes.forgotPassword];
@@ -87,8 +91,14 @@ class _MyAppState extends State<MyApp> {
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           state.maybeWhen(
-            authenticated: (_) => SeasonNotificationService.instance?.setAuthenticated(true),
-            unauthenticated: () => SeasonNotificationService.instance?.signOut(),
+            authenticated: (user) {
+              NotificationUnreadService.instance.setUser(user.id);
+              SeasonNotificationService.instance?.setAuthenticated(true);
+            },
+            unauthenticated: () {
+              NotificationUnreadService.instance.setUser(null);
+              SeasonNotificationService.instance?.signOut();
+            },
             orElse: () {},
           );
         },

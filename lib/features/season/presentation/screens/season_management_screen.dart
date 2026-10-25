@@ -47,11 +47,11 @@ class SeasonManagementScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isAdmin = context.read<RoleCubit>().state.isAdmin;
+    final canManage = context.read<RoleCubit>().state.canManage;
     return BlocProvider<SeasonBloc>(
       create: (_) {
         final bloc = getIt<SeasonBloc>();
-        if (isAdmin) bloc.add(const SeasonEvent.started());
+        if (canManage) bloc.add(const SeasonEvent.started());
         return bloc;
       },
       child: const _SeasonView(),
@@ -64,7 +64,7 @@ class _SeasonView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isAdmin = context.watch<RoleCubit>().state.isAdmin;
+    final canManage = context.watch<RoleCubit>().state.canManage;
     final showWebAppBar = MainPageBody.showWebAppBar(context);
 
     final content = BlocBuilder<SeasonBloc, SeasonState>(
@@ -77,7 +77,7 @@ class _SeasonView extends StatelessWidget {
 
     // Load when the authenticated user gains manager access.
     return BlocListener<RoleCubit, UserRole>(
-      listenWhen: (prev, curr) => prev != curr && curr.isAdmin,
+      listenWhen: (prev, curr) => prev != curr && curr.canManage,
       listener: (context, _) => context.read<SeasonBloc>().add(const SeasonEvent.started()),
       child: Scaffold(
         backgroundColor: context.theme.scaffoldBackgroundColor,
@@ -85,7 +85,7 @@ class _SeasonView extends StatelessWidget {
         appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.seasonManagement)),
         body: MainPageBody(
           title: context.local.seasonManagement,
-          child: isAdmin ? content : const _AdminOnlyView(),
+          child: canManage ? content : const _ManagerOnlyView(),
         ),
       ),
     );
@@ -326,11 +326,11 @@ class _ErrorView extends StatelessWidget {
   }
 }
 
-class _AdminOnlyView extends StatelessWidget {
-  const _AdminOnlyView();
+class _ManagerOnlyView extends StatelessWidget {
+  const _ManagerOnlyView();
 
   @override
   Widget build(BuildContext context) {
-    return AppStateView(title: context.local.stateAccessTitle, message: context.local.seasonManagementAdminOnly, icon: Icons.lock_outline_rounded);
+    return AppStateView(title: context.local.stateAccessTitle, message: context.local.seasonManagementManagerOnly, icon: Icons.lock_outline_rounded);
   }
 }

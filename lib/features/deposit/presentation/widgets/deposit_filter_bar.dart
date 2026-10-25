@@ -28,7 +28,7 @@ class DepositFilterBar extends StatelessWidget {
   DepositBloc _bloc(BuildContext context) => context.read<DepositBloc>();
 
   Future<void> _pickDay(BuildContext context) async {
-    final picked = await showDatePicker(context: context, initialDate: selectedDate, firstDate: DateTime(selectedDate.year - 2), lastDate: DateTime(selectedDate.year + 2));
+    final picked = await showDatePicker(context: context, locale: const Locale('en'), initialDate: selectedDate, firstDate: DateTime(selectedDate.year - 2), lastDate: DateTime(selectedDate.year + 2));
     if (picked != null && context.mounted) {
       _bloc(context).add(DepositEvent.selectDate(picked));
     }
@@ -36,7 +36,7 @@ class DepositFilterBar extends StatelessWidget {
 
   Future<void> _pickRange(BuildContext context) async {
     final now = DateTime.now();
-    final picked = await showDateRangePicker(context: context, initialDateRange: selectedRange, firstDate: DateTime(now.year - 2), lastDate: DateTime(now.year + 2));
+    final picked = await showDateRangePicker(context: context, locale: const Locale('en'), initialDateRange: selectedRange, firstDate: DateTime(now.year - 2), lastDate: DateTime(now.year + 2));
     if (picked != null && context.mounted) {
       _bloc(context).add(DepositEvent.selectRange(start: picked.start, end: picked.end));
     }
@@ -67,13 +67,13 @@ class DepositFilterBar extends StatelessWidget {
         else if (byDate) ...[
           _SelectChip(label: context.local.allTime, selected: dateFilter == DepositDateFilter.allTime, onTap: () => _bloc(context).add(const DepositEvent.changeDateFilter(DepositDateFilter.allTime))),
           _SelectChip(
-            label: dateFilter == DepositDateFilter.day ? DepositFormatters.shortDate(selectedDate, locale: Localizations.localeOf(context).toLanguageTag()) : context.local.day,
+            label: dateFilter == DepositDateFilter.day ? DepositFormatters.shortDate(selectedDate) : context.local.day,
             icon: Icons.event_rounded,
             selected: dateFilter == DepositDateFilter.day,
             onTap: () => _pickDay(context),
           ),
           _SelectChip(
-            label: dateFilter == DepositDateFilter.range && selectedRange != null ? DepositFormatters.rangeLabel(selectedRange!.start, selectedRange!.end, locale: Localizations.localeOf(context).toLanguageTag()) : context.local.range,
+            label: dateFilter == DepositDateFilter.range && selectedRange != null ? DepositFormatters.rangeLabel(selectedRange!.start, selectedRange!.end) : context.local.range,
             icon: Icons.date_range_rounded,
             selected: dateFilter == DepositDateFilter.range,
             onTap: () => _pickRange(context),

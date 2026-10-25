@@ -10,11 +10,12 @@ import 'package:mess_pilot/features/membership/presentation/widgets/mess_formatt
 /// a Switch button when it can become current. [busy] shows a spinner; a null
 /// [onSwitch] disables the button (another action runs).
 class MyMembershipTile extends StatelessWidget {
-  const MyMembershipTile({required this.membership, required this.busy, required this.onSwitch, super.key});
+  const MyMembershipTile({required this.membership, required this.busy, required this.onSwitch, this.showMessName = true, super.key});
 
   final MembershipSummaryEntity membership;
   final bool busy;
   final VoidCallback? onSwitch;
+  final bool showMessName;
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +25,9 @@ class MyMembershipTile extends StatelessWidget {
     final dates = start == null
         ? null
         : m.seasonEndDate == null
-            ? context.local.messSince(MessFormatters.date(context, start))
-            : context.local.seasonDates(MessFormatters.date(context, start), MessFormatters.date(context, m.seasonEndDate!));
+            ? context.local.messSince(MessFormatters.date(start))
+            : context.local.seasonDates(MessFormatters.date(start), MessFormatters.date(m.seasonEndDate!));
+    final subtitle = showMessName ? [context.local.seasonName(m.seasonName), ?dates].join(' · ') : dates;
     final accent = m.isCurrent ? colors.primaryColor : (m.canSwitch ? colors.infoColor : colors.textHintColor);
 
     return Container(
@@ -44,13 +46,13 @@ class MyMembershipTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  m.messName,
+                  showMessName ? m.messName : m.seasonName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: m.canSwitch ? colors.textPrimaryColor : colors.textSecondaryColor),
                 ),
-                Text(
-                  [context.local.seasonName(m.seasonName), ?dates].join(' · '),
+                if (subtitle != null) Text(
+                  subtitle,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textHintColor),

@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 class SeasonFormatters {
   SeasonFormatters._();
 
-  static final DateFormat _date = DateFormat('d MMM yyyy');
+  static final DateFormat _date = DateFormat('d MMM yyyy', 'en_US');
   static const String _letters = 'abcdefghijklmnopqrstuvwxyz';
   static final Random _random = Random();
 

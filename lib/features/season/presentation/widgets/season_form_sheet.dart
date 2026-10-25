@@ -187,6 +187,7 @@ class _SeasonFormState extends State<SeasonForm> {
     final now = DateTime.now();
     final picked = await showDatePicker(
       context: context,
+      locale: const Locale('en'),
       initialDate: start ? _startDate : _endDate ?? DateUtils.dateOnly(now),
       firstDate: DateTime(now.year - 2),
       lastDate: DateTime(now.year + 2),

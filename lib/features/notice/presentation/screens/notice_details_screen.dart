@@ -107,7 +107,7 @@ class _NoticeDetailsScreenState extends State<NoticeDetailsScreen> {
                             ],
                             Text(notice.title, style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: web ? Dimensions.fontSizeExtraOverLarge : Dimensions.fontSizeOverLarge, color: colors.textPrimaryColor)),
                             const SizedBox(height: Dimensions.spaceDefault),
-                            Text(NoticeFormatters.time(notice.createdAt, locale: Localizations.localeOf(context).toLanguageTag()), style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textHintColor)),
+                            Text(NoticeFormatters.time(notice.createdAt), style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textHintColor)),
                             const Padding(padding: EdgeInsets.symmetric(vertical: Dimensions.spaceDefault), child: Divider()),
                             Text(notice.description, style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeLarge, height: 1.7, color: colors.textSecondaryColor)),
                           ],

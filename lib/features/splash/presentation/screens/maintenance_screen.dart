@@ -37,7 +37,7 @@ class MaintenanceScreen extends StatelessWidget {
               actionLabel: context.local.tryAgain,
               secondaryAction: Column(mainAxisSize: MainAxisSize.min, children: [
                 if (loading) const AppLoader(size: 48),
-                if (until != null) Text(context.local.maintenanceUntil(DateFormat.yMMMd(Localizations.localeOf(context).toLanguageTag()).add_jm().format(until)), textAlign: TextAlign.center),
+                if (until != null) Text(context.local.maintenanceUntil(DateFormat.yMMMd('en_US').add_jm().format(until)), textAlign: TextAlign.center),
               ]),
             ),
           ),

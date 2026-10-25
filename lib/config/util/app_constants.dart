@@ -53,7 +53,7 @@ class AppConstants {
   static const String switchMembershipEndpoint = '/api/v1/user/membership/switch';
   static const String declineInviteEndpoint = '/api/v1/user/invites/decline';
 
-  // Membership — admin
+  // Membership — manager / acting manager
   static const String managerMembersEndpoint = '/api/v1/admin/members';
   static const String memberLookupEndpoint = '/api/v1/admin/member-lookup';
   static const String createInviteEndpoint = '/api/v1/admin/invites';
@@ -63,42 +63,42 @@ class AppConstants {
   // Mess — user
   static const String messDetailsEndpoint = '/api/v1/user/mess';
 
-  // Mess — admin (not on the backend yet)
+  // Mess — manager / acting manager (not on the backend yet)
   static const String messUpdateEndpoint = '/api/v1/user/mess';
 
-  // Seasons — admin
+  // Seasons — manager / acting manager
   static const String adminSeasonsEndpoint = '/api/v1/admin/seasons';
   static const String adminSeasonAutoCreateEndpoint = '/api/v1/admin/seasons/auto-create';
 
   // Notices — user
   static const String noticesEndpoint = '/api/v1/user/notices';
 
-  // Notices — admin
+  // Notices — manager / acting manager
   static const String adminNoticesEndpoint = '/api/v1/admin/notices';
 
   // Meals — user
   static const String myMealsEndpoint = '/api/v1/user/meals';
 
-  // Meals — admin
+  // Meals — manager / acting manager
   static const String adminMealsEndpoint = '/api/v1/admin/meals';
   static const String adminMealsBulkEndpoint = '/api/v1/admin/meals/bulk';
 
   // Deposits — user
   static const String myDepositsEndpoint = '/api/v1/user/deposits';
 
-  // Deposits — admin
+  // Deposits — manager / acting manager
   static const String adminDepositsEndpoint = '/api/v1/admin/deposits';
 
   // Funds — user
   static const String fundsEndpoint = '/api/v1/user/funds';
 
-  // Funds — admin
+  // Funds — manager / acting manager
   static const String adminFundsEndpoint = '/api/v1/admin/funds';
 
   // Costs — user
   static const String costsEndpoint = '/api/v1/user/costs';
 
-  // Costs — admin
+  // Costs — manager / acting manager
   static const String adminCostsEndpoint = '/api/v1/admin/costs';
 
   // ───────────────────────── Storage keys ─────────────────────────

@@ -76,7 +76,7 @@ class _PageBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
-    final updated = DateFormat.yMMMd(Localizations.localeOf(context).toLanguageTag()).format(page.updatedAt);
+    final updated = DateFormat.yMMMd('en_US').format(page.updatedAt);
     return AppPageScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),

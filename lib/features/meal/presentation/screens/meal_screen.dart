@@ -34,7 +34,7 @@ import 'package:mess_pilot/features/meal/presentation/widgets/meal_week_chart.da
 /// Responsive meal tracker screen (phone / tablet / desktop).
 ///
 /// * **Members** — only their own meals ("Mine").
-/// * **Admins** — a `Manage meals / Mine` switch: the manager can record meals
+/// * **Manager / acting manager** — a `Manage meals / Mine` switch to record meals
 ///   for any member and still see their own meals, since they eat too.
 /// * **Tablet / desktop** — centered, capped content with a two-column body
 ///   (editor + chart on the left, history on the right) under a summary grid.
@@ -62,8 +62,8 @@ class _MealViewState extends State<_MealView> {
   @override
   Widget build(BuildContext context) {
     final showWebAppBar = ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context);
-    final isAdmin = context.watch<RoleCubit>().state.isAdmin;
-    final content = isAdmin ? _adminContent() : const _MineTab();
+    final canManage = context.watch<RoleCubit>().state.canManage;
+    final content = canManage ? _managerContent() : const _MineTab();
 
     return Scaffold(
       backgroundColor: context.theme.scaffoldBackgroundColor,
@@ -88,7 +88,7 @@ class _MealViewState extends State<_MealView> {
 
   /// Tab switch over both tabs; [IndexedStack] keeps each tab's scroll and
   /// filters when switching back and forth.
-  Widget _adminContent() {
+  Widget _managerContent() {
     return Column(
       children: [
         Center(
@@ -306,7 +306,7 @@ class _MealTabScroll extends StatelessWidget {
               Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
-                  child: Padding(padding: EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, context.watch<RoleCubit>().state.isAdmin ? 0 : Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge), child: child),
+                  child: Padding(padding: EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, context.watch<RoleCubit>().state.canManage ? 0 : Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge), child: child),
                 ),
               ),
               if (isDesktop) const AppFooter(),
