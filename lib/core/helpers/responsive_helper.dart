@@ -1,5 +1,5 @@
-import 'package:mess_pilot/config/util/dimensions.dart';
-import 'package:mess_pilot/core/extensions/screen_matres_extensions.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/core/extensions/screen_matres_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 

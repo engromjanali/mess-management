@@ -1,21 +1,21 @@
-import 'package:mess_pilot/core/widgets/app_page_scroll_view.dart';
-import 'package:mess_pilot/core/widgets/app_state_view.dart';
-import 'package:mess_pilot/core/widgets/app_loader.dart';
+import 'package:clean_boilerplate/core/widgets/app_page_scroll_view.dart';
+import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mess_pilot/config/util/dimensions.dart';
-import 'package:mess_pilot/config/util/styles.dart';
-import 'package:mess_pilot/core/di/injection.dart';
-import 'package:mess_pilot/core/extensions/context_extensions.dart';
-import 'package:mess_pilot/core/usecase/usecase.dart';
-import 'package:mess_pilot/core/widgets/home_back_button.dart';
-import 'package:mess_pilot/core/widgets/support_channels_view.dart';
-import 'package:mess_pilot/features/app_info/domain/entities/faq_entity.dart';
-import 'package:mess_pilot/features/app_info/domain/usecases/app_info_usecases.dart';
-import 'package:mess_pilot/features/app_info/presentation/widgets/app_info_error_view.dart';
-import 'package:mess_pilot/features/home/presentation/widgets/main_page_body.dart';
-import 'package:mess_pilot/features/home/presentation/widgets/web_profile_drawer.dart';
-import 'package:mess_pilot/features/splash/presentation/bloc/splash_bloc.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/di/injection.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/usecase/usecase.dart';
+import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
+import 'package:clean_boilerplate/core/widgets/support_channels_view.dart';
+import 'package:clean_boilerplate/features/app_info/domain/entities/faq_entity.dart';
+import 'package:clean_boilerplate/features/app_info/domain/usecases/app_info_usecases.dart';
+import 'package:clean_boilerplate/features/app_info/presentation/widgets/app_info_error_view.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/main_page_body.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
+import 'package:clean_boilerplate/features/splash/presentation/bloc/splash_bloc.dart';
 
 /// Frequently asked questions from Django admin, in the app's language, with
 /// the support channels (from the app config) below them.

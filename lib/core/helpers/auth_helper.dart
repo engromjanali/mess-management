@@ -1,5 +1,5 @@
-import 'package:mess_pilot/config/util/app_constants.dart';
-import 'package:mess_pilot/core/di/injection.dart';
+import 'package:clean_boilerplate/config/util/app_constants.dart';
+import 'package:clean_boilerplate/core/di/injection.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthHelper {

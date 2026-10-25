@@ -1,18 +1,18 @@
-import 'package:mess_pilot/core/widgets/app_page_scroll_view.dart';
-import 'package:mess_pilot/core/widgets/app_loader.dart';
+import 'package:clean_boilerplate/core/widgets/app_page_scroll_view.dart';
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mess_pilot/config/util/dimensions.dart';
-import 'package:mess_pilot/config/util/styles.dart';
-import 'package:mess_pilot/core/di/injection.dart';
-import 'package:mess_pilot/core/extensions/context_extensions.dart';
-import 'package:mess_pilot/core/widgets/home_back_button.dart';
-import 'package:mess_pilot/features/app_info/domain/entities/content_page_entity.dart';
-import 'package:mess_pilot/features/app_info/domain/usecases/app_info_usecases.dart';
-import 'package:mess_pilot/features/app_info/presentation/widgets/app_info_error_view.dart';
-import 'package:mess_pilot/features/app_info/presentation/widgets/content_text.dart';
-import 'package:mess_pilot/features/home/presentation/widgets/main_page_body.dart';
-import 'package:mess_pilot/features/home/presentation/widgets/web_profile_drawer.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/di/injection.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
+import 'package:clean_boilerplate/features/app_info/domain/entities/content_page_entity.dart';
+import 'package:clean_boilerplate/features/app_info/domain/usecases/app_info_usecases.dart';
+import 'package:clean_boilerplate/features/app_info/presentation/widgets/app_info_error_view.dart';
+import 'package:clean_boilerplate/features/app_info/presentation/widgets/content_text.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/main_page_body.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
 
 /// Privacy policy or terms and conditions, as written in Django admin, in
 /// the app's language (English when it has no translation).

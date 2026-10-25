@@ -1,6 +1,6 @@
 # Project structure
 
-The app is named Mess Pilot; its Dart package is `mess_pilot`.
+The app is named Mess Pilot; its Dart package remains `clean_boilerplate`.
 
 ```text
 lib/

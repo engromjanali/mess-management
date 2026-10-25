@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:mess_pilot/core/usecase/usecase.dart';
-import 'package:mess_pilot/features/auth/domain/usecases/get_current_user_usecase.dart';
-import 'package:mess_pilot/features/auth/domain/usecases/login_usecase.dart';
-import 'package:mess_pilot/features/auth/domain/usecases/logout_usecase.dart';
-import 'package:mess_pilot/features/auth/domain/usecases/register_usecase.dart';
-import 'package:mess_pilot/features/auth/presentation/bloc/auth_event.dart';
-import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
+import 'package:clean_boilerplate/core/usecase/usecase.dart';
+import 'package:clean_boilerplate/features/auth/domain/usecases/get_current_user_usecase.dart';
+import 'package:clean_boilerplate/features/auth/domain/usecases/login_usecase.dart';
+import 'package:clean_boilerplate/features/auth/domain/usecases/logout_usecase.dart';
+import 'package:clean_boilerplate/features/auth/domain/usecases/register_usecase.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_event.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
 
 /// Auth BLoC - Handles authentication logic with Freezed
 @injectable

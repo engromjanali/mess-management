@@ -1,8 +1,8 @@
-import 'package:mess_pilot/config/util/result.dart';
-import 'package:mess_pilot/core/errors/failures.dart' hide Failure;
-import 'package:mess_pilot/core/usecase/usecase.dart';
-import 'package:mess_pilot/features/settings/domain/entities/theme_mode.dart';
-import 'package:mess_pilot/features/settings/domain/usecases/get_theme_mode_usecase.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/core/errors/failures.dart' hide Failure;
+import 'package:clean_boilerplate/core/usecase/usecase.dart';
+import 'package:clean_boilerplate/features/settings/domain/entities/theme_mode.dart';
+import 'package:clean_boilerplate/features/settings/domain/usecases/get_theme_mode_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 

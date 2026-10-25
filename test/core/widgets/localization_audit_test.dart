@@ -1,10 +1,10 @@
-import 'package:mess_pilot/config/theme/app_theme.dart';
-import 'package:mess_pilot/core/widgets/app_footer.dart';
-import 'package:mess_pilot/features/cost/domain/entities/cost_entity.dart';
-import 'package:mess_pilot/features/cost/presentation/widgets/cost_entry_form.dart';
-import 'package:mess_pilot/features/fund/presentation/widgets/fund_formatters.dart';
-import 'package:mess_pilot/features/splash/presentation/bloc/splash_bloc.dart';
-import 'package:mess_pilot/l10n/gen/app_localizations.dart';
+import 'package:clean_boilerplate/config/theme/app_theme.dart';
+import 'package:clean_boilerplate/core/widgets/app_footer.dart';
+import 'package:clean_boilerplate/features/cost/domain/entities/cost_entity.dart';
+import 'package:clean_boilerplate/features/cost/presentation/widgets/cost_entry_form.dart';
+import 'package:clean_boilerplate/features/fund/presentation/widgets/fund_formatters.dart';
+import 'package:clean_boilerplate/features/splash/presentation/bloc/splash_bloc.dart';
+import 'package:clean_boilerplate/l10n/gen/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';

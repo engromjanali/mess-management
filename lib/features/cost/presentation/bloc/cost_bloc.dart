@@ -1,11 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:mess_pilot/config/util/result.dart';
-import 'package:mess_pilot/core/usecase/usecase.dart';
-import 'package:mess_pilot/features/cost/domain/entities/cost_entity.dart';
-import 'package:mess_pilot/features/cost/domain/usecases/cost_usecases.dart';
-import 'package:mess_pilot/features/cost/presentation/bloc/cost_event.dart';
-import 'package:mess_pilot/features/cost/presentation/bloc/cost_state.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/core/usecase/usecase.dart';
+import 'package:clean_boilerplate/features/cost/domain/entities/cost_entity.dart';
+import 'package:clean_boilerplate/features/cost/domain/usecases/cost_usecases.dart';
+import 'package:clean_boilerplate/features/cost/presentation/bloc/cost_event.dart';
+import 'package:clean_boilerplate/features/cost/presentation/bloc/cost_state.dart';
 
 /// Cost (Cost) BLoC — loads the entry list and applies add / update / delete
 /// mutations, reloading the list afterwards.

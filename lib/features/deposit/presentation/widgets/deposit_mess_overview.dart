@@ -1,14 +1,14 @@
-import 'package:mess_pilot/core/widgets/app_user_avatar.dart';
-import 'package:mess_pilot/core/widgets/app_state_view.dart';
+import 'package:clean_boilerplate/core/widgets/app_user_avatar.dart';
+import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
 import 'package:flutter/material.dart';
-import 'package:mess_pilot/config/util/dimensions.dart';
-import 'package:mess_pilot/config/util/styles.dart';
-import 'package:mess_pilot/core/extensions/context_extensions.dart';
-import 'package:mess_pilot/core/widgets/stat_card.dart';
-import 'package:mess_pilot/features/deposit/domain/entities/deposit_mess_summary_entity.dart';
-import 'package:mess_pilot/features/deposit/presentation/widgets/deposit_formatters.dart';
-import 'package:mess_pilot/features/home/presentation/widgets/animated_entrance.dart';
-import 'package:mess_pilot/features/home/presentation/widgets/section_title.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/widgets/stat_card.dart';
+import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_mess_summary_entity.dart';
+import 'package:clean_boilerplate/features/deposit/presentation/widgets/deposit_formatters.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
 
 /// Admin-only deposit overview: the manager's own totals (a manager is also a member),
 /// mess-wide totals, and a per-member balance breakdown.

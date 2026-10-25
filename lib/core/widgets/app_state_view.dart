@@ -1,6 +1,6 @@
-import 'package:mess_pilot/config/util/styles.dart';
-import 'package:mess_pilot/core/errors/user_error_message.dart';
-import 'package:mess_pilot/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/errors/user_error_message.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
 
 class AppErrorState extends StatelessWidget {

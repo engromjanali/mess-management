@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:mess_pilot/features/deposit/domain/entities/deposit_entity.dart';
+import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_entity.dart';
 
 /// One member's deposit totals within the mess.
 class DepositMemberBalanceEntity extends Equatable {

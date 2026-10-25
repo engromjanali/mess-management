@@ -1,4 +1,4 @@
-import 'package:mess_pilot/features/season/data/models/season_model.dart';
+import 'package:clean_boilerplate/features/season/data/models/season_model.dart';
 
 /// Contract for any source that can provide & change a mess's seasons.
 abstract class SeasonDataSource {

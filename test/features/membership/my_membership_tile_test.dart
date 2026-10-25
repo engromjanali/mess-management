@@ -1,7 +1,7 @@
-import 'package:mess_pilot/config/theme/app_theme.dart';
-import 'package:mess_pilot/features/membership/domain/entities/membership_status_entity.dart';
-import 'package:mess_pilot/features/membership/presentation/widgets/my_membership_tile.dart';
-import 'package:mess_pilot/l10n/gen/app_localizations.dart';
+import 'package:clean_boilerplate/config/theme/app_theme.dart';
+import 'package:clean_boilerplate/features/membership/domain/entities/membership_status_entity.dart';
+import 'package:clean_boilerplate/features/membership/presentation/widgets/my_membership_tile.dart';
+import 'package:clean_boilerplate/l10n/gen/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

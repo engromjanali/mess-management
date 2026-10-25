@@ -1,7 +1,7 @@
-import 'package:mess_pilot/config/util/dimensions.dart';
-import 'package:mess_pilot/config/util/styles.dart';
-import 'package:mess_pilot/core/extensions/context_extensions.dart';
-import 'package:mess_pilot/features/season/domain/entities/season_entity.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/features/season/domain/entities/season_entity.dart';
 import 'package:flutter/material.dart';
 
 /// Asks the manager which running season a new member joins and returns its

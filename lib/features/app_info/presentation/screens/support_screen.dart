@@ -1,14 +1,14 @@
-import 'package:mess_pilot/core/widgets/app_page_scroll_view.dart';
-import 'package:mess_pilot/core/widgets/app_state_view.dart';
-import 'package:mess_pilot/core/widgets/app_loader.dart';
-import 'package:mess_pilot/config/util/dimensions.dart';
-import 'package:mess_pilot/core/extensions/context_extensions.dart';
-import 'package:mess_pilot/core/widgets/home_back_button.dart';
-import 'package:mess_pilot/core/widgets/support_channels_view.dart';
-import 'package:mess_pilot/features/app_info/presentation/widgets/app_info_error_view.dart';
-import 'package:mess_pilot/features/home/presentation/widgets/main_page_body.dart';
-import 'package:mess_pilot/features/home/presentation/widgets/web_profile_drawer.dart';
-import 'package:mess_pilot/features/splash/presentation/bloc/splash_bloc.dart';
+import 'package:clean_boilerplate/core/widgets/app_page_scroll_view.dart';
+import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
+import 'package:clean_boilerplate/core/widgets/support_channels_view.dart';
+import 'package:clean_boilerplate/features/app_info/presentation/widgets/app_info_error_view.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/main_page_body.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
+import 'package:clean_boilerplate/features/splash/presentation/bloc/splash_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

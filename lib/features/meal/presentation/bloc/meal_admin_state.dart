@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mess_pilot/features/meal/domain/entities/meal_member_entity.dart';
+import 'package:clean_boilerplate/features/meal/domain/entities/meal_member_entity.dart';
 
 part 'meal_admin_state.freezed.dart';
 

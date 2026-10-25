@@ -1,9 +1,9 @@
-import 'package:mess_pilot/core/widgets/app_loader.dart';
-import 'package:mess_pilot/core/di/injection.dart';
-import 'package:mess_pilot/core/network/api_client.dart';
-import 'package:mess_pilot/features/membership/data/membership_api_service.dart';
-import 'package:mess_pilot/features/membership/presentation/bloc/membership_cubit.dart';
-import 'package:mess_pilot/features/membership/presentation/screens/membership_gate.dart';
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
+import 'package:clean_boilerplate/core/di/injection.dart';
+import 'package:clean_boilerplate/core/network/api_client.dart';
+import 'package:clean_boilerplate/features/membership/data/membership_api_service.dart';
+import 'package:clean_boilerplate/features/membership/presentation/bloc/membership_cubit.dart';
+import 'package:clean_boilerplate/features/membership/presentation/screens/membership_gate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

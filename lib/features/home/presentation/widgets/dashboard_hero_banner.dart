@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mess_pilot/config/util/dimensions.dart';
-import 'package:mess_pilot/config/util/styles.dart';
-import 'package:mess_pilot/core/extensions/context_extensions.dart';
-import 'package:mess_pilot/features/home/presentation/widgets/dashboard_formatters.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_formatters.dart';
 
 /// Gradient summary banner for the tablet & desktop dashboards.
 ///

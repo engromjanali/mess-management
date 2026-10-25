@@ -1,5 +1,5 @@
-import 'package:mess_pilot/core/network/api_client.dart';
-import 'package:mess_pilot/features/membership/data/membership_api_service.dart';
+import 'package:clean_boilerplate/core/network/api_client.dart';
+import 'package:clean_boilerplate/features/membership/data/membership_api_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

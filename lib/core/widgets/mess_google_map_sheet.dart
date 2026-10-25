@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:mess_pilot/config/util/dimensions.dart';
-import 'package:mess_pilot/core/extensions/context_extensions.dart';
-import 'package:mess_pilot/core/extensions/overly_extensions.dart';
-import 'package:mess_pilot/core/helpers/responsive_helper.dart';
-import 'package:mess_pilot/core/helpers/google_maps_availability.dart';
-import 'package:mess_pilot/features/membership/domain/helpers/mess_map_uri.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
+import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
+import 'package:clean_boilerplate/core/helpers/google_maps_availability.dart';
+import 'package:clean_boilerplate/features/membership/domain/helpers/mess_map_uri.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';

@@ -1,7 +1,7 @@
-import 'package:mess_pilot/features/splash/data/datasources/remote/splash_api_service.dart';
+import 'package:clean_boilerplate/features/splash/data/datasources/remote/splash_api_service.dart';
 import 'package:injectable/injectable.dart';
-import 'package:mess_pilot/features/splash/data/datasources/interfaces/splash_data_source.dart';
-import 'package:mess_pilot/features/splash/data/models/config_model.dart';
+import 'package:clean_boilerplate/features/splash/data/datasources/interfaces/splash_data_source.dart';
+import 'package:clean_boilerplate/features/splash/data/models/config_model.dart';
 
 @LazySingleton(as: SplashDataSource)
 class SplashRemoteDataSourceImpl implements SplashDataSource {

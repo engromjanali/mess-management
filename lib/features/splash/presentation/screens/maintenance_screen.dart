@@ -1,12 +1,12 @@
-import 'package:mess_pilot/core/widgets/app_state_view.dart';
-import 'package:mess_pilot/core/widgets/app_loader.dart';
+import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:mess_pilot/core/extensions/context_extensions.dart';
-import 'package:mess_pilot/core/extensions/overly_extensions.dart';
-import 'package:mess_pilot/features/splash/presentation/bloc/splash_bloc.dart';
-import 'package:mess_pilot/features/splash/presentation/widgets/app_gate.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
+import 'package:clean_boilerplate/features/splash/presentation/bloc/splash_bloc.dart';
+import 'package:clean_boilerplate/features/splash/presentation/widgets/app_gate.dart';
 
 /// Shown while the admin has maintenance mode on. "Try again" reloads the
 /// config and opens the app once maintenance is over.

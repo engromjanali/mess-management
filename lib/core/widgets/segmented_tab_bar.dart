@@ -1,10 +1,10 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:mess_pilot/config/util/dimensions.dart';
-import 'package:mess_pilot/config/util/styles.dart';
-import 'package:mess_pilot/core/extensions/context_extensions.dart';
-import 'package:mess_pilot/core/widgets/pill_tab_bar.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/widgets/pill_tab_bar.dart';
 
 class SegmentedTabBar<T> extends StatefulWidget {
   const SegmentedTabBar({required this.tabs, required this.selected, required this.onChanged, super.key}) : assert(tabs.length >= 2);

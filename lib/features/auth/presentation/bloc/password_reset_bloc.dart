@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:mess_pilot/features/auth/domain/usecases/forgot_password_usecase.dart';
-import 'package:mess_pilot/features/auth/domain/usecases/reset_password_usecase.dart';
-import 'package:mess_pilot/features/auth/presentation/bloc/password_reset_event.dart';
-import 'package:mess_pilot/features/auth/presentation/bloc/password_reset_state.dart';
+import 'package:clean_boilerplate/features/auth/domain/usecases/forgot_password_usecase.dart';
+import 'package:clean_boilerplate/features/auth/domain/usecases/reset_password_usecase.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/password_reset_event.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/password_reset_state.dart';
 
 /// Drives the two-step forgot-password flow: request an OTP, then reset the
 /// password with that OTP.

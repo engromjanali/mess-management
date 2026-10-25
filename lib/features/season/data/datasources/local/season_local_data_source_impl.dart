@@ -1,7 +1,7 @@
-import 'package:mess_pilot/core/errors/exceptions.dart';
-import 'package:mess_pilot/features/season/data/datasources/interfaces/season_data_source.dart';
-import 'package:mess_pilot/features/season/data/models/season_model.dart';
-import 'package:mess_pilot/features/season/domain/entities/auto_create_season_entity.dart';
+import 'package:clean_boilerplate/core/errors/exceptions.dart';
+import 'package:clean_boilerplate/features/season/data/datasources/interfaces/season_data_source.dart';
+import 'package:clean_boilerplate/features/season/data/models/season_model.dart';
+import 'package:clean_boilerplate/features/season/domain/entities/auto_create_season_entity.dart';
 
 /// In-memory mock for the season feature.
 ///

@@ -1,6 +1,6 @@
-import 'package:mess_pilot/config/util/result.dart' hide Failure;
-import 'package:mess_pilot/core/errors/exceptions.dart';
-import 'package:mess_pilot/core/errors/failures.dart';
+import 'package:clean_boilerplate/config/util/result.dart' hide Failure;
+import 'package:clean_boilerplate/core/errors/exceptions.dart';
+import 'package:clean_boilerplate/core/errors/failures.dart';
 
 Failure mapErrorToFailure(Object error) {
   if (error is Failure) return error;

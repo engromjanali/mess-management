@@ -1,6 +1,6 @@
-import 'package:mess_pilot/core/errors/exceptions.dart';
-import 'package:mess_pilot/features/deposit/data/models/deposit_model.dart';
-import 'package:mess_pilot/features/deposit/data/datasources/interfaces/deposit_data_source.dart';
+import 'package:clean_boilerplate/core/errors/exceptions.dart';
+import 'package:clean_boilerplate/features/deposit/data/models/deposit_model.dart';
+import 'package:clean_boilerplate/features/deposit/data/datasources/interfaces/deposit_data_source.dart';
 
 /// In-memory mock for the deposit feature.
 ///

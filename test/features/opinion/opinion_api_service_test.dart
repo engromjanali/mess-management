@@ -1,6 +1,6 @@
-import 'package:mess_pilot/core/network/api_client.dart';
-import 'package:mess_pilot/features/opinion/data/opinion_api_service.dart';
-import 'package:mess_pilot/features/opinion/domain/entities/opinion_entity.dart';
+import 'package:clean_boilerplate/core/network/api_client.dart';
+import 'package:clean_boilerplate/features/opinion/data/opinion_api_service.dart';
+import 'package:clean_boilerplate/features/opinion/domain/entities/opinion_entity.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

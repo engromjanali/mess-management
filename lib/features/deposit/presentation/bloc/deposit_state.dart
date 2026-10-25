@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart' show DateTimeRange;
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mess_pilot/features/deposit/domain/entities/deposit_entity.dart';
-import 'package:mess_pilot/features/deposit/domain/entities/deposit_mess_summary_entity.dart';
-import 'package:mess_pilot/features/deposit/presentation/bloc/deposit_view_mode.dart';
+import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_entity.dart';
+import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_mess_summary_entity.dart';
+import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_view_mode.dart';
 
 part 'deposit_state.freezed.dart';
 

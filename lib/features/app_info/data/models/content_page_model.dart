@@ -1,4 +1,4 @@
-import 'package:mess_pilot/features/app_info/domain/entities/content_page_entity.dart';
+import 'package:clean_boilerplate/features/app_info/domain/entities/content_page_entity.dart';
 
 /// Data-layer DTO for `/api/v1/app/pages/<kind>`.
 class ContentPageModel {

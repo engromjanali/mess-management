@@ -1,8 +1,8 @@
 import 'package:injectable/injectable.dart';
-import 'package:mess_pilot/config/util/result.dart';
-import 'package:mess_pilot/core/usecase/usecase.dart';
-import 'package:mess_pilot/features/settings/domain/entities/theme_mode.dart';
-import 'package:mess_pilot/features/settings/domain/repositories/settings_repository.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/core/usecase/usecase.dart';
+import 'package:clean_boilerplate/features/settings/domain/entities/theme_mode.dart';
+import 'package:clean_boilerplate/features/settings/domain/repositories/settings_repository.dart';
 
 /// UseCase to get the current theme mode
 @lazySingleton

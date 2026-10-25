@@ -1,4 +1,4 @@
-import 'package:mess_pilot/features/auth/data/models/user_model.dart';
+import 'package:clean_boilerplate/features/auth/data/models/user_model.dart';
 
 /// Abstract data source interface for authentication
 ///

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mess_pilot/config/util/dimensions.dart';
-import 'package:mess_pilot/config/util/styles.dart';
-import 'package:mess_pilot/core/extensions/context_extensions.dart';
-import 'package:mess_pilot/features/season/domain/entities/season_entity.dart';
-import 'package:mess_pilot/features/season/presentation/widgets/season_formatters.dart';
-import 'package:mess_pilot/features/season/presentation/widgets/season_status_chip.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/features/season/domain/entities/season_entity.dart';
+import 'package:clean_boilerplate/features/season/presentation/widgets/season_formatters.dart';
+import 'package:clean_boilerplate/features/season/presentation/widgets/season_status_chip.dart';
 
 /// One season row: name, dates, status, a Switch button (when it can be
 /// used) and a menu with Edit / End / Disable or Enable / Delete.

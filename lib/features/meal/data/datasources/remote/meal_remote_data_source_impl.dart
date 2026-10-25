@@ -1,8 +1,8 @@
 import 'package:injectable/injectable.dart';
-import 'package:mess_pilot/config/util/app_constants.dart';
-import 'package:mess_pilot/core/network/api_client.dart';
-import 'package:mess_pilot/features/meal/data/datasources/interfaces/meal_data_source.dart';
-import 'package:mess_pilot/features/meal/data/models/meal_model.dart';
+import 'package:clean_boilerplate/config/util/app_constants.dart';
+import 'package:clean_boilerplate/core/network/api_client.dart';
+import 'package:clean_boilerplate/features/meal/data/datasources/interfaces/meal_data_source.dart';
+import 'package:clean_boilerplate/features/meal/data/models/meal_model.dart';
 
 /// The signed-in user's own meals in their active season (`/api/v1/user/meals`).
 @LazySingleton(as: MealDataSource)

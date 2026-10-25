@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mess_pilot/config/util/dimensions.dart';
-import 'package:mess_pilot/config/util/styles.dart';
-import 'package:mess_pilot/core/extensions/context_extensions.dart';
-import 'package:mess_pilot/core/widgets/app_user_avatar.dart';
-import 'package:mess_pilot/features/membership/presentation/widgets/mess_formatters.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/widgets/app_user_avatar.dart';
+import 'package:clean_boilerplate/features/membership/presentation/widgets/mess_formatters.dart';
 
 /// What a manager can do to a member from the members list.
 enum MemberAction { makeActingManager, removeActingManager, makePrimaryManager, disable, enable }

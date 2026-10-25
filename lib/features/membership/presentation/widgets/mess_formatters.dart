@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
-import 'package:mess_pilot/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
 
 /// Formatting helpers for the mess details screen.
 class MessFormatters {

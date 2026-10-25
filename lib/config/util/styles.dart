@@ -1,4 +1,4 @@
-import 'package:mess_pilot/core/assets/fonts.gen.dart';
+import 'package:clean_boilerplate/core/assets/fonts.gen.dart';
 import 'package:flutter/material.dart';
 
 /// Reusable text styles for consistent typography using SF Pro Rounded

@@ -1,12 +1,12 @@
-import 'package:mess_pilot/config/util/result.dart';
-import 'package:mess_pilot/core/errors/failures.dart';
-import 'package:mess_pilot/features/fund/domain/entities/fund_entity.dart';
-import 'package:mess_pilot/features/fund/domain/repositories/fund_repository.dart';
-import 'package:mess_pilot/features/fund/domain/usecases/fund_usecases.dart';
-import 'package:mess_pilot/features/fund/presentation/bloc/fund_bloc.dart';
-import 'package:mess_pilot/features/fund/presentation/bloc/fund_event.dart';
-import 'package:mess_pilot/features/fund/presentation/bloc/fund_state.dart';
-import 'package:mess_pilot/features/fund/presentation/widgets/fund_formatters.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/core/errors/failures.dart';
+import 'package:clean_boilerplate/features/fund/domain/entities/fund_entity.dart';
+import 'package:clean_boilerplate/features/fund/domain/repositories/fund_repository.dart';
+import 'package:clean_boilerplate/features/fund/domain/usecases/fund_usecases.dart';
+import 'package:clean_boilerplate/features/fund/presentation/bloc/fund_bloc.dart';
+import 'package:clean_boilerplate/features/fund/presentation/bloc/fund_event.dart';
+import 'package:clean_boilerplate/features/fund/presentation/bloc/fund_state.dart';
+import 'package:clean_boilerplate/features/fund/presentation/widgets/fund_formatters.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// In-memory repository whose writes can be made to fail like the backend does.

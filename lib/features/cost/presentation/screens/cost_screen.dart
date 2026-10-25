@@ -1,32 +1,32 @@
-import 'package:mess_pilot/core/widgets/app_state_view.dart';
-import 'package:mess_pilot/core/widgets/app_loader.dart';
+import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
+import 'package:clean_boilerplate/core/widgets/app_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:mess_pilot/config/util/dimensions.dart';
-import 'package:mess_pilot/config/util/styles.dart';
-import 'package:mess_pilot/core/di/injection.dart';
-import 'package:mess_pilot/core/extensions/context_extensions.dart';
-import 'package:mess_pilot/core/extensions/overly_extensions.dart';
-import 'package:mess_pilot/core/extensions/screen_matres_extensions.dart';
-import 'package:mess_pilot/core/helpers/responsive_helper.dart';
-import 'package:mess_pilot/core/role/role_cubit.dart';
-import 'package:mess_pilot/core/widgets/app_footer.dart';
-import 'package:mess_pilot/core/widgets/home_back_button.dart';
-import 'package:mess_pilot/core/widgets/pill_tab_bar.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/di/injection.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
+import 'package:clean_boilerplate/core/extensions/screen_matres_extensions.dart';
+import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
+import 'package:clean_boilerplate/core/role/role_cubit.dart';
+import 'package:clean_boilerplate/core/widgets/app_footer.dart';
+import 'package:clean_boilerplate/core/widgets/home_back_button.dart';
+import 'package:clean_boilerplate/core/widgets/pill_tab_bar.dart';
 
-import 'package:mess_pilot/features/home/presentation/widgets/animated_entrance.dart';
-import 'package:mess_pilot/features/home/presentation/widgets/dashboard_top_bar.dart';
-import 'package:mess_pilot/features/home/presentation/widgets/section_title.dart';
-import 'package:mess_pilot/core/widgets/stat_card.dart';
-import 'package:mess_pilot/features/home/presentation/widgets/web_profile_drawer.dart';
-import 'package:mess_pilot/features/cost/domain/entities/cost_entity.dart';
-import 'package:mess_pilot/features/cost/presentation/bloc/cost_bloc.dart';
-import 'package:mess_pilot/features/cost/presentation/bloc/cost_event.dart';
-import 'package:mess_pilot/features/cost/presentation/bloc/cost_state.dart';
-import 'package:mess_pilot/features/cost/presentation/widgets/cost_entry_form.dart';
-import 'package:mess_pilot/features/cost/presentation/widgets/cost_formatters.dart';
-import 'package:mess_pilot/features/cost/presentation/widgets/cost_tile.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/animated_entrance.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_top_bar.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/section_title.dart';
+import 'package:clean_boilerplate/core/widgets/stat_card.dart';
+import 'package:clean_boilerplate/features/home/presentation/widgets/web_profile_drawer.dart';
+import 'package:clean_boilerplate/features/cost/domain/entities/cost_entity.dart';
+import 'package:clean_boilerplate/features/cost/presentation/bloc/cost_bloc.dart';
+import 'package:clean_boilerplate/features/cost/presentation/bloc/cost_event.dart';
+import 'package:clean_boilerplate/features/cost/presentation/bloc/cost_state.dart';
+import 'package:clean_boilerplate/features/cost/presentation/widgets/cost_entry_form.dart';
+import 'package:clean_boilerplate/features/cost/presentation/widgets/cost_formatters.dart';
+import 'package:clean_boilerplate/features/cost/presentation/widgets/cost_tile.dart';
 
 /// Cost (bazar) screen — the active season's shopping entries.
 ///

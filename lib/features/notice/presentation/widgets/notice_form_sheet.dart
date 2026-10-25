@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mess_pilot/config/util/dimensions.dart';
-import 'package:mess_pilot/config/util/styles.dart';
-import 'package:mess_pilot/core/errors/failures.dart';
-import 'package:mess_pilot/core/extensions/context_extensions.dart';
-import 'package:mess_pilot/core/extensions/overly_extensions.dart';
-import 'package:mess_pilot/features/notice/domain/entities/notice_entity.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/errors/failures.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
+import 'package:clean_boilerplate/features/notice/domain/entities/notice_entity.dart';
 
 /// Saves the form; completes with null on success or the [Failure].
 typedef NoticeSubmit = Future<Failure?> Function({required String title, required String description});

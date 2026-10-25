@@ -1,14 +1,14 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:mess_pilot/config/util/result.dart';
-import 'package:mess_pilot/core/usecase/usecase.dart';
-import 'package:mess_pilot/features/meal/domain/entities/meal_member_entity.dart';
-import 'package:mess_pilot/features/meal/domain/usecases/add_meals_for_day_usecase.dart';
-import 'package:mess_pilot/features/meal/domain/usecases/delete_member_meal_usecase.dart';
-import 'package:mess_pilot/features/meal/domain/usecases/get_meal_admin_data_usecase.dart';
-import 'package:mess_pilot/features/meal/domain/usecases/update_member_meal_usecase.dart';
-import 'package:mess_pilot/features/meal/presentation/bloc/meal_admin_event.dart';
-import 'package:mess_pilot/features/meal/presentation/bloc/meal_admin_state.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/core/usecase/usecase.dart';
+import 'package:clean_boilerplate/features/meal/domain/entities/meal_member_entity.dart';
+import 'package:clean_boilerplate/features/meal/domain/usecases/add_meals_for_day_usecase.dart';
+import 'package:clean_boilerplate/features/meal/domain/usecases/delete_member_meal_usecase.dart';
+import 'package:clean_boilerplate/features/meal/domain/usecases/get_meal_admin_data_usecase.dart';
+import 'package:clean_boilerplate/features/meal/domain/usecases/update_member_meal_usecase.dart';
+import 'package:clean_boilerplate/features/meal/presentation/bloc/meal_admin_event.dart';
+import 'package:clean_boilerplate/features/meal/presentation/bloc/meal_admin_state.dart';
 
 /// Admin meal-management BLoC — loads the roster and records and lets a manager
 /// add a day's meals, and edit or delete a member's meal on a date.

@@ -1,8 +1,8 @@
-import 'package:mess_pilot/core/extensions/context_extensions.dart';
-import 'package:mess_pilot/core/helpers/responsive_helper.dart';
-import 'package:mess_pilot/core/widgets/animated_bottom_nav_bar.dart';
-import 'package:mess_pilot/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
+import 'package:clean_boilerplate/core/widgets/animated_bottom_nav_bar.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';

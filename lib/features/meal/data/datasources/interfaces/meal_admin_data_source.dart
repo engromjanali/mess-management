@@ -1,5 +1,5 @@
-import 'package:mess_pilot/features/meal/data/models/meal_admin_model.dart';
-import 'package:mess_pilot/features/meal/domain/entities/meal_member_entity.dart';
+import 'package:clean_boilerplate/features/meal/data/models/meal_admin_model.dart';
+import 'package:clean_boilerplate/features/meal/domain/entities/meal_member_entity.dart';
 
 /// Contract for any source that can provide & mutate admin meal data.
 abstract class MealAdminDataSource {

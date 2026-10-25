@@ -1,8 +1,8 @@
 import 'package:injectable/injectable.dart';
-import 'package:mess_pilot/config/util/result.dart';
-import 'package:mess_pilot/core/usecase/usecase.dart';
-import 'package:mess_pilot/features/auth/domain/entities/user_entity.dart';
-import 'package:mess_pilot/features/auth/domain/repositories/auth_repository.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/core/usecase/usecase.dart';
+import 'package:clean_boilerplate/features/auth/domain/entities/user_entity.dart';
+import 'package:clean_boilerplate/features/auth/domain/repositories/auth_repository.dart';
 
 class UpdateProfileParams {
   final String fullName;

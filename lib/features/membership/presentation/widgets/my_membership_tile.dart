@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mess_pilot/config/util/dimensions.dart';
-import 'package:mess_pilot/config/util/styles.dart';
-import 'package:mess_pilot/core/extensions/context_extensions.dart';
-import 'package:mess_pilot/features/membership/domain/entities/membership_status_entity.dart';
-import 'package:mess_pilot/features/membership/presentation/widgets/mess_avatar.dart';
-import 'package:mess_pilot/features/membership/presentation/widgets/mess_formatters.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/features/membership/domain/entities/membership_status_entity.dart';
+import 'package:clean_boilerplate/features/membership/presentation/widgets/mess_avatar.dart';
+import 'package:clean_boilerplate/features/membership/presentation/widgets/mess_formatters.dart';
 
 /// One of the user's memberships: mess, season (dates), role and state, with
 /// a Switch button when it can become current. [busy] shows a spinner; a null

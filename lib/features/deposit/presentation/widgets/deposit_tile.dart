@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mess_pilot/config/util/dimensions.dart';
-import 'package:mess_pilot/config/util/styles.dart';
-import 'package:mess_pilot/core/extensions/context_extensions.dart';
-import 'package:mess_pilot/features/deposit/domain/entities/deposit_entity.dart';
-import 'package:mess_pilot/features/deposit/presentation/widgets/deposit_formatters.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_entity.dart';
+import 'package:clean_boilerplate/features/deposit/presentation/widgets/deposit_formatters.dart';
 
 /// One deposit row — signed amount with a Debit/Credit status badge, the
 /// member/date context, an optional note, and (for admins) edit / delete.

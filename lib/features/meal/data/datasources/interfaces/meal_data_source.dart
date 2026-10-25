@@ -1,4 +1,4 @@
-import 'package:mess_pilot/features/meal/data/models/meal_model.dart';
+import 'package:clean_boilerplate/features/meal/data/models/meal_model.dart';
 
 /// Contract for any source that can provide the user's meal data.
 abstract class MealDataSource {

@@ -1,10 +1,10 @@
 import 'package:injectable/injectable.dart';
-import 'package:mess_pilot/config/util/result.dart';
-import 'package:mess_pilot/core/errors/error_handler.dart';
-import 'package:mess_pilot/features/app_info/data/datasources/interfaces/app_info_data_source.dart';
-import 'package:mess_pilot/features/app_info/domain/entities/content_page_entity.dart';
-import 'package:mess_pilot/features/app_info/domain/entities/faq_entity.dart';
-import 'package:mess_pilot/features/app_info/domain/repositories/app_info_repository.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/core/errors/error_handler.dart';
+import 'package:clean_boilerplate/features/app_info/data/datasources/interfaces/app_info_data_source.dart';
+import 'package:clean_boilerplate/features/app_info/domain/entities/content_page_entity.dart';
+import 'package:clean_boilerplate/features/app_info/domain/entities/faq_entity.dart';
+import 'package:clean_boilerplate/features/app_info/domain/repositories/app_info_repository.dart';
 
 @LazySingleton(as: AppInfoRepository)
 class AppInfoRepositoryImpl implements AppInfoRepository {

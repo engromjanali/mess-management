@@ -1,6 +1,6 @@
-import 'package:mess_pilot/core/errors/exceptions.dart';
-import 'package:mess_pilot/core/errors/failures.dart';
-import 'package:mess_pilot/l10n/gen/app_localizations.dart';
+import 'package:clean_boilerplate/core/errors/exceptions.dart';
+import 'package:clean_boilerplate/core/errors/failures.dart';
+import 'package:clean_boilerplate/l10n/gen/app_localizations.dart';
 
 String userErrorMessage(Object error, AppLocalizations local) {
   if (error is RequestTimeoutException) return local.requestTimedOut;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mess_pilot/config/util/styles.dart';
-import 'package:mess_pilot/features/membership/presentation/widgets/mess_formatters.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/features/membership/presentation/widgets/mess_formatters.dart';
 
 /// Round initials avatar tinted with [color].
 class MessAvatar extends StatelessWidget {

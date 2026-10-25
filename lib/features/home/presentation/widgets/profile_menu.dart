@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:mess_pilot/config/route/app_router.dart';
-import 'package:mess_pilot/core/extensions/context_extensions.dart';
-import 'package:mess_pilot/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:mess_pilot/features/auth/presentation/bloc/auth_event.dart';
+import 'package:clean_boilerplate/config/route/app_router.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_event.dart';
 
 /// One entry of the profile menu.
 class ProfileMenuItem {

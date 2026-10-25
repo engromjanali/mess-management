@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:mess_pilot/config/route/app_router.dart';
-import 'package:mess_pilot/core/extensions/context_extensions.dart';
-import 'package:mess_pilot/core/helpers/auth_helper.dart';
-import 'package:mess_pilot/features/splash/domain/entities/config_entity.dart';
+import 'package:clean_boilerplate/config/route/app_router.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/core/helpers/auth_helper.dart';
+import 'package:clean_boilerplate/features/splash/domain/entities/config_entity.dart';
 
 /// The installed app's version, e.g. `1.0.0` (from pubspec `version`).
 Future<String> currentAppVersion() async => (await PackageInfo.fromPlatform()).version;

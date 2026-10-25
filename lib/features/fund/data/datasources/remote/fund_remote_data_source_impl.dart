@@ -1,9 +1,9 @@
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
-import 'package:mess_pilot/config/util/app_constants.dart';
-import 'package:mess_pilot/core/network/api_client.dart';
-import 'package:mess_pilot/features/fund/data/models/fund_model.dart';
-import 'package:mess_pilot/features/fund/data/datasources/interfaces/fund_data_source.dart';
+import 'package:clean_boilerplate/config/util/app_constants.dart';
+import 'package:clean_boilerplate/core/network/api_client.dart';
+import 'package:clean_boilerplate/features/fund/data/models/fund_model.dart';
+import 'package:clean_boilerplate/features/fund/data/datasources/interfaces/fund_data_source.dart';
 
 /// Fund data source backed by the Django API. The fund belongs to the mess
 /// (every season), not to the active season.

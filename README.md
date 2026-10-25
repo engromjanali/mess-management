@@ -4,7 +4,7 @@ Flutter app for managing mess membership, seasons, meals, deposits, shopping cos
 shared funds, notices, and opinions. The Django API lives in the sibling
 `mm_backend` project.
 
-The Dart package name is `mess_pilot`; use that name in package imports.
+The Dart package name remains `clean_boilerplate`; use that name in package imports.
 
 ## Start locally
 
@@ -23,10 +23,8 @@ watch mode, testing, and release commands.
 ## API environments
 
 [AppConstants](lib/config/util/app_constants.dart) reads `API_BASE_URL` at build time.
-Debug and profile builds default to `http://10.0.2.2:8000` on Android (emulator)
-and `http://127.0.0.1:8000` on other platforms. Release builds default to
-`https://mm-backend-kappa.vercel.app`. Local HTTP is allowed in Android debug/profile builds.
-Restart the app fully after changing these settings.
+Debug and profile builds default to `http://127.0.0.1:8000`; release builds default
+to `https://mm-backend-kappa.vercel.app`.
 
 ```sh
 # Android emulator reaching the development computer

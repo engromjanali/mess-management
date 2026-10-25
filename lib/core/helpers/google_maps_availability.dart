@@ -1,2 +1,2 @@
-export 'package:mess_pilot/core/helpers/google_maps_availability_stub.dart'
-  if (dart.library.js_interop) 'package:mess_pilot/core/helpers/google_maps_availability_web.dart';
+export 'package:clean_boilerplate/core/helpers/google_maps_availability_stub.dart'
+  if (dart.library.js_interop) 'package:clean_boilerplate/core/helpers/google_maps_availability_web.dart';

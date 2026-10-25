@@ -1,8 +1,8 @@
-import 'package:mess_pilot/core/errors/error_handler.dart';
-import 'package:mess_pilot/core/errors/exceptions.dart';
-import 'package:mess_pilot/core/errors/failures.dart';
-import 'package:mess_pilot/core/errors/user_error_message.dart';
-import 'package:mess_pilot/l10n/gen/app_localizations.dart';
+import 'package:clean_boilerplate/core/errors/error_handler.dart';
+import 'package:clean_boilerplate/core/errors/exceptions.dart';
+import 'package:clean_boilerplate/core/errors/failures.dart';
+import 'package:clean_boilerplate/core/errors/user_error_message.dart';
+import 'package:clean_boilerplate/l10n/gen/app_localizations.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

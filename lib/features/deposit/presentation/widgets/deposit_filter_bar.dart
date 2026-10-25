@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mess_pilot/config/util/dimensions.dart';
-import 'package:mess_pilot/config/util/styles.dart';
-import 'package:mess_pilot/core/extensions/context_extensions.dart';
-import 'package:mess_pilot/features/deposit/domain/entities/deposit_entity.dart';
-import 'package:mess_pilot/features/deposit/presentation/bloc/deposit_bloc.dart';
-import 'package:mess_pilot/features/deposit/presentation/bloc/deposit_event.dart';
-import 'package:mess_pilot/features/deposit/presentation/bloc/deposit_view_mode.dart';
-import 'package:mess_pilot/features/deposit/presentation/widgets/deposit_formatters.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_entity.dart';
+import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_bloc.dart';
+import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_event.dart';
+import 'package:clean_boilerplate/features/deposit/presentation/bloc/deposit_view_mode.dart';
+import 'package:clean_boilerplate/features/deposit/presentation/widgets/deposit_formatters.dart';
 
 /// Compact, wrap-based filter controls for the admin deposit view.
 ///

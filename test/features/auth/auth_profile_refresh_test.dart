@@ -1,15 +1,15 @@
 import 'dart:async';
 
-import 'package:mess_pilot/config/util/result.dart';
-import 'package:mess_pilot/features/auth/domain/entities/user_entity.dart';
-import 'package:mess_pilot/features/auth/domain/repositories/auth_repository.dart';
-import 'package:mess_pilot/features/auth/domain/usecases/get_current_user_usecase.dart';
-import 'package:mess_pilot/features/auth/domain/usecases/login_usecase.dart';
-import 'package:mess_pilot/features/auth/domain/usecases/logout_usecase.dart';
-import 'package:mess_pilot/features/auth/domain/usecases/register_usecase.dart';
-import 'package:mess_pilot/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:mess_pilot/features/auth/presentation/bloc/auth_event.dart';
-import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/features/auth/domain/entities/user_entity.dart';
+import 'package:clean_boilerplate/features/auth/domain/repositories/auth_repository.dart';
+import 'package:clean_boilerplate/features/auth/domain/usecases/get_current_user_usecase.dart';
+import 'package:clean_boilerplate/features/auth/domain/usecases/login_usecase.dart';
+import 'package:clean_boilerplate/features/auth/domain/usecases/logout_usecase.dart';
+import 'package:clean_boilerplate/features/auth/domain/usecases/register_usecase.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_event.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _ProfileRepository implements AuthRepository {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mess_pilot/config/util/dimensions.dart';
-import 'package:mess_pilot/config/util/styles.dart';
-import 'package:mess_pilot/core/extensions/context_extensions.dart';
-import 'package:mess_pilot/features/notice/domain/entities/notice_entity.dart';
-import 'package:mess_pilot/features/notice/presentation/widgets/notice_formatters.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/features/notice/domain/entities/notice_entity.dart';
+import 'package:clean_boilerplate/features/notice/presentation/widgets/notice_formatters.dart';
 
 /// One notice: title, description, time and — for the manager — pin, edit
 /// and delete actions.

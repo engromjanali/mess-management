@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mess_pilot/config/util/dimensions.dart';
-import 'package:mess_pilot/config/util/styles.dart';
-import 'package:mess_pilot/core/extensions/context_extensions.dart';
-import 'package:mess_pilot/features/season/domain/entities/auto_create_season_entity.dart';
+import 'package:clean_boilerplate/config/util/dimensions.dart';
+import 'package:clean_boilerplate/config/util/styles.dart';
+import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:clean_boilerplate/features/season/domain/entities/auto_create_season_entity.dart';
 
 /// "Auto Create new season" setting: title and the day it runs on the left,
 /// a change-date button and the on / off switch on the right (under the

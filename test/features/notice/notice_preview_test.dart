@@ -1,21 +1,21 @@
-import 'package:mess_pilot/core/widgets/app_footer.dart';
-import 'package:mess_pilot/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:mess_pilot/features/auth/presentation/bloc/auth_event.dart';
-import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
-import 'package:mess_pilot/features/settings/presentation/bloc/theme/theme_bloc.dart';
-import 'package:mess_pilot/features/settings/presentation/bloc/theme/theme_event.dart';
-import 'package:mess_pilot/features/settings/presentation/bloc/localization/localization_bloc.dart';
-import 'package:mess_pilot/features/splash/presentation/bloc/splash_bloc.dart';
+import 'package:clean_boilerplate/core/widgets/app_footer.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_event.dart';
+import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
+import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_bloc.dart';
+import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_event.dart';
+import 'package:clean_boilerplate/features/settings/presentation/bloc/localization/localization_bloc.dart';
+import 'package:clean_boilerplate/features/splash/presentation/bloc/splash_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mess_pilot/config/theme/app_theme.dart';
-import 'package:mess_pilot/features/notice/domain/entities/notice_entity.dart';
-import 'package:mess_pilot/features/notice/presentation/screens/notice_details_screen.dart';
-import 'package:mess_pilot/features/notice/presentation/widgets/notice_card.dart';
-import 'package:mess_pilot/l10n/gen/app_localizations.dart';
+import 'package:clean_boilerplate/config/theme/app_theme.dart';
+import 'package:clean_boilerplate/features/notice/domain/entities/notice_entity.dart';
+import 'package:clean_boilerplate/features/notice/presentation/screens/notice_details_screen.dart';
+import 'package:clean_boilerplate/features/notice/presentation/widgets/notice_card.dart';
+import 'package:clean_boilerplate/l10n/gen/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mess_pilot/config/route/app_router.dart';
+import 'package:clean_boilerplate/config/route/app_router.dart';
 
 class _AuthBloc extends Bloc<AuthEvent, AuthState> implements AuthBloc {
   _AuthBloc() : super(const AuthState.initial());

@@ -1,8 +1,8 @@
 import 'package:injectable/injectable.dart';
-import 'package:mess_pilot/config/util/app_constants.dart';
-import 'package:mess_pilot/core/network/api_client.dart';
-import 'package:mess_pilot/features/notice/data/datasources/interfaces/notice_data_source.dart';
-import 'package:mess_pilot/features/notice/data/models/notice_model.dart';
+import 'package:clean_boilerplate/config/util/app_constants.dart';
+import 'package:clean_boilerplate/core/network/api_client.dart';
+import 'package:clean_boilerplate/features/notice/data/datasources/interfaces/notice_data_source.dart';
+import 'package:clean_boilerplate/features/notice/data/models/notice_model.dart';
 
 /// Notice board APIs: members read `/api/v1/user/notices`, the manager writes
 /// under `/api/v1/admin/notices`.

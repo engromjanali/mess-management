@@ -1,9 +1,9 @@
 import 'package:injectable/injectable.dart';
-import 'package:mess_pilot/config/util/app_constants.dart';
-import 'package:mess_pilot/core/network/api_client.dart';
-import 'package:mess_pilot/features/meal/data/datasources/interfaces/meal_admin_data_source.dart';
-import 'package:mess_pilot/features/meal/data/models/meal_admin_model.dart';
-import 'package:mess_pilot/features/meal/domain/entities/meal_member_entity.dart';
+import 'package:clean_boilerplate/config/util/app_constants.dart';
+import 'package:clean_boilerplate/core/network/api_client.dart';
+import 'package:clean_boilerplate/features/meal/data/datasources/interfaces/meal_admin_data_source.dart';
+import 'package:clean_boilerplate/features/meal/data/models/meal_admin_model.dart';
+import 'package:clean_boilerplate/features/meal/domain/entities/meal_member_entity.dart';
 
 /// Manager meal APIs (`/api/v1/admin/meals`). Every call returns the full
 /// admin payload, so the screen refreshes from the response.

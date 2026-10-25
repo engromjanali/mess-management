@@ -1,7 +1,7 @@
-import 'package:mess_pilot/core/errors/exceptions.dart';
-import 'package:mess_pilot/features/meal/data/models/meal_admin_model.dart';
-import 'package:mess_pilot/features/meal/data/datasources/interfaces/meal_admin_data_source.dart';
-import 'package:mess_pilot/features/meal/domain/entities/meal_member_entity.dart';
+import 'package:clean_boilerplate/core/errors/exceptions.dart';
+import 'package:clean_boilerplate/features/meal/data/models/meal_admin_model.dart';
+import 'package:clean_boilerplate/features/meal/data/datasources/interfaces/meal_admin_data_source.dart';
+import 'package:clean_boilerplate/features/meal/domain/entities/meal_member_entity.dart';
 
 /// Local, in-memory mock admin meal source.
 ///

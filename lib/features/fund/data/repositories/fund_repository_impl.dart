@@ -1,10 +1,10 @@
 import 'package:injectable/injectable.dart';
-import 'package:mess_pilot/config/util/result.dart';
-import 'package:mess_pilot/core/errors/exceptions.dart';
-import 'package:mess_pilot/core/errors/failures.dart';
-import 'package:mess_pilot/features/fund/domain/entities/fund_entity.dart';
-import 'package:mess_pilot/features/fund/domain/repositories/fund_repository.dart';
-import 'package:mess_pilot/features/fund/data/datasources/interfaces/fund_data_source.dart';
+import 'package:clean_boilerplate/config/util/result.dart';
+import 'package:clean_boilerplate/core/errors/exceptions.dart';
+import 'package:clean_boilerplate/core/errors/failures.dart';
+import 'package:clean_boilerplate/features/fund/domain/entities/fund_entity.dart';
+import 'package:clean_boilerplate/features/fund/domain/repositories/fund_repository.dart';
+import 'package:clean_boilerplate/features/fund/data/datasources/interfaces/fund_data_source.dart';
 
 /// Concrete [FundRepository] in the data layer.
 @LazySingleton(as: FundRepository)

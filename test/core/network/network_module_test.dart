@@ -1,4 +1,4 @@
-import 'package:mess_pilot/core/network/network_module.dart';
+import 'package:clean_boilerplate/core/network/network_module.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
