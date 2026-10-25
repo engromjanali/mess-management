@@ -32,6 +32,7 @@ import 'package:mess_pilot/features/notice/presentation/screens/notice_screen.da
 import 'package:mess_pilot/features/notice/presentation/screens/notice_details_screen.dart';
 import 'package:mess_pilot/features/notice/domain/entities/notice_entity.dart';
 import 'package:mess_pilot/features/opinion/presentation/screens/opinion_screen.dart';
+import 'package:mess_pilot/features/feedback/presentation/screens/feedback_screen.dart';
 import 'package:mess_pilot/features/season/presentation/screens/season_management_screen.dart';
 import 'package:mess_pilot/features/settings/presentation/screens/settings_screen.dart';
 import 'package:mess_pilot/core/widgets/main_navigation_shell.dart';
@@ -66,6 +67,7 @@ class AppRoutes {
 
   static const String opinions = '/opinions';
   static const String createOpinionPeriod = '/opinions/create';
+  static const String feedback = '/feedback';
   static const String profile = '/profile';
   static const String editProfile = '/profile/edit';
   static const String deleteAccount = '/account/delete';
@@ -167,6 +169,7 @@ final router = GoRouter(
 
     GoRoute(path: AppRoutes.opinions, name: 'opinions', pageBuilder: (context, state) => const NoTransitionPage(key: ValueKey('opinions-page'), child: OpinionScreen())),
     GoRoute(path: AppRoutes.createOpinionPeriod, name: 'createOpinionPeriod', pageBuilder: (context, state) => const NoTransitionPage(key: ValueKey('opinions-page'), child: OpinionScreen(showCreateTab: true))),
+    GoRoute(path: AppRoutes.feedback, name: 'feedback', pageBuilder: (context, state) => const NoTransitionPage(key: ValueKey('feedback-page'), child: FeedbackScreen())),
 
     // Profile route
     GoRoute(path: AppRoutes.editProfile, name: 'editProfile', builder: (context, state) => const EditProfileScreen()),

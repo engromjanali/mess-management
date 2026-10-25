@@ -334,7 +334,7 @@ class ApiClient {
     try {
       if (kDebugMode) {
         print('=====> POST Multipart: $path');
-        print('=====> Data: ${_formatLogValue(data)}');
+        print('=====> Data: ${options?.extra?['sensitive'] == true ? '[REDACTED]' : _formatLogValue(data)}');
         print('=====> Files: ${files?.length ?? 0}');
       }
 

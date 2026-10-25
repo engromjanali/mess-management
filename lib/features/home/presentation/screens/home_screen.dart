@@ -24,6 +24,7 @@ import 'package:mess_pilot/features/home/presentation/bloc/home_state.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/animated_entrance.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/dashboard_formatters.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/dashboard_hero_banner.dart';
+import 'package:mess_pilot/features/home/presentation/widgets/feedback_banner_card.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/dashboard_top_bar.dart';
 import 'package:mess_pilot/features/membership/data/membership_api_service.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/home_sliver_app_bar.dart';
@@ -182,6 +183,10 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
                   padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge),
                   sliver: SliverToBoxAdapter(child: AnimatedEntrance(child: _MessDetailsCard(dashboard: dashboard))),
                 ),
+                const SliverPadding(
+                  padding: EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, 0, Dimensions.paddingSizeLarge, Dimensions.paddingSizeDefault),
+                  sliver: SliverToBoxAdapter(child: AnimatedEntrance(child: FeedbackBannerCard())),
+                ),
                 SliverToBoxAdapter(child: SizedBox(key: _statsAnchor, height: 0)),
                 SliverPersistentHeader(
                   pinned: true,
@@ -292,6 +297,8 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                         AnimatedEntrance(child: _heroBanner(dashboard)),
+                        const SizedBox(height: Dimensions.paddingSizeDefault),
+                        const AnimatedEntrance(child: FeedbackBannerCard()),
                         const SizedBox(height: Dimensions.paddingSizeSmall),
 
                         // Mess section — wide grid.
@@ -469,6 +476,7 @@ class _MessDetailsCardState extends State<_MessDetailsCard> {
                     label: Text(context.local.showOnGoogleMaps),
                   ),
                   OutlinedButton.icon(onPressed: () => context.go(AppRoutes.opinions), icon: const Icon(Icons.forum_outlined), label: Text(context.local.shareYourOpinions)),
+                  OutlinedButton.icon(onPressed: () => context.go(AppRoutes.feedback), icon: const Icon(Icons.feedback_outlined), label: Text(context.local.feedbackTitle)),
                 ],
               ),
             ],
