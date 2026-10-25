@@ -20,6 +20,7 @@ import 'package:mess_pilot/features/membership/domain/entities/membership_status
 import 'package:mess_pilot/features/home/presentation/widgets/main_page_body.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/web_profile_drawer.dart';
 import 'package:mess_pilot/features/membership/presentation/widgets/managed_member_tile.dart';
+import 'package:mess_pilot/features/membership/presentation/widgets/mess_avatar.dart';
 import 'package:mess_pilot/features/membership/presentation/widgets/mess_formatters.dart';
 import 'package:mess_pilot/features/membership/presentation/widgets/mess_item_tile.dart';
 import 'package:mess_pilot/features/membership/presentation/widgets/my_membership_tile.dart';
@@ -57,6 +58,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
   final _statusFilters = <_ManagementSection, String>{};
   String _sort = 'newest';
   _ManagementSection _section = _ManagementSection.memberships;
+  int? _selectedMembershipMessId;
   bool _loading = true;
 
   /// The user's own side: memberships, invitations received, requests sent.
@@ -85,6 +87,14 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
   bool get _canManage => const {'manager', 'acting_manager'}.contains(_status?.current?.role);
 
   List<SeasonEntity> get _runningSeasons => [...?_seasons?.seasons.where((season) => season.status == SeasonStatus.running)];
+
+  Map<int, List<MembershipSummaryEntity>> get _membershipsByMess {
+    final groups = <int, List<MembershipSummaryEntity>>{};
+    for (final membership in _status?.memberships ?? const <MembershipSummaryEntity>[]) {
+      groups.putIfAbsent(membership.messId, () => []).add(membership);
+    }
+    return groups;
+  }
 
   bool get _isPhoneQuery {
     final query = _emailController.text.trim();
@@ -126,6 +136,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
           _invitations = admin?[1] ?? [];
           _members = admin?[2] ?? [];
           _seasons = seasonsResult?.data ?? _seasons;
+          if (_selectedMembershipMessId != null && !status.memberships.any((membership) => membership.messId == _selectedMembershipMessId)) _selectedMembershipMessId = null;
           if (!manage && _section.isMessSide) _section = _ManagementSection.memberships;
         });
         seasonsResult?.onFailure((failure) => context.showErrorSnackBar(failure.error));
@@ -469,9 +480,11 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
     final myRole = _status?.current?.role;
     final idle = _busyItem == null;
     final showWebAppBar = MainPageBody.showWebAppBar(context);
+    final membershipsByMess = _membershipsByMess;
+    final selectedMemberships = membershipsByMess[_selectedMembershipMessId] ?? const <MembershipSummaryEntity>[];
     /// Shown as "Label (n)" for the sections that have one.
     final counts = <_ManagementSection, int>{
-      _ManagementSection.memberships: _status?.memberships.length ?? 0,
+      _ManagementSection.memberships: membershipsByMess.length,
       _ManagementSection.invitations: _status?.invites.where((invite) => invite.status == 'pending').length ?? 0,
       _ManagementSection.requests: _status?.pendingRequests.length ?? 0,
       // Everyone still in the season: active and disabled, not those who left.
@@ -501,34 +514,55 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                         PillTab(value: item, label: counts[item] == null ? item.label(context) : '${item.label(context)} (${counts[item]})'),
                     ],
                     selected: _section,
-                    onChanged: (section) => setState(() => _section = section),
+                    onChanged: (section) => setState(() {
+                      _section = section;
+                      if (section == _ManagementSection.memberships) _selectedMembershipMessId = null;
+                    }),
                   ),
                   const SizedBox(height: Dimensions.spaceLarge),
                   if (_section == _ManagementSection.memberships)
                     _ManagePanel(
-                      title: context.local.myMemberships,
+                      title: selectedMemberships.isEmpty ? context.local.myMemberships : selectedMemberships.first.messName,
                       icon: Icons.badge_rounded,
+                      onBack: _selectedMembershipMessId == null ? null : () => setState(() => _selectedMembershipMessId = null),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          _filterField(_ManagementSection.memberships),
-                          const SizedBox(height: Dimensions.paddingSizeLarge),
                           if (_loading && _status == null)
                             const Center(child: AppLoader())
-                          else if ((_status?.memberships ?? const []).isEmpty)
+                          else if (membershipsByMess.isEmpty)
                             AppEmptyState(title: context.local.noMembershipsYet, icon: Icons.groups_outlined)
-                          else if (!_status!.memberships.any((membership) => _matchesFilter(_ManagementSection.memberships, membership.status)))
-                            AppEmptyState(title: context.local.noMatchingRecords, icon: Icons.search_off_rounded)
-                          else
-                            for (final membership in _status!.memberships.where((membership) => _matchesFilter(_ManagementSection.memberships, membership.status)))
+                          else if (_selectedMembershipMessId == null) ...[
+                            Text(context.local.membershipSelectMess, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor)),
+                            const SizedBox(height: Dimensions.paddingSizeDefault),
+                            for (final entry in membershipsByMess.entries)
                               Padding(
                                 padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
-                                child: MyMembershipTile(
-                                  membership: membership,
-                                  busy: _busyItem == 'switch:${membership.messId}:${membership.seasonId}',
-                                  onSwitch: idle ? () => _switchTo(membership) : null,
+                                child: _MembershipMessTile(
+                                  messId: entry.key,
+                                  messName: entry.value.first.messName,
+                                  seasonCount: entry.value.length,
+                                  isCurrent: entry.value.any((membership) => membership.isCurrent),
+                                  onTap: () => setState(() => _selectedMembershipMessId = entry.key),
                                 ),
                               ),
+                          ] else ...[
+                            _filterField(_ManagementSection.memberships),
+                            const SizedBox(height: Dimensions.paddingSizeLarge),
+                            if (!selectedMemberships.any((membership) => _matchesFilter(_ManagementSection.memberships, membership.status)))
+                              AppEmptyState(title: context.local.noMatchingRecords, icon: Icons.search_off_rounded)
+                            else
+                              for (final membership in selectedMemberships.where((membership) => _matchesFilter(_ManagementSection.memberships, membership.status)))
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
+                                  child: MyMembershipTile(
+                                    membership: membership,
+                                    busy: _busyItem == 'switch:${membership.messId}:${membership.seasonId}',
+                                    onSwitch: idle ? () => _switchTo(membership) : null,
+                                    showMessName: false,
+                                  ),
+                                ),
+                          ],
                           const SizedBox(height: Dimensions.paddingSizeSmall),
                           Align(
                             alignment: AlignmentDirectional.centerStart,
@@ -787,11 +821,12 @@ enum _ManagementSection {
 }
 
 class _ManagePanel extends StatelessWidget {
-  const _ManagePanel({required this.title, required this.icon, required this.child});
+  const _ManagePanel({required this.title, required this.icon, required this.child, this.onBack});
 
   final String title;
   final IconData icon;
   final Widget child;
+  final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) {
@@ -799,7 +834,48 @@ class _ManagePanel extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
       decoration: BoxDecoration(color: colors.surfaceColor, borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge), border: Border.all(color: colors.borderColor)),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [Row(children: [Icon(icon, color: colors.primaryColor), const SizedBox(width: Dimensions.paddingSizeSmall), Text(title, style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge))]), const SizedBox(height: Dimensions.paddingSizeLarge), child]),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [Row(children: [if (onBack == null) Icon(icon, color: colors.primaryColor) else IconButton(key: const ValueKey('membership-all-messes-back'), onPressed: onBack, tooltip: context.local.membershipAllMesses, icon: Icon(Icons.arrow_back_rounded, color: colors.primaryColor), padding: EdgeInsets.zero, constraints: const BoxConstraints(minWidth: 24, minHeight: 40)), const SizedBox(width: Dimensions.paddingSizeSmall), Expanded(child: Text(title, maxLines: 2, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge)))]), const SizedBox(height: Dimensions.paddingSizeLarge), child]),
+    );
+  }
+}
+
+class _MembershipMessTile extends StatelessWidget {
+  const _MembershipMessTile({required this.messId, required this.messName, required this.seasonCount, required this.isCurrent, required this.onTap});
+
+  final int messId;
+  final String messName;
+  final int seasonCount;
+  final bool isCurrent;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+    return Material(
+      color: isCurrent ? colors.primaryColor.withValues(alpha: 0.06) : Colors.transparent,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge), side: BorderSide(color: isCurrent ? colors.primaryColor.withValues(alpha: 0.5) : colors.borderColor.withValues(alpha: 0.4))),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        key: ValueKey('membership-mess-$messId'),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+          child: Row(children: [
+            MessAvatar(name: messName, color: colors.primaryColor, size: 44),
+            const SizedBox(width: Dimensions.paddingSizeDefault),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(messName, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor)),
+              Text(context.local.membershipSeasonCount(seasonCount), maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textHintColor)),
+            ])),
+            if (isCurrent) ...[
+              const SizedBox(width: Dimensions.paddingSizeSmall),
+              Icon(Icons.check_circle_rounded, size: Dimensions.iconSizeSmall, color: colors.primaryColor),
+            ],
+            const SizedBox(width: Dimensions.paddingSizeSmall),
+            Icon(Icons.chevron_right_rounded, color: colors.textHintColor),
+          ]),
+        ),
+      ),
     );
   }
 }

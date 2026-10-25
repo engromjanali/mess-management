@@ -620,5 +620,9 @@
   "notificationLoadFailed": "নোটিফিকেশন লোড করা যায়নি। আবার চেষ্টা করুন।",
   "notificationChangeSeason": "গন্তব্য খুলতে বর্তমান সিজন পরিবর্তন করে এই নোটিফিকেশনের সিজন নির্বাচন করুন, তারপর নোটিফিকেশনটি আবার খুলুন।",
   "notificationAccessUnavailable": "গন্তব্যটি পাওয়া যাচ্ছে না অথবা এই সিজনে আপনার প্রবেশাধিকার নেই।",
-  "notificationChooseSeason": "সিজন নির্বাচন করুন"
+  "notificationChooseSeason": "সিজন নির্বাচন করুন",
+  "membershipSelectMess": "সিজন দেখতে একটি মেস নির্বাচন করুন।",
+  "membershipAllMesses": "সব মেস",
+  "membershipSeasonCount": "সিজন: {count}",
+  "@membershipSeasonCount": {"placeholders": {"count": {"type": "int"}}}
 }

@@ -620,5 +620,9 @@
   "notificationLoadFailed": "تعذر تحميل الإشعارات. حاول مرة أخرى.",
   "notificationChangeSeason": "لفتح الوجهة، غيّر الموسم الحالي إلى موسم هذا الإشعار ثم افتح الإشعار مرة أخرى.",
   "notificationAccessUnavailable": "هذه الوجهة غير متاحة أو لم يعد لديك وصول إلى موسمها.",
-  "notificationChooseSeason": "اختيار الموسم"
+  "notificationChooseSeason": "اختيار الموسم",
+  "membershipSelectMess": "اختر سكنًا لعرض مواسمه.",
+  "membershipAllMesses": "كل المساكن",
+  "membershipSeasonCount": "المواسم: {count}",
+  "@membershipSeasonCount": {"placeholders": {"count": {"type": "int"}}}
 }
