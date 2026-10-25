@@ -1,6 +1,6 @@
-import 'package:clean_boilerplate/core/errors/exceptions.dart';
-import 'package:clean_boilerplate/features/fund/data/models/fund_model.dart';
-import 'package:clean_boilerplate/features/fund/data/datasources/interfaces/fund_data_source.dart';
+import 'package:mess_pilot/core/errors/exceptions.dart';
+import 'package:mess_pilot/features/fund/data/models/fund_model.dart';
+import 'package:mess_pilot/features/fund/data/datasources/interfaces/fund_data_source.dart';
 
 /// In-memory mock for the fund feature.
 ///

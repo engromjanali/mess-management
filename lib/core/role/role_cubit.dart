@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
+import 'package:mess_pilot/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

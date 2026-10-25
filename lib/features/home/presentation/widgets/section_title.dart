@@ -1,8 +1,8 @@
-import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
+import 'package:mess_pilot/core/helpers/responsive_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:clean_boilerplate/config/util/dimensions.dart';
-import 'package:clean_boilerplate/config/util/styles.dart';
-import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:mess_pilot/config/util/dimensions.dart';
+import 'package:mess_pilot/config/util/styles.dart';
+import 'package:mess_pilot/core/extensions/context_extensions.dart';
 
 /// Plain (non-sliver) section heading used by the tablet & desktop dashboards.
 ///

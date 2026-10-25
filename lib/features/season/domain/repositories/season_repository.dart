@@ -1,5 +1,5 @@
-import 'package:clean_boilerplate/config/util/result.dart';
-import 'package:clean_boilerplate/features/season/domain/entities/season_overview_entity.dart';
+import 'package:mess_pilot/config/util/result.dart';
+import 'package:mess_pilot/features/season/domain/entities/season_overview_entity.dart';
 
 /// Season repository contract (abstraction in the domain layer).
 abstract class SeasonRepository {

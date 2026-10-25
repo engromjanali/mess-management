@@ -1,6 +1,6 @@
-import 'package:clean_boilerplate/config/util/app_constants.dart';
-import 'package:clean_boilerplate/core/network/api_client.dart';
-import 'package:clean_boilerplate/features/auth/data/datasources/remote/auth_api_service.dart';
+import 'package:mess_pilot/config/util/app_constants.dart';
+import 'package:mess_pilot/core/network/api_client.dart';
+import 'package:mess_pilot/features/auth/data/datasources/remote/auth_api_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

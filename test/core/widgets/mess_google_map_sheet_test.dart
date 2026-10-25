@@ -1,5 +1,5 @@
-import 'package:clean_boilerplate/core/widgets/mess_google_map_sheet.dart';
-import 'package:clean_boilerplate/l10n/gen/app_localizations.dart';
+import 'package:mess_pilot/core/widgets/mess_google_map_sheet.dart';
+import 'package:mess_pilot/l10n/gen/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

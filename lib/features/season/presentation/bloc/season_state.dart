@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:clean_boilerplate/features/season/domain/entities/season_overview_entity.dart';
+import 'package:mess_pilot/features/season/domain/entities/season_overview_entity.dart';
 
 part 'season_state.freezed.dart';
 

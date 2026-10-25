@@ -1,7 +1,7 @@
 import 'package:injectable/injectable.dart';
-import 'package:clean_boilerplate/config/util/result.dart';
-import 'package:clean_boilerplate/core/usecase/usecase.dart';
-import 'package:clean_boilerplate/features/auth/domain/repositories/auth_repository.dart';
+import 'package:mess_pilot/config/util/result.dart';
+import 'package:mess_pilot/core/usecase/usecase.dart';
+import 'package:mess_pilot/features/auth/domain/repositories/auth_repository.dart';
 
 /// Forgot-password use case - requests an OTP for the given email
 @lazySingleton

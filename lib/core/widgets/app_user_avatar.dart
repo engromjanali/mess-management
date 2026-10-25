@@ -1,5 +1,5 @@
-import 'package:clean_boilerplate/config/util/app_constants.dart';
-import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
+import 'package:mess_pilot/config/util/app_constants.dart';
+import 'package:mess_pilot/core/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
 
 class AppUserAvatar extends StatelessWidget {

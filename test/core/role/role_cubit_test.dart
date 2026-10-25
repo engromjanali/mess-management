@@ -1,8 +1,8 @@
-import 'package:clean_boilerplate/core/role/role_cubit.dart';
-import 'package:clean_boilerplate/features/auth/domain/entities/user_entity.dart';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_event.dart';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
+import 'package:mess_pilot/core/role/role_cubit.dart';
+import 'package:mess_pilot/features/auth/domain/entities/user_entity.dart';
+import 'package:mess_pilot/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:mess_pilot/features/auth/presentation/bloc/auth_event.dart';
+import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 

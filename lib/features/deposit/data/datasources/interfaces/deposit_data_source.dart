@@ -1,4 +1,4 @@
-import 'package:clean_boilerplate/features/deposit/data/models/deposit_model.dart';
+import 'package:mess_pilot/features/deposit/data/models/deposit_model.dart';
 
 /// Contract for any source that can provide & mutate deposits.
 abstract class DepositDataSource {

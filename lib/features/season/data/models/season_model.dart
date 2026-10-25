@@ -1,6 +1,6 @@
-import 'package:clean_boilerplate/features/season/domain/entities/auto_create_season_entity.dart';
-import 'package:clean_boilerplate/features/season/domain/entities/season_entity.dart';
-import 'package:clean_boilerplate/features/season/domain/entities/season_overview_entity.dart';
+import 'package:mess_pilot/features/season/domain/entities/auto_create_season_entity.dart';
+import 'package:mess_pilot/features/season/domain/entities/season_entity.dart';
+import 'package:mess_pilot/features/season/domain/entities/season_overview_entity.dart';
 
 /// Data-layer DTO for a season (`/api/v1/admin/seasons` item).
 class SeasonModel {

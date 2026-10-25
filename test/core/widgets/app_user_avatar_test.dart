@@ -1,9 +1,9 @@
-import 'package:clean_boilerplate/config/theme/app_theme.dart';
-import 'package:clean_boilerplate/core/widgets/app_user_avatar.dart';
-import 'package:clean_boilerplate/features/cost/data/models/cost_model.dart';
-import 'package:clean_boilerplate/features/meal/data/models/meal_admin_model.dart';
-import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_entity.dart';
-import 'package:clean_boilerplate/features/deposit/domain/entities/deposit_mess_summary_entity.dart';
+import 'package:mess_pilot/config/theme/app_theme.dart';
+import 'package:mess_pilot/core/widgets/app_user_avatar.dart';
+import 'package:mess_pilot/features/cost/data/models/cost_model.dart';
+import 'package:mess_pilot/features/meal/data/models/meal_admin_model.dart';
+import 'package:mess_pilot/features/deposit/domain/entities/deposit_entity.dart';
+import 'package:mess_pilot/features/deposit/domain/entities/deposit_mess_summary_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

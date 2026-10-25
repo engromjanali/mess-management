@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:clean_boilerplate/config/route/app_router.dart';
-import 'package:clean_boilerplate/config/util/app_constants.dart';
-import 'package:clean_boilerplate/config/util/dimensions.dart';
-import 'package:clean_boilerplate/config/util/styles.dart';
-import 'package:clean_boilerplate/core/assets/assets.gen.dart';
-import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
-import 'package:clean_boilerplate/core/widgets/app_logo.dart';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
-import 'package:clean_boilerplate/features/settings/domain/entities/theme_mode.dart';
-import 'package:clean_boilerplate/features/settings/presentation/bloc/localization/localization_bloc.dart';
-import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_bloc.dart';
-import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_event.dart';
+import 'package:mess_pilot/config/route/app_router.dart';
+import 'package:mess_pilot/config/util/app_constants.dart';
+import 'package:mess_pilot/config/util/dimensions.dart';
+import 'package:mess_pilot/config/util/styles.dart';
+import 'package:mess_pilot/core/assets/assets.gen.dart';
+import 'package:mess_pilot/core/extensions/context_extensions.dart';
+import 'package:mess_pilot/core/widgets/app_logo.dart';
+import 'package:mess_pilot/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
+import 'package:mess_pilot/features/settings/domain/entities/theme_mode.dart';
+import 'package:mess_pilot/features/settings/presentation/bloc/localization/localization_bloc.dart';
+import 'package:mess_pilot/features/settings/presentation/bloc/theme/theme_bloc.dart';
+import 'package:mess_pilot/features/settings/presentation/bloc/theme/theme_event.dart';
 
 /// A single navigation entry rendered in the [DashboardTopBar].
 class DashboardNavItem {

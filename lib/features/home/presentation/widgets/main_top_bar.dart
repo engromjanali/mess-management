@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_top_bar.dart';
+import 'package:mess_pilot/features/home/presentation/widgets/dashboard_top_bar.dart';
 
 /// Desktop / big-tablet app bar with the main sections, for screens that use
 /// the shared layout. [active] marks the current section; screens outside the

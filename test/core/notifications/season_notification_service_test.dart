@@ -1,6 +1,6 @@
-import 'package:clean_boilerplate/config/util/app_constants.dart';
-import 'package:clean_boilerplate/core/network/api_client.dart';
-import 'package:clean_boilerplate/core/notifications/season_notification_service.dart';
+import 'package:mess_pilot/config/util/app_constants.dart';
+import 'package:mess_pilot/core/network/api_client.dart';
+import 'package:mess_pilot/core/notifications/season_notification_service.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';

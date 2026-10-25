@@ -1,6 +1,6 @@
-import 'package:clean_boilerplate/config/util/app_constants.dart';
-import 'package:clean_boilerplate/core/network/api_client.dart';
-import 'package:clean_boilerplate/features/splash/data/models/config_model.dart';
+import 'package:mess_pilot/config/util/app_constants.dart';
+import 'package:mess_pilot/core/network/api_client.dart';
+import 'package:mess_pilot/features/splash/data/models/config_model.dart';
 import 'package:injectable/injectable.dart';
 
 @LazySingleton()

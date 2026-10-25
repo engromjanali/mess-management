@@ -1,10 +1,10 @@
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
-import 'package:clean_boilerplate/config/util/app_constants.dart';
-import 'package:clean_boilerplate/core/network/api_client.dart';
-import 'package:clean_boilerplate/features/cost/domain/entities/cost_entity.dart';
-import 'package:clean_boilerplate/features/cost/data/models/cost_model.dart';
-import 'package:clean_boilerplate/features/cost/data/datasources/interfaces/cost_data_source.dart';
+import 'package:mess_pilot/config/util/app_constants.dart';
+import 'package:mess_pilot/core/network/api_client.dart';
+import 'package:mess_pilot/features/cost/domain/entities/cost_entity.dart';
+import 'package:mess_pilot/features/cost/data/models/cost_model.dart';
+import 'package:mess_pilot/features/cost/data/datasources/interfaces/cost_data_source.dart';
 
 /// Cost data source backed by the Django API (active season only).
 ///

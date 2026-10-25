@@ -1,26 +1,26 @@
-import 'package:clean_boilerplate/core/helpers/notification_helper.dart';
+import 'package:mess_pilot/core/helpers/notification_helper.dart';
 
-import 'package:clean_boilerplate/core/notifications/season_notification_service.dart';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_state.dart';
-import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_event.dart';
-import 'package:clean_boilerplate/features/splash/presentation/bloc/splash_bloc.dart';
+import 'package:mess_pilot/core/notifications/season_notification_service.dart';
+import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
+import 'package:mess_pilot/features/settings/presentation/bloc/theme/theme_event.dart';
+import 'package:mess_pilot/features/splash/presentation/bloc/splash_bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:go_router/go_router.dart';
-import 'package:clean_boilerplate/config/route/app_router.dart';
-import 'package:clean_boilerplate/config/theme/app_theme.dart';
-import 'package:clean_boilerplate/core/di/injection.dart';
-import 'package:clean_boilerplate/core/helpers/auth_helper.dart';
-import 'package:clean_boilerplate/core/network/api_client.dart';
-import 'package:clean_boilerplate/core/role/role_cubit.dart';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:clean_boilerplate/features/auth/presentation/bloc/auth_event.dart';
-import 'package:clean_boilerplate/features/settings/presentation/bloc/localization/localization_bloc.dart';
-import 'package:clean_boilerplate/features/settings/presentation/bloc/theme/theme_bloc.dart';
-import 'package:clean_boilerplate/features/splash/presentation/widgets/app_gate.dart';
-import 'package:clean_boilerplate/l10n/gen/app_localizations.dart';
+import 'package:mess_pilot/config/route/app_router.dart';
+import 'package:mess_pilot/config/theme/app_theme.dart';
+import 'package:mess_pilot/core/di/injection.dart';
+import 'package:mess_pilot/core/helpers/auth_helper.dart';
+import 'package:mess_pilot/core/network/api_client.dart';
+import 'package:mess_pilot/core/role/role_cubit.dart';
+import 'package:mess_pilot/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:mess_pilot/features/auth/presentation/bloc/auth_event.dart';
+import 'package:mess_pilot/features/settings/presentation/bloc/localization/localization_bloc.dart';
+import 'package:mess_pilot/features/settings/presentation/bloc/theme/theme_bloc.dart';
+import 'package:mess_pilot/features/splash/presentation/widgets/app_gate.dart';
+import 'package:mess_pilot/l10n/gen/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

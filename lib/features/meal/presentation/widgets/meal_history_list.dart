@@ -1,11 +1,11 @@
-import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
+import 'package:mess_pilot/core/widgets/app_state_view.dart';
 import 'package:flutter/material.dart';
-import 'package:clean_boilerplate/config/util/dimensions.dart';
-import 'package:clean_boilerplate/config/util/styles.dart';
-import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
-import 'package:clean_boilerplate/features/home/presentation/widgets/dashboard_formatters.dart';
-import 'package:clean_boilerplate/features/meal/domain/entities/meal_entity.dart';
-import 'package:clean_boilerplate/features/meal/presentation/widgets/meal_formatters.dart';
+import 'package:mess_pilot/config/util/dimensions.dart';
+import 'package:mess_pilot/config/util/styles.dart';
+import 'package:mess_pilot/core/extensions/context_extensions.dart';
+import 'package:mess_pilot/features/home/presentation/widgets/dashboard_formatters.dart';
+import 'package:mess_pilot/features/meal/domain/entities/meal_entity.dart';
+import 'package:mess_pilot/features/meal/presentation/widgets/meal_formatters.dart';
 
 /// Scrollable-free meal history card: one row per day with the B/L/D breakdown,
 /// the day's meal total and its cost, or a message when there are no meals.

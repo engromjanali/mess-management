@@ -4,7 +4,7 @@ Flutter app for managing mess membership, seasons, meals, deposits, shopping cos
 shared funds, notices, and opinions. The Django API lives in the sibling
 `mm_backend` project.
 
-The Dart package name remains `clean_boilerplate`; use that name in package imports.
+The Dart package name is `mess_pilot`; use that name in package imports.
 
 ## Start locally
 

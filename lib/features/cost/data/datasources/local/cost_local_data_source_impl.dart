@@ -1,7 +1,7 @@
-import 'package:clean_boilerplate/core/errors/exceptions.dart';
-import 'package:clean_boilerplate/features/cost/domain/entities/cost_entity.dart';
-import 'package:clean_boilerplate/features/cost/data/models/cost_model.dart';
-import 'package:clean_boilerplate/features/cost/data/datasources/interfaces/cost_data_source.dart';
+import 'package:mess_pilot/core/errors/exceptions.dart';
+import 'package:mess_pilot/features/cost/domain/entities/cost_entity.dart';
+import 'package:mess_pilot/features/cost/data/models/cost_model.dart';
+import 'package:mess_pilot/features/cost/data/datasources/interfaces/cost_data_source.dart';
 
 /// In-memory mock for the Cost/cost feature (not registered for DI; the app
 /// uses `CostRemoteDataSourceImpl`). Handy for offline demos and tests.

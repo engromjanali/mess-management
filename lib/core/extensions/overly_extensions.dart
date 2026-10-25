@@ -1,10 +1,10 @@
-import 'package:clean_boilerplate/config/util/dimensions.dart';
-import 'package:clean_boilerplate/core/errors/user_error_message.dart';
-import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
-import 'package:clean_boilerplate/core/extensions/screen_matres_extensions.dart';
-import 'package:clean_boilerplate/core/helpers/responsive_helper.dart';
-import 'package:clean_boilerplate/core/widgets/app_snackbar_content.dart';
-import 'package:clean_boilerplate/core/widgets/app_desktop_toast.dart';
+import 'package:mess_pilot/config/util/dimensions.dart';
+import 'package:mess_pilot/core/errors/user_error_message.dart';
+import 'package:mess_pilot/core/extensions/context_extensions.dart';
+import 'package:mess_pilot/core/extensions/screen_matres_extensions.dart';
+import 'package:mess_pilot/core/helpers/responsive_helper.dart';
+import 'package:mess_pilot/core/widgets/app_snackbar_content.dart';
+import 'package:mess_pilot/core/widgets/app_desktop_toast.dart';
 import 'package:flutter/material.dart';
 
 /// SnackBar status types

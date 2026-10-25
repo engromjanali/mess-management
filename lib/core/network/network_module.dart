@@ -1,4 +1,4 @@
-import 'package:clean_boilerplate/config/util/app_constants.dart';
+import 'package:mess_pilot/config/util/app_constants.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';

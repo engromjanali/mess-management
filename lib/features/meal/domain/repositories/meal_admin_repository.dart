@@ -1,5 +1,5 @@
-import 'package:clean_boilerplate/config/util/result.dart';
-import 'package:clean_boilerplate/features/meal/domain/entities/meal_member_entity.dart';
+import 'package:mess_pilot/config/util/result.dart';
+import 'package:mess_pilot/features/meal/domain/entities/meal_member_entity.dart';
 
 /// Admin meal-management repository contract (domain abstraction).
 ///

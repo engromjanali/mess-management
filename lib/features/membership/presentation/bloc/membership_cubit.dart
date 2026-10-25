@@ -1,6 +1,6 @@
-import 'package:clean_boilerplate/core/errors/exceptions.dart';
-import 'package:clean_boilerplate/features/membership/data/membership_api_service.dart';
-import 'package:clean_boilerplate/features/membership/domain/entities/membership_status_entity.dart';
+import 'package:mess_pilot/core/errors/exceptions.dart';
+import 'package:mess_pilot/features/membership/data/membership_api_service.dart';
+import 'package:mess_pilot/features/membership/domain/entities/membership_status_entity.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 sealed class MembershipState {

@@ -1,9 +1,9 @@
-import 'package:clean_boilerplate/core/widgets/app_state_view.dart';
+import 'package:mess_pilot/core/widgets/app_state_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
-import 'package:clean_boilerplate/features/splash/presentation/bloc/splash_bloc.dart';
-import 'package:clean_boilerplate/features/splash/presentation/widgets/app_gate.dart';
+import 'package:mess_pilot/core/extensions/context_extensions.dart';
+import 'package:mess_pilot/features/splash/presentation/bloc/splash_bloc.dart';
+import 'package:mess_pilot/features/splash/presentation/widgets/app_gate.dart';
 
 /// Shown when this app version is older than the admin's minimum version:
 /// the app can't be used until it's updated.

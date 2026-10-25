@@ -1,8 +1,8 @@
-import 'package:clean_boilerplate/config/theme/app_theme.dart';
-import 'package:clean_boilerplate/core/widgets/support_channels_view.dart';
-import 'package:clean_boilerplate/features/splash/data/models/config_model.dart';
-import 'package:clean_boilerplate/features/splash/domain/entities/support_channel_entity.dart';
-import 'package:clean_boilerplate/l10n/gen/app_localizations.dart';
+import 'package:mess_pilot/config/theme/app_theme.dart';
+import 'package:mess_pilot/core/widgets/support_channels_view.dart';
+import 'package:mess_pilot/features/splash/data/models/config_model.dart';
+import 'package:mess_pilot/features/splash/domain/entities/support_channel_entity.dart';
+import 'package:mess_pilot/l10n/gen/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

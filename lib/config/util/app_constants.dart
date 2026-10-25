@@ -1,4 +1,4 @@
-import 'package:clean_boilerplate/features/settings/domain/entities/language_model.dart';
+import 'package:mess_pilot/features/settings/domain/entities/language_model.dart';
 import 'package:flutter/foundation.dart';
 
 /// Application-level constants
@@ -8,6 +8,8 @@ class AppConstants {
   // App info
   static const String appName = 'Mess Pilot';
   static const String appVersion = '1.0.0';
+
+  // static const String baseUrl = 'https://mm-backend-kappa.vercel.app';
 
   static String get baseUrl {
     const configuredUrl = String.fromEnvironment('API_BASE_URL');

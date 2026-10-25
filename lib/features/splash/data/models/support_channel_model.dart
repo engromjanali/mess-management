@@ -1,4 +1,4 @@
-import 'package:clean_boilerplate/features/splash/domain/entities/support_channel_entity.dart';
+import 'package:mess_pilot/features/splash/domain/entities/support_channel_entity.dart';
 
 class SupportChannelModel extends SupportChannelEntity {
   const SupportChannelModel({required super.name, required super.kind, required super.destination, required super.url, super.logoUrl});

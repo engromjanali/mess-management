@@ -1,12 +1,12 @@
-import 'package:clean_boilerplate/config/util/result.dart';
-import 'package:clean_boilerplate/core/errors/failures.dart';
-import 'package:clean_boilerplate/features/cost/domain/entities/cost_entity.dart';
-import 'package:clean_boilerplate/features/cost/domain/repositories/cost_repository.dart';
-import 'package:clean_boilerplate/features/cost/domain/usecases/cost_usecases.dart';
-import 'package:clean_boilerplate/features/cost/presentation/bloc/cost_bloc.dart';
-import 'package:clean_boilerplate/features/cost/presentation/bloc/cost_event.dart';
-import 'package:clean_boilerplate/features/cost/presentation/bloc/cost_state.dart';
-import 'package:clean_boilerplate/features/cost/presentation/widgets/cost_formatters.dart';
+import 'package:mess_pilot/config/util/result.dart';
+import 'package:mess_pilot/core/errors/failures.dart';
+import 'package:mess_pilot/features/cost/domain/entities/cost_entity.dart';
+import 'package:mess_pilot/features/cost/domain/repositories/cost_repository.dart';
+import 'package:mess_pilot/features/cost/domain/usecases/cost_usecases.dart';
+import 'package:mess_pilot/features/cost/presentation/bloc/cost_bloc.dart';
+import 'package:mess_pilot/features/cost/presentation/bloc/cost_event.dart';
+import 'package:mess_pilot/features/cost/presentation/bloc/cost_state.dart';
+import 'package:mess_pilot/features/cost/presentation/widgets/cost_formatters.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// In-memory repository whose calls can be made to fail like the backend does.

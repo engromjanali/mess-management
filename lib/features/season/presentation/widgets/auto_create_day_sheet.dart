@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:clean_boilerplate/config/util/dimensions.dart';
-import 'package:clean_boilerplate/config/util/styles.dart';
-import 'package:clean_boilerplate/core/extensions/context_extensions.dart';
-import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
-import 'package:clean_boilerplate/features/season/domain/entities/auto_create_season_entity.dart';
+import 'package:mess_pilot/config/util/dimensions.dart';
+import 'package:mess_pilot/config/util/styles.dart';
+import 'package:mess_pilot/core/extensions/context_extensions.dart';
+import 'package:mess_pilot/core/extensions/overly_extensions.dart';
+import 'package:mess_pilot/features/season/domain/entities/auto_create_season_entity.dart';
 
 /// Picks the auto-create day: a calendar-like grid of days 1–28 plus
 /// "Month end". Resolves to the chosen day (`AutoCreateSeasonEntity.monthEnd`

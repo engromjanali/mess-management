@@ -1,10 +1,10 @@
-import 'package:clean_boilerplate/config/theme/app_theme.dart';
-import 'package:clean_boilerplate/core/di/injection.dart';
-import 'package:clean_boilerplate/core/extensions/overly_extensions.dart';
-import 'package:clean_boilerplate/core/network/api_client.dart';
-import 'package:clean_boilerplate/core/widgets/app_snackbar_content.dart';
-import 'package:clean_boilerplate/features/membership/presentation/screens/edit_mess_screen.dart';
-import 'package:clean_boilerplate/l10n/gen/app_localizations.dart';
+import 'package:mess_pilot/config/theme/app_theme.dart';
+import 'package:mess_pilot/core/di/injection.dart';
+import 'package:mess_pilot/core/extensions/overly_extensions.dart';
+import 'package:mess_pilot/core/network/api_client.dart';
+import 'package:mess_pilot/core/widgets/app_snackbar_content.dart';
+import 'package:mess_pilot/features/membership/presentation/screens/edit_mess_screen.dart';
+import 'package:mess_pilot/l10n/gen/app_localizations.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

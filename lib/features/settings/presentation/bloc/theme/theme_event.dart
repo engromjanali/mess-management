@@ -1,4 +1,4 @@
-import 'package:clean_boilerplate/features/settings/domain/entities/theme_mode.dart';
+import 'package:mess_pilot/features/settings/domain/entities/theme_mode.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'theme_event.freezed.dart';

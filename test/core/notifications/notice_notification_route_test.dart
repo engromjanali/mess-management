@@ -1,5 +1,5 @@
-import 'package:clean_boilerplate/core/helpers/notification_helper.dart';
-import 'package:clean_boilerplate/config/route/app_router.dart';
+import 'package:mess_pilot/core/helpers/notification_helper.dart';
+import 'package:mess_pilot/config/route/app_router.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

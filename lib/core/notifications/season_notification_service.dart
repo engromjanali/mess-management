@@ -1,8 +1,8 @@
-import 'package:clean_boilerplate/core/helpers/notification_helper.dart';
+import 'package:mess_pilot/core/helpers/notification_helper.dart';
 import 'dart:async';
 
-import 'package:clean_boilerplate/config/util/app_constants.dart';
-import 'package:clean_boilerplate/core/network/api_client.dart';
+import 'package:mess_pilot/config/util/app_constants.dart';
+import 'package:mess_pilot/core/network/api_client.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';

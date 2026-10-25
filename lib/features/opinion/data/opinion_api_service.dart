@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:clean_boilerplate/config/util/app_constants.dart';
-import 'package:clean_boilerplate/core/network/api_client.dart';
-import 'package:clean_boilerplate/features/opinion/domain/entities/opinion_entity.dart';
+import 'package:mess_pilot/config/util/app_constants.dart';
+import 'package:mess_pilot/core/network/api_client.dart';
+import 'package:mess_pilot/features/opinion/domain/entities/opinion_entity.dart';
 
 typedef OpinionOverview = ({String messId, bool canManage, bool canCreate, int? nextPage, List<OpinionPeriodEntity> periods});
 typedef OpinionMessagePage = ({int? nextPage, List<AnonymousOpinionEntity> opinions});

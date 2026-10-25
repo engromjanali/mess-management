@@ -1,4 +1,4 @@
-import 'package:clean_boilerplate/features/membership/domain/helpers/mess_map_uri.dart';
+import 'package:mess_pilot/features/membership/domain/helpers/mess_map_uri.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

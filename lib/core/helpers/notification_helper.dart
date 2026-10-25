@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:clean_boilerplate/config/route/app_router.dart';
-import 'package:clean_boilerplate/core/helpers/auth_helper.dart';
+import 'package:mess_pilot/config/route/app_router.dart';
+import 'package:mess_pilot/core/helpers/auth_helper.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';

@@ -1,5 +1,5 @@
-import 'package:clean_boilerplate/features/cost/domain/entities/cost_entity.dart';
-import 'package:clean_boilerplate/features/cost/data/models/cost_model.dart';
+import 'package:mess_pilot/features/cost/domain/entities/cost_entity.dart';
+import 'package:mess_pilot/features/cost/data/models/cost_model.dart';
 
 /// Contract for any source that can provide & mutate Cost/cost entries.
 abstract class CostDataSource {

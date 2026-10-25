@@ -1,5 +1,5 @@
-import 'package:clean_boilerplate/features/auth/data/models/user_model.dart';
-import 'package:clean_boilerplate/features/auth/data/datasources/interfaces/auth_data_source.dart';
+import 'package:mess_pilot/features/auth/data/models/user_model.dart';
+import 'package:mess_pilot/features/auth/data/datasources/interfaces/auth_data_source.dart';
 
 /// Local data source implementation for authentication
 ///

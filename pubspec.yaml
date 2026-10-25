@@ -1,6 +1,6 @@
 # name: mess_pilot
 # description: A digital solution for your mess.
-name: clean_boilerplate
+name: mess_pilot
 description: A Clean Architecture Flutter boilerplate with BLoC and code generation
 publish_to: 'none'
 version: 1.0.0+0

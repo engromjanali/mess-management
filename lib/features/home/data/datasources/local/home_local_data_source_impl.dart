@@ -1,10 +1,10 @@
-import 'package:clean_boilerplate/core/errors/exceptions.dart';
+import 'package:mess_pilot/core/errors/exceptions.dart';
 import 'package:injectable/injectable.dart';
 import 'package:dio/dio.dart';
-import 'package:clean_boilerplate/config/util/app_constants.dart';
-import 'package:clean_boilerplate/core/network/api_client.dart';
-import 'package:clean_boilerplate/features/home/data/models/dashboard_model.dart';
-import 'package:clean_boilerplate/features/home/data/datasources/interfaces/home_data_source.dart';
+import 'package:mess_pilot/config/util/app_constants.dart';
+import 'package:mess_pilot/core/network/api_client.dart';
+import 'package:mess_pilot/features/home/data/models/dashboard_model.dart';
+import 'package:mess_pilot/features/home/data/datasources/interfaces/home_data_source.dart';
 
 /// Live mess, personal and member totals for the selected season.
 @LazySingleton(as: HomeDataSource)
