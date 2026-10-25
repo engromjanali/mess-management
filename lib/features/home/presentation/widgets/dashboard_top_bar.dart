@@ -214,7 +214,7 @@ class _LocaleMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final locale = context.watch<LocalizationBloc>().state.locale;
-    final currentLanguage = AppConstants.languages.firstWhere((language) => language.code == locale.languageCode, orElse: () => AppConstants.languages.first);
+    final currentLanguage = AppConstants.languages.firstWhere((language) => language.code == locale.languageCode, orElse: () => AppConstants.languages.firstWhere((language) => language.code == AppConstants.defaultLanguageCode));
 
     return PopupMenuButton<String>(
       tooltip: context.local.selectLanguage,

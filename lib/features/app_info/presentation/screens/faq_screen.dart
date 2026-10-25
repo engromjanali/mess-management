@@ -2,23 +2,19 @@ import 'package:mess_pilot/core/widgets/app_page_scroll_view.dart';
 import 'package:mess_pilot/core/widgets/app_state_view.dart';
 import 'package:mess_pilot/core/widgets/app_loader.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/core/di/injection.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
 import 'package:mess_pilot/core/usecase/usecase.dart';
 import 'package:mess_pilot/core/widgets/home_back_button.dart';
-import 'package:mess_pilot/core/widgets/support_channels_view.dart';
 import 'package:mess_pilot/features/app_info/domain/entities/faq_entity.dart';
 import 'package:mess_pilot/features/app_info/domain/usecases/app_info_usecases.dart';
 import 'package:mess_pilot/features/app_info/presentation/widgets/app_info_error_view.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/main_page_body.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/web_profile_drawer.dart';
-import 'package:mess_pilot/features/splash/presentation/bloc/splash_bloc.dart';
 
-/// Frequently asked questions from Django admin, in the app's language, with
-/// the support channels (from the app config) below them.
+/// Frequently asked questions from Django admin, in the app's language.
 class FaqScreen extends StatefulWidget {
   const FaqScreen({super.key});
 
@@ -72,8 +68,6 @@ class _FaqList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.customThemeColors;
-    final supportChannels = context.watch<SplashBloc>().state.maybeWhen(loaded: (config) => config.availableSupportChannels, orElse: () => null);
     return AppPageScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
@@ -92,12 +86,6 @@ class _FaqList extends StatelessWidget {
                       padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
                       child: _FaqTile(faq: faq),
                     ),
-                if (supportChannels != null && supportChannels.isNotEmpty) ...[
-                  const SizedBox(height: Dimensions.paddingSizeLarge),
-                  Text(context.local.support, style: AppTextStyles.sfProRoundedSemiBold.copyWith(color: colors.textPrimaryColor)),
-                  const SizedBox(height: Dimensions.paddingSizeSmall),
-                  SupportChannelsView(channels: supportChannels),
-                ],
               ],
             ),
           ),

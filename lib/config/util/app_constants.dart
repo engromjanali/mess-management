@@ -106,6 +106,7 @@ class AppConstants {
   static const String refreshTokenKey = 'refresh_token';
   static const String guestUserIdKey = 'guest_user_id';
   static const String languageCodeKey = 'language_code';
+  static const String defaultLanguageCode = 'en';
 
   // Pagination
   static const int paginationLimit = 20;

@@ -26,8 +26,7 @@ class SettingsLocalDataSourceImpl implements SettingsDataSource {
 
   @override
   Future<String> getLocale() async {
-    // Use first language from AppConstants.languages as default
-    return _prefs.getString(_localeKey) ?? _prefs.getString('locale_code') ?? AppConstants.languages.first.code;
+    return _prefs.getString(_localeKey) ?? _prefs.getString('locale_code') ?? AppConstants.defaultLanguageCode;
   }
 
   @override

@@ -79,7 +79,7 @@ class ApiClient {
     _token = _sharedPreferences.getString(AppConstants.tokenKey);
     _refreshToken = _sharedPreferences.getString(AppConstants.refreshTokenKey);
     _guestUserId = _sharedPreferences.getString(AppConstants.guestUserIdKey);
-    _languageCode = _sharedPreferences.getString(AppConstants.languageCodeKey) ?? _sharedPreferences.getString('locale_code') ?? 'en';
+    _languageCode = _sharedPreferences.getString(AppConstants.languageCodeKey) ?? _sharedPreferences.getString('locale_code') ?? AppConstants.defaultLanguageCode;
 
     _updateHeaders();
   }
