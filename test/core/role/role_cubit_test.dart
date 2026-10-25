@@ -22,7 +22,7 @@ void main() {
     for (final role in ['member', 'manager', 'acting_manager', 'admin', 'unknown']) {
       final auth = _TestAuthBloc(signedIn(role));
       final cubit = RoleCubit(auth);
-      expect(cubit.state.isAdmin, role == 'manager' || role == 'acting_manager');
+      expect(cubit.state.canManage, role == 'manager' || role == 'acting_manager');
       await cubit.close();
       await auth.close();
     }
@@ -31,17 +31,17 @@ void main() {
   test('Profile changes, ownership transfers and logout replace the current role', () async {
     final auth = _TestAuthBloc(signedIn('member'));
     final cubit = RoleCubit(auth);
-    final changes = expectLater(cubit.stream, emitsInOrder([UserRole.admin, UserRole.user, UserRole.admin, UserRole.user]));
+    final changes = expectLater(cubit.stream, emitsInOrder([UserRole.manager, UserRole.member, UserRole.actingManager, UserRole.member]));
     auth.update(signedIn('manager'));
     auth.update(signedIn('member'));
     auth.update(signedIn('acting_manager'));
     auth.update(const AuthState.unauthenticated());
     await changes;
-    expect(cubit.state, UserRole.user);
+    expect(cubit.state, UserRole.member);
     await cubit.close();
     auth.update(signedIn('manager'));
     await Future<void>.delayed(Duration.zero);
-    expect(cubit.state, UserRole.user);
+    expect(cubit.state, UserRole.member);
     await auth.close();
   });
 
@@ -49,7 +49,7 @@ void main() {
     for (final state in [const AuthState.initial(), const AuthState.loading(), const AuthState.error('Failed')]) {
       final auth = _TestAuthBloc(state);
       final cubit = RoleCubit(auth);
-      expect(cubit.state.isAdmin, isFalse);
+      expect(cubit.state.canManage, isFalse);
       await cubit.close();
       await auth.close();
     }

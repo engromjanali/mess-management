@@ -150,17 +150,17 @@ final router = GoRouter(
       ],
     ),
 
-    // Admin: add meal for all members
+    // Manager / acting manager: add meal for all members
     GoRoute(path: AppRoutes.addMeal, name: 'addMeal', builder: (context, state) => const MealEntryScreen()),
 
     GoRoute(path: AppRoutes.mealList, name: 'mealList', builder: (context, state) => const MealListScreen()),
 
-    // Fund route (role-aware: admin manages, user views the list)
+    // Fund route (role-aware: managers manage, members view the list)
     GoRoute(path: AppRoutes.funds, name: 'funds', builder: (context, state) => const FundScreen()),
 
     GoRoute(path: AppRoutes.notifications, name: 'notifications', builder: (context, state) => NotificationScreen(noticeId: state.uri.queryParameters['notice_id'])),
 
-    // Notice route (role-aware: admin manages, user views the list)
+    // Notice route (role-aware: managers manage, members view the list)
     GoRoute(path: AppRoutes.notices, name: 'notices', builder: (context, state) => const NoticeScreen(), routes: [
       GoRoute(path: ':id', name: 'noticeDetails', builder: (context, state) => NoticeDetailsScreen(noticeId: state.pathParameters['id'], notice: state.extra is NoticeEntity ? state.extra as NoticeEntity : null)),
     ]),
@@ -197,7 +197,7 @@ final router = GoRouter(
 
     GoRoute(path: AppRoutes.messLeadership, name: 'messLeadership', builder: (context, state) => const MessLeadershipScreen()),
 
-    // Season management (admin: start, end, delete seasons)
+    // Season management (manager / acting manager: start, end, delete seasons)
     GoRoute(path: AppRoutes.seasons, name: 'seasons', builder: (context, state) => const SeasonManagementScreen()),
 
     // Add more routes as your app grows

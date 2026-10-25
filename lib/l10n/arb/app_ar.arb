@@ -62,8 +62,6 @@
   "logoutConfirm": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
   "cancel": "إلغاء",
   "notSignedIn": "لم تقم بتسجيل الدخول",
-  "roleAdmin": "مسؤول",
-  "roleUser": "مستخدم",
   "messOverview": "نظرة عامة على السكن",
   "totalCredit": "إجمالي الإيداع",
   "totalDebit": "إجمالي السحب",
@@ -246,7 +244,6 @@
   "noMatchingRecords": "لا يوجد ما يطابق هذه الفلاتر.",
   "seasonManagement": "إدارة المواسم",
   "seasonManagementSubtitle": "إنشاء المواسم وتبديلها وإنهاؤها وحذفها",
-  "seasonManagementAdminOnly": "يمكن للمدير فقط إدارة المواسم.",
   "seasonInUse": "الموسم المستخدم",
   "noSeasonInUse": "لا يوجد موسم مستخدم. بدّل إلى موسم أو أنشئ موسمًا جديدًا.",
   "allSeasons": "كل المواسم",
@@ -624,5 +621,6 @@
   "membershipSelectMess": "اختر سكنًا لعرض مواسمه.",
   "membershipAllMesses": "كل المساكن",
   "membershipSeasonCount": "المواسم: {count}",
-  "@membershipSeasonCount": {"placeholders": {"count": {"type": "int"}}}
+  "@membershipSeasonCount": {"placeholders": {"count": {"type": "int"}}},
+  "seasonManagementManagerOnly": "يمكن للمدير أو المدير بالإنابة فقط إدارة المواسم."
 }

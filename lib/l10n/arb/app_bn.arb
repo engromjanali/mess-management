@@ -62,8 +62,6 @@
   "logoutConfirm": "আপনি কি নিশ্চিত যে লগআউট করতে চান?",
   "cancel": "বাতিল",
   "notSignedIn": "আপনি লগইন করেননি",
-  "roleAdmin": "অ্যাডমিন",
-  "roleUser": "ব্যবহারকারী",
   "messOverview": "মেসের সারসংক্ষেপ",
   "totalCredit": "মোট জমা",
   "totalDebit": "মোট উত্তোলন",
@@ -246,7 +244,6 @@
   "noMatchingRecords": "এই ফিল্টারে কিছু পাওয়া যায়নি।",
   "seasonManagement": "সিজন ব্যবস্থাপনা",
   "seasonManagementSubtitle": "সিজন তৈরি, বদল, শেষ ও মুছে ফেলুন",
-  "seasonManagementAdminOnly": "শুধু ম্যানেজার সিজন পরিচালনা করতে পারেন।",
   "seasonInUse": "ব্যবহৃত সিজন",
   "noSeasonInUse": "কোনো সিজন ব্যবহার হচ্ছে না। একটি সিজনে বদলান বা নতুন সিজন তৈরি করুন।",
   "allSeasons": "সব সিজন",
@@ -624,5 +621,6 @@
   "membershipSelectMess": "সিজন দেখতে একটি মেস নির্বাচন করুন।",
   "membershipAllMesses": "সব মেস",
   "membershipSeasonCount": "সিজন: {count}",
-  "@membershipSeasonCount": {"placeholders": {"count": {"type": "int"}}}
+  "@membershipSeasonCount": {"placeholders": {"count": {"type": "int"}}},
+  "seasonManagementManagerOnly": "শুধু ম্যানেজার বা ভারপ্রাপ্ত ম্যানেজার সিজন পরিচালনা করতে পারেন।"
 }

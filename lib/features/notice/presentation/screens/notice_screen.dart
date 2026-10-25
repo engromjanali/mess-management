@@ -31,8 +31,8 @@ import 'package:mess_pilot/features/notice/presentation/widgets/notice_form_shee
 
 /// Notice board.
 ///
-/// * **Admin** — publish, edit, pin and delete notices.
-/// * **User** — a read-only list of notices, pinned first.
+/// * **Manager / acting manager** — publish, edit, pin and delete notices.
+/// * **Member** — a read-only list of notices, pinned first.
 ///
 /// Every action shows progress (the list stays visible and actions are
 /// disabled meanwhile) and ends with a success or a specific error message.
@@ -41,9 +41,9 @@ class NoticeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isAdmin = context.read<RoleCubit>().state.isAdmin;
+    final canManage = context.read<RoleCubit>().state.canManage;
     return BlocProvider<NoticeBloc>(
-      create: (_) => getIt<NoticeBloc>()..add(NoticeEvent.started(isAdmin: isAdmin)),
+      create: (_) => getIt<NoticeBloc>()..add(NoticeEvent.started(isAdmin: canManage)),
       child: const _NoticeView(),
     );
   }
@@ -69,7 +69,7 @@ class _NoticeView extends StatelessWidget {
     // Reload when the authenticated role changes.
     return BlocListener<RoleCubit, UserRole>(
       listenWhen: (prev, curr) => prev != curr,
-      listener: (context, role) => context.read<NoticeBloc>().add(NoticeEvent.started(isAdmin: role.isAdmin)),
+      listener: (context, role) => context.read<NoticeBloc>().add(NoticeEvent.started(isAdmin: role.canManage)),
       child: Scaffold(
         backgroundColor: context.theme.scaffoldBackgroundColor,
         endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
@@ -121,8 +121,8 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isAdmin = context.read<RoleCubit>().state.isAdmin;
-    return AppErrorState(error: message, onRetry: () => context.read<NoticeBloc>().add(NoticeEvent.started(isAdmin: isAdmin)));
+    final canManage = context.read<RoleCubit>().state.canManage;
+    return AppErrorState(error: message, onRetry: () => context.read<NoticeBloc>().add(NoticeEvent.started(isAdmin: canManage)));
   }
 }
 

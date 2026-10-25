@@ -30,7 +30,7 @@ import 'package:mess_pilot/features/fund/presentation/widgets/fund_tile.dart';
 
 /// Fund screen — the shared mess fund (all seasons of the mess).
 ///
-/// * **Admin** (manager / acting manager) — add / edit / delete fund entries.
+/// * **Manager / acting manager** — add / edit / delete fund entries.
 /// * **User** — a read-only list of the same entries.
 ///
 /// Both can browse by date (a single day, a custom range, or all time).
@@ -39,9 +39,9 @@ class FundScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isAdmin = context.read<RoleCubit>().state.isAdmin;
+    final canManage = context.read<RoleCubit>().state.canManage;
     return BlocProvider<FundBloc>(
-      create: (_) => getIt<FundBloc>()..add(FundEvent.started(isAdmin: isAdmin)),
+      create: (_) => getIt<FundBloc>()..add(FundEvent.started(isAdmin: canManage)),
       child: const _FundView(),
     );
   }
@@ -72,7 +72,7 @@ class _FundView extends StatelessWidget {
     // Reload when the authenticated role changes.
     return BlocListener<RoleCubit, UserRole>(
       listenWhen: (prev, curr) => prev != curr,
-      listener: (context, role) => context.read<FundBloc>().add(FundEvent.started(isAdmin: role.isAdmin)),
+      listener: (context, role) => context.read<FundBloc>().add(FundEvent.started(isAdmin: role.canManage)),
       child: Scaffold(
         backgroundColor: context.theme.scaffoldBackgroundColor,
         endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
@@ -106,8 +106,8 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isAdmin = context.read<RoleCubit>().state.isAdmin;
-    return AppErrorState(error: message, onRetry: () => context.read<FundBloc>().add(FundEvent.started(isAdmin: isAdmin)));
+    final canManage = context.read<RoleCubit>().state.canManage;
+    return AppErrorState(error: message, onRetry: () => context.read<FundBloc>().add(FundEvent.started(isAdmin: canManage)));
   }
 }
 

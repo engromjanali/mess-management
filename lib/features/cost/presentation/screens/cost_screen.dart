@@ -30,17 +30,17 @@ import 'package:mess_pilot/features/cost/presentation/widgets/cost_tile.dart';
 
 /// Cost (bazar) screen — the active season's shopping entries.
 ///
-/// * **Admin** — two tabs: *Cost List* (browse, edit, delete) and
+/// * **Manager / acting manager** — two tabs: *Cost List* (browse, edit, delete) and
 ///   *Cost Entry* (record a new Cost with multiple products).
-/// * **User** — the read-only *Cost List* only.
+/// * **Member** — the read-only *Cost List* only.
 class CostScreen extends StatelessWidget {
   const CostScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isAdmin = context.read<RoleCubit>().state.isAdmin;
+    final canManage = context.read<RoleCubit>().state.canManage;
     return BlocProvider<CostBloc>(
-      create: (_) => getIt<CostBloc>()..add(CostEvent.started(isAdmin: isAdmin)),
+      create: (_) => getIt<CostBloc>()..add(CostEvent.started(isAdmin: canManage)),
       child: const _CostView(),
     );
   }
@@ -66,7 +66,7 @@ class _CostViewState extends State<_CostView> {
       listenWhen: (prev, curr) => prev != curr,
       listener: (context, role) {
         setState(() => _tab = _CostTab.list);
-        context.read<CostBloc>().add(CostEvent.started(isAdmin: role.isAdmin));
+        context.read<CostBloc>().add(CostEvent.started(isAdmin: role.canManage));
       },
       child: Scaffold(
         backgroundColor: context.theme.scaffoldBackgroundColor,
@@ -325,8 +325,8 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isAdmin = context.read<RoleCubit>().state.isAdmin;
-    return AppErrorState(error: message, onRetry: () => context.read<CostBloc>().add(CostEvent.started(isAdmin: isAdmin)));
+    final canManage = context.read<RoleCubit>().state.canManage;
+    return AppErrorState(error: message, onRetry: () => context.read<CostBloc>().add(CostEvent.started(isAdmin: canManage)));
   }
 }
 

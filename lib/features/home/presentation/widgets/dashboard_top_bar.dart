@@ -48,7 +48,7 @@ class DashboardTopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
     final user = context.watch<AuthBloc>().state.maybeWhen(authenticated: (user) => user, orElse: () => null);
-    final resolvedUserName = userName ?? user?.name ?? context.local.roleUser;
+    final resolvedUserName = userName ?? user?.name ?? context.local.roleMember;
     final roleLabel = switch (user?.role) {
       'manager' => context.local.roleManager,
       'acting_manager' => context.local.roleActingManager,

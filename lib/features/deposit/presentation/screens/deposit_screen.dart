@@ -32,18 +32,18 @@ import 'package:mess_pilot/features/deposit/presentation/widgets/deposit_tile.da
 
 /// Deposit screen.
 ///
-/// * **Admin** — add / edit / delete deposits, and browse them by member
+/// * **Manager / acting manager** — add / edit / delete deposits, and browse them by member
 ///   (incl. "all members") or by date (a single day, a custom range, or all
 ///   time).
-/// * **User** — a read-only list of their own deposits.
+/// * **Member** — a read-only list of their own deposits.
 class DepositScreen extends StatelessWidget {
   const DepositScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isAdmin = context.read<RoleCubit>().state.isAdmin;
+    final canManage = context.read<RoleCubit>().state.canManage;
     return BlocProvider<DepositBloc>(
-      create: (_) => getIt<DepositBloc>()..add(DepositEvent.started(isAdmin: isAdmin)),
+      create: (_) => getIt<DepositBloc>()..add(DepositEvent.started(isAdmin: canManage)),
       child: const _DepositView(),
     );
   }
@@ -59,7 +59,7 @@ class _DepositView extends StatelessWidget {
     // Reload when the authenticated role changes.
     return BlocListener<RoleCubit, UserRole>(
       listenWhen: (prev, curr) => prev != curr,
-      listener: (context, role) => context.read<DepositBloc>().add(DepositEvent.started(isAdmin: role.isAdmin)),
+      listener: (context, role) => context.read<DepositBloc>().add(DepositEvent.started(isAdmin: role.canManage)),
       child: Scaffold(
         backgroundColor: context.theme.scaffoldBackgroundColor,
         endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
@@ -125,8 +125,8 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isAdmin = context.read<RoleCubit>().state.isAdmin;
-    return AppErrorState(error: message, onRetry: () => context.read<DepositBloc>().add(DepositEvent.started(isAdmin: isAdmin)));
+    final canManage = context.read<RoleCubit>().state.canManage;
+    return AppErrorState(error: message, onRetry: () => context.read<DepositBloc>().add(DepositEvent.started(isAdmin: canManage)));
   }
 }
 

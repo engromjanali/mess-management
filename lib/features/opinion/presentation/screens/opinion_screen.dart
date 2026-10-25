@@ -197,7 +197,7 @@ class _OpinionScreenState extends State<OpinionScreen> {
   @override
   Widget build(BuildContext context) {
     final showWebAppBar = ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context);
-    final isAdmin = context.watch<RoleCubit>().state.isAdmin && _canManage;
+    final isAdmin = context.watch<RoleCubit>().state.canManage && _canManage;
     final opinionContent = _loading ? const Center(child: AppLoader()) : _error != null && _periods.isEmpty
         ? AppErrorState(error: _error!, onRetry: () => _load())
         : RefreshIndicator(onRefresh: () => _load(), child: _OpinionBody(

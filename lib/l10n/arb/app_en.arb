@@ -62,8 +62,6 @@
   "logoutConfirm": "Are you sure you want to log out?",
   "cancel": "Cancel",
   "notSignedIn": "You are not logged in",
-  "roleAdmin": "Admin",
-  "roleUser": "User",
   "messOverview": "Mess overview",
   "totalCredit": "Total credit",
   "totalDebit": "Total debit",
@@ -506,7 +504,6 @@
   "noMatchingRecords": "Nothing matches these filters.",
   "seasonManagement": "Season management",
   "seasonManagementSubtitle": "Create, switch, end and delete seasons",
-  "seasonManagementAdminOnly": "Only the manager can manage seasons.",
   "seasonInUse": "Season in use",
   "noSeasonInUse": "No season is in use. Switch to a season or create a new one.",
   "allSeasons": "All seasons",
@@ -1133,5 +1130,6 @@
   "membershipSelectMess": "Select a mess to view its seasons.",
   "membershipAllMesses": "All messes",
   "membershipSeasonCount": "Seasons: {count}",
-  "@membershipSeasonCount": {"placeholders": {"count": {"type": "int"}}}
+  "@membershipSeasonCount": {"placeholders": {"count": {"type": "int"}}},
+  "seasonManagementManagerOnly": "Only the manager or acting manager can manage seasons."
 }
