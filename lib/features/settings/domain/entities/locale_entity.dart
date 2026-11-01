@@ -20,8 +20,7 @@ class AppLocale {
       return Locale(code);
     }
 
-    // Default to first language in the list
-    return Locale(AppConstants.languages.first.code);
+    return const Locale(AppConstants.defaultLanguageCode);
   }
 
   /// Get language name from locate (returns native name)

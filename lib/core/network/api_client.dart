@@ -79,7 +79,7 @@ class ApiClient {
     _token = _sharedPreferences.getString(AppConstants.tokenKey);
     _refreshToken = _sharedPreferences.getString(AppConstants.refreshTokenKey);
     _guestUserId = _sharedPreferences.getString(AppConstants.guestUserIdKey);
-    _languageCode = _sharedPreferences.getString(AppConstants.languageCodeKey) ?? _sharedPreferences.getString('locale_code') ?? 'en';
+    _languageCode = _sharedPreferences.getString(AppConstants.languageCodeKey) ?? _sharedPreferences.getString('locale_code') ?? AppConstants.defaultLanguageCode;
 
     _updateHeaders();
   }
@@ -334,7 +334,7 @@ class ApiClient {
     try {
       if (kDebugMode) {
         print('=====> POST Multipart: $path');
-        print('=====> Data: ${_formatLogValue(data)}');
+        print('=====> Data: ${options?.extra?['sensitive'] == true ? '[REDACTED]' : _formatLogValue(data)}');
         print('=====> Files: ${files?.length ?? 0}');
       }
 

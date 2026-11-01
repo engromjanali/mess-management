@@ -101,11 +101,17 @@ class AppConstants {
   // Costs — manager / acting manager
   static const String adminCostsEndpoint = '/api/v1/admin/costs';
 
+  static const String opinionsEndpoint = '/api/v1/user/opinions';
+  static const String adminOpinionsEndpoint = '/api/v1/admin/opinions';
+  static const String feedbacksEndpoint = '/api/v1/user/feedbacks';
+  static const String adminFeedbacksEndpoint = '/api/v1/admin/feedbacks';
+
   // ───────────────────────── Storage keys ─────────────────────────
   static const String tokenKey = 'auth_token';
   static const String refreshTokenKey = 'refresh_token';
   static const String guestUserIdKey = 'guest_user_id';
   static const String languageCodeKey = 'language_code';
+  static const String defaultLanguageCode = 'en';
 
   // Pagination
   static const int paginationLimit = 20;
@@ -132,6 +138,4 @@ class AppConstants {
 
     LanguageModel(code: 'ar', name: 'Arabic', nativeName: 'العربية'),
   ];
-  static const String opinionsEndpoint = '/api/v1/user/opinions';
-  static const String adminOpinionsEndpoint = '/api/v1/admin/opinions';
 }

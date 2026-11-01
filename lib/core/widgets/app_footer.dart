@@ -55,6 +55,7 @@ class AppFooter extends StatelessWidget {
                               _FooterLink(label: context.local.meals, route: AppRoutes.meals),
                               _FooterLink(label: context.local.deposits, route: AppRoutes.deposits),
                               _FooterLink(label: context.local.shareYourOpinions, route: AppRoutes.opinions),
+                              _FooterLink(label: context.local.feedbackTitle, route: AppRoutes.feedback),
                             ],
                           ),
                         ),

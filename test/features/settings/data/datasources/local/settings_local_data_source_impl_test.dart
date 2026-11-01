@@ -72,9 +72,7 @@ void main() {
       // act
       final result = await dataSource.getLocale();
       // assert
-      // Assuming AppConstants.languages.first.code is 'en' or similar. 
-      // We check that it returns passed default from constants.
-      expect(result, AppConstants.languages.first.code);
+      expect(result, AppConstants.defaultLanguageCode);
       verify(mockSharedPreferences.getString(tLocaleKey));
     });
   });

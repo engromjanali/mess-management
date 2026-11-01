@@ -18,10 +18,12 @@ class MessMapLocation {
   const MessMapLocation({required this.latitude, required this.longitude, this.address = ''});
 }
 
-Future<MessMapLocation?> showMessGoogleMap({required BuildContext context, double? latitude, double? longitude, String address = '', bool editable = false, Future<List<MessMapLocation>> Function(String query)? onSearch}) {
-  if (!isGoogleMapsAvailable()) {
+Future<MessMapLocation?> showMessGoogleMap({required BuildContext context, double? latitude, double? longitude, String address = '', bool editable = false, Future<List<MessMapLocation>> Function(String query)? onSearch}) async {
+  final available = await ensureGoogleMapsAvailable();
+  if (!context.mounted) return null;
+  if (!available) {
     context.showErrorSnackBar(context.local.mapOpenFailed);
-    return Future.value();
+    return null;
   }
   final content = MessGoogleMapSheet(latitude: latitude, longitude: longitude, address: address, editable: editable, onSearch: onSearch);
   if (ResponsiveHelper.isDesktop(context)) {
