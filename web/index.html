@@ -158,7 +158,35 @@
       window.messMapsAuthFailed = true;
     };
   </script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBktvyfMj1GRqOnf3gFFdB6idMLhwrX9VQ"></script>
+  <script>
+    let mapsLoading;
+    window.loadMessMaps = function () {
+      if (mapsLoading) return mapsLoading;
+      mapsLoading = new Promise(function (resolve) {
+        const script = document.createElement('script');
+        let finished = false;
+        const finish = function (loaded) {
+          if (finished) return;
+          finished = true;
+          clearTimeout(timeout);
+          script.onerror = null;
+          delete window.messMapsLoaded;
+          if (!loaded) {
+            script.remove();
+            mapsLoading = null;
+          }
+          resolve(loaded);
+        };
+        const timeout = setTimeout(function () { finish(false); }, 15000);
+        window.messMapsLoaded = function () { finish(!window.messMapsAuthFailed); };
+        script.onerror = function () { finish(false); };
+        script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyBktvyfMj1GRqOnf3gFFdB6idMLhwrX9VQ&loading=async&callback=messMapsLoaded';
+        script.async = true;
+        document.head.appendChild(script);
+      });
+      return mapsLoading;
+    };
+  </script>
 </head>
 <body>
   <div id="flutter-launch-screen" role="status" aria-label="Loading Mess Pilot">

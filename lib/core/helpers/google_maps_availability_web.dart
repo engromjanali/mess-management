@@ -8,3 +8,13 @@ bool isGoogleMapsAvailable() {
   final maps = google?.getProperty<JSObject?>('maps'.toJS);
   return maps?.getProperty<JSAny?>('Map'.toJS) != null;
 }
+
+Future<bool> ensureGoogleMapsAvailable() async {
+  if (isGoogleMapsAvailable()) return true;
+  try {
+    final loaded = await globalContext.callMethod<JSPromise<JSBoolean>>('loadMessMaps'.toJS).toDart;
+    return loaded.toDart && isGoogleMapsAvailable();
+  } catch (_) {
+    return false;
+  }
+}
