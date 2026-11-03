@@ -10,9 +10,7 @@ import 'package:mess_pilot/features/splash/presentation/bloc/splash_bloc.dart';
 import 'package:mess_pilot/features/splash/presentation/widgets/app_gate.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({required this.destination, super.key});
-
-  final String destination;
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -21,11 +19,20 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   bool _isOpening = false;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<SplashBloc>().state.maybeWhen(loaded: _openApp, orElse: () {});
+    });
+  }
+
   Future<void> _openApp(ConfigEntity config) async {
     if (_isOpening) return;
     _isOpening = true;
     if (!mounted) return;
-    await openApp(context, config, destination: widget.destination);
+    await openApp(context, config);
   }
 
   @override

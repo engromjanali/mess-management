@@ -36,6 +36,7 @@ import 'package:mess_pilot/features/feedback/presentation/screens/feedback_scree
 import 'package:mess_pilot/features/season/presentation/screens/season_management_screen.dart';
 import 'package:mess_pilot/features/settings/presentation/screens/settings_screen.dart';
 import 'package:mess_pilot/core/widgets/main_navigation_shell.dart';
+import 'package:mess_pilot/core/helpers/auth_helper.dart';
 
 /// App route constants
 class AppRoutes {
@@ -102,15 +103,33 @@ class AppRoutes {
   }
 
   static String startupRoute(String destination) {
-    final uri = Uri.tryParse(destination);
-    if (uri == null || uri.hasScheme || uri.hasAuthority || !uri.path.startsWith('/') || uri.path.startsWith('//')) return home;
+    var uri = Uri.parse(linkLocation(destination));
+    if (uri.path == _login && uri.queryParameters['redirect'] != null) uri = Uri.parse(linkLocation(uri.queryParameters['redirect']!));
     const startupRoutes = [_splash, _login, register, forgotPassword, maintenance, updateRequired];
     if (startupRoutes.contains(uri.path)) return home;
+    return uri.toString();
+  }
+
+  static String linkLocation(String destination) {
+    var uri = Uri.tryParse(destination);
+    if (uri == null) return home;
+    try {
+      Uri.decodeFull(uri.toString());
+    } on FormatException {
+      return home;
+    }
+    if (uri.hasScheme || uri.hasAuthority) {
+      if (uri.scheme != 'https' || (uri.authority != 'messpilot.goraso.com' && uri.authority != 'messpilot.goraso.com:443')) return home;
+      final location = uri.fragment.startsWith('/') ? uri.fragment : '${uri.path.isEmpty ? home : uri.path}${uri.hasQuery ? '?${uri.query}' : ''}${uri.hasFragment ? '#${uri.fragment}' : ''}';
+      uri = Uri.tryParse(location);
+    }
+    if (uri == null || uri.hasScheme || uri.hasAuthority || !uri.path.startsWith('/') || uri.path.startsWith('//')) return home;
     return uri.toString();
   }
 }
 
 String initialDestination = _initialDestination();
+bool appStartupComplete = false;
 
 String _initialDestination() {
   if (kIsWeb) {
@@ -121,14 +140,66 @@ String _initialDestination() {
   return PlatformDispatcher.instance.defaultRouteName;
 }
 
+String? appRouteRedirect(BuildContext context, GoRouterState state) {
+  const blockedRoutes = [AppRoutes.maintenance, AppRoutes.updateRequired];
+  final destination = AppRoutes.linkLocation(state.uri.toString());
+  if (destination != state.uri.toString()) {
+    final currentPath = GoRouter.of(context).routerDelegate.currentConfiguration.uri.path;
+    final targetPath = Uri.parse(destination).path;
+    if (targetPath == AppRoutes.getSplashRoute() || blockedRoutes.contains(targetPath)) return blockedRoutes.contains(currentPath) ? currentPath : AppRoutes.home;
+    return destination;
+  }
+  final path = state.uri.path;
+  if (path == AppRoutes.getSplashRoute() || blockedRoutes.contains(path)) {
+    initialDestination = AppRoutes.startupRoute(initialDestination);
+    appStartupComplete = false;
+    return null;
+  }
+  if (!appStartupComplete) {
+    initialDestination = AppRoutes.startupRoute(destination);
+    final currentPath = GoRouter.of(context).routerDelegate.currentConfiguration.uri.path;
+    return blockedRoutes.contains(currentPath) ? currentPath : AppRoutes.getSplashRoute();
+  }
+  final publicRoutes = [AppRoutes.getLoginRoute(), AppRoutes.register, AppRoutes.forgotPassword, AppRoutes.privacyPolicy, AppRoutes.termsAndConditions, AppRoutes.faq, AppRoutes.support];
+  if (!publicRoutes.contains(path) && !AuthHelper.isLogin()) return AppRoutes.loginRouteFor(destination);
+  return null;
+}
+
+RouterConfig<RouteMatchList> appRouterConfiguration(GoRouter routes) => RouterConfig<RouteMatchList>(
+  routeInformationProvider: routes.routeInformationProvider,
+  routeInformationParser: _AppRouteInformationParser(routes.routeInformationParser),
+  routerDelegate: routes.routerDelegate,
+  backButtonDispatcher: routes.backButtonDispatcher,
+);
+
+class _AppRouteInformationParser extends RouteInformationParser<RouteMatchList> {
+  _AppRouteInformationParser(this._delegate);
+
+  final RouteInformationParser<RouteMatchList> _delegate;
+
+  @override
+  Future<RouteMatchList> parseRouteInformationWithDependencies(RouteInformation routeInformation, BuildContext context) {
+    try {
+      Uri.decodeFull(routeInformation.uri.toString());
+    } on FormatException {
+      routeInformation = RouteInformation(uri: Uri(path: AppRoutes.home));
+    }
+    return _delegate.parseRouteInformationWithDependencies(routeInformation, context);
+  }
+
+  @override
+  RouteInformation? restoreRouteInformation(RouteMatchList configuration) => _delegate.restoreRouteInformation(configuration);
+}
+
 /// Router configuration using go_router
 final router = GoRouter(
   initialLocation: AppRoutes._splash,
   overridePlatformDefaultLocation: true,
+  redirect: appRouteRedirect,
   // On web, route focus before the first layout triggers view focus traversal on an unlaid Overlay.
   requestFocus: !kIsWeb,
   routes: [
-    GoRoute(path: AppRoutes._splash, name: 'splash', builder: (context, state) => SplashScreen(destination: initialDestination)),
+    GoRoute(path: AppRoutes._splash, name: 'splash', builder: (context, state) => const SplashScreen()),
 
     // App gate: maintenance mode / forced update
     GoRoute(path: AppRoutes.maintenance, name: 'maintenance', builder: (context, state) => const MaintenanceScreen()),
@@ -209,3 +280,5 @@ final router = GoRouter(
   // Error handling
   errorBuilder: (context, state) => Scaffold(body: Center(child: Text(context.local.uiPageNotFound(state.matchedLocation)))),
 );
+
+final appRouterConfig = appRouterConfiguration(router);

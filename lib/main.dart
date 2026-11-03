@@ -115,7 +115,7 @@ class _MyAppState extends State<MyApp> {
                 darkTheme: AppTheme.dark,
                 themeMode: themeMode,
                 locale: localeState.locale,
-                routerConfig: router,
+                routerConfig: appRouterConfig,
                 builder: (context, child) => BlocListener<SplashBloc, SplashState>(
                   listener: (context, state) {
                     state.maybeWhen(
