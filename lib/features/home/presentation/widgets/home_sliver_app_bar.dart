@@ -1,3 +1,4 @@
+import 'package:mess_pilot/core/role/role_cubit.dart';
 import 'package:mess_pilot/core/widgets/notification_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:mess_pilot/config/util/dimensions.dart';
@@ -6,9 +7,10 @@ import 'package:mess_pilot/core/extensions/context_extensions.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/dashboard_formatters.dart';
 
 class HomeSliverAppBar extends StatelessWidget {
-  const HomeSliverAppBar({required this.userName, required this.currentSeasonName, required this.totalBalance, required this.expandedHeight, this.photoUrl, super.key});
+  const HomeSliverAppBar({required this.userName, required this.role, required this.currentSeasonName, required this.totalBalance, required this.expandedHeight, this.photoUrl, super.key});
 
   final String userName;
+  final UserRole role;
   final String? photoUrl;
   final String currentSeasonName;
   final double totalBalance;
@@ -30,6 +32,11 @@ class HomeSliverAppBar extends StatelessWidget {
       shape: const Border(),
       actions: [
         const NotificationIconButton(),
+        const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+        Padding(
+          padding: const EdgeInsetsDirectional.only(end: Dimensions.paddingSizeSmall),
+          child: _RoleBadge(role: role),
+        ),
       ],
       flexibleSpace: LayoutBuilder(
         builder: (context, constraints) {
@@ -97,16 +104,16 @@ class _HeaderBackground extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-              Text(
-                context.local.uiWelcomeBack,
-                style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.85), fontSize: Dimensions.fontSizeDefault),
-              ),
-              Text(
-                userName,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeExtraOverLarge),
-              ),
+                Text(
+                  context.local.uiWelcomeBack,
+                  style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.85), fontSize: Dimensions.fontSizeDefault),
+                ),
+                Text(
+                  userName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeExtraOverLarge),
+                ),
               ],
             ),
             const SizedBox(height: Dimensions.paddingSizeSmall),
@@ -215,4 +222,45 @@ class _DecorativeCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => IgnorePointer(child: Container(width: size, height: size, decoration: BoxDecoration(color: color, shape: BoxShape.circle)));
+}
+
+/// Glass pill that shows the signed-in user's role in the phone app bar.
+class _RoleBadge extends StatelessWidget {
+  const _RoleBadge({required this.role});
+
+  final UserRole role;
+
+  @override
+  Widget build(BuildContext context) {
+    final (label, icon, accent) = switch (role) {
+      UserRole.manager => (context.local.roleManager, Icons.admin_panel_settings_rounded, const Color(0xFFFFD166)),
+      UserRole.actingManager => (context.local.roleActingManager, Icons.verified_user_rounded, const Color(0xFF7FE7D1)),
+      UserRole.member => (context.local.roleMember, Icons.person_rounded, Colors.white),
+    };
+
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 170),
+      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeExtraSmall),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(Dimensions.radiusExtra2Large),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.28)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: Dimensions.iconSizeSmall, color: accent),
+          const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyles.sfProRoundedSemiBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeSmall),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

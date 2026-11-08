@@ -163,6 +163,7 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
   @override
   Widget build(BuildContext context) {
     final dashboard = widget.dashboard;
+    final role = context.watch<RoleCubit>().state;
     final photoUrl = context.select<AuthBloc, String?>((bloc) => bloc.state.maybeWhen(authenticated: (user) => user.photoUrl, orElse: () => null));
 
     return Stack(
@@ -173,7 +174,7 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
-                HomeSliverAppBar(userName: dashboard.userName, photoUrl: photoUrl, currentSeasonName: dashboard.currentSeasonName, totalBalance: dashboard.totalBalance, expandedHeight: 200),
+                HomeSliverAppBar(userName: dashboard.userName, role: role, photoUrl: photoUrl, currentSeasonName: dashboard.currentSeasonName, totalBalance: dashboard.totalBalance, expandedHeight: 200),
                 SliverPersistentHeader(
                   pinned: true,
                   delegate: PinnedSectionHeader(title: context.local.uiMessSection, icon: Icons.groups_rounded),
