@@ -94,6 +94,23 @@ class AppRoutes {
 
   static String getLoginRoute() => _login;
 
+  /// Routes a signed-out visitor may open (sign-in flow, legal and help pages).
+  static const List<String> publicRoutes = [_login, register, forgotPassword, privacyPolicy, termsAndConditions, faq, support];
+
+  /// Public content a signed-out visitor may read without being sent to login.
+  static const List<String> guestRoutes = [privacyPolicy, termsAndConditions, faq, support];
+
+  /// Whether [location] is one of [publicRoutes].
+  static bool isPublicRoute(String location) => _matchesRoute(location, publicRoutes);
+
+  /// Whether [location] is legal / help content a signed-out visitor can read.
+  static bool isGuestRoute(String location) => _matchesRoute(location, guestRoutes);
+
+  static bool _matchesRoute(String location, List<String> routes) {
+    final path = Uri.tryParse(linkLocation(location))?.path;
+    return path != null && routes.contains(path);
+  }
+
   static String getHomeRoute() => home;
 
   static String loginRouteFor(String destination) {
@@ -160,8 +177,7 @@ String? appRouteRedirect(BuildContext context, GoRouterState state) {
     final currentPath = GoRouter.of(context).routerDelegate.currentConfiguration.uri.path;
     return blockedRoutes.contains(currentPath) ? currentPath : AppRoutes.getSplashRoute();
   }
-  final publicRoutes = [AppRoutes.getLoginRoute(), AppRoutes.register, AppRoutes.forgotPassword, AppRoutes.privacyPolicy, AppRoutes.termsAndConditions, AppRoutes.faq, AppRoutes.support];
-  if (!publicRoutes.contains(path) && !AuthHelper.isLogin()) return AppRoutes.loginRouteFor(destination);
+  if (!AppRoutes.isPublicRoute(path) && !AuthHelper.isLogin()) return AppRoutes.loginRouteFor(destination);
   return null;
 }
 

@@ -25,7 +25,11 @@ Future<void> openApp(BuildContext context, ConfigEntity config, {String? destina
   }
   appStartupComplete = true;
   final target = destination ?? initialDestination;
-  context.go(AuthHelper.isLogin() ? AppRoutes.startupRoute(target) : AppRoutes.loginRouteFor(target));
+  // Legal / help pages are public: guests land on them instead of the login screen.
+  if (!AuthHelper.isLogin() && !AppRoutes.isGuestRoute(target)) {
+    return context.go(AppRoutes.loginRouteFor(target));
+  }
+  context.go(AppRoutes.startupRoute(target));
 }
 
 Future<void> openBlockedAppRoute(BuildContext context, ConfigEntity config) async {

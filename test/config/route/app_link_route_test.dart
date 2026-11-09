@@ -147,6 +147,38 @@ void main() {
     expect(routes.routerDelegate.currentConfiguration.uri.toString(), '/notices/42?source=shared');
   });
 
+  testWidgets('Cold link to a public content page opens it without login', (tester) async {
+    final routes = _testRouter(initialLocation: 'https://messpilot.goraso.com/privacy-policy');
+    addTearDown(routes.dispose);
+    await tester.pumpWidget(MaterialApp.router(routerConfig: routes));
+    await tester.pumpAndSettle();
+    expect(routes.routerDelegate.currentConfiguration.uri.path, AppRoutes.getSplashRoute());
+    expect(initialDestination, AppRoutes.privacyPolicy);
+    expect(getIt<SharedPreferences>().getString(AppConstants.tokenKey), isNull);
+
+    await openApp(tester.element(find.text(AppRoutes.getSplashRoute())), const ConfigEntity(latestVersion: '1.0.0', minimumVersion: '1.0.0'));
+    await tester.pumpAndSettle();
+
+    expect(routes.routerDelegate.currentConfiguration.uri.path, AppRoutes.privacyPolicy);
+    expect(appStartupComplete, isTrue);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Cold link to a protected page still requires login', (tester) async {
+    final routes = _testRouter(initialLocation: 'https://messpilot.goraso.com/notices/42');
+    addTearDown(routes.dispose);
+    await tester.pumpWidget(MaterialApp.router(routerConfig: routes));
+    await tester.pumpAndSettle();
+    expect(initialDestination, '/notices/42');
+
+    await openApp(tester.element(find.text(AppRoutes.getSplashRoute())), const ConfigEntity(latestVersion: '1.0.0', minimumVersion: '1.0.0'));
+    await tester.pumpAndSettle();
+
+    final login = routes.routerDelegate.currentConfiguration.uri;
+    expect(login.path, AppRoutes.getLoginRoute());
+    expect(login.queryParameters['redirect'], '/notices/42');
+  });
+
   testWidgets('Delayed iOS links retain the latest destination while splash is open', (tester) async {
     final routes = _testRouter();
     addTearDown(routes.dispose);
