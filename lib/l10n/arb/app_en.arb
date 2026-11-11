@@ -1160,5 +1160,10 @@
   "@feedbackShowComments": {"placeholders": {"count": {"type": "int"}}},
   "feedbackHideComments": "Hide comments",
   "feedbackNew": "NEW",
-  "feedbackYou": "YOU"
+  "feedbackYou": "YOU",
+  "continueWithGoogle": "Continue with Google",
+  "orDivider": "or",
+  "googleSignInFailed": "Google sign-in failed. Please try again.",
+  "googleSignInNotConfigured": "Google sign-in isn't configured in this build.",
+  "passwordLeaveBlankHint": "Leave blank to keep unchanged."
 }

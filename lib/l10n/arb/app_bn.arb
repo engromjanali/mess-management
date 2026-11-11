@@ -651,5 +651,10 @@
   "@feedbackShowComments": {"placeholders": {"count": {"type": "int"}}},
   "feedbackHideComments": "মন্তব্য লুকান",
   "feedbackNew": "নতুন",
-  "feedbackYou": "আপনি"
+  "feedbackYou": "আপনি",
+  "continueWithGoogle": "Google দিয়ে চালিয়ে যান",
+  "orDivider": "অথবা",
+  "googleSignInFailed": "Google সাইন-ইন ব্যর্থ হয়েছে। আবার চেষ্টা করুন।",
+  "googleSignInNotConfigured": "এই বিল্ডে Google সাইন-ইন কনফিগার করা হয়নি।",
+  "passwordLeaveBlankHint": "অপরিবর্তিত রাখতে খালি রাখুন।"
 }

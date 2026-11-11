@@ -176,7 +176,7 @@ class _DeleteFormState extends State<_DeleteForm> {
               ],
               const SizedBox(height: Dimensions.paddingSizeDefault),
               FilledButton.icon(
-                style: FilledButton.styleFrom(backgroundColor: colors.errorColor, minimumSize: const Size.fromHeight(Dimensions.buttonHeightDefault)),
+                style: FilledButton.styleFrom(backgroundColor: colors.errorColor, minimumSize: const Size.fromHeight(Dimensions.buttonHeight)),
                 onPressed: _understood && !_submitting ? _submit : null,
                 icon: _submitting ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) : const Icon(Icons.delete_forever_rounded),
                 label: Text(context.local.deleteAccount),
@@ -270,7 +270,7 @@ class _ScheduledViewState extends State<_ScheduledView> {
           Text(context.local.keepAccountHint, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor)),
           const SizedBox(height: Dimensions.paddingSizeLarge),
           FilledButton.icon(
-            style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeightDefault)),
+            style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeight)),
             onPressed: _keeping ? null : _keep,
             icon: _keeping ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.verified_user_outlined),
             label: Text(context.local.keepAccount),

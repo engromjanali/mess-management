@@ -244,7 +244,7 @@ class _CostEntryFormState extends State<CostEntryForm> {
           const SizedBox(height: Dimensions.paddingSizeLarge),
 
           SizedBox(
-            height: Dimensions.buttonHeightLarge,
+            height: Dimensions.buttonHeight,
             child: ElevatedButton.icon(
               onPressed: _submit,
               icon: Icon(_isEdit ? Icons.save_rounded : Icons.check_rounded),

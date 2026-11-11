@@ -17,6 +17,10 @@ import 'package:vector_graphics/vector_graphics.dart' as _vg;
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
+  /// File path: assets/images/icons8-google-logo-48.png
+  AssetGenImage get icons8GoogleLogo48 =>
+      const AssetGenImage('assets/images/icons8-google-logo-48.png');
+
   /// File path: assets/images/logo.png
   AssetGenImage get logo => const AssetGenImage('assets/images/logo.png');
 
@@ -24,7 +28,7 @@ class $AssetsImagesGen {
   $AssetsImagesSvgGen get svg => const $AssetsImagesSvgGen();
 
   /// List of all assets
-  List<AssetGenImage> get values => [logo];
+  List<AssetGenImage> get values => [icons8GoogleLogo48, logo];
 }
 
 class $AssetsImagesSvgGen {

@@ -11,8 +11,9 @@ class UpdateProfileParams {
   final String? address;
   final List<int>? photoBytes;
   final String? photoName;
+  final String? password;
 
-  const UpdateProfileParams({required this.fullName, required this.email, required this.phone, this.address, this.photoBytes, this.photoName});
+  const UpdateProfileParams({required this.fullName, required this.email, required this.phone, this.address, this.photoBytes, this.photoName, this.password});
 }
 
 /// Update profile use case
@@ -24,6 +25,6 @@ class UpdateProfileUseCase implements UseCase<UserEntity, UpdateProfileParams> {
 
   @override
   ResultFuture<UserEntity> call(UpdateProfileParams params) {
-    return _repository.updateProfile(fullName: params.fullName, email: params.email, phone: params.phone, address: params.address, photoBytes: params.photoBytes, photoName: params.photoName);
+    return _repository.updateProfile(fullName: params.fullName, email: params.email, phone: params.phone, address: params.address, photoBytes: params.photoBytes, photoName: params.photoName, password: params.password);
   }
 }

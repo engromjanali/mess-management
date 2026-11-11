@@ -1,12 +1,16 @@
 import 'package:mess_pilot/config/util/app_constants.dart';
+import 'package:mess_pilot/config/util/dimensions.dart';
+import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/config/route/app_router.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
 import 'package:mess_pilot/core/extensions/overly_extensions.dart';
+import 'package:mess_pilot/features/auth/data/services/google_sign_in_service.dart';
 import 'package:mess_pilot/features/auth/domain/entities/user_entity.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_event.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
 import 'package:mess_pilot/features/auth/presentation/widgets/auth_scaffold.dart';
+import 'package:mess_pilot/features/auth/presentation/widgets/google_sign_in_button.dart';
 import 'package:mess_pilot/features/auth/presentation/widgets/login_form_widget.dart';
 import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
@@ -71,15 +75,31 @@ class _LoginScreenState extends State<LoginScreen> {
           subtitle: context.local.uiSignInToContinueManagingYourMess,
           action: AppConstants.enableDemoLogin ? IconButton(tooltip: context.local.uiFillDemoCredentials, icon: const Icon(CupertinoIcons.pencil_circle), onPressed: _fillDemoCredentials) : null,
           footer: AuthFooterPrompt(promptText: context.local.uiNoAccountPrompt, actionText: context.local.uiSignUp, onTap: () => context.push(AppRoutes.register)),
-          child: LoginFormWidget(
-            formKey: _formKey,
-            emailController: _emailController,
-            passwordController: _passwordController,
-            onLogin: _handleLogin,
-            isLoading: isLoading,
-            countryDialCode: _dialCode,
-            onCountryChanged: (code) => _dialCode = code.dialCode ?? _dialCode,
-            onForgotPassword: () => context.push(AppRoutes.forgotPassword),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              LoginFormWidget(
+                formKey: _formKey,
+                emailController: _emailController,
+                passwordController: _passwordController,
+                onLogin: _handleLogin,
+                isLoading: isLoading,
+                countryDialCode: _dialCode,
+                onCountryChanged: (code) => _dialCode = code.dialCode ?? _dialCode,
+                onForgotPassword: () => context.push(AppRoutes.forgotPassword),
+              ),
+              if (GoogleSignInService.instance.shouldShowButton) ...[
+                const SizedBox(height: Dimensions.paddingSizeLarge),
+                _OrDivider(label: context.local.orDivider),
+                const SizedBox(height: Dimensions.paddingSizeLarge),
+                GoogleSignInButton(
+                  key: ValueKey('google_sign_in_${Localizations.localeOf(context).languageCode}'),
+                  enabled: !isLoading,
+                  onIdToken: (idToken) => context.read<AuthBloc>().add(AuthEvent.googleLoginRequested(idToken: idToken)),
+                  onError: (message) => context.showErrorSnackBar(message),
+                ),
+              ],
+            ],
           ),
         );
       },
@@ -91,5 +111,27 @@ class _LoginScreenState extends State<LoginScreen> {
     context.showSuccessSnackBar(context.local.welcome(user.name));
     final destination = GoRouterState.of(context).uri.queryParameters['redirect'] ?? AppRoutes.home;
     context.go(AppRoutes.startupRoute(destination));
+  }
+}
+
+/// A hairline rule with the "or" label in the middle, above the Google button.
+class _OrDivider extends StatelessWidget {
+  const _OrDivider({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+    return Row(
+      children: [
+        Expanded(child: Divider(color: colors.borderColor)),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
+          child: Text(label, style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor, fontSize: Dimensions.fontSizeSmall)),
+        ),
+        Expanded(child: Divider(color: colors.borderColor)),
+      ],
+    );
   }
 }

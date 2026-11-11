@@ -4,6 +4,7 @@ import 'package:mess_pilot/config/util/result.dart';
 import 'package:mess_pilot/features/auth/domain/entities/user_entity.dart';
 import 'package:mess_pilot/features/auth/domain/repositories/auth_repository.dart';
 import 'package:mess_pilot/features/auth/domain/usecases/get_current_user_usecase.dart';
+import 'package:mess_pilot/features/auth/domain/usecases/google_login_usecase.dart';
 import 'package:mess_pilot/features/auth/domain/usecases/login_usecase.dart';
 import 'package:mess_pilot/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:mess_pilot/features/auth/domain/usecases/register_usecase.dart';
@@ -37,7 +38,7 @@ void main() {
 
   setUp(() async {
     repository = _ProfileRepository();
-    bloc = AuthBloc(LoginUseCase(repository), RegisterUseCase(repository), LogoutUseCase(repository), GetCurrentUserUseCase(repository));
+    bloc = AuthBloc(LoginUseCase(repository), GoogleLoginUseCase(repository), RegisterUseCase(repository), LogoutUseCase(repository), GetCurrentUserUseCase(repository));
     final authenticated = bloc.stream.firstWhere((state) => state == const AuthState.authenticated(original));
     bloc.add(const AuthEvent.userUpdated(original));
     await authenticated;

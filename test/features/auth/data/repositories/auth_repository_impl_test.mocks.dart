@@ -8,8 +8,7 @@ import 'dart:async' as _i4;
 
 import 'package:mess_pilot/features/auth/data/datasources/interfaces/auth_data_source.dart'
     as _i3;
-import 'package:mess_pilot/features/auth/data/models/user_model.dart'
-    as _i2;
+import 'package:mess_pilot/features/auth/data/models/user_model.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -59,6 +58,18 @@ class MockAuthDataSource extends _i1.Mock implements _i3.AuthDataSource {
       ),
     ),
   ) as _i4.Future<_i2.UserModel>);
+
+  @override
+  _i4.Future<_i2.UserModel> googleLogin({required String? idToken}) =>
+      (super.noSuchMethod(
+        Invocation.method(#googleLogin, [], {#idToken: idToken}),
+        returnValue: _i4.Future<_i2.UserModel>.value(
+          _FakeUserModel_0(
+            this,
+            Invocation.method(#googleLogin, [], {#idToken: idToken}),
+          ),
+        ),
+      ) as _i4.Future<_i2.UserModel>);
 
   @override
   _i4.Future<_i2.UserModel> register({
@@ -130,6 +141,7 @@ class MockAuthDataSource extends _i1.Mock implements _i3.AuthDataSource {
     String? address,
     List<int>? photoBytes,
     String? photoName,
+    String? password,
   }) => (super.noSuchMethod(
     Invocation.method(#updateProfile, [], {
       #fullName: fullName,
@@ -138,6 +150,7 @@ class MockAuthDataSource extends _i1.Mock implements _i3.AuthDataSource {
       #address: address,
       #photoBytes: photoBytes,
       #photoName: photoName,
+      #password: password,
     }),
     returnValue: _i4.Future<_i2.UserModel>.value(
       _FakeUserModel_0(
@@ -149,6 +162,7 @@ class MockAuthDataSource extends _i1.Mock implements _i3.AuthDataSource {
           #address: address,
           #photoBytes: photoBytes,
           #photoName: photoName,
+          #password: password,
         }),
       ),
     ),

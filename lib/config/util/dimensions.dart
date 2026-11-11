@@ -39,10 +39,8 @@ class Dimensions {
   static const double spaceLarge = 24.0;
   static const double spaceExtraLarge = 32.0;
 
-  // Button heights
-  static const double buttonHeightSmall = 36.0;
-  static const double buttonHeightDefault = 48.0;
-  static const double buttonHeightLarge = 56.0;
+  // Button height (every button in the app uses this)
+  static const double buttonHeight = 40.0;
 
   // Web max width
   static const double webMaxWidth = 1200.0;

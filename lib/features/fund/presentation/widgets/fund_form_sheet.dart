@@ -147,7 +147,7 @@ class _FundFormSheetState extends State<_FundFormSheet> {
               Expanded(
                 child: OutlinedButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeightDefault)),
+                  style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeight)),
                   child: Text(context.local.cancel),
                 ),
               ),
@@ -155,7 +155,7 @@ class _FundFormSheetState extends State<_FundFormSheet> {
               Expanded(
                 child: ElevatedButton(
                   onPressed: _submit,
-                  style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeightDefault)),
+                  style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeight)),
                   child: Text(_isEdit ? context.local.save : context.local.add),
                 ),
               ),

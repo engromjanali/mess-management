@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mess_pilot/core/usecase/usecase.dart';
 import 'package:mess_pilot/features/auth/domain/usecases/get_current_user_usecase.dart';
+import 'package:mess_pilot/features/auth/domain/usecases/google_login_usecase.dart';
 import 'package:mess_pilot/features/auth/domain/usecases/login_usecase.dart';
 import 'package:mess_pilot/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:mess_pilot/features/auth/domain/usecases/register_usecase.dart';
@@ -14,11 +15,12 @@ import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
 @injectable
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUseCase _loginUseCase;
+  final GoogleLoginUseCase _googleLoginUseCase;
   final RegisterUseCase _registerUseCase;
   final LogoutUseCase _logoutUseCase;
   final GetCurrentUserUseCase _getCurrentUserUseCase;
 
-  AuthBloc(this._loginUseCase, this._registerUseCase, this._logoutUseCase, this._getCurrentUserUseCase) : super(const AuthState.initial()) {
+  AuthBloc(this._loginUseCase, this._googleLoginUseCase, this._registerUseCase, this._logoutUseCase, this._getCurrentUserUseCase) : super(const AuthState.initial()) {
     on<AuthEvent>(_onAuthEvent);
   }
 
@@ -26,6 +28,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onAuthEvent(AuthEvent event, Emitter<AuthState> emit) async {
     await event.when(
       loginRequested: (email, password) => _handleLogin(email, password, emit),
+      googleLoginRequested: (idToken) => _handleGoogleLogin(idToken, emit),
       registerRequested: (fullName, email, password, phone) => _handleRegister(fullName, email, password, phone, emit),
       logoutRequested: () => _handleLogout(emit),
       checkAuthStatus: () => _handleCheckAuthStatus(emit),
@@ -46,6 +49,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(const AuthState.loading());
 
     final result = await _loginUseCase(LoginParams(email: email, password: password));
+
+    result.when(success: (success) => emit(AuthState.authenticated(success.data)), failure: (failure) => emit(AuthState.error(failure.message.toString())));
+  }
+
+  /// Handle Google login request
+  Future<void> _handleGoogleLogin(String idToken, Emitter<AuthState> emit) async {
+    emit(const AuthState.loading());
+
+    final result = await _googleLoginUseCase(GoogleLoginParams(idToken: idToken));
 
     result.when(success: (success) => emit(AuthState.authenticated(success.data)), failure: (failure) => emit(AuthState.error(failure.message.toString())));
   }

@@ -1,6 +1,7 @@
 import 'package:mess_pilot/core/assets/fonts.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:mess_pilot/config/theme/custom_theme_colors.dart';
+import 'package:mess_pilot/config/util/dimensions.dart';
 
 /// Light theme data configuration
 ThemeData lightThemeData = ThemeData(
@@ -48,7 +49,9 @@ ThemeData lightThemeData = ThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: const Color(0xFF1FA463),
       foregroundColor: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+      minimumSize: const Size(0, Dimensions.buttonHeight),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       elevation: 2,
     ),
@@ -56,7 +59,12 @@ ThemeData lightThemeData = ThemeData(
 
   // Text Button
   textButtonTheme: TextButtonThemeData(
-    style: TextButton.styleFrom(foregroundColor: const Color(0xFF1FA463), padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12)),
+    style: TextButton.styleFrom(
+      foregroundColor: const Color(0xFF1FA463),
+      minimumSize: const Size(0, Dimensions.buttonHeight),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    ),
   ),
 
   // Outlined Button
@@ -64,7 +72,19 @@ ThemeData lightThemeData = ThemeData(
     style: OutlinedButton.styleFrom(
       foregroundColor: const Color(0xFF1FA463),
       side: const BorderSide(color: Color(0xFF1FA463)),
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+      minimumSize: const Size(0, Dimensions.buttonHeight),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    ),
+  ),
+
+  // Filled Button
+  filledButtonTheme: FilledButtonThemeData(
+    style: FilledButton.styleFrom(
+      minimumSize: const Size(0, Dimensions.buttonHeight),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     ),
   ),

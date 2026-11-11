@@ -59,3 +59,9 @@ coverage/
 
 # Test results
 test/.test_coverage.dart
+
+# Local test account credentials
+TEST_USERS.md
+
+# Local secrets (restore real values from here in the secrets commit)
+.local-secrets/

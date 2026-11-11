@@ -25,7 +25,8 @@ class AuthScaffold extends StatelessWidget {
   final Widget? action;
 
   /// Auth forms read better narrow — cap well below [Dimensions.webMaxWidth].
-  static const double _maxCardWidth = 460;
+  /// Matches Google Sign-In button maximum width (400) + card horizontal padding (48).
+  static const double _maxCardWidth = 448;
 
   @override
   Widget build(BuildContext context) {

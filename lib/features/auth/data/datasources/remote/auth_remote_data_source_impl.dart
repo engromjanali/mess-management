@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:mess_pilot/features/auth/data/models/user_model.dart';
 import 'package:mess_pilot/features/auth/data/datasources/interfaces/auth_data_source.dart';
 import 'package:mess_pilot/features/auth/data/datasources/remote/auth_api_service.dart';
+import 'package:mess_pilot/features/auth/data/services/google_sign_in_service.dart';
 
 /// Remote data source implementation for authentication
 @LazySingleton(as: AuthDataSource)
@@ -16,6 +17,11 @@ class AuthRemoteDataSourceImpl implements AuthDataSource {
     // `email` carries either an email or a phone number (with dial code).
     final type = email.contains('@') ? 'email' : 'phone';
     return _apiService.login({'type': type, type: email, 'password': password});
+  }
+
+  @override
+  Future<UserModel> googleLogin({required String idToken}) {
+    return _apiService.googleLogin(idToken);
   }
 
   @override
@@ -37,6 +43,12 @@ class AuthRemoteDataSourceImpl implements AuthDataSource {
   @override
   Future<void> logout() async {
     await _apiService.logout();
+    if (!GoogleSignInService.instance.isSupported) return;
+    try {
+      await GoogleSignInService.instance.signOut();
+    } catch (_) {
+      // The backend session is already cleared; a missing Google session is fine.
+    }
   }
 
   @override
@@ -45,8 +57,9 @@ class AuthRemoteDataSourceImpl implements AuthDataSource {
   }
 
   @override
-  Future<UserModel> updateProfile({required String fullName, required String email, required String phone, String? address, List<int>? photoBytes, String? photoName}) async {
+  Future<UserModel> updateProfile({required String fullName, required String email, required String phone, String? address, List<int>? photoBytes, String? photoName, String? password}) async {
     final body = <String, dynamic>{'full_name': fullName, 'email': email, 'phone': phone, 'address': address ?? ''};
+    if (password != null && password.isNotEmpty) body['password'] = password;
     if (photoBytes == null) return _apiService.updateProfile(body);
     // A new photo is sent as multipart; the backend stores it in Cloudinary.
     return _apiService.updateProfile(FormData.fromMap({...body, 'photo': MultipartFile.fromBytes(photoBytes, filename: photoName ?? 'profile.jpg')}));

@@ -7,6 +7,7 @@ import 'package:mess_pilot/core/network/api_client.dart';
 import 'package:mess_pilot/features/auth/domain/entities/user_entity.dart';
 import 'package:mess_pilot/features/auth/domain/repositories/auth_repository.dart';
 import 'package:mess_pilot/features/auth/domain/usecases/get_current_user_usecase.dart';
+import 'package:mess_pilot/features/auth/domain/usecases/google_login_usecase.dart';
 import 'package:mess_pilot/features/auth/domain/usecases/login_usecase.dart';
 import 'package:mess_pilot/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:mess_pilot/features/auth/domain/usecases/register_usecase.dart';
@@ -72,7 +73,7 @@ void main() {
       dio.close();
     });
     final repository = _AuthRepository();
-    final authBloc = AuthBloc(LoginUseCase(repository), RegisterUseCase(repository), LogoutUseCase(repository), GetCurrentUserUseCase(repository));
+    final authBloc = AuthBloc(LoginUseCase(repository), GoogleLoginUseCase(repository), RegisterUseCase(repository), LogoutUseCase(repository), GetCurrentUserUseCase(repository));
     const user = UserEntity(id: '1', email: 'member@example.com', name: 'Member', activeMessId: 3);
     final authenticated = authBloc.stream.firstWhere((state) => state == const AuthState.authenticated(user));
     authBloc.add(const AuthEvent.userUpdated(user));

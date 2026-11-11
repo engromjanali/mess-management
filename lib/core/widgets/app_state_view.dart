@@ -1,3 +1,4 @@
+import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/core/errors/user_error_message.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
@@ -106,7 +107,7 @@ class AppStateView extends StatelessWidget {
                   const SizedBox(height: 24),
                   FilledButton(
                     onPressed: onAction,
-                    style: FilledButton.styleFrom(backgroundColor: colors.primaryColor, foregroundColor: colors.surfaceColor, minimumSize: const Size(160, 48), padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+                    style: FilledButton.styleFrom(backgroundColor: colors.primaryColor, foregroundColor: colors.surfaceColor, minimumSize: const Size(160, Dimensions.buttonHeight), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
                     child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(actionIcon, size: 20), const SizedBox(width: 8), Flexible(child: Text(actionLabel!, textAlign: TextAlign.center))]),
                   ),
                 ],
