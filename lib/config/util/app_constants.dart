@@ -19,9 +19,8 @@ class AppConstants {
   }
   static const bool enableDemoLogin = kDebugMode;
   
-  // Replace with the real client IDs in the secrets commit.
-  static const String googleWebClientId = 'YOUR_GOOGLE_WEB_CLIENT_ID';
-  static const String googleIosClientId = 'YOUR_GOOGLE_IOS_CLIENT_ID';
+  static const String googleWebClientId = '139665999955-jubvssfv8fteilk9imgouch9l8lkdfv8.apps.googleusercontent.com';
+  static const String googleIosClientId = '139665999955-a2sj6nrcquabshnsjclj68ddumksfblh.apps.googleusercontent.com';
 
   // ───────────────────────── API endpoints ─────────────────────────
   // Grouped by feature; inside a feature, user (`/api/v1/user`) routes come
