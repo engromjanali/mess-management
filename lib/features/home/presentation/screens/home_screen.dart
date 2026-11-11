@@ -175,43 +175,55 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
                 HomeSliverAppBar(userName: dashboard.userName, role: role, photoUrl: photoUrl, currentSeasonName: dashboard.currentSeasonName, totalBalance: dashboard.totalBalance, expandedHeight: 200),
-                SliverPersistentHeader(
-                  pinned: true,
-                  delegate: PinnedSectionHeader(title: context.local.uiMessSection, icon: Icons.groups_rounded),
-                ),
-                _StatSliverGrid(stats: _messStats(context, dashboard)),
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge),
-                  sliver: SliverToBoxAdapter(child: AnimatedEntrance(child: _MessDetailsCard(dashboard: dashboard))),
-                ),
-                const SliverPadding(
-                  padding: EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, 0, Dimensions.paddingSizeLarge, Dimensions.paddingSizeDefault),
-                  sliver: SliverToBoxAdapter(child: AnimatedEntrance(child: FeedbackBannerCard())),
+                SliverMainAxisGroup(
+                  slivers: [
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: PinnedSectionHeader(title: context.local.uiMessSection, icon: Icons.groups_rounded),
+                    ),
+                    _StatSliverGrid(stats: _messStats(context, dashboard)),
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge),
+                      sliver: SliverToBoxAdapter(child: AnimatedEntrance(child: _MessDetailsCard(dashboard: dashboard))),
+                    ),
+                    const SliverPadding(
+                      padding: EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, 0, Dimensions.paddingSizeLarge, Dimensions.paddingSizeDefault),
+                      sliver: SliverToBoxAdapter(child: AnimatedEntrance(child: FeedbackBannerCard())),
+                    ),
+                  ],
                 ),
                 SliverToBoxAdapter(child: SizedBox(key: _statsAnchor, height: 0)),
-                SliverPersistentHeader(
-                  pinned: true,
-                  delegate: PinnedSectionHeader(title: context.local.uiMySection, icon: Icons.person_rounded),
-                ),
-                if (dashboard.isMember)
-                  _StatSliverGrid(stats: _myStats(context, dashboard))
-                else
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge),
-                    sliver: SliverToBoxAdapter(child: _NoSeasonMembershipCard(message: context.local.noSeasonMembershipAccess)),
-                  ),
-                if (dashboard.isManager) ...[
-                  SliverPersistentHeader(
-                    pinned: true,
-                    delegate: PinnedSectionHeader(title: context.local.members, icon: Icons.bar_chart_rounded),
-                  ),
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge),
-                    sliver: SliverToBoxAdapter(
-                      child: AnimatedEntrance(
-                        child: MemberStatsTable(members: dashboard.members, mealRate: dashboard.mealRate),
-                      ),
+                SliverMainAxisGroup(
+                  slivers: [
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: PinnedSectionHeader(title: context.local.uiMySection, icon: Icons.person_rounded),
                     ),
+                    if (dashboard.isMember)
+                      _StatSliverGrid(stats: _myStats(context, dashboard))
+                    else
+                      SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge),
+                        sliver: SliverToBoxAdapter(child: _NoSeasonMembershipCard(message: context.local.noSeasonMembershipAccess)),
+                      ),
+                  ],
+                ),
+                if (dashboard.isManager) ...[
+                  SliverMainAxisGroup(
+                    slivers: [
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: PinnedSectionHeader(title: context.local.members, icon: Icons.bar_chart_rounded),
+                      ),
+                      SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge),
+                        sliver: SliverToBoxAdapter(
+                          child: AnimatedEntrance(
+                            child: MemberStatsTable(members: dashboard.members, mealRate: dashboard.mealRate),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
                 SliverToBoxAdapter(child: SizedBox(key: _noticeAnchor, height: 0)),
