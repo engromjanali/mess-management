@@ -165,6 +165,7 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
     final dashboard = widget.dashboard;
     final role = context.watch<RoleCubit>().state;
     final photoUrl = context.select<AuthBloc, String?>((bloc) => bloc.state.maybeWhen(authenticated: (user) => user.photoUrl, orElse: () => null));
+    final showMembers = dashboard.isManager || dashboard.members.isNotEmpty;
 
     return Stack(
       children: [
@@ -175,57 +176,19 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
                 HomeSliverAppBar(userName: dashboard.userName, role: role, photoUrl: photoUrl, currentSeasonName: dashboard.currentSeasonName, totalBalance: dashboard.totalBalance, expandedHeight: 200),
-                SliverMainAxisGroup(
-                  slivers: [
-                    SliverPersistentHeader(
-                      pinned: true,
-                      delegate: PinnedSectionHeader(title: context.local.uiMySection, icon: Icons.person_rounded),
-                    ),
-                    if (dashboard.isMember)
-                      _StatSliverGrid(stats: _myStats(context, dashboard))
-                    else
-                      SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge),
-                        sliver: SliverToBoxAdapter(child: _NoSeasonMembershipCard(message: context.local.noSeasonMembershipAccess)),
-                      ),
-                  ],
-                ),
-                SliverToBoxAdapter(child: SizedBox(key: _statsAnchor, height: 0)),
                 if (dashboard.isManager) ...[
-                  SliverMainAxisGroup(
-                    slivers: [
-                      SliverPersistentHeader(
-                        pinned: true,
-                        delegate: PinnedSectionHeader(title: context.local.members, icon: Icons.bar_chart_rounded),
-                      ),
-                      SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge),
-                        sliver: SliverToBoxAdapter(
-                          child: AnimatedEntrance(
-                            child: MemberStatsTable(members: dashboard.members, mealRate: dashboard.mealRate),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  ..._buildMessSection(context, dashboard),
+                  ..._buildCardSection(dashboard),
+                  SliverToBoxAdapter(child: SizedBox(key: _statsAnchor, height: 0)),
+                  ..._buildMySection(context, dashboard),
+                  if (showMembers) ..._buildMembersSection(context, dashboard),
+                ] else ...[
+                  ..._buildMySection(context, dashboard),
+                  SliverToBoxAdapter(child: SizedBox(key: _statsAnchor, height: 0)),
+                  ..._buildCardSection(dashboard),
+                  ..._buildMessSection(context, dashboard),
+                  if (showMembers) ..._buildMembersSection(context, dashboard),
                 ],
-                SliverMainAxisGroup(
-                  slivers: [
-                    SliverPersistentHeader(
-                      pinned: true,
-                      delegate: PinnedSectionHeader(title: context.local.uiMessSection, icon: Icons.groups_rounded),
-                    ),
-                    _StatSliverGrid(stats: _messStats(context, dashboard)),
-                    SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge),
-                      sliver: SliverToBoxAdapter(child: AnimatedEntrance(child: _MessDetailsCard(dashboard: dashboard))),
-                    ),
-                    const SliverPadding(
-                      padding: EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, 0, Dimensions.paddingSizeLarge, Dimensions.paddingSizeDefault),
-                      sliver: SliverToBoxAdapter(child: AnimatedEntrance(child: FeedbackBannerCard())),
-                    ),
-                  ],
-                ),
                 SliverToBoxAdapter(child: SizedBox(key: _noticeAnchor, height: 0)),
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeExtraLarge32),
@@ -238,6 +201,74 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
         ),
       ],
     );
+  }
+
+  List<Widget> _buildMessSection(BuildContext context, DashboardEntity dashboard) {
+    return [
+      SliverMainAxisGroup(
+        slivers: [
+          SliverPersistentHeader(
+            pinned: true,
+            delegate: PinnedSectionHeader(title: context.local.uiMessSection, icon: Icons.groups_rounded),
+          ),
+          _StatSliverGrid(stats: _messStats(context, dashboard)),
+        ],
+      ),
+    ];
+  }
+
+  List<Widget> _buildCardSection(DashboardEntity dashboard) {
+    return [
+      SliverPadding(
+        padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge),
+        sliver: SliverToBoxAdapter(child: AnimatedEntrance(child: _MessDetailsCard(dashboard: dashboard))),
+      ),
+      const SliverPadding(
+        padding: EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, 0, Dimensions.paddingSizeLarge, Dimensions.paddingSizeDefault),
+        sliver: SliverToBoxAdapter(child: AnimatedEntrance(child: FeedbackBannerCard())),
+      ),
+    ];
+  }
+
+  List<Widget> _buildMySection(BuildContext context, DashboardEntity dashboard) {
+    return [
+      SliverMainAxisGroup(
+        slivers: [
+          SliverPersistentHeader(
+            pinned: true,
+            delegate: PinnedSectionHeader(title: context.local.uiMySection, icon: Icons.person_rounded),
+          ),
+          if (dashboard.isMember)
+            _StatSliverGrid(stats: _myStats(context, dashboard))
+          else
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge),
+              sliver: SliverToBoxAdapter(child: _NoSeasonMembershipCard(message: context.local.noSeasonMembershipAccess)),
+            ),
+        ],
+      ),
+    ];
+  }
+
+  List<Widget> _buildMembersSection(BuildContext context, DashboardEntity dashboard) {
+    return [
+      SliverMainAxisGroup(
+        slivers: [
+          SliverPersistentHeader(
+            pinned: true,
+            delegate: PinnedSectionHeader(title: context.local.members, icon: Icons.bar_chart_rounded),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge),
+            sliver: SliverToBoxAdapter(
+              child: AnimatedEntrance(
+                child: MemberStatsTable(members: dashboard.members, mealRate: dashboard.mealRate),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ];
   }
 }
 
@@ -314,50 +345,105 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
                         const AnimatedEntrance(child: FeedbackBannerCard()),
                         const SizedBox(height: Dimensions.paddingSizeSmall),
 
-                        // My section (left) + pinned notice (right).
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              flex: 3,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  SectionTitle(title: context.local.uiMySection, icon: Icons.person_rounded),
-                                  if (dashboard.isMember)
-                                    _StatBoxGrid(stats: _myStats(context, dashboard), maxCrossAxisExtent: 230)
-                                  else
-                                    _NoSeasonMembershipCard(message: context.local.noSeasonMembershipAccess),
-                                ],
+                        if (dashboard.isManager) ...[
+                          // 1. Mess section
+                          SectionTitle(title: context.local.uiMessSection, icon: Icons.groups_rounded),
+                          _StatBoxGrid(stats: _messStats(context, dashboard), maxCrossAxisExtent: 230),
+                          const SizedBox(height: Dimensions.paddingSizeDefault),
+
+                          // 2. Card
+                          AnimatedEntrance(child: _MessDetailsCard(dashboard: dashboard)),
+                          const SizedBox(height: Dimensions.paddingSizeLarge),
+
+                          // 3. My section (left) + pinned notice (right)
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    SectionTitle(title: context.local.uiMySection, icon: Icons.person_rounded),
+                                    if (dashboard.isMember)
+                                      _StatBoxGrid(stats: _myStats(context, dashboard), maxCrossAxisExtent: 230)
+                                    else
+                                      _NoSeasonMembershipCard(message: context.local.noSeasonMembershipAccess),
+                                  ],
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: Dimensions.paddingSizeLarge),
-                            Expanded(
-                              flex: 2,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  SectionTitle(title: context.local.uiPinnedNotice, icon: Icons.push_pin_rounded),
-                                  AnimatedEntrance(child: PinnedNoticeCard(notice: dashboard.pinnedNotice)),
-                                ],
+                              const SizedBox(width: Dimensions.paddingSizeLarge),
+                              Expanded(
+                                flex: 2,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    SectionTitle(title: context.local.uiPinnedNotice, icon: Icons.push_pin_rounded),
+                                    AnimatedEntrance(child: PinnedNoticeCard(notice: dashboard.pinnedNotice)),
+                                  ],
+                                ),
                               ),
+                            ],
+                          ),
+
+                          // 4. Member
+                          if (dashboard.members.isNotEmpty || dashboard.isManager) ...[
+                            const SizedBox(height: Dimensions.paddingSizeLarge),
+                            SectionTitle(title: context.local.members, icon: Icons.bar_chart_rounded),
+                            AnimatedEntrance(
+                              child: MemberStatsTable(members: dashboard.members, mealRate: dashboard.mealRate),
                             ),
                           ],
-                        ),
-                        if (dashboard.isManager) ...[
-                          const SizedBox(height: Dimensions.paddingSizeLarge),
-                          SectionTitle(title: context.local.members, icon: Icons.bar_chart_rounded),
-                          AnimatedEntrance(
-                            child: MemberStatsTable(members: dashboard.members, mealRate: dashboard.mealRate),
+                        ] else ...[
+                          // 1. My section (left) + pinned notice (right)
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    SectionTitle(title: context.local.uiMySection, icon: Icons.person_rounded),
+                                    if (dashboard.isMember)
+                                      _StatBoxGrid(stats: _myStats(context, dashboard), maxCrossAxisExtent: 230)
+                                    else
+                                      _NoSeasonMembershipCard(message: context.local.noSeasonMembershipAccess),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: Dimensions.paddingSizeLarge),
+                              Expanded(
+                                flex: 2,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    SectionTitle(title: context.local.uiPinnedNotice, icon: Icons.push_pin_rounded),
+                                    AnimatedEntrance(child: PinnedNoticeCard(notice: dashboard.pinnedNotice)),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                        const SizedBox(height: Dimensions.paddingSizeLarge),
+                          const SizedBox(height: Dimensions.paddingSizeLarge),
 
-                        // Mess section — wide grid.
-                        SectionTitle(title: context.local.uiMessSection, icon: Icons.groups_rounded),
-                        _StatBoxGrid(stats: _messStats(context, dashboard), maxCrossAxisExtent: 230),
-                        const SizedBox(height: Dimensions.paddingSizeDefault),
-                        AnimatedEntrance(child: _MessDetailsCard(dashboard: dashboard)),
+                          // 2. Card
+                          AnimatedEntrance(child: _MessDetailsCard(dashboard: dashboard)),
+                          const SizedBox(height: Dimensions.paddingSizeLarge),
+
+                          // 3. Mess section
+                          SectionTitle(title: context.local.uiMessSection, icon: Icons.groups_rounded),
+                          _StatBoxGrid(stats: _messStats(context, dashboard), maxCrossAxisExtent: 230),
+
+                          // 4. Member
+                          if (dashboard.members.isNotEmpty) ...[
+                            const SizedBox(height: Dimensions.paddingSizeLarge),
+                            SectionTitle(title: context.local.members, icon: Icons.bar_chart_rounded),
+                            AnimatedEntrance(
+                              child: MemberStatsTable(members: dashboard.members, mealRate: dashboard.mealRate),
+                            ),
+                          ],
+                        ],
                             const SizedBox(height: Dimensions.paddingSizeExtraLarge32),
                           ],
                         ),
