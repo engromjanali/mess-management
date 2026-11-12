@@ -19,6 +19,8 @@ import 'package:mess_pilot/core/network/api_client.dart';
 import 'package:mess_pilot/core/role/role_cubit.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_event.dart';
+import 'package:mess_pilot/features/membership/data/membership_api_service.dart';
+import 'package:mess_pilot/features/membership/presentation/bloc/membership_cubit.dart';
 import 'package:mess_pilot/features/settings/presentation/bloc/localization/localization_bloc.dart';
 import 'package:mess_pilot/features/settings/presentation/bloc/theme/theme_bloc.dart';
 import 'package:mess_pilot/features/splash/presentation/widgets/app_gate.dart';
@@ -60,6 +62,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   FocusTraversalPolicy _focusTraversalPolicy = kIsWeb ? WidgetOrderTraversalPolicy() : ReadingOrderTraversalPolicy();
+  String? _membershipUserId;
 
   @override
   void initState() {
@@ -87,6 +90,7 @@ class _MyAppState extends State<MyApp> {
           return authBloc;
         }),
         BlocProvider(create: (context) => RoleCubit(context.read<AuthBloc>())),
+        BlocProvider(create: (context) => MembershipCubit(MembershipApiService(getIt<ApiClient>()))),
       ],
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
@@ -94,8 +98,14 @@ class _MyAppState extends State<MyApp> {
             authenticated: (user) {
               NotificationUnreadService.instance.setUser(user.id);
               SeasonNotificationService.instance?.setAuthenticated(true);
+              if (_membershipUserId != user.id) {
+                _membershipUserId = user.id;
+                context.read<MembershipCubit>().load();
+              }
             },
             unauthenticated: () {
+              _membershipUserId = null;
+              context.read<MembershipCubit>().reset();
               NotificationUnreadService.instance.setUser(null);
               SeasonNotificationService.instance?.signOut();
             },

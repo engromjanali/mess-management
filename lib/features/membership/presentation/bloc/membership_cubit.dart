@@ -35,6 +35,14 @@ class MembershipCubit extends Cubit<MembershipState> {
     }
   }
 
+  /// Drops the previous account's memberships from memory.
+  void reset() => emit(const MembershipLoading());
+
+  Future<void> switchMembership(MembershipSummaryEntity membership) async {
+    await _service.switchMembership(membership);
+    await load();
+  }
+
   Future<void> joinInvite(String code) async {
     if (code.trim().isEmpty) return;
     try {

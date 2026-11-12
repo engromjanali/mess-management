@@ -26,14 +26,13 @@ import 'package:mess_pilot/features/home/presentation/widgets/dashboard_formatte
 import 'package:mess_pilot/features/home/presentation/widgets/dashboard_hero_banner.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/feedback_banner_card.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/dashboard_top_bar.dart';
-import 'package:mess_pilot/features/membership/data/membership_api_service.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/home_sliver_app_bar.dart';
+import 'package:mess_pilot/features/membership/data/membership_api_service.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/member_stats_table.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/pinned_notice_card.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/pinned_section_header.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/section_title.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/web_profile_drawer.dart';
-import 'package:mess_pilot/features/membership/presentation/bloc/membership_cubit.dart';
 import 'package:mess_pilot/features/membership/presentation/screens/membership_gate.dart';
 
 /// Internal view-model for a single metric card.
@@ -87,10 +86,7 @@ class HomeScreen extends StatelessWidget {
         child: Builder(builder: (context) => DashboardTopBar(active: DashboardSection.home, onProfileTap: () => Scaffold.of(context).openEndDrawer())),
       ) : null,
       endDrawer: ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context) ? const WebProfileDrawer() : null,
-      body: BlocProvider<MembershipCubit>(
-        create: (_) => MembershipCubit(MembershipApiService(getIt<ApiClient>()))..load(),
-        child: MembershipGate(loadingChild: const HomeDashboardShimmer(), connectedChild: BlocProvider<HomeBloc>(create: (_) => getIt<HomeBloc>()..add(const HomeEvent.loadDashboard()), child: const _HomeView())),
-      ),
+      body: MembershipGate(loadingChild: const HomeDashboardShimmer(), connectedChild: BlocProvider<HomeBloc>(create: (_) => getIt<HomeBloc>()..add(const HomeEvent.loadDashboard()), child: const _HomeView())),
     );
   }
 }

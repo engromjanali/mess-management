@@ -8,9 +8,12 @@ import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/core/assets/assets.gen.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
+import 'package:mess_pilot/core/extensions/overly_extensions.dart';
 import 'package:mess_pilot/core/widgets/app_logo.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
+import 'package:mess_pilot/features/membership/domain/entities/membership_status_entity.dart';
+import 'package:mess_pilot/features/membership/presentation/bloc/membership_cubit.dart';
 import 'package:mess_pilot/features/settings/domain/entities/theme_mode.dart';
 import 'package:mess_pilot/features/settings/presentation/bloc/localization/localization_bloc.dart';
 import 'package:mess_pilot/features/settings/presentation/bloc/theme/theme_bloc.dart';
@@ -105,6 +108,7 @@ class DashboardTopBar extends StatelessWidget {
                         )),
                       ],
                       if (resolvedNavItems.isEmpty) const Spacer(),
+                      const _MembershipMenu(),
                       if (showNotifications) NotificationIconButton(color: colors.textSecondaryColor),
                       if (showTheme) _ActionIcon(
                         icon: themeIcon,
@@ -205,6 +209,203 @@ class _NavButton extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
       ),
     );
+  }
+}
+
+class _MembershipMenu extends StatefulWidget {
+  const _MembershipMenu();
+
+  @override
+  State<_MembershipMenu> createState() => _MembershipMenuState();
+}
+
+class _MembershipMenuState extends State<_MembershipMenu> {
+  bool _switching = false;
+
+  @override
+  Widget build(BuildContext context) {
+    if (context.findAncestorWidgetOfExactType<BlocProvider<MembershipCubit>>() == null) return const SizedBox.shrink();
+    final state = context.watch<MembershipCubit>().state;
+    if (state is! MembershipLoaded) return const SizedBox.shrink();
+    final current = state.status.current;
+    if (current == null) return const SizedBox.shrink();
+
+    final memberships = state.status.memberships.where((membership) => membership.messId == current.messId).toList();
+    if (!memberships.any((membership) => membership.seasonId == current.seasonId)) memberships.insert(0, current);
+    memberships.sort((a, b) {
+      if (a.isCurrent != b.isCurrent) return a.isCurrent ? -1 : 1;
+      return (b.seasonStartDate ?? DateTime.fromMillisecondsSinceEpoch(0)).compareTo(a.seasonStartDate ?? DateTime.fromMillisecondsSinceEpoch(0));
+    });
+    final hasSwitch = memberships.any((membership) => membership.canSwitch && !membership.isCurrent);
+
+    return Padding(
+      padding: const EdgeInsets.only(right: Dimensions.paddingSizeSmall),
+      child: PopupMenuButton<MembershipSummaryEntity>(
+        tooltip: context.local.myMemberships,
+        enabled: !_switching,
+        position: PopupMenuPosition.under,
+        offset: const Offset(0, 8),
+        color: context.customThemeColors.surfaceColor,
+        elevation: 8,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge), side: BorderSide(color: context.customThemeColors.borderColor)),
+        onSelected: _switchTo,
+        itemBuilder: (context) => [
+          PopupMenuItem<MembershipSummaryEntity>(
+            enabled: false,
+            height: 58,
+            child: SizedBox(
+              width: 300,
+              child: Row(
+                children: [
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(color: context.customThemeColors.primaryColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
+                    child: Icon(Icons.apartment_rounded, size: Dimensions.iconSizeDefault, color: context.customThemeColors.primaryColor),
+                  ),
+                  const SizedBox(width: Dimensions.paddingSizeDefault),
+                  Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(current.messName, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: context.customThemeColors.textPrimaryColor)),
+                        Text(context.local.myMemberships, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: context.customThemeColors.textSecondaryColor)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const PopupMenuDivider(),
+          for (final membership in memberships)
+            PopupMenuItem<MembershipSummaryEntity>(
+              value: membership,
+              enabled: membership.canSwitch && !membership.isCurrent,
+              height: 58,
+              child: SizedBox(
+                width: 300,
+                child: Row(
+                  children: [
+                    Icon(
+                      membership.isCurrent ? Icons.check_circle_rounded : membership.canSwitch ? Icons.calendar_month_rounded : Icons.lock_outline_rounded,
+                      size: Dimensions.iconSizeDefault,
+                      color: membership.isCurrent ? context.customThemeColors.primaryColor : membership.canSwitch ? context.customThemeColors.textSecondaryColor : context.customThemeColors.textHintColor,
+                    ),
+                    const SizedBox(width: Dimensions.paddingSizeDefault),
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(membership.seasonName, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: membership.canSwitch || membership.isCurrent ? context.customThemeColors.textPrimaryColor : context.customThemeColors.textHintColor)),
+                          const SizedBox(height: 2),
+                          Text(_subtitle(context, membership), maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: context.customThemeColors.textSecondaryColor)),
+                        ],
+                      ),
+                    ),
+                    if (membership.isCurrent)
+                      Text(context.local.currentMembership, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: context.customThemeColors.primaryColor))
+                    else if (membership.canSwitch)
+                      Icon(Icons.swap_horiz_rounded, size: Dimensions.iconSizeSmall + 2, color: context.customThemeColors.primaryColor)
+                    else
+                      Icon(Icons.lock_outline_rounded, size: Dimensions.iconSizeSmall, color: context.customThemeColors.textHintColor),
+                  ],
+                ),
+              ),
+            ),
+        ],
+        child: _MembershipChip(current: current, switching: _switching, hasSwitch: hasSwitch),
+      ),
+    );
+  }
+
+  String _subtitle(BuildContext context, MembershipSummaryEntity membership) {
+    final role = switch (membership.role) {
+      'manager' => context.local.roleManager,
+      'acting_manager' => context.local.roleActingManager,
+      _ => context.local.roleMember,
+    };
+    return membership.status == 'left' ? '$role · ${context.local.membershipLeft}' : role;
+  }
+
+  Future<void> _switchTo(MembershipSummaryEntity membership) async {
+    if (_switching) return;
+    setState(() => _switching = true);
+    try {
+      await context.read<MembershipCubit>().switchMembership(membership);
+      if (!mounted) return;
+      await context.read<AuthBloc>().refreshProfile();
+      if (!mounted) return;
+      context.showSuccessSnackBar(context.local.switchedMembership(membership.messName, membership.seasonName));
+      context.go(AppRoutes.home);
+    } catch (error) {
+      if (mounted) context.showErrorSnackBar(error);
+    } finally {
+      if (mounted) setState(() => _switching = false);
+    }
+  }
+}
+
+class _MembershipChip extends StatelessWidget {
+  const _MembershipChip({required this.current, required this.switching, required this.hasSwitch});
+
+  final MembershipSummaryEntity current;
+  final bool switching;
+  final bool hasSwitch;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+    final radius = BorderRadius.circular(Dimensions.radiusLarge);
+    final initial = current.messName.trim().characters.take(1).toString().toUpperCase();
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 220),
+      padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+      decoration: BoxDecoration(
+        color: colors.primaryColor.withValues(alpha: 0.09),
+        borderRadius: radius,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 24,
+            height: 24,
+            decoration: BoxDecoration(color: colors.primaryColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(Dimensions.radiusSmall + 2)),
+            child: switching
+                ? const Padding(padding: EdgeInsets.all(Dimensions.paddingSizeExtraSmall), child: CircularProgressIndicator(strokeWidth: 2))
+                : Center(child: Text(initial.isEmpty ? '?' : initial, style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraSmall + 1, color: colors.primaryColor))),
+          ),
+          const SizedBox(width: Dimensions.paddingSizeSmall),
+          Flexible(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(child: Text(_limited(current.messName, 15), maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textPrimaryColor))),
+                    if (hasSwitch) ...[
+                      const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                      Icon(Icons.keyboard_arrow_down_rounded, size: Dimensions.iconSizeSmall, color: colors.primaryColor),
+                    ],
+                  ],
+                ),
+                Text(_limited(current.seasonName, 20), maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: colors.textSecondaryColor)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _limited(String value, int max) {
+    if (value.characters.length <= max) return value;
+    return '${value.characters.take(max - 1).toString().trimRight()}…';
   }
 }
 
@@ -315,7 +516,12 @@ class _ProfileChip extends StatelessWidget {
       return IconButton(tooltip: context.local.uiProfileMenu, onPressed: onTap, icon: avatar);
     }
 
-    final radius = BorderRadius.circular(Dimensions.radiusExtra2Large);
+    final radius = const BorderRadius.only(
+      topLeft: Radius.circular(Dimensions.radiusLarge),
+      bottomLeft: Radius.circular(Dimensions.radiusLarge),
+      topRight: Radius.circular(Dimensions.radiusLarge),
+      bottomRight: Radius.circular(Dimensions.radiusLarge),
+    );
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 150),
       child: Material(
@@ -326,7 +532,6 @@ class _ProfileChip extends StatelessWidget {
           borderRadius: radius,
           child: Container(
             padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeExtraSmall, Dimensions.paddingSizeExtraSmall, Dimensions.paddingSizeDefault, Dimensions.paddingSizeExtraSmall),
-            decoration: BoxDecoration(borderRadius: radius, border: Border.all(color: colors.borderColor)),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
