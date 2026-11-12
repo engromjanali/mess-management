@@ -13,6 +13,7 @@ import 'package:mess_pilot/core/extensions/overly_extensions.dart';
 import 'package:mess_pilot/core/extensions/screen_matres_extensions.dart';
 import 'package:mess_pilot/core/helpers/responsive_helper.dart';
 import 'package:mess_pilot/core/role/role_cubit.dart';
+import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/core/widgets/app_footer.dart';
 import 'package:mess_pilot/core/widgets/home_back_button.dart';
 import 'package:mess_pilot/core/widgets/web_page_title_bar.dart';
@@ -158,18 +159,15 @@ class _NoticeBody extends StatelessWidget {
 
   Future<void> _onDelete(BuildContext context, NoticeEntity notice) async {
     final bloc = context.read<NoticeBloc>();
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(context.local.deleteNotice),
-        content: Text(context.local.deleteNoticeConfirm(notice.title)),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: Text(context.local.cancel)),
-          FilledButton(onPressed: () => Navigator.of(ctx).pop(true), child: Text(context.local.delete)),
-        ],
-      ),
+    final confirmed = await showAppConfirmDialog(
+      context,
+      title: context.local.deleteNotice,
+      message: context.local.deleteNoticeConfirm(notice.title),
+      confirmLabel: context.local.delete,
+      icon: Icons.delete_outline_rounded,
+      destructive: true,
     );
-    if (!(confirmed ?? false) || !context.mounted) return;
+    if (!confirmed || !context.mounted) return;
 
     final success = context.local.noticeDeleted;
     final done = Completer<Failure?>();

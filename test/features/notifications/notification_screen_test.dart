@@ -1,3 +1,4 @@
+import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/core/widgets/app_footer.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_event.dart';
@@ -68,7 +69,7 @@ void main() {
       await tester.ensureVisible(find.text(title));
       tester.widget<InkWell>(find.descendant(of: find.byType(Card), matching: find.byType(InkWell)).first).onTap!();
       await tester.pumpAndSettle();
-      expect(find.byType(AlertDialog), findsOneWidget);
+      expect(find.byType(AppDialog), findsOneWidget);
       expect(find.text(description), findsNWidgets(2));
       expect(tester.takeException(), isNull, reason: locale);
     }

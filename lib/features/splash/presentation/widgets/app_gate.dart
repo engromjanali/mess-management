@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:mess_pilot/config/route/app_router.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
 import 'package:mess_pilot/core/helpers/auth_helper.dart';
+import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/features/splash/domain/entities/config_entity.dart';
 
 /// The installed app's version, e.g. `1.0.0` (from pubspec `version`).
@@ -67,19 +68,21 @@ class _UpdateAvailableDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final url = storeUrl(config);
-    return AlertDialog(
-      icon: const Icon(Icons.system_update_rounded),
-      title: Text(context.local.updateAvailableTitle),
-      content: Text(config.updateMessage.isNotEmpty ? config.updateMessage : context.local.updateAvailableMessage(currentVersion, config.latestVersion)),
+    return AppDialog(
+      icon: Icons.system_update_rounded,
+      tone: AppDialogTone.info,
+      title: context.local.updateAvailableTitle,
+      message: config.updateMessage.isNotEmpty ? config.updateMessage : context.local.updateAvailableMessage(currentVersion, config.latestVersion),
       actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(context.local.later)),
+        AppDialogAction(label: context.local.later, style: AppDialogActionStyle.secondary, onPressed: (dialogContext) => Navigator.of(dialogContext).pop()),
         if (url != null)
-          FilledButton(
-            onPressed: () {
-              Navigator.of(context).pop();
+          AppDialogAction(
+            label: context.local.updateNow,
+            icon: Icons.open_in_new_rounded,
+            onPressed: (dialogContext) {
+              Navigator.of(dialogContext).pop();
               openStore(url);
             },
-            child: Text(context.local.updateNow),
           ),
       ],
     );

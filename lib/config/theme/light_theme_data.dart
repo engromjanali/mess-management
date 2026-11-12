@@ -112,6 +112,15 @@ ThemeData lightThemeData = ThemeData(
     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
   ),
 
+  // Dialog
+  dialogTheme: DialogThemeData(
+    backgroundColor: const Color(0xFFFFFFFF),
+    surfaceTintColor: Colors.transparent,
+    elevation: 0,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusExtra2Large + 4)),
+    insetPadding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraLarge, vertical: Dimensions.paddingSizeExtraLarge24),
+  ),
+
   // Divider
   dividerColor: const Color(0xFFBDBDBD),
 

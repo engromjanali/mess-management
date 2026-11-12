@@ -7,6 +7,7 @@ import 'package:mess_pilot/core/di/injection.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
 import 'package:mess_pilot/core/network/api_client.dart';
 import 'package:mess_pilot/core/helpers/responsive_helper.dart';
+import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/core/widgets/app_page_scroll_view.dart';
 import 'package:mess_pilot/core/widgets/web_page_title_bar.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/dashboard_top_bar.dart';
@@ -80,20 +81,29 @@ class _NotificationScreenState extends State<NotificationScreen> {
         if (route is String && RegExp(r'^/notices/[1-9][0-9]*$').hasMatch(route)) await context.push(route);
       } else {
         final changeSeason = data['status'] == 'change_season';
-        await showDialog<void>(context: context, builder: (dialogContext) => AlertDialog(
-          icon: Icon(changeSeason ? Icons.swap_horiz_rounded : Icons.lock_outline_rounded, color: context.colorScheme.primary),
-          title: Text(context.local.uiNotifications),
-          content: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+        await showDialog<void>(context: context, builder: (_) => AppDialog(
+          icon: changeSeason ? Icons.swap_horiz_rounded : Icons.lock_outline_rounded,
+          tone: changeSeason ? AppDialogTone.info : AppDialogTone.warning,
+          title: context.local.uiNotifications,
+          content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(data['title'] as String? ?? '', style: context.textTheme.titleMedium),
             const SizedBox(height: 12),
             Text(data['description'] as String? ?? ''),
             const SizedBox(height: 20),
             Text(changeSeason ? context.local.notificationChangeSeason : context.local.notificationAccessUnavailable, style: TextStyle(color: context.colorScheme.error)),
             if (data['season_name'] != null) ...[const SizedBox(height: 12), Text(context.local.seasonName(data['season_name'] as String))],
-          ])),
+          ]),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(context.local.cancel)),
-            if (changeSeason) FilledButton(onPressed: () { Navigator.pop(dialogContext); context.push(AppRoutes.manageMembership); }, child: Text(context.local.notificationChooseSeason)),
+            AppDialogAction(label: context.local.cancel, style: AppDialogActionStyle.secondary, onPressed: (dialogContext) => Navigator.pop(dialogContext)),
+            if (changeSeason)
+              AppDialogAction(
+                label: context.local.notificationChooseSeason,
+                icon: Icons.event_available_rounded,
+                onPressed: (dialogContext) {
+                  Navigator.pop(dialogContext);
+                  context.push(AppRoutes.manageMembership);
+                },
+              ),
           ],
         ));
       }

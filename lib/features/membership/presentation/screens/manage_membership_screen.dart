@@ -1,3 +1,4 @@
+import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/core/widgets/app_page_scroll_view.dart';
 import 'package:mess_pilot/core/widgets/app_user_avatar.dart';
 import 'package:mess_pilot/core/widgets/app_state_view.dart';
@@ -240,9 +241,10 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
     setState(() => _selectedMember = null);
     await showDialog<void>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        icon: Icon(Icons.mark_email_read_rounded, color: context.customThemeColors.successColor, size: Dimensions.iconSizeExtraLarge),
-        title: Text(local.invitationSent),
+      builder: (_) => AppDialog(
+        icon: Icons.mark_email_read_rounded,
+        tone: AppDialogTone.success,
+        title: local.invitationSent,
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -254,7 +256,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
             _CopyValue(label: local.invitationCode, value: invite['invite_code'] as String),
           ],
         ),
-        actions: [TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: Text(local.done))],
+        actions: [AppDialogAction(label: local.done, onPressed: (dialogContext) => Navigator.of(dialogContext).pop())],
       ),
     );
     await _load();
@@ -305,22 +307,16 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
 
   Future<void> _revoke(int inviteId) async {
     final local = context.local;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(local.cancelInvitationTitle),
-        content: Text(local.cancelInvitationConfirm(inviteId)),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: Text(local.keep)),
-          FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: context.customThemeColors.errorColor),
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text(local.revoke),
-          ),
-        ],
-      ),
+    final confirmed = await showAppConfirmDialog(
+      context,
+      title: local.cancelInvitationTitle,
+      message: local.cancelInvitationConfirm(inviteId),
+      confirmLabel: local.revoke,
+      cancelLabel: local.keep,
+      icon: Icons.link_off_rounded,
+      destructive: true,
     );
-    if (confirmed != true || !mounted) return;
+    if (!confirmed || !mounted) return;
     setState(() => _busyInviteId = inviteId);
     try {
       await _service.revokeInvite(inviteId);
@@ -351,22 +347,15 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
       );
       if (seasonId == null) return;
     } else {
-      final confirmed = await showDialog<bool>(
-        context: context,
-        builder: (dialogContext) => AlertDialog(
-          title: Text(local.rejectRequestTitle(name)),
-          content: Text(local.rejectRequestConfirm(name)),
-          actions: [
-            TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: Text(local.cancel)),
-            FilledButton(
-              style: FilledButton.styleFrom(backgroundColor: context.customThemeColors.errorColor),
-              onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: Text(local.reject),
-            ),
-          ],
-        ),
+      final confirmed = await showAppConfirmDialog(
+        context,
+        title: local.rejectRequestTitle(name),
+        message: local.rejectRequestConfirm(name),
+        confirmLabel: local.reject,
+        icon: Icons.person_off_outlined,
+        destructive: true,
       );
-      if (confirmed != true) return;
+      if (!confirmed) return;
     }
     if (!mounted) return;
 
@@ -420,22 +409,15 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
         MemberAction.enable => ('', '', ''),
       };
       final destructive = action == MemberAction.disable || action == MemberAction.makePrimaryManager;
-      final confirmed = await showDialog<bool>(
-        context: context,
-        builder: (dialogContext) => AlertDialog(
-          title: Text(title),
-          content: Text(body),
-          actions: [
-            TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: Text(local.cancel)),
-            FilledButton(
-              style: destructive ? FilledButton.styleFrom(backgroundColor: context.customThemeColors.errorColor) : null,
-              onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: Text(confirmLabel),
-            ),
-          ],
-        ),
+      final confirmed = await showAppConfirmDialog(
+        context,
+        title: title,
+        message: body,
+        confirmLabel: confirmLabel,
+        destructive: destructive,
+        icon: destructive ? Icons.warning_amber_rounded : Icons.manage_accounts_rounded,
       );
-      if (!(confirmed ?? false) || !mounted) return;
+      if (!confirmed || !mounted) return;
     }
 
     setState(() => _busyMembershipId = membershipId);

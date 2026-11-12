@@ -1,3 +1,4 @@
+import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/core/widgets/app_page_scroll_view.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/main_page_body.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/web_profile_drawer.dart';
@@ -249,18 +250,14 @@ class _InviteCard extends StatelessWidget {
       context.showErrorSnackBar(context.local.inviteCodeRequired);
       return;
     }
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(context.local.uiJoinMess),
-        content: Text(messName == null ? context.local.uiAreYouSureYouWantToUseThisInvitationAndJoinTheMess : context.local.uiJoinNamedMess(messName)),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: Text(context.local.cancel)),
-          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: Text(context.local.uiJoin)),
-        ],
-      ),
+    final confirmed = await showAppConfirmDialog(
+      context,
+      title: context.local.uiJoinMess,
+      message: messName == null ? context.local.uiAreYouSureYouWantToUseThisInvitationAndJoinTheMess : context.local.uiJoinNamedMess(messName),
+      confirmLabel: context.local.uiJoin,
+      icon: Icons.group_add_outlined,
     );
-    if (confirmed == true && context.mounted) await context.read<MembershipCubit>().joinInvite(inviteCode);
+    if (confirmed && context.mounted) await context.read<MembershipCubit>().joinInvite(inviteCode);
   }
 
   @override

@@ -1,3 +1,4 @@
+import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/core/widgets/app_page_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -219,15 +220,14 @@ class _DeleteFormState extends State<_DeleteForm> {
 
   /// Confirms the date, then signs the user out like a real deletion would.
   Future<void> _showScheduledAndSignOut(DateTime scheduledFor) async {
-    await showDialog<void>(
-      context: context,
+    await showAppAlertDialog(
+      context,
+      title: context.local.deletionScheduledTitle,
+      message: context.local.deletionScheduledMessage(_longDate(scheduledFor)),
+      icon: Icons.event_busy_rounded,
+      tone: AppDialogTone.danger,
+      okLabel: context.local.done,
       barrierDismissible: false,
-      builder: (dialogContext) => AlertDialog(
-        icon: Icon(Icons.event_busy_rounded, color: context.customThemeColors.errorColor),
-        title: Text(context.local.deletionScheduledTitle),
-        content: Text(context.local.deletionScheduledMessage(_longDate(scheduledFor))),
-        actions: [FilledButton(onPressed: () => Navigator.of(dialogContext).pop(), child: Text(context.local.done))],
-      ),
     );
     if (!mounted) return;
     context.read<AuthBloc>().add(const AuthEvent.logoutRequested());

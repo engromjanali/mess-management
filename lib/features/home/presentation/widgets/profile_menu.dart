@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:mess_pilot/config/route/app_router.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
+import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_event.dart';
 
@@ -57,18 +58,15 @@ List<ProfileMenuItem> profileMenuItems(BuildContext context, {required bool canM
 /// runs once confirmed (e.g. to close the drawer).
 Future<void> confirmSignOut(BuildContext context, {VoidCallback? beforeSignOut}) async {
   final authBloc = context.read<AuthBloc>();
-  final confirmed = await showDialog<bool>(
-    context: context,
-    builder: (dialogContext) => AlertDialog(
-      title: Text(context.local.logout),
-      content: Text(context.local.logoutConfirm),
-      actions: [
-        TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: Text(context.local.cancel)),
-        FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: Text(context.local.logout)),
-      ],
-    ),
+  final confirmed = await showAppConfirmDialog(
+    context,
+    title: context.local.logout,
+    message: context.local.logoutConfirm,
+    confirmLabel: context.local.logout,
+    icon: Icons.logout_rounded,
+    tone: AppDialogTone.warning,
   );
-  if (!(confirmed ?? false) || !context.mounted) return;
+  if (!confirmed || !context.mounted) return;
   beforeSignOut?.call();
   authBloc.add(const AuthEvent.logoutRequested());
   context.go(AppRoutes.getLoginRoute());

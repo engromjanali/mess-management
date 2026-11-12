@@ -9,6 +9,7 @@ import 'package:mess_pilot/core/extensions/overly_extensions.dart';
 import 'package:mess_pilot/core/extensions/screen_matres_extensions.dart';
 import 'package:mess_pilot/core/helpers/responsive_helper.dart';
 import 'package:mess_pilot/core/role/role_cubit.dart';
+import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/core/widgets/app_footer.dart';
 import 'package:mess_pilot/core/widgets/home_back_button.dart';
 import 'package:mess_pilot/core/widgets/web_page_title_bar.dart';
@@ -143,24 +144,19 @@ class _FundBody extends StatelessWidget {
 
   Future<void> _onDelete(BuildContext context, FundEntity fund) async {
     final bloc = context.read<FundBloc>();
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(context.local.deleteFund),
-        content: Text(
-          context.local.deleteFundConfirm(
-            (fund.isCredit ? context.local.credit : context.local.debit).toLowerCase(),
-            FundFormatters.taka(fund.absoluteAmount),
-            FundFormatters.date(fund.date),
-          ),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: Text(context.local.cancel)),
-          FilledButton(onPressed: () => Navigator.of(ctx).pop(true), child: Text(context.local.delete)),
-        ],
+    final confirmed = await showAppConfirmDialog(
+      context,
+      title: context.local.deleteFund,
+      message: context.local.deleteFundConfirm(
+        (fund.isCredit ? context.local.credit : context.local.debit).toLowerCase(),
+        FundFormatters.taka(fund.absoluteAmount),
+        FundFormatters.date(fund.date),
       ),
+      confirmLabel: context.local.delete,
+      icon: Icons.delete_outline_rounded,
+      destructive: true,
     );
-    if (confirmed ?? false) {
+    if (confirmed) {
       bloc.add(FundEvent.delete(fund.id));
     }
   }

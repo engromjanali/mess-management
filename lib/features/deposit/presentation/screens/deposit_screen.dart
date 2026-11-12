@@ -10,6 +10,7 @@ import 'package:mess_pilot/core/extensions/overly_extensions.dart';
 import 'package:mess_pilot/core/extensions/screen_matres_extensions.dart';
 import 'package:mess_pilot/core/helpers/responsive_helper.dart';
 import 'package:mess_pilot/core/role/role_cubit.dart';
+import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/core/widgets/app_footer.dart';
 import 'package:mess_pilot/core/widgets/home_back_button.dart';
 
@@ -178,20 +179,15 @@ class _DepositBody extends StatelessWidget {
 
   Future<void> _onDelete(BuildContext context, DepositEntity deposit) async {
     final bloc = context.read<DepositBloc>();
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(context.local.uiDeleteDeposit),
-        content: Text(
-          context.local.uiDeleteDepositConfirmation(deposit.isCredit ? context.local.credit : context.local.debit, DepositFormatters.taka(deposit.absoluteAmount), deposit.memberName),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: Text(context.local.cancel)),
-          FilledButton(onPressed: () => Navigator.of(ctx).pop(true), child: Text(context.local.delete)),
-        ],
-      ),
+    final confirmed = await showAppConfirmDialog(
+      context,
+      title: context.local.uiDeleteDeposit,
+      message: context.local.uiDeleteDepositConfirmation(deposit.isCredit ? context.local.credit : context.local.debit, DepositFormatters.taka(deposit.absoluteAmount), deposit.memberName),
+      confirmLabel: context.local.delete,
+      icon: Icons.delete_outline_rounded,
+      destructive: true,
     );
-    if (confirmed ?? false) {
+    if (confirmed) {
       bloc.add(DepositEvent.delete(deposit.id));
     }
   }
