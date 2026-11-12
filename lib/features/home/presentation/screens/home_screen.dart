@@ -179,24 +179,6 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
                   slivers: [
                     SliverPersistentHeader(
                       pinned: true,
-                      delegate: PinnedSectionHeader(title: context.local.uiMessSection, icon: Icons.groups_rounded),
-                    ),
-                    _StatSliverGrid(stats: _messStats(context, dashboard)),
-                    SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge),
-                      sliver: SliverToBoxAdapter(child: AnimatedEntrance(child: _MessDetailsCard(dashboard: dashboard))),
-                    ),
-                    const SliverPadding(
-                      padding: EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, 0, Dimensions.paddingSizeLarge, Dimensions.paddingSizeDefault),
-                      sliver: SliverToBoxAdapter(child: AnimatedEntrance(child: FeedbackBannerCard())),
-                    ),
-                  ],
-                ),
-                SliverToBoxAdapter(child: SizedBox(key: _statsAnchor, height: 0)),
-                SliverMainAxisGroup(
-                  slivers: [
-                    SliverPersistentHeader(
-                      pinned: true,
                       delegate: PinnedSectionHeader(title: context.local.uiMySection, icon: Icons.person_rounded),
                     ),
                     if (dashboard.isMember)
@@ -208,6 +190,7 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
                       ),
                   ],
                 ),
+                SliverToBoxAdapter(child: SizedBox(key: _statsAnchor, height: 0)),
                 if (dashboard.isManager) ...[
                   SliverMainAxisGroup(
                     slivers: [
@@ -226,6 +209,23 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
                     ],
                   ),
                 ],
+                SliverMainAxisGroup(
+                  slivers: [
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: PinnedSectionHeader(title: context.local.uiMessSection, icon: Icons.groups_rounded),
+                    ),
+                    _StatSliverGrid(stats: _messStats(context, dashboard)),
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge),
+                      sliver: SliverToBoxAdapter(child: AnimatedEntrance(child: _MessDetailsCard(dashboard: dashboard))),
+                    ),
+                    const SliverPadding(
+                      padding: EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, 0, Dimensions.paddingSizeLarge, Dimensions.paddingSizeDefault),
+                      sliver: SliverToBoxAdapter(child: AnimatedEntrance(child: FeedbackBannerCard())),
+                    ),
+                  ],
+                ),
                 SliverToBoxAdapter(child: SizedBox(key: _noticeAnchor, height: 0)),
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeExtraLarge32),
@@ -314,13 +314,6 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
                         const AnimatedEntrance(child: FeedbackBannerCard()),
                         const SizedBox(height: Dimensions.paddingSizeSmall),
 
-                        // Mess section — wide grid.
-                        SectionTitle(title: context.local.uiMessSection, icon: Icons.groups_rounded),
-                        _StatBoxGrid(stats: _messStats(context, dashboard), maxCrossAxisExtent: 230),
-                        const SizedBox(height: Dimensions.paddingSizeDefault),
-                        AnimatedEntrance(child: _MessDetailsCard(dashboard: dashboard)),
-                        const SizedBox(height: Dimensions.paddingSizeLarge),
-
                         // My section (left) + pinned notice (right).
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -351,7 +344,6 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
                             ),
                           ],
                         ),
-
                         if (dashboard.isManager) ...[
                           const SizedBox(height: Dimensions.paddingSizeLarge),
                           SectionTitle(title: context.local.members, icon: Icons.bar_chart_rounded),
@@ -359,6 +351,13 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
                             child: MemberStatsTable(members: dashboard.members, mealRate: dashboard.mealRate),
                           ),
                         ],
+                        const SizedBox(height: Dimensions.paddingSizeLarge),
+
+                        // Mess section — wide grid.
+                        SectionTitle(title: context.local.uiMessSection, icon: Icons.groups_rounded),
+                        _StatBoxGrid(stats: _messStats(context, dashboard), maxCrossAxisExtent: 230),
+                        const SizedBox(height: Dimensions.paddingSizeDefault),
+                        AnimatedEntrance(child: _MessDetailsCard(dashboard: dashboard)),
                             const SizedBox(height: Dimensions.paddingSizeExtraLarge32),
                           ],
                         ),
@@ -489,7 +488,6 @@ class _MessDetailsCardState extends State<_MessDetailsCard> {
                     label: Text(context.local.showOnGoogleMaps),
                   ),
                   OutlinedButton.icon(onPressed: () => context.go(AppRoutes.opinions), icon: const Icon(Icons.forum_outlined), label: Text(context.local.shareYourOpinions)),
-                  OutlinedButton.icon(onPressed: () => context.go(AppRoutes.feedback), icon: const Icon(Icons.feedback_outlined), label: Text(context.local.feedbackTitle)),
                 ],
               ),
             ],
