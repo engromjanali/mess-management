@@ -656,5 +656,7 @@
   "orDivider": "অথবা",
   "googleSignInFailed": "Google সাইন-ইন ব্যর্থ হয়েছে। আবার চেষ্টা করুন।",
   "googleSignInNotConfigured": "এই বিল্ডে Google সাইন-ইন কনফিগার করা হয়নি।",
-  "passwordLeaveBlankHint": "অপরিবর্তিত রাখতে খালি রাখুন।"
+  "passwordLeaveBlankHint": "অপরিবর্তিত রাখতে খালি রাখুন।",
+  "showOnMap": "ম্যাপে দেখুন",
+  "shareOpinion": "মতামত দিন"
 }

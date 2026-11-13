@@ -28,6 +28,7 @@ import 'package:mess_pilot/features/home/presentation/widgets/feedback_banner_ca
 import 'package:mess_pilot/features/home/presentation/widgets/dashboard_top_bar.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/home_sliver_app_bar.dart';
 import 'package:mess_pilot/features/membership/data/membership_api_service.dart';
+import 'package:mess_pilot/features/membership/presentation/bloc/membership_cubit.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/member_stats_table.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/pinned_notice_card.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/pinned_section_header.dart';
@@ -162,6 +163,9 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
     final role = context.watch<RoleCubit>().state;
     final photoUrl = context.select<AuthBloc, String?>((bloc) => bloc.state.maybeWhen(authenticated: (user) => user.photoUrl, orElse: () => null));
     final showMembers = dashboard.isManager || dashboard.members.isNotEmpty;
+    final membershipState = context.watch<MembershipCubit>().state;
+    final membership = membershipState is MembershipLoaded ? membershipState.status.current : null;
+    final canSwitchMembership = membership != null && membershipState is MembershipLoaded && membershipState.status.memberships.any((item) => item.messId == membership.messId && item.canSwitch && !item.isCurrent);
 
     return Stack(
       children: [
@@ -171,7 +175,16 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
-                HomeSliverAppBar(userName: dashboard.userName, role: role, photoUrl: photoUrl, currentSeasonName: dashboard.currentSeasonName, totalBalance: dashboard.totalBalance, expandedHeight: 200),
+                HomeSliverAppBar(
+                  userName: dashboard.userName,
+                  role: role,
+                  photoUrl: photoUrl,
+                  currentSeasonName: dashboard.currentSeasonName,
+                  totalBalance: dashboard.totalBalance,
+                  expandedHeight: 200,
+                  membership: membership,
+                  hasSwitch: canSwitchMembership,
+                ),
                 if (dashboard.isManager) ...[
                   ..._buildMessSection(context, dashboard),
                   ..._buildCardSection(dashboard),
@@ -567,9 +580,9 @@ class _MessDetailsCardState extends State<_MessDetailsCard> {
                   FilledButton.icon(
                     onPressed: _openingMap ? null : _openMap,
                     icon: _openingMap ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.map_outlined),
-                    label: Text(context.local.showOnGoogleMaps),
+                    label: Text(context.local.showOnMap),
                   ),
-                  OutlinedButton.icon(onPressed: () => context.go(AppRoutes.opinions), icon: const Icon(Icons.forum_outlined), label: Text(context.local.shareYourOpinions)),
+                  OutlinedButton.icon(onPressed: () => context.go(AppRoutes.opinions), icon: const Icon(Icons.forum_outlined), label: Text(context.local.shareOpinion)),
                 ],
               ),
             ],
@@ -662,7 +675,7 @@ class _StatBoxGrid extends StatelessWidget {
 
 Widget _statCard(_Stat stat) => StatCard(label: stat.label, value: stat.value, icon: stat.icon, accent: stat.accent);
 
-Widget _heroBanner(DashboardEntity d) => DashboardHeroBanner(userName: d.userName, currentSeasonName: d.currentSeasonName, totalBalance: d.totalBalance);
+Widget _heroBanner(DashboardEntity d) => DashboardHeroBanner(userName: d.userName, totalBalance: d.totalBalance);
 
 Future<void> _refresh(BuildContext context) async {
   context.read<HomeBloc>().add(const HomeEvent.refreshDashboard());

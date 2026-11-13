@@ -1165,5 +1165,7 @@
   "orDivider": "or",
   "googleSignInFailed": "Google sign-in failed. Please try again.",
   "googleSignInNotConfigured": "Google sign-in isn't configured in this build.",
-  "passwordLeaveBlankHint": "Leave blank to keep unchanged."
+  "passwordLeaveBlankHint": "Leave blank to keep unchanged.",
+  "showOnMap": "Show on map",
+  "shareOpinion": "Share opinion"
 }

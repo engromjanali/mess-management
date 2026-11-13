@@ -656,5 +656,7 @@
   "orDivider": "أو",
   "googleSignInFailed": "تعذر تسجيل الدخول باستخدام Google. حاول مرة أخرى.",
   "googleSignInNotConfigured": "لم يتم تكوين تسجيل الدخول باستخدام Google في هذا الإصدار.",
-  "passwordLeaveBlankHint": "اتركه فارغًا للإبقاء عليه دون تغيير."
+  "passwordLeaveBlankHint": "اتركه فارغًا للإبقاء عليه دون تغيير.",
+  "showOnMap": "عرض على الخريطة",
+  "shareOpinion": "شارك رأيك"
 }

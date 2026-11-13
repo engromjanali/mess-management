@@ -5,9 +5,11 @@ import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/dashboard_formatters.dart';
+import 'package:mess_pilot/features/home/presentation/widgets/membership_summary_card.dart';
+import 'package:mess_pilot/features/membership/domain/entities/membership_status_entity.dart';
 
 class HomeSliverAppBar extends StatelessWidget {
-  const HomeSliverAppBar({required this.userName, required this.role, required this.currentSeasonName, required this.totalBalance, required this.expandedHeight, this.photoUrl, super.key});
+  const HomeSliverAppBar({required this.userName, required this.role, required this.currentSeasonName, required this.totalBalance, required this.expandedHeight, this.photoUrl, this.membership, this.hasSwitch = false, super.key});
 
   final String userName;
   final UserRole role;
@@ -15,6 +17,8 @@ class HomeSliverAppBar extends StatelessWidget {
   final String currentSeasonName;
   final double totalBalance;
   final double expandedHeight;
+  final MembershipSummaryEntity? membership;
+  final bool hasSwitch;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +51,7 @@ class HomeSliverAppBar extends StatelessWidget {
           return Stack(
             fit: StackFit.expand,
             children: [
-              _HeaderBackground(userName: userName, currentSeasonName: currentSeasonName, totalBalance: totalBalance, expandedHeight: maximumHeight, contentOpacity: expandedOpacity),
+              _HeaderBackground(userName: userName, currentSeasonName: currentSeasonName, totalBalance: totalBalance, expandedHeight: maximumHeight, contentOpacity: expandedOpacity, membership: membership, hasSwitch: hasSwitch),
               Positioned(
                 top: topInset,
                 left: Dimensions.paddingSizeLarge,
@@ -67,13 +71,15 @@ class HomeSliverAppBar extends StatelessWidget {
 }
 
 class _HeaderBackground extends StatelessWidget {
-  const _HeaderBackground({required this.userName, required this.currentSeasonName, required this.totalBalance, required this.expandedHeight, required this.contentOpacity});
+  const _HeaderBackground({required this.userName, required this.currentSeasonName, required this.totalBalance, required this.expandedHeight, required this.contentOpacity, this.membership, this.hasSwitch = false});
 
   final String userName;
   final String currentSeasonName;
   final double totalBalance;
   final double expandedHeight;
   final double contentOpacity;
+  final MembershipSummaryEntity? membership;
+  final bool hasSwitch;
 
   @override
   Widget build(BuildContext context) {
@@ -127,8 +133,16 @@ class _HeaderBackground extends StatelessWidget {
               alignment: AlignmentDirectional.centerStart,
               child: Text(DashboardFormatters.taka(totalBalance), style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: 32)),
             ),
-            if (currentSeasonName.isNotEmpty)
-              _SeasonChip(seasonName: currentSeasonName),
+            if (membership != null || currentSeasonName.isNotEmpty)
+              MembershipSummaryCard(
+                messName: membership?.messName ?? '',
+                seasonName: membership?.seasonName ?? currentSeasonName,
+                hasSwitch: hasSwitch,
+                maxMessChars: 100,
+                maxSeasonChars: 100,
+                maxWidth: MediaQuery.sizeOf(context).width,
+                onDark: true,
+              ),
             const SizedBox(height: Dimensions.paddingSizeDefault),
           ]),
                 ),
@@ -180,36 +194,6 @@ class _CollapsedIdentity extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _SeasonChip extends StatelessWidget {
-  const _SeasonChip({required this.seasonName});
-
-  final String seasonName;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      constraints: const BoxConstraints(maxWidth: 320),
-      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeSmall),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.18),
-        borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(width: 30, height: 30, decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.16), borderRadius: BorderRadius.circular(Dimensions.radiusDefault)), child: const Icon(Icons.event_note_rounded, size: Dimensions.iconSizeSmall, color: Colors.white)),
-          const SizedBox(width: Dimensions.paddingSizeSmall),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(context.local.currentSeasonLabel, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.70), fontSize: Dimensions.fontSizeExtraSmall)),
-            Text(seasonName, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedSemiBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeSmall)),
-          ])),
-        ],
-      ),
     );
   }
 }
