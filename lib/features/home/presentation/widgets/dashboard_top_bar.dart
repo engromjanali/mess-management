@@ -15,6 +15,7 @@ import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
 import 'package:mess_pilot/features/membership/domain/entities/membership_status_entity.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/membership_summary_card.dart';
 import 'package:mess_pilot/features/membership/presentation/bloc/membership_cubit.dart';
+import 'package:mess_pilot/features/membership/presentation/widgets/mess_avatar.dart';
 import 'package:mess_pilot/features/settings/domain/entities/theme_mode.dart';
 import 'package:mess_pilot/features/settings/presentation/bloc/localization/localization_bloc.dart';
 import 'package:mess_pilot/features/settings/presentation/bloc/theme/theme_bloc.dart';
@@ -258,12 +259,7 @@ class _MembershipMenuState extends State<_MembershipMenu> {
               width: 300,
               child: Row(
                 children: [
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(color: context.customThemeColors.primaryColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
-                    child: Icon(Icons.apartment_rounded, size: Dimensions.iconSizeDefault, color: context.customThemeColors.primaryColor),
-                  ),
+                  MessAvatar(name: current.messName, color: context.customThemeColors.primaryColor, size: 36, imageUrl: current.messImageUrl),
                   const SizedBox(width: Dimensions.paddingSizeDefault),
                   Expanded(
                     child: Column(
@@ -317,7 +313,7 @@ class _MembershipMenuState extends State<_MembershipMenu> {
               ),
             ),
         ],
-        child: MembershipSummaryCard(messName: current.messName, seasonName: current.seasonName, switching: _switching, hasSwitch: hasSwitch),
+        child: MembershipSummaryCard(messName: current.messName, seasonName: current.seasonName, imageUrl: current.messImageUrl, switching: _switching, hasSwitch: hasSwitch),
       ),
     );
   }

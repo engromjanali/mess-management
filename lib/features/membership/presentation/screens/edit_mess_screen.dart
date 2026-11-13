@@ -11,6 +11,7 @@ import 'package:mess_pilot/core/widgets/code_picker_widget.dart';
 import 'package:mess_pilot/core/widgets/home_back_button.dart';
 import 'package:mess_pilot/core/widgets/mess_google_map_sheet.dart';
 import 'package:mess_pilot/features/membership/data/membership_api_service.dart';
+import 'package:mess_pilot/features/membership/presentation/widgets/mess_image_picker.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/main_page_body.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/web_profile_drawer.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +41,10 @@ class _EditMessScreenState extends State<EditMessScreen> {
   double? _latitude;
   double? _longitude;
   String _locationAddress = '';
+  Uint8List? _imageBytes;
+  String? _imageName;
+  String _imageUrl = '';
+  bool _removeImage = false;
   Map<String, String> _fieldErrors = const {};
 
   @override
@@ -69,6 +74,7 @@ class _EditMessScreenState extends State<EditMessScreen> {
       _latitude = mess.latitude;
       _longitude = mess.longitude;
       _locationAddress = mess.address;
+      _imageUrl = mess.imageUrl;
     } catch (error) {
       if (mounted) context.showErrorSnackBar(_errorMessage(error, context.local.messDetailsLoadFailed));
     } finally {
@@ -85,7 +91,7 @@ class _EditMessScreenState extends State<EditMessScreen> {
     });
     try {
       final phone = _phoneController.text.trim();
-      await _service.updateMess(name: _nameController.text.trim(), address: _addressController.text.trim(), email: _emailController.text.trim(), phone: phone.isEmpty ? '' : '$_dialCode$phone', latitude: _latitude, longitude: _longitude);
+      await _service.updateMess(name: _nameController.text.trim(), address: _addressController.text.trim(), email: _emailController.text.trim(), phone: phone.isEmpty ? '' : '$_dialCode$phone', latitude: _latitude, longitude: _longitude, imageBytes: _imageBytes, imageName: _imageName, removeImage: _removeImage);
       if (!mounted) return;
       saved = true;
     } on ServerException catch (error) {
@@ -165,6 +171,26 @@ class _EditMessScreenState extends State<EditMessScreen> {
     });
   }
 
+  Future<void> _pickImage() async {
+    if (_saving) return;
+    final picked = await pickMessImage(context);
+    if (picked == null || !mounted) return;
+    setState(() {
+      _imageBytes = picked.bytes;
+      _imageName = picked.name;
+      _removeImage = false;
+    });
+  }
+
+  void _removeImageBytes() {
+    setState(() {
+      _imageBytes = null;
+      _imageName = null;
+      _imageUrl = '';
+      _removeImage = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final showWebAppBar = MainPageBody.showWebAppBar(context);
@@ -221,6 +247,18 @@ class _EditMessScreenState extends State<EditMessScreen> {
                             textInputAction: TextInputAction.done,
                             inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(15)],
                             onFieldSubmitted: (_) => _save(),
+                          ),
+                          const SizedBox(height: Dimensions.paddingSizeDefault),
+                          Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: MessImagePicker(
+                              name: _nameController.text,
+                              imageUrl: _removeImage ? '' : _imageUrl,
+                              pickedBytes: _imageBytes,
+                              busy: _saving,
+                              onPick: _pickImage,
+                              onRemove: _removeImageBytes,
+                            ),
                           ),
                           const SizedBox(height: Dimensions.paddingSizeDefault),
                           OutlinedButton.icon(onPressed: _pickLocation, icon: const Icon(Icons.add_location_alt_outlined), label: Text(_latitude == null ? context.local.setMapLocation : context.local.changeMapLocation)),

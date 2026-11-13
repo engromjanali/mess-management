@@ -658,5 +658,8 @@
   "googleSignInNotConfigured": "এই বিল্ডে Google সাইন-ইন কনফিগার করা হয়নি।",
   "passwordLeaveBlankHint": "অপরিবর্তিত রাখতে খালি রাখুন।",
   "showOnMap": "ম্যাপে দেখুন",
-  "shareOpinion": "মতামত দিন"
+  "shareOpinion": "মতামত দিন",
+  "messImageOptional": "মেসের ছবি (ঐচ্ছিক)",
+  "changeMessImage": "মেসের ছবি পরিবর্তন করুন",
+  "removeImage": "ছবি মুছুন"
 }

@@ -658,5 +658,8 @@
   "googleSignInNotConfigured": "لم يتم تكوين تسجيل الدخول باستخدام Google في هذا الإصدار.",
   "passwordLeaveBlankHint": "اتركه فارغًا للإبقاء عليه دون تغيير.",
   "showOnMap": "عرض على الخريطة",
-  "shareOpinion": "شارك رأيك"
+  "shareOpinion": "شارك رأيك",
+  "messImageOptional": "صورة المس (اختياري)",
+  "changeMessImage": "تغيير صورة المس",
+  "removeImage": "إزالة الصورة"
 }

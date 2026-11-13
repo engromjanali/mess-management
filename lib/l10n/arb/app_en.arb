@@ -1167,5 +1167,8 @@
   "googleSignInNotConfigured": "Google sign-in isn't configured in this build.",
   "passwordLeaveBlankHint": "Leave blank to keep unchanged.",
   "showOnMap": "Show on map",
-  "shareOpinion": "Share opinion"
+  "shareOpinion": "Share opinion",
+  "messImageOptional": "Mess image (optional)",
+  "changeMessImage": "Change mess image",
+  "removeImage": "Remove image"
 }

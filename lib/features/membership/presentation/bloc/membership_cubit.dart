@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:mess_pilot/core/errors/exceptions.dart';
 import 'package:mess_pilot/features/membership/data/membership_api_service.dart';
 import 'package:mess_pilot/features/membership/domain/entities/membership_status_entity.dart';
@@ -64,10 +66,10 @@ class MembershipCubit extends Cubit<MembershipState> {
 
   Future<MessPageEntity> getAvailableMesses({required int page, required int limit, String search = ''}) => _service.getAvailableMesses(page: page, limit: limit, search: search);
 
-  Future<void> createMess({required String name, required String address, required String seasonName}) async {
+  Future<void> createMess({required String name, required String address, required String seasonName, Uint8List? imageBytes, String? imageName}) async {
     if (name.trim().isEmpty || seasonName.trim().isEmpty) return;
     try {
-      await _service.createMess(name: name.trim(), address: address.trim(), seasonName: seasonName.trim());
+      await _service.createMess(name: name.trim(), address: address.trim(), seasonName: seasonName.trim(), imageBytes: imageBytes, imageName: imageName);
       await load();
     } catch (e) {
       emit(MembershipError(_message(e, 'Could not create the mess. Please check the details and try again.')));

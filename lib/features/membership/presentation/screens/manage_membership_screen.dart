@@ -523,6 +523,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                                 child: _MembershipMessTile(
                                   messId: entry.key,
                                   messName: entry.value.first.messName,
+                                  messImageUrl: entry.value.first.messImageUrl,
                                   seasonCount: entry.value.length,
                                   isCurrent: entry.value.any((membership) => membership.isCurrent),
                                   onTap: () => setState(() => _selectedMembershipMessId = entry.key),
@@ -570,6 +571,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                             for (final invite in _status!.invites.where((invite) => _matchesFilter(_ManagementSection.invitations, invite.status)))
                               MessItemTile(
                                 messName: invite.messName,
+                                imageUrl: invite.messImageUrl,
                                 subtitle: [
                                   invite.seasonName == null ? context.local.inviteCode(invite.inviteCode) : context.local.invitationSeasonCode(invite.seasonName!, invite.inviteCode),
                                   ?_expiryLabel(context, invite.status, invite.expiresAt),
@@ -602,6 +604,7 @@ class _ManageMembershipScreenState extends State<ManageMembershipScreen> {
                             for (final request in _status!.joinRequests.where((request) => _matchesFilter(_ManagementSection.requests, request.status)))
                               MessItemTile(
                                 messName: request.messName,
+                                imageUrl: request.messImageUrl,
                                 subtitle: switch (request) {
                                   JoinRequestSummaryEntity(status: 'pending') => [context.local.waitingForApproval, ?_expiryLabel(context, request.status, request.expiresAt)].join(' · '),
                                   JoinRequestSummaryEntity(status: 'approved', :final seasonName?) => context.local.approvedForSeason(seasonName),
@@ -822,10 +825,11 @@ class _ManagePanel extends StatelessWidget {
 }
 
 class _MembershipMessTile extends StatelessWidget {
-  const _MembershipMessTile({required this.messId, required this.messName, required this.seasonCount, required this.isCurrent, required this.onTap});
+  const _MembershipMessTile({required this.messId, required this.messName, required this.seasonCount, required this.isCurrent, required this.onTap, this.messImageUrl = ''});
 
   final int messId;
   final String messName;
+  final String messImageUrl;
   final int seasonCount;
   final bool isCurrent;
   final VoidCallback onTap;
@@ -843,7 +847,7 @@ class _MembershipMessTile extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
           child: Row(children: [
-            MessAvatar(name: messName, color: colors.primaryColor, size: 44),
+            MessAvatar(name: messName, color: colors.primaryColor, size: 44, imageUrl: messImageUrl),
             const SizedBox(width: Dimensions.paddingSizeDefault),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(messName, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor)),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
+import 'package:mess_pilot/core/helpers/image_url_helper.dart';
 import 'package:mess_pilot/features/membership/domain/entities/mess_details_entity.dart';
 import 'package:mess_pilot/features/membership/presentation/widgets/mess_formatters.dart';
 
@@ -16,6 +17,9 @@ class MessHeroCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
     final day = mess.season.dayOn(DateTime.now());
+    final imageUrl = resolveImageUrl(mess.imageUrl);
+    final hasImage = isNetworkImageUrl(imageUrl);
+    final cacheSize = (64 * MediaQuery.devicePixelRatioOf(context)).ceil();
 
     return Container(
       width: double.infinity,
@@ -38,15 +42,26 @@ class MessHeroCard extends StatelessWidget {
                     width: 64,
                     height: 64,
                     alignment: Alignment.center,
+                    clipBehavior: Clip.antiAlias,
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.18),
                       borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge),
                       border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
                     ),
-                    child: Text(
-                      MessFormatters.initials(mess.name),
-                      style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraOverLarge, color: Colors.white),
-                    ),
+                    child: hasImage
+                        ? Image.network(
+                            imageUrl,
+                            width: 64,
+                            height: 64,
+                            fit: BoxFit.cover,
+                            cacheWidth: cacheSize,
+                            cacheHeight: cacheSize,
+                            errorBuilder: (_, _, _) => Text(MessFormatters.initials(mess.name), style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraOverLarge, color: Colors.white)),
+                          )
+                        : Text(
+                            MessFormatters.initials(mess.name),
+                            style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraOverLarge, color: Colors.white),
+                          ),
                   ),
                   const SizedBox(width: Dimensions.paddingSizeDefault),
                   Expanded(

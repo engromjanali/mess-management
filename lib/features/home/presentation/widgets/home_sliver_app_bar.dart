@@ -137,6 +137,7 @@ class _HeaderBackground extends StatelessWidget {
               MembershipSummaryCard(
                 messName: membership?.messName ?? '',
                 seasonName: membership?.seasonName ?? currentSeasonName,
+                imageUrl: membership?.messImageUrl,
                 hasSwitch: hasSwitch,
                 maxMessChars: 100,
                 maxSeasonChars: 100,
