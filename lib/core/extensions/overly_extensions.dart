@@ -30,15 +30,26 @@ extension OverlayExtensions on BuildContext {
       return;
     }
 
+    final compact = ResponsiveHelper.isSmallMobile(this);
+    final tablet = ResponsiveHelper.isTab(this);
+    final horizontalInset = compact ? 12.0 : 16.0;
+    final maxWidth = tablet ? 520.0 : compact ? 396.0 : 440.0;
+    final padding = compact
+        ? const EdgeInsets.symmetric(horizontal: 12, vertical: 10)
+        : tablet
+        ? const EdgeInsets.symmetric(horizontal: 16, vertical: 14)
+        : const EdgeInsets.symmetric(horizontal: 14, vertical: 12);
+
     ScaffoldMessenger.of(this)
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
-          elevation: 4,
+          elevation: tablet ? 6 : 4,
           duration: duration,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: BorderSide(color: customThemeColors.borderColor)),
+          padding: padding,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(tablet ? 14 : 12), side: BorderSide(color: customThemeColors.borderColor)),
           content: AppSnackbarContent(message: message, icon: icon, color: color),
-          width: (screenWidth - 24).clamp(0.0, 560.0),
+          width: (screenWidth - horizontalInset * 2).clamp(0.0, maxWidth),
           behavior: SnackBarBehavior.floating,
           backgroundColor: customThemeColors.surfaceColor,
         ),

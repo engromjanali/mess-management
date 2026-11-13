@@ -5,6 +5,7 @@ import 'package:mess_pilot/core/notifications/notification_unread_service.dart';
 import 'package:mess_pilot/config/route/app_router.dart';
 import 'package:mess_pilot/core/di/injection.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
+import 'package:mess_pilot/core/extensions/overly_extensions.dart';
 import 'package:mess_pilot/core/network/api_client.dart';
 import 'package:mess_pilot/core/helpers/responsive_helper.dart';
 import 'package:mess_pilot/core/widgets/app_dialog.dart';
@@ -108,7 +109,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         ));
       }
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.local.notificationLoadFailed)));
+      if (mounted) context.showErrorSnackBar(context.local.notificationLoadFailed);
     } finally {
       if (mounted) setState(() => _opening = null);
     }
