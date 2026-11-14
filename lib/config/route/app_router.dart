@@ -59,6 +59,8 @@ class AppRoutes {
   static const String addMeal = '/meals/add';
   static const String mealList = '/meals/list';
   static const String deposits = '/deposits';
+  static const String depositBreakdown = '/deposits/breakdown';
+  static const String addDeposit = '/deposits/add';
   static const String funds = '/funds';
   static const String costs = '/costs';
   static const String notifications = '/notifications';
@@ -233,7 +235,21 @@ final router = GoRouter(
       branches: [
         StatefulShellBranch(routes: [GoRoute(path: AppRoutes.home, name: 'home', builder: (context, state) => const HomeScreen())]),
         StatefulShellBranch(routes: [GoRoute(path: AppRoutes.meals, name: 'meals', builder: (context, state) => const MealScreen())]),
-        StatefulShellBranch(routes: [GoRoute(path: AppRoutes.deposits, name: 'deposits', builder: (context, state) => const DepositScreen())]),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(path: AppRoutes.deposits, name: 'deposits', pageBuilder: (context, state) => const NoTransitionPage(key: ValueKey('deposits-page'), child: DepositScreen())),
+            GoRoute(
+              path: AppRoutes.depositBreakdown,
+              name: 'depositBreakdown',
+              pageBuilder: (context, state) => const NoTransitionPage(key: ValueKey('deposits-page'), child: DepositScreen(tab: DepositTab.breakdown)),
+            ),
+            GoRoute(
+              path: AppRoutes.addDeposit,
+              name: 'addDeposit',
+              pageBuilder: (context, state) => const NoTransitionPage(key: ValueKey('deposits-page'), child: DepositScreen(tab: DepositTab.add)),
+            ),
+          ],
+        ),
         StatefulShellBranch(routes: [GoRoute(path: AppRoutes.costs, name: 'costs', builder: (context, state) => const CostScreen())]),
         StatefulShellBranch(routes: [GoRoute(path: AppRoutes.profile, name: 'profile', builder: (context, state) => const ProfileScreen())]),
       ],

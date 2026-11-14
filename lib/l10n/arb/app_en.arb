@@ -1170,5 +1170,6 @@
   "shareOpinion": "Share opinion",
   "messImageOptional": "Mess image (optional)",
   "changeMessImage": "Change mess image",
-  "removeImage": "Remove image"
+  "removeImage": "Remove image",
+  "uiDepositBreakdown": "Deposit breakdown"
 }

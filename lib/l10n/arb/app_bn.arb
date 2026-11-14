@@ -661,5 +661,6 @@
   "shareOpinion": "মতামত দিন",
   "messImageOptional": "মেসের ছবি (ঐচ্ছিক)",
   "changeMessImage": "মেসের ছবি পরিবর্তন করুন",
-  "removeImage": "ছবি মুছুন"
+  "removeImage": "ছবি মুছুন",
+  "uiDepositBreakdown": "জমার বিবরণ"
 }

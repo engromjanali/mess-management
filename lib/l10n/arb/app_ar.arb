@@ -661,5 +661,6 @@
   "shareOpinion": "شارك رأيك",
   "messImageOptional": "صورة المس (اختياري)",
   "changeMessImage": "تغيير صورة المس",
-  "removeImage": "إزالة الصورة"
+  "removeImage": "إزالة الصورة",
+  "uiDepositBreakdown": "تفصيل الإيداعات"
 }

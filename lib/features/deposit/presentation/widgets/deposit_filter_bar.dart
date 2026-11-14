@@ -3,16 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
+import 'package:mess_pilot/core/helpers/responsive_helper.dart';
 import 'package:mess_pilot/features/deposit/domain/entities/deposit_entity.dart';
 import 'package:mess_pilot/features/deposit/presentation/bloc/deposit_bloc.dart';
 import 'package:mess_pilot/features/deposit/presentation/bloc/deposit_event.dart';
 import 'package:mess_pilot/features/deposit/presentation/bloc/deposit_view_mode.dart';
 import 'package:mess_pilot/features/deposit/presentation/widgets/deposit_formatters.dart';
 
-/// Compact, wrap-based filter controls for the admin deposit view.
+/// Compact filter controls for the admin deposit view.
 ///
-/// Everything is laid out in a [Wrap] of small pill chips, so it collapses
-/// onto multiple rows on a phone and stays inline on tablet / desktop:
+/// On phones the chips form a single horizontally scrollable row; on tablet /
+/// desktop they wrap onto multiple rows when needed:
 ///   `[By member] [By date]` then the contextual selector
 ///   (member picker, or `All time / Day / Range`).
 class DepositFilterBar extends StatelessWidget {
@@ -47,39 +48,59 @@ class DepositFilterBar extends StatelessWidget {
     final byMember = mode == DepositViewMode.byMember;
     final byDate = mode == DepositViewMode.byDate;
 
-    return Wrap(
-      spacing: Dimensions.paddingSizeSmall,
-      runSpacing: Dimensions.paddingSizeSmall,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: [
-        // Mode selector.
-        _SelectChip(label: context.local.uiByMember, icon: Icons.person_rounded, selected: byMember, onTap: () => _bloc(context).add(const DepositEvent.changeMode(DepositViewMode.byMember))),
-        _SelectChip(label: context.local.uiByDate, icon: Icons.calendar_today_rounded, selected: byDate, onTap: () => _bloc(context).add(const DepositEvent.changeMode(DepositViewMode.byDate))),
-        // A manager is also a member — let them list only their own deposits.
-        _SelectChip(label: context.local.mine, icon: Icons.account_circle_outlined, selected: mode == DepositViewMode.mine, onTap: () => _bloc(context).add(const DepositEvent.changeMode(DepositViewMode.mine))),
+    final chips = <Widget>[
+      // Mode selector.
+      _SelectChip(label: context.local.uiByMember, icon: Icons.person_rounded, selected: byMember, onTap: () => _bloc(context).add(const DepositEvent.changeMode(DepositViewMode.byMember))),
+      _SelectChip(label: context.local.uiByDate, icon: Icons.calendar_today_rounded, selected: byDate, onTap: () => _bloc(context).add(const DepositEvent.changeMode(DepositViewMode.byDate))),
+      // A manager is also a member — let them list only their own deposits.
+      _SelectChip(label: context.local.mine, icon: Icons.account_circle_outlined, selected: mode == DepositViewMode.mine, onTap: () => _bloc(context).add(const DepositEvent.changeMode(DepositViewMode.mine))),
 
-        // A subtle divider between mode and its sub-filters.
-        if (byMember || byDate) const _ChipDivider(),
+      // A subtle divider between mode and its sub-filters.
+      if (byMember || byDate) const _ChipDivider(),
 
-        // Contextual sub-filter.
-        if (byMember)
-          _MemberMenuChip(members: members, selectedMember: selectedMember, onSelected: (id) => _bloc(context).add(DepositEvent.selectMember(id)))
-        else if (byDate) ...[
-          _SelectChip(label: context.local.allTime, selected: dateFilter == DepositDateFilter.allTime, onTap: () => _bloc(context).add(const DepositEvent.changeDateFilter(DepositDateFilter.allTime))),
-          _SelectChip(
-            label: dateFilter == DepositDateFilter.day ? DepositFormatters.shortDate(selectedDate) : context.local.day,
-            icon: Icons.event_rounded,
-            selected: dateFilter == DepositDateFilter.day,
-            onTap: () => _pickDay(context),
-          ),
-          _SelectChip(
-            label: dateFilter == DepositDateFilter.range && selectedRange != null ? DepositFormatters.rangeLabel(selectedRange!.start, selectedRange!.end) : context.local.range,
-            icon: Icons.date_range_rounded,
-            selected: dateFilter == DepositDateFilter.range,
-            onTap: () => _pickRange(context),
-          ),
-        ],
+      // Contextual sub-filter.
+      if (byMember)
+        _MemberMenuChip(members: members, selectedMember: selectedMember, onSelected: (id) => _bloc(context).add(DepositEvent.selectMember(id)))
+      else if (byDate) ...[
+        _SelectChip(label: context.local.allTime, selected: dateFilter == DepositDateFilter.allTime, onTap: () => _bloc(context).add(const DepositEvent.changeDateFilter(DepositDateFilter.allTime))),
+        _SelectChip(
+          label: dateFilter == DepositDateFilter.day ? DepositFormatters.shortDate(selectedDate) : context.local.day,
+          icon: Icons.event_rounded,
+          selected: dateFilter == DepositDateFilter.day,
+          onTap: () => _pickDay(context),
+        ),
+        _SelectChip(
+          label: dateFilter == DepositDateFilter.range && selectedRange != null ? DepositFormatters.rangeLabel(selectedRange!.start, selectedRange!.end) : context.local.range,
+          icon: Icons.date_range_rounded,
+          selected: dateFilter == DepositDateFilter.range,
+          onTap: () => _pickRange(context),
+        ),
       ],
+    ];
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth <= ResponsiveHelper.mobile) {
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (var i = 0; i < chips.length; i++) ...[
+                  if (i > 0) const SizedBox(width: Dimensions.paddingSizeSmall),
+                  chips[i],
+                ],
+              ],
+            ),
+          );
+        }
+        return Wrap(
+          spacing: Dimensions.paddingSizeSmall,
+          runSpacing: Dimensions.paddingSizeSmall,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: chips,
+        );
+      },
     );
   }
 }
@@ -98,28 +119,25 @@ class _SelectChip extends StatelessWidget {
     final colors = context.customThemeColors;
     final fg = selected ? colors.primaryColor : colors.textSecondaryColor;
 
-    return Material(
-      color: selected ? colors.primaryColor.withValues(alpha: 0.12) : colors.cardBackgroundColor,
+    return InkWell(
+      onTap: onTap,
       borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeSmall),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge),
-            border: Border.all(color: selected ? colors.primaryColor : colors.borderColor, width: selected ? 1.4 : 1),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (icon != null) ...[Icon(icon, size: Dimensions.iconSizeSmall, color: fg), const SizedBox(width: Dimensions.paddingSizeExtraSmall)],
-              Text(
-                label,
-                style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: fg),
-              ),
-            ],
-          ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeSmall),
+        decoration: BoxDecoration(
+          color: selected ? colors.primaryColor.withValues(alpha: 0.12) : colors.cardBackgroundColor,
+          borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge),
+          border: Border.all(color: selected ? colors.primaryColor : colors.borderColor, width: 1.4),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[Icon(icon, size: Dimensions.iconSizeSmall, color: fg), const SizedBox(width: Dimensions.paddingSizeExtraSmall)],
+            Text(
+              label,
+              style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: fg),
+            ),
+          ],
         ),
       ),
     );
@@ -147,6 +165,8 @@ class _MemberMenuChip extends StatelessWidget {
       tooltip: context.local.uiFilterByMember,
       onSelected: (value) => onSelected(value == _allMembers ? null : value),
       position: PopupMenuPosition.under,
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(),
       itemBuilder: (context) => [
         PopupMenuItem<String>(value: _allMembers, child: Text(context.local.uiAllMembers)),
         const PopupMenuDivider(),
@@ -173,7 +193,7 @@ class _MemberMenuChip extends StatelessWidget {
                 style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.primaryColor),
               ),
             ),
-            Icon(Icons.arrow_drop_down_rounded, size: Dimensions.iconSizeDefault, color: colors.primaryColor),
+            Icon(Icons.arrow_drop_down_rounded, size: Dimensions.iconSizeSmall, color: colors.primaryColor),
           ],
         ),
       ),

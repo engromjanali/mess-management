@@ -32,6 +32,7 @@ class DepositState with _$DepositState {
     DepositMemberEntity? selectedMember,
     DateTimeRange? selectedRange,
     @Default(false) bool saving,
+    @Default(false) bool isLoading,
     DepositMessSummaryEntity? messSummary,
   }) = DepositLoaded;
 
