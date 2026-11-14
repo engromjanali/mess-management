@@ -1,4 +1,6 @@
+import 'package:mess_pilot/config/route/app_router.dart';
 import 'package:mess_pilot/core/widgets/app_page_scroll_view.dart';
+import 'package:mess_pilot/core/widgets/home_back_button.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/main_page_body.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/web_profile_drawer.dart';
 import 'package:mess_pilot/core/widgets/app_loader.dart';
@@ -29,7 +31,7 @@ class EditProfileScreen extends StatelessWidget {
     final showWebAppBar = MainPageBody.showWebAppBar(context);
     return Scaffold(
       endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
-      appBar: showWebAppBar ? null : AppBar(title: Text(context.local.editProfile)),
+      appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.editProfile)),
       body: MainPageBody(title: context.local.editProfile, child: user == null ? const Center(child: AppLoader()) : _EditProfileForm(user: user)),
     );
   }
@@ -115,7 +117,11 @@ class _EditProfileFormState extends State<_EditProfileForm> {
       success: (success) {
         context.read<AuthBloc>().add(AuthEvent.userUpdated(success.data));
         context.showSuccessSnackBar(context.local.profileUpdated);
-        context.pop();
+        if (context.canPop()) {
+          context.pop();
+        } else {
+          context.go(AppRoutes.home);
+        }
       },
       failure: (failure) => context.showErrorSnackBar(failure),
     );
