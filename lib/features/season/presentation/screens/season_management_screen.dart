@@ -13,6 +13,7 @@ import 'package:mess_pilot/core/errors/failures.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
 import 'package:mess_pilot/core/extensions/overly_extensions.dart';
 import 'package:mess_pilot/core/role/role_cubit.dart';
+import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/core/widgets/home_back_button.dart';
 import 'package:mess_pilot/core/widgets/pill_tab_bar.dart';
 import 'package:mess_pilot/core/widgets/segmented_tab_bar.dart';
@@ -296,22 +297,14 @@ class _SeasonBodyState extends State<_SeasonBody> {
   }
 
   Future<bool> _confirm(BuildContext context, {required String title, required String message, required String action, bool destructive = false}) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(title),
-        content: Text(message),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: Text(context.local.cancel)),
-          FilledButton(
-            style: destructive ? FilledButton.styleFrom(backgroundColor: context.customThemeColors.errorColor) : null,
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text(action),
-          ),
-        ],
-      ),
+    return showAppConfirmDialog(
+      context,
+      title: title,
+      message: message,
+      confirmLabel: action,
+      destructive: destructive,
+      icon: destructive ? Icons.warning_amber_rounded : Icons.help_outline_rounded,
     );
-    return confirmed ?? false;
   }
 }
 

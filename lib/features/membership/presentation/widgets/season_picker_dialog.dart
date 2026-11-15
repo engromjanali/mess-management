@@ -1,6 +1,7 @@
 import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
+import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/features/season/domain/entities/season_entity.dart';
 import 'package:flutter/material.dart';
 
@@ -48,14 +49,14 @@ class _SeasonPickerDialogState extends State<SeasonPickerDialog> {
         : _selectedId == null
         ? local.inAllRunningSeasons
         : null;
-    return AlertDialog(
-      title: Text(widget.title),
+    return AppDialog(
+      icon: Icons.event_repeat_rounded,
+      title: widget.title,
+      message: widget.message,
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(widget.message),
-          const SizedBox(height: Dimensions.paddingSizeLarge),
           if (widget.seasons.isNotEmpty)
             DropdownButtonFormField<String>(
               initialValue: _selectedId,
@@ -83,8 +84,8 @@ class _SeasonPickerDialogState extends State<SeasonPickerDialog> {
         ],
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(local.cancel)),
-        FilledButton(onPressed: _selectedId == null ? null : () => Navigator.of(context).pop(_selectedId), child: Text(widget.confirmLabel)),
+        AppDialogAction(label: local.cancel, style: AppDialogActionStyle.secondary, onPressed: (dialogContext) => Navigator.of(dialogContext).pop()),
+        AppDialogAction(label: widget.confirmLabel, autofocus: true, onPressed: _selectedId == null ? null : (dialogContext) => Navigator.of(dialogContext).pop(_selectedId)),
       ],
     );
   }

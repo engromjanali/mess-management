@@ -39,7 +39,7 @@ class MyMembershipTile extends StatelessWidget {
       ),
       child: Row(
         children: [
-          MessAvatar(name: m.messName, color: accent, size: 44),
+          MessAvatar(name: m.messName, color: accent, size: 44, imageUrl: m.messImageUrl),
           const SizedBox(width: Dimensions.paddingSizeDefault),
           Expanded(
             child: Column(

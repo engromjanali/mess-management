@@ -17,7 +17,10 @@ class AppConstants {
     if (kReleaseMode) return 'https://mm-backend-kappa.vercel.app';
     return !kIsWeb && defaultTargetPlatform == TargetPlatform.android ? 'http://10.0.2.2:8000' : 'http://127.0.0.1:8000';
   }
-  static const bool enableDemoLogin = bool.fromEnvironment('ENABLE_DEMO_LOGIN', defaultValue: kDebugMode);
+  static const bool enableDemoLogin = kDebugMode;
+  
+  static const String googleWebClientId = '139665999955-jubvssfv8fteilk9imgouch9l8lkdfv8.apps.googleusercontent.com';
+  static const String googleIosClientId = '139665999955-a2sj6nrcquabshnsjclj68ddumksfblh.apps.googleusercontent.com';
 
   // ───────────────────────── API endpoints ─────────────────────────
   // Grouped by feature; inside a feature, user (`/api/v1/user`) routes come
@@ -31,6 +34,7 @@ class AppConstants {
 
   // Auth
   static const String loginEndpoint = '/api/v1/auth/sign-in';
+  static const String googleSignInEndpoint = '/api/v1/auth/google';
   static const String logoutEndpoint = '/api/v1/auth/logout';
   static const String pushDeviceEndpoint = '/api/v1/auth/push-device';
   static const String registerEndpoint = '/api/v1/auth/sign-up';

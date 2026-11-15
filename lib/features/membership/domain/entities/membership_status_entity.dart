@@ -22,6 +22,7 @@ class MembershipSummaryEntity {
     required this.messName,
     required this.seasonName,
     required this.role,
+    this.messImageUrl = '',
     this.status,
     this.totalDeposit = 0,
     this.totalMeal = 0,
@@ -39,6 +40,7 @@ class MembershipSummaryEntity {
   final int seasonId;
   final int messId;
   final String messName;
+  final String messImageUrl;
   final String seasonName;
   final String role;
 
@@ -61,11 +63,12 @@ class MembershipSummaryEntity {
 }
 
 class JoinRequestSummaryEntity {
-  const JoinRequestSummaryEntity({required this.id, required this.messId, required this.messName, this.status = 'pending', this.seasonName, this.expiresAt});
+  const JoinRequestSummaryEntity({required this.id, required this.messId, required this.messName, this.messImageUrl = '', this.status = 'pending', this.seasonName, this.expiresAt});
 
   final int id;
   final int messId;
   final String messName;
+  final String messImageUrl;
 
   /// `pending`, `approved`, `rejected`, `cancelled` or `expired`.
   final String status;
@@ -78,11 +81,12 @@ class JoinRequestSummaryEntity {
 }
 
 class InviteSummaryEntity {
-  const InviteSummaryEntity({required this.id, required this.messId, required this.messName, required this.inviteCode, required this.status, this.seasonName, this.expiresAt});
+  const InviteSummaryEntity({required this.id, required this.messId, required this.messName, required this.inviteCode, required this.status, this.messImageUrl = '', this.seasonName, this.expiresAt});
 
   final int id;
   final int messId;
   final String messName;
+  final String messImageUrl;
   final String inviteCode;
   final String status;
 
@@ -94,11 +98,12 @@ class InviteSummaryEntity {
 }
 
 class MessSummaryEntity {
-  const MessSummaryEntity({required this.id, required this.name, required this.address});
+  const MessSummaryEntity({required this.id, required this.name, required this.address, this.imageUrl = ''});
 
   final int id;
   final String name;
   final String address;
+  final String imageUrl;
 }
 
 class MessPageEntity {

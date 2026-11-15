@@ -82,7 +82,7 @@ class _ApplyToAllCardState extends State<ApplyToAllCard> {
           const SizedBox(height: Dimensions.paddingSizeLarge),
           SizedBox(
             width: double.infinity,
-            height: Dimensions.buttonHeightLarge,
+            height: Dimensions.buttonHeight,
             child: OutlinedButton.icon(
               onPressed: _total == 0 ? null : widget.onApplyToAll,
               style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge))),

@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.goraso.messpilot",
+      "sha256_cert_fingerprints": [
+        "53:72:FE:18:40:A3:BC:F1:70:E6:A9:41:93:10:3F:A1:B2:98:AF:DE:67:4F:85:B7:81:83:19:D8:7B:5A:25:3C"
+      ]
+    }
+  }
+]

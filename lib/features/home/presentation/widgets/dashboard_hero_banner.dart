@@ -8,10 +8,9 @@ import 'package:mess_pilot/features/home/presentation/widgets/dashboard_formatte
 ///
 /// Mirrors the phone hero as a self-contained rounded card.
 class DashboardHeroBanner extends StatelessWidget {
-  const DashboardHeroBanner({required this.userName, required this.currentSeasonName, required this.totalBalance, super.key});
+  const DashboardHeroBanner({required this.userName, required this.totalBalance, super.key});
 
   final String userName;
-  final String currentSeasonName;
   final double totalBalance;
 
   @override
@@ -31,31 +30,7 @@ class DashboardHeroBanner extends StatelessWidget {
         child: Stack(
           children: [
             Positioned(top: -110, right: -55, child: _DecorativeCircle(size: 270, color: Colors.white.withValues(alpha: 0.08))),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                final wide = constraints.maxWidth > 640;
-                if (wide) {
-                  return Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Expanded(child: _balanceBlock(context)),
-                if (currentSeasonName.isNotEmpty) _SeasonChip(seasonName: currentSeasonName),
-              ],
-            );
-                }
-
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _balanceBlock(context),
-                    if (currentSeasonName.isNotEmpty) ...[
-                      const SizedBox(height: Dimensions.paddingSizeLarge),
-                      _SeasonChip(seasonName: currentSeasonName),
-                    ],
-                  ],
-                );
-              },
-            ),
+            _balanceBlock(context),
           ],
         ),
       ),
@@ -90,36 +65,6 @@ class DashboardHeroBanner extends StatelessWidget {
             alignment: AlignmentDirectional.centerStart,
             child: Text.rich(TextSpan(style: const TextStyle(color: Colors.white, fontSize: 36, fontWeight: FontWeight.w700, height: 1.15), children: [TextSpan(text: '৳'), TextSpan(text: DashboardFormatters.number(totalBalance), style: AppTextStyles.sfProRoundedBold)])),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SeasonChip extends StatelessWidget {
-  const _SeasonChip({required this.seasonName});
-
-  final String seasonName;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      constraints: const BoxConstraints(maxWidth: 320),
-      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeSmall),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.18),
-        borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(width: 34, height: 34, decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.16), borderRadius: BorderRadius.circular(Dimensions.radiusDefault)), child: const Icon(Icons.event_note_rounded, size: Dimensions.iconSizeSmall, color: Colors.white)),
-          const SizedBox(width: Dimensions.paddingSizeSmall),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(context.local.currentSeasonLabel, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.70), fontSize: Dimensions.fontSizeExtraSmall)),
-            Text(seasonName, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedSemiBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeDefault)),
-          ])),
         ],
       ),
     );

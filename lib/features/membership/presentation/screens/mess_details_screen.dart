@@ -1,3 +1,4 @@
+import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/core/widgets/app_state_view.dart';
 import 'package:mess_pilot/core/widgets/app_loader.dart';
 import 'package:mess_pilot/config/route/app_router.dart';
@@ -257,22 +258,15 @@ class _ActionsCard extends StatelessWidget {
   Future<void> _leave(BuildContext context) async {
     final mess = state.mess;
     final cubit = context.read<MessDetailsCubit>();
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(context.local.leaveMessConfirmTitle(mess.name)),
-        content: Text(context.local.leaveMessConfirm),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: Text(context.local.cancel)),
-          FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: context.customThemeColors.errorColor),
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text(context.local.leave),
-          ),
-        ],
-      ),
+    final confirmed = await showAppConfirmDialog(
+      context,
+      title: context.local.leaveMessConfirmTitle(mess.name),
+      message: context.local.leaveMessConfirm,
+      confirmLabel: context.local.leave,
+      icon: Icons.logout_rounded,
+      destructive: true,
     );
-    if (!(confirmed ?? false) || !context.mounted) return;
+    if (!confirmed || !context.mounted) return;
 
     final success = context.local.leftMess(mess.name);
     final result = await cubit.leave();

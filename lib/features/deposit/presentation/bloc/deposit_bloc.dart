@@ -79,7 +79,7 @@ class DepositBloc extends Bloc<DepositEvent, DepositState> {
     // Admins can switch to every mode, including their own deposits (a manager is also a member).
     if (!_isAdmin) return;
     _mode = event.mode;
-    emit(const DepositState.loading());
+    _emitLoading(emit);
     await _reload(emit);
   }
 
@@ -88,7 +88,7 @@ class DepositBloc extends Bloc<DepositEvent, DepositState> {
     _mode = DepositViewMode.byMember;
     final id = event.memberId;
     _selectedMember = id == null ? null : _members.firstWhere((m) => m.id == id, orElse: () => _selectedMember ?? _members.first);
-    emit(const DepositState.loading());
+    _emitLoading(emit);
     await _reload(emit);
   }
 
@@ -96,7 +96,7 @@ class DepositBloc extends Bloc<DepositEvent, DepositState> {
     if (!_isAdmin) return;
     _mode = DepositViewMode.byDate;
     _dateFilter = event.filter;
-    emit(const DepositState.loading());
+    _emitLoading(emit);
     await _reload(emit);
   }
 
@@ -105,7 +105,7 @@ class DepositBloc extends Bloc<DepositEvent, DepositState> {
     _mode = DepositViewMode.byDate;
     _dateFilter = DepositDateFilter.day;
     _selectedDate = DateTime(event.date.year, event.date.month, event.date.day);
-    emit(const DepositState.loading());
+    _emitLoading(emit);
     await _reload(emit);
   }
 
@@ -114,7 +114,7 @@ class DepositBloc extends Bloc<DepositEvent, DepositState> {
     _mode = DepositViewMode.byDate;
     _dateFilter = DepositDateFilter.range;
     _selectedRange = DateTimeRange(start: event.start, end: event.end);
-    emit(const DepositState.loading());
+    _emitLoading(emit);
     await _reload(emit);
   }
 
@@ -174,6 +174,18 @@ class DepositBloc extends Bloc<DepositEvent, DepositState> {
     final myResult = _mode == DepositViewMode.mine ? listResult : await _getMyDeposits(const NoParams());
     final myDeposits = myResult.when(success: (s) => s.data, failure: (_) => null);
     allResult.when(success: (s) => _messSummary = DepositMessSummaryEntity.fromDeposits(s.data, _members, myDeposits: myDeposits), failure: (_) => _messSummary = null);
+  }
+
+  /// Keeps the current screen (summary, filters) visible while a new filter
+  /// loads, instead of blanking the whole UI with a full loader. Only the
+  /// initial load falls back to [DepositState.loading].
+  void _emitLoading(Emitter<DepositState> emit) {
+    final current = state;
+    if (current is DepositLoaded) {
+      emit(current.copyWith(isLoading: true, saving: false));
+    } else {
+      emit(const DepositState.loading());
+    }
   }
 
   /// Keeps current data visible while a mutation is in flight.

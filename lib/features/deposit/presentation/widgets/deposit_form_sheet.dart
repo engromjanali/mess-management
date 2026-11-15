@@ -20,22 +20,30 @@ Future<void> showDepositFormSheet({
   DepositEntity? existing,
 }) {
   return context.showAdaptiveSheet<void>(
-    child: _DepositFormSheet(members: members, existing: existing, onSave: onSave),
+    child: DepositForm(members: members, existing: existing, onSave: onSave),
   );
 }
 
-class _DepositFormSheet extends StatefulWidget {
-  const _DepositFormSheet({required this.members, required this.existing, required this.onSave});
+/// Add / edit deposit form.
+///
+/// Reused both inside the [showDepositFormSheet] sheet and inline in the
+/// "Add deposit" tab. When [popOnSave] is false the caller owns navigation
+/// after a save; [onCancel] lets an inline host switch away from the form.
+class DepositForm extends StatefulWidget {
+  const DepositForm({required this.members, required this.onSave, this.existing, this.popOnSave = true, this.onCancel, this.showHeader = true, super.key});
 
   final List<DepositMemberEntity> members;
   final DepositEntity? existing;
   final void Function({required String memberId, required double amount, required DateTime date, String? note}) onSave;
+  final bool popOnSave;
+  final VoidCallback? onCancel;
+  final bool showHeader;
 
   @override
-  State<_DepositFormSheet> createState() => _DepositFormSheetState();
+  State<DepositForm> createState() => _DepositFormState();
 }
 
-class _DepositFormSheetState extends State<_DepositFormSheet> {
+class _DepositFormState extends State<DepositForm> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _amountController;
   late final TextEditingController _noteController;
@@ -80,7 +88,16 @@ class _DepositFormSheetState extends State<_DepositFormSheet> {
     final note = _noteController.text.trim();
 
     widget.onSave(memberId: _memberId!, amount: signed, date: _date, note: note.isEmpty ? null : note);
-    Navigator.of(context).pop();
+    if (widget.popOnSave) Navigator.of(context).pop();
+  }
+
+  void _cancel() {
+    final onCancel = widget.onCancel;
+    if (onCancel != null) {
+      onCancel();
+    } else {
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -93,15 +110,17 @@ class _DepositFormSheetState extends State<_DepositFormSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            _isEdit ? context.local.uiEditDeposit : context.local.uiAddDeposit,
-            style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
-          ),
-          Text(
-            context.local.uiRecordedForOneMemberAtATime,
-            style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
-          ),
-          const SizedBox(height: Dimensions.paddingSizeLarge),
+          if (widget.showHeader) ...[
+            Text(
+              _isEdit ? context.local.uiEditDeposit : context.local.uiAddDeposit,
+              style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
+            ),
+            Text(
+              context.local.uiRecordedForOneMemberAtATime,
+              style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
+            ),
+            const SizedBox(height: Dimensions.paddingSizeLarge),
+          ],
 
           // Member — dropdown when adding, read-only when editing.
           _Label(context.local.roleMember),
@@ -173,8 +192,8 @@ class _DepositFormSheetState extends State<_DepositFormSheet> {
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeightDefault)),
+                  onPressed: _cancel,
+                  style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeight)),
                   child: Text(context.local.cancel),
                 ),
               ),
@@ -182,7 +201,7 @@ class _DepositFormSheetState extends State<_DepositFormSheet> {
               Expanded(
                 child: ElevatedButton(
                   onPressed: _submit,
-                  style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeightDefault)),
+                  style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeight)),
                   child: Text(_isEdit ? context.local.save : context.local.add),
                 ),
               ),

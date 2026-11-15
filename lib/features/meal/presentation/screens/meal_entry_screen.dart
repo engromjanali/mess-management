@@ -316,7 +316,7 @@ class _BottomSaveButton extends StatelessWidget {
       alignment: wide ? Alignment.centerRight : Alignment.center,
       child: SizedBox(
         width: wide ? 300 : double.infinity,
-        height: Dimensions.buttonHeightLarge,
+        height: Dimensions.buttonHeight,
         child: ElevatedButton.icon(
           onPressed: saving ? null : onSave,
           style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge))),

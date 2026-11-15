@@ -1,6 +1,7 @@
 import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
+import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/features/settings/domain/entities/locale_entity.dart';
 import 'package:flutter/material.dart';
 
@@ -12,29 +13,19 @@ class LanguageSelectionOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      clipBehavior: Clip.antiAlias,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 440),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(context.local.selectLanguage, textAlign: TextAlign.center, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge)),
-                const SizedBox(height: Dimensions.spaceDefault),
-                ...AppLocale.supportedLocales.map((locale) {
-                  final isSelected = locale.languageCode == currentLocale.languageCode;
-                  final languageName = AppLocale.getLanguageName(locale);
-      
-                  return _LanguageListItem(isSelected: isSelected, languageName: languageName, locale: locale);
-                }),
-                const SizedBox(height: Dimensions.spaceDefault),
-              ],
-            ),
-          ),
-        ),
+    return AppDialog(
+      icon: Icons.translate_rounded,
+      title: context.local.selectLanguage,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ...AppLocale.supportedLocales.map((locale) {
+            final isSelected = locale.languageCode == currentLocale.languageCode;
+            final languageName = AppLocale.getLanguageName(locale);
+
+            return _LanguageListItem(isSelected: isSelected, languageName: languageName, locale: locale);
+          }),
+        ],
       ),
     );
   }

@@ -651,5 +651,16 @@
   "@feedbackShowComments": {"placeholders": {"count": {"type": "int"}}},
   "feedbackHideComments": "إخفاء التعليقات",
   "feedbackNew": "جديد",
-  "feedbackYou": "أنت"
+  "feedbackYou": "أنت",
+  "continueWithGoogle": "المتابعة باستخدام Google",
+  "orDivider": "أو",
+  "googleSignInFailed": "تعذر تسجيل الدخول باستخدام Google. حاول مرة أخرى.",
+  "googleSignInNotConfigured": "لم يتم تكوين تسجيل الدخول باستخدام Google في هذا الإصدار.",
+  "passwordLeaveBlankHint": "اتركه فارغًا للإبقاء عليه دون تغيير.",
+  "showOnMap": "عرض على الخريطة",
+  "shareOpinion": "شارك رأيك",
+  "messImageOptional": "صورة المس (اختياري)",
+  "changeMessImage": "تغيير صورة المس",
+  "removeImage": "إزالة الصورة",
+  "uiDepositBreakdown": "تفصيل الإيداعات"
 }

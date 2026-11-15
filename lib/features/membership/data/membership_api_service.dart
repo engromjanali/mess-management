@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:mess_pilot/config/util/app_constants.dart';
 import 'package:mess_pilot/core/network/api_client.dart';
 import 'package:mess_pilot/features/membership/domain/entities/mess_details_entity.dart';
@@ -25,6 +27,7 @@ class MembershipApiService {
           id: json['id'] as int,
           messId: json['mess_id'] as int,
           messName: json['mess_name'] as String,
+          messImageUrl: json['mess_image'] as String? ?? '',
           inviteCode: json['invite_code'] as String,
           status: status.isEmpty ? 'pending' : status,
           seasonName: json['season_name'] as String?,
@@ -48,7 +51,7 @@ class MembershipApiService {
         : <String, dynamic>{};
     final messes = items.map((item) {
       final json = item as Map<String, dynamic>;
-      return MessSummaryEntity(id: json['id'] as int, name: json['name'] as String, address: json['address'] as String? ?? '');
+      return MessSummaryEntity(id: json['id'] as int, name: json['name'] as String, address: json['address'] as String? ?? '', imageUrl: json['image'] as String? ?? '');
     }).toList();
     final total = (meta['total'] as num?)?.toInt() ?? (meta['count'] as num?)?.toInt() ?? messes.length;
     return MessPageEntity(
@@ -73,8 +76,17 @@ class MembershipApiService {
     await _apiClient.post<void>(AppConstants.joinRequestEndpoint, data: {'mess_id': messId});
   }
 
-  Future<void> createMess({required String name, required String address, required String seasonName}) async {
-    await _apiClient.post<void>(AppConstants.createMessEndpoint, data: {'name': name, 'address': address, 'season_name': seasonName});
+  Future<void> createMess({required String name, required String address, required String seasonName, Uint8List? imageBytes, String? imageName}) async {
+    final data = {'name': name, 'address': address, 'season_name': seasonName};
+    if (imageBytes == null) {
+      await _apiClient.post<void>(AppConstants.createMessEndpoint, data: data);
+      return;
+    }
+    await _apiClient.postMultipart<void>(
+      AppConstants.createMessEndpoint,
+      data: data,
+      files: [MapEntry('image', MultipartFile.fromBytes(imageBytes, filename: imageName ?? 'mess.jpg'))],
+    );
   }
 
   Future<Map<String, dynamic>> findMember(String query) async {
@@ -147,6 +159,7 @@ class MembershipApiService {
       address: json['address'] as String? ?? '',
       email: json['email'] as String? ?? '',
       phone: json['phone'] as String? ?? '',
+      imageUrl: json['image'] as String? ?? '',
       mapUrl: json['map_url'] as String? ?? '',
       latitude: _double(json['latitude']),
       longitude: _double(json['longitude']),
@@ -187,8 +200,17 @@ class MembershipApiService {
     );
   }
 
-  Future<void> updateMess({required String name, required String address, required String email, required String phone, double? latitude, double? longitude}) async {
-    await _apiClient.patch<void>(AppConstants.messUpdateEndpoint, data: {'name': name, 'address': address, 'email': email, 'phone': phone, 'latitude': latitude?.toStringAsFixed(7), 'longitude': longitude?.toStringAsFixed(7)});
+  Future<void> updateMess({required String name, required String address, required String email, required String phone, double? latitude, double? longitude, Uint8List? imageBytes, String? imageName, bool removeImage = false}) async {
+    final data = <String, dynamic>{'name': name, 'address': address, 'email': email, 'phone': phone, 'latitude': latitude?.toStringAsFixed(7), 'longitude': longitude?.toStringAsFixed(7)};
+    if (imageBytes != null) {
+      await _apiClient.patch<void>(
+        AppConstants.messUpdateEndpoint,
+        data: FormData.fromMap({...data, 'image': MultipartFile.fromBytes(imageBytes, filename: imageName ?? 'mess.jpg')}),
+      );
+      return;
+    }
+    if (removeImage) data['remove_image'] = true;
+    await _apiClient.patch<void>(AppConstants.messUpdateEndpoint, data: data);
   }
 
   Future<List<Map<String, dynamic>>> searchMessLocations(String query) async {
@@ -229,6 +251,7 @@ class MembershipApiService {
     seasonId: json['season_id'] as int,
     messId: json['mess_id'] as int,
     messName: json['mess_name'] as String,
+    messImageUrl: json['mess_image'] as String? ?? '',
     seasonName: json['season_name'] as String,
     role: json['role'] as String? ?? 'member',
     status: json['status'] as String?,
@@ -248,6 +271,7 @@ class MembershipApiService {
     id: json['id'] as int,
     messId: json['mess_id'] as int,
     messName: json['mess_name'] as String,
+    messImageUrl: json['mess_image'] as String? ?? '',
     status: json['status'] as String? ?? 'pending',
     seasonName: json['season_name'] as String?,
     expiresAt: DateTime.tryParse(json['expires_at'] as String? ?? '')?.toLocal(),

@@ -1,3 +1,4 @@
+import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/core/widgets/app_page_scroll_view.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mess_pilot/core/widgets/app_loader.dart';
@@ -62,18 +63,15 @@ class _MessLeadershipScreenState extends State<MessLeadershipScreen> {
     if (membershipId == null || _saving) return;
     final member = _members.where((item) => item['membership_id'] == membershipId).firstOrNull;
     final roleName = _role == 'manager' ? context.local.roleManager : context.local.roleActingManager;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(_role == 'manager' ? context.local.uiTransferManagerRole : context.local.uiAssignActingManager),
-        content: Text('${context.local.uiLeadershipConfirm(member?['name'] ?? context.local.uiThisMember, roleName)} ${_role == 'manager' ? context.local.uiYouWillNoLongerBeThePrimaryManager : ''}'),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: Text(context.local.cancel)),
-          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: Text(context.local.confirm)),
-        ],
-      ),
+    final confirmed = await showAppConfirmDialog(
+      context,
+      title: _role == 'manager' ? context.local.uiTransferManagerRole : context.local.uiAssignActingManager,
+      message: '${context.local.uiLeadershipConfirm(member?['name'] ?? context.local.uiThisMember, roleName)} ${_role == 'manager' ? context.local.uiYouWillNoLongerBeThePrimaryManager : ''}',
+      confirmLabel: context.local.confirm,
+      icon: Icons.admin_panel_settings_outlined,
+      tone: _role == 'manager' ? AppDialogTone.warning : AppDialogTone.primary,
     );
-    if (confirmed != true) return;
+    if (!confirmed) return;
     setState(() => _saving = true);
     try {
       final transferOwnership = _role == 'manager';

@@ -542,7 +542,7 @@ class _PeriodCard extends StatelessWidget {
     final inDateRange = period.isWithinDateRangeAt(DateTime.now());
     final status = !inDateRange ? context.local.uiClosed : period.acceptingMessages ? context.local.uiOpen : context.local.uiPaused;
     final opinionColors = [colors.primaryColor, colors.infoColor];
-    final managerButtonStyle = OutlinedButton.styleFrom(minimumSize: const Size(0, 36), padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall), iconSize: 18);
+    final managerButtonStyle = OutlinedButton.styleFrom(minimumSize: const Size(0, Dimensions.buttonHeight), padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall), iconSize: 18);
 
     return Container(
       padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),

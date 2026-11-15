@@ -1,0 +1,38 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["Q7U8S53NZ6.com.goraso.messpilot"],
+        "components": [
+          { "/": "/" },
+          { "/": "/login" },
+          { "/": "/register" },
+          { "/": "/forgot-password" },
+          { "/": "/meals" },
+          { "/": "/meals/*" },
+          { "/": "/deposits" },
+          { "/": "/funds" },
+          { "/": "/costs" },
+          { "/": "/notifications" },
+          { "/": "/notices" },
+          { "/": "/notices/*" },
+          { "/": "/opinions" },
+          { "/": "/opinions/*" },
+          { "/": "/feedback" },
+          { "/": "/profile" },
+          { "/": "/profile/*" },
+          { "/": "/account/delete" },
+          { "/": "/settings" },
+          { "/": "/privacy-policy" },
+          { "/": "/terms-and-conditions" },
+          { "/": "/faq" },
+          { "/": "/support" },
+          { "/": "/membership/manage" },
+          { "/": "/mess" },
+          { "/": "/mess/*" },
+          { "/": "/seasons" }
+        ]
+      }
+    ]
+  }
+}

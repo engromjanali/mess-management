@@ -132,7 +132,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
 
           // Primary action
           SizedBox(
-            height: Dimensions.buttonHeightLarge,
+            height: Dimensions.buttonHeight,
             child: ElevatedButton(
               onPressed: widget.isLoading ? null : widget.onRegister,
               style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge))),

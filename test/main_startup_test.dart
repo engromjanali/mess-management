@@ -57,6 +57,8 @@ void main() {
     getIt.registerSingleton<SplashBloc>(splashBloc);
     addTearDown(() => getIt.reset());
 
+    appStartupComplete = true;
+    addTearDown(() => appStartupComplete = false);
     router.go(AppRoutes.getLoginRoute());
     await tester.pumpWidget(const MyApp(), phase: EnginePhase.build);
     tester.binding.handleViewFocusChanged(ViewFocusEvent(viewId: tester.view.viewId, state: ViewFocusState.focused, direction: ViewFocusDirection.forward));

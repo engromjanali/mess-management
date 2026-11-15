@@ -5,6 +5,7 @@ import 'package:mess_pilot/features/auth/presentation/bloc/auth_event.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
 import 'package:mess_pilot/features/auth/presentation/screens/login_screen.dart';
 import 'package:mess_pilot/l10n/gen/app_localizations.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -126,5 +127,18 @@ void main() {
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
     
     loadingBloc.close();
+  });
+
+  testWidgets('Shows Google sign-in on supported platforms',
+      (WidgetTester tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    try {
+      await tester.pumpWidget(createWidgetUnderTest());
+      await tester.pumpAndSettle();
+
+      expect(find.text('Continue with Google'), findsOneWidget);
+    } finally {
+      debugDefaultTargetPlatformOverride = null;
+    }
   });
 }

@@ -30,6 +30,14 @@ class AuthLocalDataSourceImpl implements AuthDataSource {
   }
 
   @override
+  Future<UserModel> googleLogin({required String idToken}) async {
+    throw UnimplementedError(
+      'Local Google login is not yet implemented. '
+      'This is a placeholder for future local data source functionality.',
+    );
+  }
+
+  @override
   Future<UserModel> register({required String fullName, required String email, required String password, String? phone}) async {
     throw UnimplementedError(
       'Local registration is not yet implemented. '
@@ -70,7 +78,7 @@ class AuthLocalDataSourceImpl implements AuthDataSource {
   }
 
   @override
-  Future<UserModel> updateProfile({required String fullName, required String email, required String phone, String? address, List<int>? photoBytes, String? photoName}) async {
+  Future<UserModel> updateProfile({required String fullName, required String email, required String phone, String? address, List<int>? photoBytes, String? photoName, String? password}) async {
     throw UnimplementedError(
       'Local updateProfile is not yet implemented. '
       'This is a placeholder for future local data source functionality.',

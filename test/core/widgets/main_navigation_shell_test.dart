@@ -79,7 +79,9 @@ void main() {
       expect(tester.widget<AnimatedBottomNavBar>(find.byType(AnimatedBottomNavBar)).currentIndex, index);
       expect(find.byKey(ValueKey(_routes[index])), findsOneWidget);
       final contentRect = tester.getRect(find.byKey(ValueKey(_routes[index])));
-      expect(contentRect.bottom, lessThanOrEqualTo(tester.getRect(find.byType(AnimatedBottomNavBar)).top));
+      final navRect = tester.getRect(find.byType(AnimatedBottomNavBar));
+      expect(contentRect.bottom, greaterThan(navRect.top), reason: 'The navbar must be an overlay on top of the body.');
+      expect(navRect.bottom, closeTo(tester.view.physicalSize.height / tester.view.devicePixelRatio, 0.01));
       expect(tester.takeException(), isNull);
     }
 
@@ -89,6 +91,47 @@ void main() {
     testRouter.pop();
     await tester.pumpAndSettle();
     expect(tester.widget<AnimatedBottomNavBar>(find.byType(AnimatedBottomNavBar)).currentIndex, 4);
+  });
+
+  testWidgets('Navbar hides when scrolling down and shows again when scrolling up', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(375, 800);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final testRouter = GoRouter(
+      initialLocation: AppRoutes.home,
+      routes: [
+        StatefulShellRoute.indexedStack(
+          builder: (context, state, navigationShell) => MainNavigationShell(navigationShell: navigationShell),
+          branches: [
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: AppRoutes.home,
+                  builder: (context, state) => Scaffold(
+                    body: ListView(children: [for (var i = 0; i < 40; i++) SizedBox(height: 80, child: Text('Item $i'))]),
+                  ),
+                ),
+              ],
+            ),
+            for (final route in _routes.skip(1)) StatefulShellBranch(routes: [GoRoute(path: route, builder: (context, state) => const Scaffold(body: SizedBox.shrink()))]),
+          ],
+        ),
+      ],
+    );
+    addTearDown(testRouter.dispose);
+    await tester.pumpWidget(_app(testRouter, authBloc));
+    await tester.pumpAndSettle();
+    expect(tester.widget<AnimatedBottomNavBar>(find.byType(AnimatedBottomNavBar)).visible, isTrue);
+
+    await tester.drag(find.byType(ListView), const Offset(0, -300));
+    await tester.pumpAndSettle();
+    expect(tester.widget<AnimatedBottomNavBar>(find.byType(AnimatedBottomNavBar)).visible, isFalse);
+
+    await tester.drag(find.byType(ListView), const Offset(0, 200));
+    await tester.pumpAndSettle();
+    expect(tester.widget<AnimatedBottomNavBar>(find.byType(AnimatedBottomNavBar)).visible, isTrue);
   });
 
   testWidgets('Navbar fits narrow screens, translations and large text with a round avatar', (tester) async {

@@ -11,6 +11,7 @@ import 'package:mess_pilot/core/extensions/overly_extensions.dart';
 import 'package:mess_pilot/core/extensions/screen_matres_extensions.dart';
 import 'package:mess_pilot/core/helpers/responsive_helper.dart';
 import 'package:mess_pilot/core/role/role_cubit.dart';
+import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/core/widgets/app_footer.dart';
 import 'package:mess_pilot/core/widgets/home_back_button.dart';
 import 'package:mess_pilot/core/widgets/pill_tab_bar.dart';
@@ -175,18 +176,15 @@ class _ListTab extends StatelessWidget {
 
   Future<void> _onDelete(BuildContext context, CostEntity cost) async {
     final bloc = context.read<CostBloc>();
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(context.local.deleteCost),
-        content: Text(context.local.deleteCostConfirm(cost.personName, CostFormatters.taka(cost.total), cost.itemCount)),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: Text(context.local.cancel)),
-          FilledButton(onPressed: () => Navigator.of(ctx).pop(true), child: Text(context.local.delete)),
-        ],
-      ),
+    final confirmed = await showAppConfirmDialog(
+      context,
+      title: context.local.deleteCost,
+      message: context.local.deleteCostConfirm(cost.personName, CostFormatters.taka(cost.total), cost.itemCount),
+      confirmLabel: context.local.delete,
+      icon: Icons.delete_outline_rounded,
+      destructive: true,
     );
-    if (confirmed ?? false) {
+    if (confirmed) {
       bloc.add(CostEvent.delete(cost.id));
     }
   }

@@ -5,6 +5,8 @@ import 'package:mess_pilot/features/auth/domain/entities/user_entity.dart';
 abstract class AuthRepository {
   ResultFuture<UserEntity> login({required String email, required String password});
 
+  ResultFuture<UserEntity> googleLogin({required String idToken});
+
   ResultFuture<UserEntity> register({required String fullName, required String email, required String password, String? phone});
 
   ResultFuture<void> forgotPassword({required String email});
@@ -15,7 +17,7 @@ abstract class AuthRepository {
 
   ResultFuture<UserEntity?> getCurrentUser();
 
-  ResultFuture<UserEntity> updateProfile({required String fullName, required String email, required String phone, String? address, List<int>? photoBytes, String? photoName});
+  ResultFuture<UserEntity> updateProfile({required String fullName, required String email, required String phone, String? address, List<int>? photoBytes, String? photoName, String? password});
 
   /// Schedules deletion of the signed-in account; returns when it takes effect.
   ResultFuture<DateTime> requestAccountDeletion({required String password, String? reason});

@@ -24,6 +24,12 @@ class AuthApiService {
     return _handleAuthResponse(response.data as Map<String, dynamic>);
   }
 
+  /// Signs in with a Google OAuth ID token, creating the account if needed.
+  Future<UserModel> googleLogin(String idToken) async {
+    final response = await _apiClient.post(AppConstants.googleSignInEndpoint, data: {'id_token': idToken});
+    return _handleAuthResponse(response.data as Map<String, dynamic>);
+  }
+
   Future<void> forgotPassword(Map<String, dynamic> body) async {
     await _apiClient.post(AppConstants.forgotPasswordEndpoint, data: body);
   }

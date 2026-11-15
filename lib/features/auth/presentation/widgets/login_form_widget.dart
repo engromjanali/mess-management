@@ -121,7 +121,8 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
 
           // Primary action
           SizedBox(
-            height: Dimensions.buttonHeightLarge,
+            width: double.infinity,
+            height: Dimensions.buttonHeight,
             child: ElevatedButton(
               onPressed: widget.isLoading ? null : widget.onLogin,
               style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge))),

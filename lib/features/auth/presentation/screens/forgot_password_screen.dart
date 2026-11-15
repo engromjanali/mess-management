@@ -176,7 +176,7 @@ class _ForgotPasswordViewState extends State<_ForgotPasswordView> {
 
   Widget _primaryButton(BuildContext context, {required String label, required bool isLoading, required VoidCallback onPressed}) {
     return SizedBox(
-      height: Dimensions.buttonHeightLarge,
+      height: Dimensions.buttonHeight,
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge))),

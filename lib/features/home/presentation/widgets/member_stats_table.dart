@@ -68,15 +68,21 @@ class _MemberStatsTableState extends State<MemberStatsTable> {
       child: Row(
         children: [
           SizedBox(width: 36, child: Text('#', style: style)),
-          Expanded(flex: 3, child: Text(context.local.roleMember, style: style)),
+          Expanded(flex: 5, child: Text(context.local.roleMember, style: style, maxLines: 1, overflow: TextOverflow.ellipsis)),
+          const SizedBox(width: Dimensions.paddingSizeSmall),
           Expanded(
-            child: Text(context.local.uiDeposit, style: style, textAlign: TextAlign.end),
+            flex: 3,
+            child: Text(context.local.uiDeposit, style: style, textAlign: TextAlign.end, maxLines: 1, overflow: TextOverflow.ellipsis),
           ),
+          const SizedBox(width: Dimensions.paddingSizeSmall),
           Expanded(
-            child: Text(context.local.uiMeal, style: style, textAlign: TextAlign.end),
+            flex: 2,
+            child: Text(context.local.uiMeal, style: style, textAlign: TextAlign.end, maxLines: 1, overflow: TextOverflow.ellipsis),
           ),
+          const SizedBox(width: Dimensions.paddingSizeSmall),
           Expanded(
-            child: Text(context.local.uiRemaining, style: style, textAlign: TextAlign.end),
+            flex: 3,
+            child: Text(context.local.uiRemaining, style: style, textAlign: TextAlign.end, maxLines: 1, overflow: TextOverflow.ellipsis),
           ),
         ],
       ),
@@ -86,7 +92,7 @@ class _MemberStatsTableState extends State<MemberStatsTable> {
   Widget _buildMemberRow(BuildContext context, int index, MemberStatEntity m) {
     final colors = context.customThemeColors;
     final remaining = m.remaining(widget.mealRate);
-    final remainingColor = remaining < 0 ? colors.errorColor : colors.successColor;
+    final remainingColor = remaining < -0.005 ? colors.errorColor : colors.successColor;
 
     final valueStyle = AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textPrimaryColor);
 
@@ -97,7 +103,7 @@ class _MemberStatsTableState extends State<MemberStatsTable> {
           AppUserAvatar(name: m.name, photoUrl: m.photoUrl, radius: 14),
           const SizedBox(width: Dimensions.paddingSizeSmall),
           Expanded(
-            flex: 3,
+            flex: 5,
             child: Text(
               m.name,
               maxLines: 1,
@@ -105,13 +111,19 @@ class _MemberStatsTableState extends State<MemberStatsTable> {
               style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
             ),
           ),
+          const SizedBox(width: Dimensions.paddingSizeSmall),
           Expanded(
+            flex: 3,
             child: Align(alignment: Alignment.centerRight, child: FittedBox(fit: BoxFit.scaleDown, child: Text(DashboardFormatters.taka(m.deposit), style: valueStyle, textAlign: TextAlign.end))),
           ),
+          const SizedBox(width: Dimensions.paddingSizeSmall),
           Expanded(
+            flex: 2,
             child: Align(alignment: Alignment.centerRight, child: FittedBox(fit: BoxFit.scaleDown, child: Text(DashboardFormatters.number(m.meal), style: valueStyle, textAlign: TextAlign.end))),
           ),
+          const SizedBox(width: Dimensions.paddingSizeSmall),
           Expanded(
+            flex: 3,
             child: Align(alignment: Alignment.centerRight, child: FittedBox(fit: BoxFit.scaleDown, child: Text(
               DashboardFormatters.taka(remaining),
               textAlign: TextAlign.end,

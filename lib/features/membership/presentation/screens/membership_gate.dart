@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/core/widgets/app_page_scroll_view.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/main_page_body.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/web_profile_drawer.dart';
@@ -17,6 +20,8 @@ import 'package:mess_pilot/features/home/presentation/widgets/dashboard_formatte
 import 'package:mess_pilot/features/home/presentation/widgets/profile_menu.dart';
 import 'package:mess_pilot/features/membership/domain/entities/membership_status_entity.dart';
 import 'package:mess_pilot/features/membership/presentation/bloc/membership_cubit.dart';
+import 'package:mess_pilot/features/membership/presentation/widgets/mess_avatar.dart';
+import 'package:mess_pilot/features/membership/presentation/widgets/mess_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -249,18 +254,14 @@ class _InviteCard extends StatelessWidget {
       context.showErrorSnackBar(context.local.inviteCodeRequired);
       return;
     }
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(context.local.uiJoinMess),
-        content: Text(messName == null ? context.local.uiAreYouSureYouWantToUseThisInvitationAndJoinTheMess : context.local.uiJoinNamedMess(messName)),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: Text(context.local.cancel)),
-          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: Text(context.local.uiJoin)),
-        ],
-      ),
+    final confirmed = await showAppConfirmDialog(
+      context,
+      title: context.local.uiJoinMess,
+      message: messName == null ? context.local.uiAreYouSureYouWantToUseThisInvitationAndJoinTheMess : context.local.uiJoinNamedMess(messName),
+      confirmLabel: context.local.uiJoin,
+      icon: Icons.group_add_outlined,
     );
-    if (confirmed == true && context.mounted) await context.read<MembershipCubit>().joinInvite(inviteCode);
+    if (confirmed && context.mounted) await context.read<MembershipCubit>().joinInvite(inviteCode);
   }
 
   @override
@@ -345,12 +346,29 @@ class _JoinMessMenuItem extends StatelessWidget {
   }
 }
 
-class _CreateMessCard extends StatelessWidget {
+class _CreateMessCard extends StatefulWidget {
   const _CreateMessCard({required this.nameController, required this.addressController, required this.seasonController});
 
   final TextEditingController nameController;
   final TextEditingController addressController;
   final TextEditingController seasonController;
+
+  @override
+  State<_CreateMessCard> createState() => _CreateMessCardState();
+}
+
+class _CreateMessCardState extends State<_CreateMessCard> {
+  Uint8List? _imageBytes;
+  String? _imageName;
+
+  Future<void> _pickImage() async {
+    final picked = await pickMessImage(context);
+    if (picked == null || !mounted) return;
+    setState(() {
+      _imageBytes = picked.bytes;
+      _imageName = picked.name;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -362,9 +380,9 @@ class _CreateMessCard extends StatelessWidget {
         child: LayoutBuilder(
           builder: (context, constraints) {
             final fields = [
-              TextField(controller: nameController, decoration: InputDecoration(labelText: context.local.messName)),
-              TextField(controller: seasonController, decoration: InputDecoration(labelText: context.local.uiFirstSeasonName, hintText: context.local.uiExampleJuly2026)),
-              TextField(controller: addressController, decoration: InputDecoration(labelText: context.local.addressOptional)),
+              TextField(controller: widget.nameController, decoration: InputDecoration(labelText: context.local.messName)),
+              TextField(controller: widget.seasonController, decoration: InputDecoration(labelText: context.local.uiFirstSeasonName, hintText: context.local.uiExampleJuly2026)),
+              TextField(controller: widget.addressController, decoration: InputDecoration(labelText: context.local.addressOptional)),
             ];
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -374,12 +392,13 @@ class _CreateMessCard extends StatelessWidget {
                 else
                   for (var i = 0; i < fields.length; i++) ...[fields[i], if (i < fields.length - 1) const SizedBox(height: Dimensions.paddingSizeDefault)],
                 const SizedBox(height: Dimensions.paddingSizeDefault),
+                Align(alignment: Alignment.centerLeft, child: MessImagePicker(name: widget.nameController.text, pickedBytes: _imageBytes, onPick: _pickImage, onRemove: () => setState(() { _imageBytes = null; _imageName = null; }))),
+                const SizedBox(height: Dimensions.paddingSizeDefault),
                 Align(
                   alignment: Alignment.centerRight,
-                  child: FilledButton.icon(
-                    onPressed: () => context.read<MembershipCubit>().createMess(name: nameController.text, address: addressController.text, seasonName: seasonController.text),
-                    icon: const Icon(Icons.add_rounded),
-                    label: Text(context.local.uiCreateMess),
+                  child: FilledButton(
+                    onPressed: () => context.read<MembershipCubit>().createMess(name: widget.nameController.text, address: widget.addressController.text, seasonName: widget.seasonController.text, imageBytes: _imageBytes, imageName: _imageName),
+                    child: Text(context.local.uiCreateMess),
                   ),
                 ),
               ],
@@ -423,7 +442,7 @@ class _AvailableMessCard extends StatelessWidget {
             for (final mess in messPage!.messes)
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: const CircleAvatar(child: Icon(Icons.home_work_outlined)),
+                    leading: MessAvatar(name: mess.name, color: context.customThemeColors.primaryColor, imageUrl: mess.imageUrl),
                     title: Text(mess.name, maxLines: 1, overflow: TextOverflow.ellipsis),
                     subtitle: Text(mess.address.isEmpty ? context.local.uiMessId(mess.id) : '${context.local.uiMessId(mess.id)} · ${mess.address}', maxLines: 1, overflow: TextOverflow.ellipsis),
                     trailing: pendingIds.contains(mess.id) ? Chip(label: Text(context.local.statusPending)) : TextButton(onPressed: () => context.read<MembershipCubit>().requestJoin(mess.id), child: Text(context.local.uiRequest)),

@@ -100,3 +100,50 @@ requires the project's signing/provisioning configuration.
 
 Use [FIX_VERSIONS.md](FIX_VERSIONS.md). Keep `pubspec.lock`; deleting it changes
 resolved dependencies instead of reproducing the existing build.
+
+## Deep links
+
+App Links and Universal Links use `https://messpilot.goraso.com`, for example
+`https://messpilot.goraso.com/notices/1`. Protected destinations continue after
+startup and login; the server still checks access to the requested content.
+
+The association files live in `web/.well-known/` and are copied to `build/web`
+by `flutter build web --release`. Firebase Hosting serves them as JSON and keeps
+unrelated hidden files excluded. Deploy the web build through the existing
+Hosting workflow before testing domain verification, then confirm both URLs
+return HTTP 200 with JSON content, without a redirect or the Flutter HTML page:
+
+```sh
+curl -i https://messpilot.goraso.com/.well-known/assetlinks.json
+curl -i https://messpilot.goraso.com/.well-known/apple-app-site-association
+```
+
+Android's `assetlinks.json` contains the SHA-256 fingerprint verified against
+the existing release APK and the local debug keystore. Release builds currently
+use debug signing. Add the actual release certificate fingerprint when changing
+signing; for Google Play distribution, add the **Play App Signing certificate**
+SHA-256 from Play Console, rather than the upload certificate. Other developers'
+debug builds need their own verified fingerprint to use domain verification.
+The iOS association uses the project's team `Q7U8S53NZ6` and bundle identifier
+`com.goraso.messpilot`; ensure the App ID and provisioning profile have Associated
+Domains enabled when signing the app.
+
+After installing a new mobile build, check domain verification on Android 12+
+and open a link without forcing a package, so the test includes OS verification:
+
+```sh
+adb shell pm verify-app-links --re-verify com.goraso.messpilot
+adb shell pm get-app-links com.goraso.messpilot
+adb shell am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d 'https://messpilot.goraso.com/notices/1'
+xcrun simctl openurl booted 'https://messpilot.goraso.com/notices/1'
+```
+
+Use an accessible notice ID. Test both a closed app and an already running app,
+including login when signed out, and confirm the requested screen opens. On a
+physical iOS device, tap the link from Notes or Messages; Apple's association
+cache can take up to 24 hours to update. Browser links use normal application
+paths, while existing `/#/...` URLs remain supported by the web app.
+
+See Flutter's [Android App Links](https://docs.flutter.dev/cookbook/navigation/set-up-app-links)
+and [iOS Universal Links](https://docs.flutter.dev/cookbook/navigation/set-up-universal-links)
+setup guides for platform verification details.

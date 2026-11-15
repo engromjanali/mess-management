@@ -16,6 +16,10 @@ class AuthRepositoryImpl implements AuthRepository {
       guardResult(() async => (await _dataSource.login(email: email, password: password)).toEntity());
 
   @override
+  ResultFuture<UserEntity> googleLogin({required String idToken}) =>
+      guardResult(() async => (await _dataSource.googleLogin(idToken: idToken)).toEntity());
+
+  @override
   ResultFuture<void> logout() => guardResult(() => _dataSource.logout());
 
   @override
@@ -35,8 +39,8 @@ class AuthRepositoryImpl implements AuthRepository {
       guardResult(() => _dataSource.resetPassword(email: email, otp: otp, password: password));
 
   @override
-  ResultFuture<UserEntity> updateProfile({required String fullName, required String email, required String phone, String? address, List<int>? photoBytes, String? photoName}) =>
-      guardResult(() async => (await _dataSource.updateProfile(fullName: fullName, email: email, phone: phone, address: address, photoBytes: photoBytes, photoName: photoName)).toEntity());
+  ResultFuture<UserEntity> updateProfile({required String fullName, required String email, required String phone, String? address, List<int>? photoBytes, String? photoName, String? password}) =>
+      guardResult(() async => (await _dataSource.updateProfile(fullName: fullName, email: email, phone: phone, address: address, photoBytes: photoBytes, photoName: photoName, password: password)).toEntity());
 
   @override
   ResultFuture<DateTime> requestAccountDeletion({required String password, String? reason}) =>

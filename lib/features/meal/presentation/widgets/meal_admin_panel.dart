@@ -1,3 +1,4 @@
+import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/core/widgets/app_state_view.dart';
 import 'package:mess_pilot/core/widgets/app_loader.dart';
 import 'package:flutter/material.dart';
@@ -116,22 +117,17 @@ class _ManageCard extends StatelessWidget {
   }
 
   Future<void> _confirmDelete(BuildContext context, MemberMealEntity entry) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(context.local.uiDeleteMeal),
-        content: Text(
-          '${data.memberName(entry.memberId)} · '
+    final confirmed = await showAppConfirmDialog(
+      context,
+      title: context.local.uiDeleteMeal,
+      message: '${data.memberName(entry.memberId)} · '
           '${MealFormatters.dayLabel(entry.date)}\n'
-          + context.local.uiThisRemovesTheRecordedMealForThatDay,
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: Text(context.local.cancel)),
-          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: Text(context.local.delete)),
-        ],
-      ),
+          '${context.local.uiThisRemovesTheRecordedMealForThatDay}',
+      confirmLabel: context.local.delete,
+      icon: Icons.delete_outline_rounded,
+      destructive: true,
     );
-    if (confirmed == true && context.mounted) {
+    if (confirmed && context.mounted) {
       context.read<MealAdminBloc>().add(MealAdminEvent.delete(memberId: entry.memberId, date: entry.date));
     }
   }

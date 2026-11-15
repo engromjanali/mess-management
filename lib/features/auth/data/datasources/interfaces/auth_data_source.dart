@@ -10,6 +10,9 @@ abstract class AuthDataSource {
   /// Authenticate user with email and password
   Future<UserModel> login({required String email, required String password});
 
+  /// Exchanges a Google OAuth ID token for the app's own JWT session
+  Future<UserModel> googleLogin({required String idToken});
+
   /// Register a new account and return the signed-in user
   Future<UserModel> register({required String fullName, required String email, required String password, String? phone});
 
@@ -26,7 +29,7 @@ abstract class AuthDataSource {
   Future<UserModel?> getCurrentUser();
 
   /// Update the signed-in user's profile (optionally with a new photo) and return the saved user
-  Future<UserModel> updateProfile({required String fullName, required String email, required String phone, String? address, List<int>? photoBytes, String? photoName});
+  Future<UserModel> updateProfile({required String fullName, required String email, required String phone, String? address, List<int>? photoBytes, String? photoName, String? password});
 
   /// Schedules deletion of the signed-in account (60 days ahead); returns when it takes effect
   Future<DateTime> requestAccountDeletion({required String password, String? reason});

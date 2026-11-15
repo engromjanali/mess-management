@@ -1,4 +1,6 @@
+import 'package:mess_pilot/config/route/app_router.dart';
 import 'package:mess_pilot/core/widgets/app_page_scroll_view.dart';
+import 'package:mess_pilot/core/widgets/home_back_button.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/main_page_body.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/web_profile_drawer.dart';
 import 'package:mess_pilot/core/widgets/app_loader.dart';
@@ -19,7 +21,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
-/// Edit the signed-in user's photo, name, email, phone and address.
+/// Edit the signed-in user's photo, name, email, phone, password and address.
 class EditProfileScreen extends StatelessWidget {
   const EditProfileScreen({super.key});
 
@@ -29,7 +31,7 @@ class EditProfileScreen extends StatelessWidget {
     final showWebAppBar = MainPageBody.showWebAppBar(context);
     return Scaffold(
       endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
-      appBar: showWebAppBar ? null : AppBar(title: Text(context.local.editProfile)),
+      appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.editProfile)),
       body: MainPageBody(title: context.local.editProfile, child: user == null ? const Center(child: AppLoader()) : _EditProfileForm(user: user)),
     );
   }
@@ -53,6 +55,7 @@ class _EditProfileFormState extends State<_EditProfileForm> {
   late final _emailController = TextEditingController(text: widget.user.email);
   late final _phoneController = TextEditingController(text: widget.user.phone ?? '');
   late final _addressController = TextEditingController(text: widget.user.address ?? '');
+  final _passwordController = TextEditingController();
   bool _saving = false;
   Uint8List? _photoBytes;
   String? _photoName;
@@ -63,12 +66,13 @@ class _EditProfileFormState extends State<_EditProfileForm> {
     _emailController.dispose();
     _phoneController.dispose();
     _addressController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
   String? _validatePhone(String? value) {
     final phone = (value ?? '').trim();
-    if (phone.isEmpty) return '${context.local.phone} ${context.local.validation_is_required}';
+    if (phone.isEmpty) return null;
     return _phonePattern.hasMatch(phone) ? null : context.local.validation_invalid_phone;
   }
 
@@ -94,8 +98,17 @@ class _EditProfileFormState extends State<_EditProfileForm> {
     FocusScope.of(context).unfocus();
     setState(() => _saving = true);
 
+    final password = _passwordController.text;
     final result = await getIt<UpdateProfileUseCase>()(
-      UpdateProfileParams(fullName: _nameController.text.trim(), email: _emailController.text.trim(), phone: _phoneController.text.trim(), address: _addressController.text.trim(), photoBytes: _photoBytes, photoName: _photoName),
+      UpdateProfileParams(
+        fullName: _nameController.text.trim(),
+        email: _emailController.text.trim(),
+        phone: _phoneController.text.trim(),
+        address: _addressController.text.trim(),
+        password: password.isEmpty ? null : password,
+        photoBytes: _photoBytes,
+        photoName: _photoName,
+      ),
     );
     if (!mounted) return;
     setState(() => _saving = false);
@@ -104,7 +117,11 @@ class _EditProfileFormState extends State<_EditProfileForm> {
       success: (success) {
         context.read<AuthBloc>().add(AuthEvent.userUpdated(success.data));
         context.showSuccessSnackBar(context.local.profileUpdated);
-        context.pop();
+        if (context.canPop()) {
+          context.pop();
+        } else {
+          context.go(AppRoutes.home);
+        }
       },
       failure: (failure) => context.showErrorSnackBar(failure),
     );
@@ -155,7 +172,18 @@ class _EditProfileFormState extends State<_EditProfileForm> {
                 prefixIcon: const Icon(Icons.phone_outlined),
                 prefixIconColor: _prefixIconColor,
                 borderRadius: Dimensions.radiusLarge,
-                isRequired: true,
+              ),
+              const SizedBox(height: Dimensions.spaceDefault),
+              CommonLabeledInputItemWidget(
+                label: context.local.password,
+                hintText: context.local.passwordLeaveBlankHint,
+                controller: _passwordController,
+                keyboardType: TextInputType.visiblePassword,
+                textInputAction: TextInputAction.next,
+                prefixIcon: const Icon(Icons.lock_outline_rounded),
+                prefixIconColor: _prefixIconColor,
+                borderRadius: Dimensions.radiusLarge,
+                passwordLength: 6,
               ),
               const SizedBox(height: Dimensions.spaceDefault),
               CommonLabeledInputItemWidget(
@@ -171,7 +199,7 @@ class _EditProfileFormState extends State<_EditProfileForm> {
               ),
               const SizedBox(height: Dimensions.spaceLarge),
               SizedBox(
-                height: Dimensions.buttonHeightLarge,
+                height: Dimensions.buttonHeight,
                 child: ElevatedButton(
                   onPressed: _saving ? null : _save,
                   style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge))),

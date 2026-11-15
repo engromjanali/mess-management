@@ -152,7 +152,7 @@ class _NoticeFormSheetState extends State<_NoticeFormSheet> {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: _submitting ? null : () => Navigator.of(context).pop(),
-                    style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeightDefault)),
+                    style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeight)),
                     child: Text(context.local.cancel, maxLines: 1, overflow: TextOverflow.ellipsis),
                   ),
                 ),
@@ -160,7 +160,7 @@ class _NoticeFormSheetState extends State<_NoticeFormSheet> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _submitting ? null : _submit,
-                    style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeightDefault)),
+                    style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeight)),
                     child: _submitting
                         ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
                         : Text(_isEdit ? context.local.save : context.local.publish, maxLines: 1, overflow: TextOverflow.ellipsis),

@@ -7,9 +7,10 @@ import 'package:mess_pilot/features/membership/presentation/widgets/mess_avatar.
 /// A mess row (invitation received, join request sent): avatar, name,
 /// [subtitle] and [actions]. [busy] replaces the actions with a spinner.
 class MessItemTile extends StatelessWidget {
-  const MessItemTile({required this.messName, required this.subtitle, required this.actions, this.busy = false, super.key});
+  const MessItemTile({required this.messName, required this.subtitle, required this.actions, this.imageUrl, this.busy = false, super.key});
 
   final String messName;
+  final String? imageUrl;
   final String subtitle;
   final List<Widget> actions;
   final bool busy;
@@ -21,7 +22,7 @@ class MessItemTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
       child: Row(
         children: [
-          MessAvatar(name: messName, color: colors.primaryColor, size: 44),
+          MessAvatar(name: messName, color: colors.primaryColor, size: 44, imageUrl: imageUrl),
           const SizedBox(width: Dimensions.paddingSizeDefault),
           Expanded(
             child: Column(

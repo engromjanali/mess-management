@@ -58,14 +58,14 @@ class PinnedNoticeCard extends StatelessWidget {
           else ...[
             Text(
               notice!.title,
-              maxLines: 2,
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
+              style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
             ),
             const SizedBox(height: Dimensions.paddingSizeSmall),
             Text(
               notice!.description,
-              maxLines: 4,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textSecondaryColor, height: 1.4),
             ),

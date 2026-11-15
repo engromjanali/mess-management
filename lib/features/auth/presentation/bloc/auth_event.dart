@@ -12,6 +12,9 @@ class AuthEvent with _$AuthEvent {
   /// Login requested event
   const factory AuthEvent.loginRequested({required String email, required String password}) = LoginRequested;
 
+  /// Google login requested event
+  const factory AuthEvent.googleLoginRequested({required String idToken}) = GoogleLoginRequested;
+
   /// Register requested event
   const factory AuthEvent.registerRequested({required String fullName, required String email, required String password, String? phone}) = RegisterRequested;
 
