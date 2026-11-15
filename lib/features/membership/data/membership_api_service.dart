@@ -182,6 +182,7 @@ class MembershipApiService {
           membershipId: member['membership_id'] as int,
           userId: member['user_id'] as int,
           name: member['name'] as String? ?? '',
+          photoUrl: member['photo'] as String? ?? member['photo_url'] as String?,
           role: member['role'] as String? ?? 'member',
           joinedAt: DateTime.parse(member['joined_at'] as String).toLocal(),
         );
@@ -241,7 +242,13 @@ class MembershipApiService {
 
   MessPersonEntity? _person(Object? value) {
     if (value is! Map<String, dynamic>) return null;
-    return MessPersonEntity(userId: value['user_id'] as int, name: value['name'] as String? ?? '', email: value['email'] as String? ?? '', phone: value['phone'] as String? ?? '');
+    return MessPersonEntity(
+      userId: value['user_id'] as int,
+      name: value['name'] as String? ?? '',
+      email: value['email'] as String? ?? '',
+      phone: value['phone'] as String? ?? '',
+      photoUrl: value['photo'] as String? ?? value['photo_url'] as String?,
+    );
   }
 
   double? _double(Object? value) => value is num ? value.toDouble() : double.tryParse(value?.toString() ?? '');

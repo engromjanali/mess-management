@@ -11,7 +11,6 @@ import 'package:mess_pilot/core/di/injection.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
 import 'package:mess_pilot/core/extensions/overly_extensions.dart';
 import 'package:mess_pilot/core/helpers/responsive_helper.dart';
-import 'package:mess_pilot/features/home/presentation/widgets/dashboard_formatters.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/section_title.dart';
 import 'package:mess_pilot/features/meal/domain/entities/meal_member_entity.dart';
 import 'package:mess_pilot/features/meal/presentation/bloc/meal_admin_bloc.dart';
@@ -187,7 +186,6 @@ class _ManageCard extends StatelessWidget {
               _EntryRow(
                 entry: entries[i],
                 memberName: data.memberName(entries[i].memberId),
-                mealRate: data.mealRate,
                 showMember: selectedMemberId == null,
                 onEdit: busy ? null : () => _edit(context, entries[i]),
                 onDelete: busy ? null : () => _confirmDelete(context, entries[i]),
@@ -302,11 +300,10 @@ class _Filters extends StatelessWidget {
 }
 
 class _EntryRow extends StatelessWidget {
-  const _EntryRow({required this.entry, required this.memberName, required this.mealRate, required this.showMember, required this.onEdit, required this.onDelete});
+  const _EntryRow({required this.entry, required this.memberName, required this.showMember, required this.onEdit, required this.onDelete});
 
   final MemberMealEntity entry;
   final String memberName;
-  final double mealRate;
   final bool showMember;
 
   /// Null while another action runs, which disables the buttons.
@@ -316,10 +313,11 @@ class _EntryRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
-    final showActionMenu = ResponsiveHelper.isMobile(context) || ResponsiveHelper.isSmallTab(context);
+    final isCompact = ResponsiveHelper.isMobile(context) || ResponsiveHelper.isSmallTab(context);
+    final mealLabel = isCompact ? '${MealFormatters.count(entry.total)} M' : '${MealFormatters.count(entry.total)} meals';
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault),
+      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeDefault),
       child: Row(
         children: [
           Expanded(
@@ -357,24 +355,12 @@ class _EntryRow extends StatelessWidget {
               ],
             ),
           ),
-          Expanded(
-            flex: 2,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  '${MealFormatters.count(entry.total)} meals',
-                  style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
-                ),
-                Text(
-                  DashboardFormatters.taka(entry.total * mealRate),
-                  style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
-                ),
-              ],
-            ),
+          Text(
+            mealLabel,
+            style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
           ),
           // Edit / delete actions.
-          if (showActionMenu)
+          if (isCompact)
             PopupMenuButton<_MealAction>(
               tooltip: context.local.options,
               enabled: onEdit != null,
@@ -399,6 +385,7 @@ class _EntryRow extends StatelessWidget {
               ],
             )
           else ...[
+            const SizedBox(width: Dimensions.paddingSizeDefault),
             IconButton(
               tooltip: context.local.edit,
               visualDensity: VisualDensity.compact,

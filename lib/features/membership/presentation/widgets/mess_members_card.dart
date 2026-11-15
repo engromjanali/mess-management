@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
+import 'package:mess_pilot/core/widgets/app_user_avatar.dart';
 import 'package:mess_pilot/features/membership/domain/entities/mess_details_entity.dart';
-import 'package:mess_pilot/features/membership/presentation/widgets/mess_avatar.dart';
 import 'package:mess_pilot/features/membership/presentation/widgets/mess_formatters.dart';
 import 'package:mess_pilot/features/membership/presentation/widgets/mess_section_card.dart';
 
@@ -60,7 +60,7 @@ class _MemberRow extends StatelessWidget {
 
     return Row(
       children: [
-        MessAvatar(name: member.name, color: accent),
+        AppUserAvatar(name: member.name, photoUrl: member.photoUrl, radius: 20),
         const SizedBox(width: Dimensions.paddingSizeDefault),
         Expanded(
           child: Column(
