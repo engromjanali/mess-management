@@ -18,6 +18,7 @@ import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -51,14 +52,36 @@ class _EditProfileFormState extends State<_EditProfileForm> {
   static final RegExp _phonePattern = RegExp(r'^\+?\d{10,15}$');
 
   final _formKey = GlobalKey<FormState>();
+  late String _dialCode = _dialCodeOf(widget.user.phone);
   late final _nameController = TextEditingController(text: widget.user.name);
   late final _emailController = TextEditingController(text: widget.user.email);
-  late final _phoneController = TextEditingController(text: widget.user.phone ?? '');
+  late final _phoneController = TextEditingController(text: _nationalNumber(widget.user.phone));
   late final _addressController = TextEditingController(text: widget.user.address ?? '');
   final _passwordController = TextEditingController();
   bool _saving = false;
   Uint8List? _photoBytes;
   String? _photoName;
+
+  /// Splits a stored phone into its dial code and national number so the
+  /// country picker and the text field don't duplicate the prefix.
+  static String _normalizedPhone(String? phone) => (phone ?? '').replaceAll(RegExp(r'[^\d+]'), '');
+
+  static String _dialCodeOf(String? phone) {
+    final value = _normalizedPhone(phone);
+    if (!value.startsWith('+')) return '+880';
+    final match = codes
+        .map((country) => country['dial_code'] ?? '')
+        .where((code) => code.isNotEmpty && value.startsWith(code))
+        .fold<String>('', (longest, code) => code.length > longest.length ? code : longest);
+    return match.isEmpty ? '+880' : match;
+  }
+
+  static String _nationalNumber(String? phone) {
+    final value = _normalizedPhone(phone);
+    final code = _dialCodeOf(value);
+    final national = value.startsWith(code) ? value.substring(code.length) : value;
+    return national.replaceFirst(RegExp(r'^0+'), '');
+  }
 
   @override
   void dispose() {
@@ -99,11 +122,12 @@ class _EditProfileFormState extends State<_EditProfileForm> {
     setState(() => _saving = true);
 
     final password = _passwordController.text;
+    final nationalNumber = _phoneController.text.trim().replaceFirst(RegExp(r'^0+'), '');
     final result = await getIt<UpdateProfileUseCase>()(
       UpdateProfileParams(
         fullName: _nameController.text.trim(),
         email: _emailController.text.trim(),
-        phone: _phoneController.text.trim(),
+        phone: nationalNumber.isEmpty ? '' : '$_dialCode$nationalNumber',
         address: _addressController.text.trim(),
         password: password.isEmpty ? null : password,
         photoBytes: _photoBytes,
@@ -160,17 +184,15 @@ class _EditProfileFormState extends State<_EditProfileForm> {
                 isRequired: true,
               ),
               const SizedBox(height: Dimensions.spaceDefault),
-              // Stored numbers may already include a country code, so no picker here.
               CommonLabeledInputItemWidget(
                 label: context.local.phone,
                 hintText: context.local.phoneNumber,
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
-                isPhoneField: false,
                 validator: _validatePhone,
                 textInputAction: TextInputAction.next,
-                prefixIcon: const Icon(Icons.phone_outlined),
-                prefixIconColor: _prefixIconColor,
+                countryDialCode: _dialCode,
+                onCountryChanged: (code) => setState(() => _dialCode = code.dialCode ?? _dialCode),
                 borderRadius: Dimensions.radiusLarge,
               ),
               const SizedBox(height: Dimensions.spaceDefault),
