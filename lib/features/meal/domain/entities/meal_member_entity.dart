@@ -59,6 +59,14 @@ class MealAdminEntity extends Equatable {
       )
       .name;
 
+  /// Photo URL for [memberId], or null if it isn't on the roster.
+  String? memberPhoto(String memberId) => members
+      .firstWhere(
+        (m) => m.id == memberId,
+        orElse: () => const MealMemberEntity(id: '', name: 'Unknown'),
+      )
+      .photoUrl;
+
   /// Records filtered by an optional [memberId] and/or [date], most recent
   /// first. Passing `null` for either leaves that dimension unfiltered.
   List<MemberMealEntity> filtered({String? memberId, DateTime? date}) {

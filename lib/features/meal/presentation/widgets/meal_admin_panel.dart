@@ -1,6 +1,7 @@
 import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/core/widgets/app_state_view.dart';
 import 'package:mess_pilot/core/widgets/app_loader.dart';
+import 'package:mess_pilot/core/widgets/app_user_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -186,6 +187,7 @@ class _ManageCard extends StatelessWidget {
               _EntryRow(
                 entry: entries[i],
                 memberName: data.memberName(entries[i].memberId),
+                memberPhoto: data.memberPhoto(entries[i].memberId),
                 showMember: selectedMemberId == null,
                 onEdit: busy ? null : () => _edit(context, entries[i]),
                 onDelete: busy ? null : () => _confirmDelete(context, entries[i]),
@@ -300,10 +302,11 @@ class _Filters extends StatelessWidget {
 }
 
 class _EntryRow extends StatelessWidget {
-  const _EntryRow({required this.entry, required this.memberName, required this.showMember, required this.onEdit, required this.onDelete});
+  const _EntryRow({required this.entry, required this.memberName, required this.showMember, required this.onEdit, required this.onDelete, this.memberPhoto});
 
   final MemberMealEntity entry;
   final String memberName;
+  final String? memberPhoto;
   final bool showMember;
 
   /// Null while another action runs, which disables the buttons.
@@ -320,6 +323,10 @@ class _EntryRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeDefault),
       child: Row(
         children: [
+          if (showMember) ...[
+            AppUserAvatar(name: memberName, photoUrl: memberPhoto),
+            const SizedBox(width: Dimensions.paddingSizeSmall),
+          ],
           Expanded(
             flex: 4,
             child: Column(

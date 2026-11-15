@@ -1,17 +1,17 @@
+import 'package:mess_pilot/core/helpers/responsive_helper.dart';
 import 'package:mess_pilot/core/widgets/app_state_view.dart';
 import 'package:flutter/material.dart';
 import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
-import 'package:mess_pilot/features/home/presentation/widgets/dashboard_formatters.dart';
 import 'package:mess_pilot/features/meal/domain/entities/meal_entity.dart';
 import 'package:mess_pilot/features/meal/presentation/widgets/meal_formatters.dart';
 
 /// Scrollable-free meal history card: one row per day with the B/L/D breakdown,
-/// the day's meal total and its cost, or a message when there are no meals.
+/// the day's meal total, or a message when there are no meals.
 /// Designed to sit inside an outer scroll.
 class MealHistoryList extends StatelessWidget {
-  const MealHistoryList({required this.days, required this.mealRate, super.key});
+  const MealHistoryList({required this.days, this.mealRate = 0, super.key});
 
   /// Most-recent-first list of days.
   final List<MealEntity> days;
@@ -35,7 +35,7 @@ class MealHistoryList extends StatelessWidget {
             AppEmptyState(title: context.local.noMealsYet, icon: Icons.no_meals_rounded),
           for (var i = 0; i < days.length; i++) ...[
             if (i > 0) Divider(height: 1, color: colors.dividerColor.withValues(alpha: 0.3)),
-            _HistoryRow(day: days[i], mealRate: mealRate, isToday: days[i].date.year == now.year && days[i].date.month == now.month && days[i].date.day == now.day),
+            _HistoryRow(day: days[i], isToday: days[i].date.year == now.year && days[i].date.month == now.month && days[i].date.day == now.day),
           ],
         ],
       ),
@@ -44,23 +44,24 @@ class MealHistoryList extends StatelessWidget {
 }
 
 class _HistoryRow extends StatelessWidget {
-  const _HistoryRow({required this.day, required this.mealRate, required this.isToday});
+  const _HistoryRow({required this.day, required this.isToday});
 
   final MealEntity day;
-  final double mealRate;
   final bool isToday;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
+    final isCompact = ResponsiveHelper.isMobile(context) || ResponsiveHelper.isSmallTab(context);
+    final mealLabel = isCompact ? '${MealFormatters.count(day.total)} M' : '${MealFormatters.count(day.total)} meals';
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault),
+      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeDefault),
       child: Row(
         children: [
           // Date + today chip.
           Expanded(
-            flex: 3,
+            flex: 4,
             child: Row(
               children: [
                 Flexible(
@@ -97,22 +98,9 @@ class _HistoryRow extends StatelessWidget {
               ],
             ),
           ),
-          // Total + cost.
-          Expanded(
-            flex: 2,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  '${MealFormatters.count(day.total)} meals',
-                  style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
-                ),
-                Text(
-                  DashboardFormatters.taka(day.total * mealRate),
-                  style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
-                ),
-              ],
-            ),
+          Text(
+            mealLabel,
+            style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
           ),
         ],
       ),
