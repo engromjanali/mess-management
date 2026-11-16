@@ -1,5 +1,6 @@
 import 'package:mess_pilot/core/notifications/notification_unread_service.dart';
 import 'package:mess_pilot/core/helpers/notification_helper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mess_pilot/core/notifications/season_notification_service.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
@@ -44,6 +45,9 @@ void main() async {
   getIt<ApiClient>().onUnauthorized = () {
     NotificationUnreadService.instance.setUser(null);
     SeasonNotificationService.instance?.signOut();
+    getIt<SharedPreferences>().remove('cached_user_profile');
+    getIt<SharedPreferences>().remove('cached_membership_status');
+    getIt<SharedPreferences>().remove('cached_home_dashboard');
     final path = router.routerDelegate.currentConfiguration.uri.path;
     const authRoutes = [AppRoutes.register, AppRoutes.forgotPassword];
     if (path == AppRoutes.getLoginRoute() || authRoutes.contains(path)) return;
@@ -106,6 +110,8 @@ class _MyAppState extends State<MyApp> {
             unauthenticated: () {
               _membershipUserId = null;
               context.read<MembershipCubit>().reset();
+              getIt<SharedPreferences>().remove('cached_user_profile');
+              getIt<SharedPreferences>().remove('cached_home_dashboard');
               NotificationUnreadService.instance.setUser(null);
               SeasonNotificationService.instance?.signOut();
             },

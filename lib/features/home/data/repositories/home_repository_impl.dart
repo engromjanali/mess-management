@@ -14,6 +14,14 @@ class HomeRepositoryImpl implements HomeRepository {
   HomeRepositoryImpl(this._dataSource);
 
   @override
+  DashboardEntity? getCachedDashboard() {
+    return _dataSource.getCachedDashboard()?.toEntity();
+  }
+
+  @override
+  Future<void> clearCachedDashboard() => _dataSource.clearCachedDashboard();
+
+  @override
   ResultFuture<DashboardEntity> getDashboard() async {
     try {
       final model = await _dataSource.getDashboard();

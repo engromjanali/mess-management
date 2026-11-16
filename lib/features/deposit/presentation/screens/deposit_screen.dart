@@ -613,15 +613,15 @@ class _AddDepositTab extends StatelessWidget {
             children: [
               Center(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 720),
+                  constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                   child: Padding(
                     padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        SectionTitle(title: context.local.uiAddDeposit, icon: Icons.add_rounded),
                         DepositForm(
                           members: members,
+                          inline: true,
                           showHeader: false,
                           popOnSave: false,
                           onCancel: onSaved,

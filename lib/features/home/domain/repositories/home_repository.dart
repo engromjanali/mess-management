@@ -5,4 +5,6 @@ import 'package:mess_pilot/features/home/domain/entities/dashboard_entity.dart';
 abstract class HomeRepository {
   /// Loads the aggregated dashboard for the current mess/session.
   ResultFuture<DashboardEntity> getDashboard();
+  DashboardEntity? getCachedDashboard();
+  Future<void> clearCachedDashboard();
 }
