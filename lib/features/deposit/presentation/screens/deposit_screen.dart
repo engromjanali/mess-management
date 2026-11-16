@@ -17,6 +17,7 @@ import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/core/widgets/app_footer.dart';
 import 'package:mess_pilot/core/widgets/home_back_button.dart';
 import 'package:mess_pilot/core/widgets/pill_tab_bar.dart';
+import 'package:mess_pilot/core/widgets/segmented_tab_bar.dart';
 
 import 'package:mess_pilot/features/home/presentation/widgets/animated_entrance.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/dashboard_top_bar.dart';
@@ -232,7 +233,7 @@ class _LoadedContent extends StatelessWidget {
                   constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, 0),
-                    child: PillTabBar<DepositTab>(
+                    child: SegmentedTabBar<DepositTab>(
                       tabs: [
                         PillTab(value: DepositTab.overview, label: context.local.deposits),
                         PillTab(value: DepositTab.breakdown, label: context.local.uiDepositBreakdown),
