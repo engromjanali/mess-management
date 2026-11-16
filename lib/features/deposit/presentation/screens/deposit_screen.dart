@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mess_pilot/config/route/app_router.dart';
 
 import 'package:mess_pilot/config/util/dimensions.dart';
+import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/core/di/injection.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
 import 'package:mess_pilot/core/extensions/overly_extensions.dart';
@@ -15,6 +16,7 @@ import 'package:mess_pilot/core/helpers/responsive_helper.dart';
 import 'package:mess_pilot/core/role/role_cubit.dart';
 import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/core/widgets/app_footer.dart';
+import 'package:mess_pilot/core/widgets/app_user_avatar.dart';
 import 'package:mess_pilot/core/widgets/home_back_button.dart';
 import 'package:mess_pilot/core/widgets/pill_tab_bar.dart';
 import 'package:mess_pilot/core/widgets/segmented_tab_bar.dart';
@@ -217,7 +219,7 @@ class _LoadedContent extends StatelessWidget {
           selectedRange: selectedRange,
         );
       case DepositTab.add:
-        return _AddDepositTab(members: members, onSaved: onSaved);
+        return _AddDepositTab(members: members, deposits: deposits, onSaved: onSaved);
     }
   }
 
@@ -593,15 +595,80 @@ class _DepositFilterHeader extends SliverPersistentHeaderDelegate {
 }
 
 /// The "Add deposit" tab — the same form used in the sheet, hosted inline.
-class _AddDepositTab extends StatelessWidget {
-  const _AddDepositTab({required this.members, required this.onSaved});
+class _AddDepositTab extends StatefulWidget {
+  const _AddDepositTab({required this.members, required this.deposits, required this.onSaved});
 
   final List<DepositMemberEntity> members;
+  final List<DepositEntity> deposits;
   final VoidCallback onSaved;
+
+  @override
+  State<_AddDepositTab> createState() => _AddDepositTabState();
+}
+
+class _AddDepositTabState extends State<_AddDepositTab> {
+  String? _selectedMemberId;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedMemberId = widget.members.isNotEmpty ? widget.members.first.id : null;
+    _ensureAllDeposits();
+  }
+
+  /// The history panel needs every member's deposits. If the current filter
+  /// only holds a subset, switch the bloc to "all members" once.
+  void _ensureAllDeposits() {
+    final showingAll = context.read<DepositBloc>().state.maybeWhen(
+          loaded: (mode, deposits, members, dateFilter, selectedDate, isAdmin, selectedMember, selectedRange, saving, isLoading, messSummary) =>
+              mode == DepositViewMode.byMember && selectedMember == null,
+          orElse: () => true,
+        );
+    if (!showingAll) context.read<DepositBloc>().add(const DepositEvent.selectMember(null));
+  }
+
+  @override
+  void didUpdateWidget(covariant _AddDepositTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final stillExists = widget.members.any((m) => m.id == _selectedMemberId);
+    if (!stillExists) _selectedMemberId = widget.members.isNotEmpty ? widget.members.first.id : null;
+  }
+
+  DepositMemberEntity? get _selectedMember {
+    for (final m in widget.members) {
+      if (m.id == _selectedMemberId) return m;
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<DepositBloc>();
+
+    final form = DepositForm(
+      members: widget.members,
+      inline: true,
+      showHeader: false,
+      popOnSave: false,
+      onMemberChanged: (id) => setState(() => _selectedMemberId = id),
+      onCancel: widget.onSaved,
+      onSave: ({required memberId, required amount, required date, note}) {
+        bloc.add(DepositEvent.add(memberId: memberId, amount: amount, date: date, note: note));
+        widget.onSaved();
+      },
+    );
+
+    final memberDeposits = widget.deposits.where((d) => d.memberId == _selectedMemberId).toList();
+    final recent = [...memberDeposits]..sort((a, b) => b.date.compareTo(a.date));
+
+    final summary = _MemberSummaryCard(
+      member: _selectedMember,
+      entries: memberDeposits.length,
+      credit: memberDeposits.totalCredit,
+      debit: memberDeposits.totalDebit,
+      net: memberDeposits.net,
+    );
+    final breakdown = _MemberBreakdownCard(deposits: recent.take(6).toList());
 
     return LayoutBuilder(
       builder: (context, viewportConstraints) => SingleChildScrollView(
@@ -616,22 +683,46 @@ class _AddDepositTab extends StatelessWidget {
                   constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                   child: Padding(
                     padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        DepositForm(
-                          members: members,
-                          inline: true,
-                          showHeader: false,
-                          popOnSave: false,
-                          onCancel: onSaved,
-                          onSave: ({required memberId, required amount, required date, note}) {
-                            bloc.add(DepositEvent.add(memberId: memberId, amount: amount, date: date, note: note));
-                            onSaved();
-                          },
-                        ),
-                        SizedBox(height: context.bottomPadding + Dimensions.paddingSizeExtraLarge),
-                      ],
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        if (constraints.maxWidth >= 900) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                                      children: [
+                                        summary,
+                                        const SizedBox(height: Dimensions.paddingSizeLarge),
+                                        breakdown,
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: Dimensions.paddingSizeLarge),
+                                  Expanded(flex: 3, child: form),
+                                ],
+                              ),
+                              SizedBox(height: context.bottomPadding + Dimensions.paddingSizeExtraLarge),
+                            ],
+                          );
+                        }
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            summary,
+                            const SizedBox(height: Dimensions.paddingSizeLarge),
+                            form,
+                            const SizedBox(height: Dimensions.paddingSizeLarge),
+                            breakdown,
+                            SizedBox(height: context.bottomPadding + Dimensions.paddingSizeExtraLarge),
+                          ],
+                        );
+                      },
                     ),
                   ),
                 ),
@@ -641,6 +732,359 @@ class _AddDepositTab extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Summary of the selected member: name, net balance and the credit / debit /
+/// entries breakdown.
+class _MemberSummaryCard extends StatelessWidget {
+  const _MemberSummaryCard({required this.member, required this.entries, required this.credit, required this.debit, required this.net});
+
+  final DepositMemberEntity? member;
+  final int entries;
+  final double credit;
+  final double debit;
+  final double net;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+    final netColor = net < 0 ? colors.errorColor : colors.successColor;
+
+    return Container(
+      padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            colors.primaryColor.withValues(alpha: context.isDarkMode ? 0.24 : 0.12),
+            colors.secondaryColor.withValues(alpha: context.isDarkMode ? 0.16 : 0.06),
+          ],
+        ),
+        border: Border.all(color: colors.primaryColor.withValues(alpha: 0.28)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              AppUserAvatar(name: member?.name ?? '', photoUrl: member?.photoUrl),
+              const SizedBox(width: Dimensions.paddingSizeDefault),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      member?.name ?? context.local.selectMember,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
+                    ),
+                    Text(
+                      context.local.roleMember,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: Dimensions.paddingSizeLarge),
+          Text(
+            context.local.netBalance,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
+          ),
+          const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+          Text(
+            DepositFormatters.signedTaka(net),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraOverLarge, color: netColor),
+          ),
+          const SizedBox(height: Dimensions.paddingSizeLarge),
+          Row(
+            children: [
+              Expanded(child: _SummaryStat(label: context.local.totalCredit, value: DepositFormatters.taka(credit), icon: Icons.south_west_rounded, accent: colors.successColor)),
+              const SizedBox(width: Dimensions.paddingSizeSmall),
+              Expanded(child: _SummaryStat(label: context.local.totalDebit, value: DepositFormatters.taka(debit), icon: Icons.north_east_rounded, accent: colors.errorColor)),
+              const SizedBox(width: Dimensions.paddingSizeSmall),
+              Expanded(child: _SummaryStat(label: context.local.entries, value: '$entries', icon: Icons.receipt_long_rounded, accent: colors.infoColor)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SummaryStat extends StatelessWidget {
+  const _SummaryStat({required this.label, required this.value, required this.icon, required this.accent});
+
+  final String label;
+  final String value;
+  final IconData icon;
+  final Color accent;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+    return Container(
+      padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+      decoration: BoxDecoration(
+        color: colors.cardBackgroundColor.withValues(alpha: 0.65),
+        borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
+        border: Border.all(color: colors.borderColor.withValues(alpha: 0.4)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 14, color: accent),
+              const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+              Expanded(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: colors.textSecondaryColor),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: AlignmentDirectional.centerStart,
+            child: Text(
+              value,
+              maxLines: 1,
+              style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// The selected member's recent deposits, newest first.
+class _MemberBreakdownCard extends StatelessWidget {
+  const _MemberBreakdownCard({required this.deposits});
+
+  final List<DepositEntity> deposits;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: colors.cardBackgroundColor,
+        borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge),
+        border: Border.all(color: colors.borderColor.withValues(alpha: 0.4)),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+                  decoration: BoxDecoration(color: colors.primaryColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
+                  child: Icon(Icons.history_rounded, size: Dimensions.iconSizeSmall, color: colors.primaryColor),
+                ),
+                const SizedBox(width: Dimensions.paddingSizeSmall),
+                Expanded(
+                  child: Text(
+                    context.local.uiHistory,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Divider(height: 1, color: colors.dividerColor.withValues(alpha: 0.35)),
+          if (deposits.isEmpty)
+            const _NoRecentDeposits()
+          else
+            Padding(
+              padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+              child: Column(
+                children: [
+                  for (var i = 0; i < deposits.length; i++) ...[
+                    if (i > 0) Divider(height: Dimensions.paddingSizeLarge + Dimensions.paddingSizeSmall, color: colors.dividerColor.withValues(alpha: 0.4)),
+                    _RecentDepositRow(deposit: deposits[i]),
+                  ],
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RecentDepositRow extends StatelessWidget {
+  const _RecentDepositRow({required this.deposit});
+
+  final DepositEntity deposit;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+    final accent = deposit.isCredit ? colors.successColor : colors.errorColor;
+    final note = deposit.note;
+
+    return Row(
+      children: [
+        Container(
+          width: 36,
+          height: 36,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(color: accent.withValues(alpha: 0.14), shape: BoxShape.circle),
+          child: Icon(deposit.isCredit ? Icons.south_west_rounded : Icons.north_east_rounded, size: Dimensions.iconSizeSmall, color: accent),
+        ),
+        const SizedBox(width: Dimensions.paddingSizeSmall),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                DepositFormatters.date(deposit.date),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
+              ),
+              if (note != null && note.isNotEmpty) ...[
+                const SizedBox(height: 2),
+                Text(
+                  note,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
+                ),
+              ],
+            ],
+          ),
+        ),
+        const SizedBox(width: Dimensions.paddingSizeSmall),
+        Text(
+          DepositFormatters.signedTaka(deposit.amount),
+          maxLines: 1,
+          style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: accent),
+        ),
+      ],
+    );
+  }
+}
+
+/// Illustrated empty state for the member history panel.
+class _NoRecentDeposits extends StatelessWidget {
+  const _NoRecentDeposits();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeExtraLarge32),
+      child: Column(
+        children: [
+          SizedBox(
+            width: 108,
+            height: 108,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  width: 108,
+                  height: 108,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        colors.primaryColor.withValues(alpha: context.isDarkMode ? 0.24 : 0.14),
+                        colors.secondaryColor.withValues(alpha: context.isDarkMode ? 0.16 : 0.06),
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  width: 74,
+                  height: 74,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: colors.cardBackgroundColor,
+                    border: Border.all(color: colors.primaryColor.withValues(alpha: 0.22)),
+                  ),
+                  child: Icon(Icons.savings_rounded, size: Dimensions.iconSizeLarge, color: colors.primaryColor),
+                ),
+                Positioned(
+                  top: 8,
+                  right: 10,
+                  child: _Sparkle(icon: Icons.auto_awesome_rounded, color: colors.warningColor),
+                ),
+                Positioned(
+                  bottom: 10,
+                  left: 8,
+                  child: _Sparkle(icon: Icons.add_rounded, color: colors.secondaryColor),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: Dimensions.paddingSizeLarge),
+          Text(
+            context.local.stateNoDeposits,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
+          ),
+          const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+          Text(
+            context.local.stateEmptyHint,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Sparkle extends StatelessWidget {
+  const _Sparkle({required this.icon, required this.color});
+
+  final IconData icon;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+    return Container(
+      width: 26,
+      height: 26,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: colors.cardBackgroundColor,
+        shape: BoxShape.circle,
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+        boxShadow: [BoxShadow(color: color.withValues(alpha: 0.12), blurRadius: 8, offset: const Offset(0, 3))],
+      ),
+      child: Icon(icon, size: 14, color: color),
     );
   }
 }

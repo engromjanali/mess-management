@@ -30,7 +30,7 @@ Future<void> showDepositFormSheet({
 /// "Add deposit" tab. When [popOnSave] is false the caller owns navigation
 /// after a save; [onCancel] lets an inline host switch away from the form.
 class DepositForm extends StatefulWidget {
-  const DepositForm({required this.members, required this.onSave, this.existing, this.popOnSave = true, this.onCancel, this.showHeader = true, this.inline = false, super.key});
+  const DepositForm({required this.members, required this.onSave, this.existing, this.popOnSave = true, this.onCancel, this.showHeader = true, this.inline = false, this.onMemberChanged, super.key});
 
   final List<DepositMemberEntity> members;
   final DepositEntity? existing;
@@ -41,6 +41,9 @@ class DepositForm extends StatefulWidget {
 
   /// Full-page presentation: a live preview card above a sectioned form.
   final bool inline;
+
+  /// Notifies the host when the selected member changes (inline history panel).
+  final ValueChanged<String?>? onMemberChanged;
 
   @override
   State<DepositForm> createState() => _DepositFormState();
@@ -103,15 +106,6 @@ class _DepositFormState extends State<DepositForm> {
     }
   }
 
-  String _resolvedMemberName() {
-    final existing = widget.existing;
-    if (existing != null) return existing.memberName;
-    for (final m in widget.members) {
-      if (m.id == _memberId) return m.name;
-    }
-    return '';
-  }
-
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
@@ -128,7 +122,10 @@ class _DepositFormState extends State<DepositForm> {
             initialValue: _memberId,
             decoration: _fieldDecoration(context),
             items: [for (final m in widget.members) DropdownMenuItem(value: m.id, child: Text(m.name))],
-            onChanged: (v) => setState(() => _memberId = v),
+            onChanged: (v) {
+              setState(() => _memberId = v);
+              widget.onMemberChanged?.call(v);
+            },
             validator: (v) => v == null ? context.local.selectMember : null,
           ),
         const SizedBox(height: Dimensions.paddingSizeDefault),
@@ -250,43 +247,9 @@ class _DepositFormState extends State<DepositForm> {
 
     return Form(
       key: _formKey,
-      child: widget.inline ? _inlineLayout(context, fields) : Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [fields]),
-    );
-  }
-
-  /// Inline (full-page) layout: preview above the form on phones, side by side
-  /// once there is room on tablet / desktop.
-  Widget _inlineLayout(BuildContext context, Widget fields) {
-    final preview = _DepositPreviewCard(
-      type: _type,
-      amount: double.tryParse(_amountController.text.trim()) ?? 0,
-      memberName: _resolvedMemberName(),
-      date: _date,
-      isEdit: _isEdit,
-    );
-    final section = _FormSectionCard(
-      title: context.local.uiDetails,
-      icon: Icons.edit_note_rounded,
-      child: fields,
-    );
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth >= 860) {
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(flex: 2, child: preview),
-              const SizedBox(width: Dimensions.paddingSizeLarge),
-              Expanded(flex: 3, child: section),
-            ],
-          );
-        }
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [preview, const SizedBox(height: Dimensions.paddingSizeLarge), section],
-        );
-      },
+      child: widget.inline
+          ? _FormSectionCard(title: context.local.uiDetails, icon: Icons.edit_note_rounded, child: fields)
+          : Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [fields]),
     );
   }
 
@@ -411,114 +374,6 @@ class _Segment extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-/// Live summary of the deposit being entered, shown above the inline form.
-class _DepositPreviewCard extends StatelessWidget {
-  const _DepositPreviewCard({required this.type, required this.amount, required this.memberName, required this.date, required this.isEdit});
-
-  final DepositType type;
-  final double amount;
-  final String memberName;
-  final DateTime date;
-  final bool isEdit;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.customThemeColors;
-    final credit = type == DepositType.credit;
-    final accent = credit ? colors.successColor : colors.errorColor;
-    final secondary = credit ? colors.primaryColor : colors.warningColor;
-
-    return Container(
-      padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            accent.withValues(alpha: context.isDarkMode ? 0.26 : 0.12),
-            secondary.withValues(alpha: context.isDarkMode ? 0.16 : 0.06),
-          ],
-        ),
-        border: Border.all(color: accent.withValues(alpha: 0.30)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-                decoration: BoxDecoration(color: accent.withValues(alpha: 0.16), shape: BoxShape.circle),
-                child: Icon(credit ? Icons.south_west_rounded : Icons.north_east_rounded, color: accent, size: Dimensions.iconSizeDefault),
-              ),
-              const SizedBox(width: Dimensions.paddingSizeDefault),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      isEdit ? context.local.uiEditDeposit : context.local.uiAddDeposit,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
-                    ),
-                    Text(
-                      credit ? context.local.credit : context.local.debit,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: accent),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: Dimensions.paddingSizeLarge),
-          Text(
-            DepositFormatters.taka(amount),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraOverLarge + 10, color: accent),
-          ),
-          const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-          Row(
-            children: [
-              Icon(Icons.person_outline_rounded, size: Dimensions.iconSizeSmall, color: colors.textSecondaryColor),
-              const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-              Expanded(
-                child: Text(
-                  memberName.isEmpty ? context.local.selectMember : memberName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textSecondaryColor),
-                ),
-              ),
-              const SizedBox(width: Dimensions.paddingSizeSmall),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeExtraSmall),
-                decoration: BoxDecoration(color: colors.cardBackgroundColor.withValues(alpha: 0.7), borderRadius: BorderRadius.circular(Dimensions.radiusExtra2Large)),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.event_rounded, size: Dimensions.iconSizeSmall, color: colors.textSecondaryColor),
-                    const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-                    Text(
-                      DepositFormatters.date(date),
-                      maxLines: 1,
-                      style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }
