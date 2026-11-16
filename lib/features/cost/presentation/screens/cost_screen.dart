@@ -15,6 +15,7 @@ import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/core/widgets/app_footer.dart';
 import 'package:mess_pilot/core/widgets/home_back_button.dart';
 import 'package:mess_pilot/core/widgets/pill_tab_bar.dart';
+import 'package:mess_pilot/core/widgets/segmented_tab_bar.dart';
 
 import 'package:mess_pilot/features/home/presentation/widgets/animated_entrance.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/dashboard_top_bar.dart';
@@ -113,7 +114,7 @@ class _CostViewState extends State<_CostView> {
                           constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, 0),
-                            child: PillTabBar<_CostTab>(
+                            child: SegmentedTabBar<_CostTab>(
                               tabs: [PillTab(value: _CostTab.list, label: context.local.costList), PillTab(value: _CostTab.entry, label: context.local.costEntry)],
                               selected: tab,
                               onChanged: (t) => setState(() => _tab = t),
