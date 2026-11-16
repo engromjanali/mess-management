@@ -26,7 +26,10 @@ import 'package:mess_pilot/features/cost/domain/entities/cost_entity.dart';
 import 'package:mess_pilot/features/cost/presentation/bloc/cost_bloc.dart';
 import 'package:mess_pilot/features/cost/presentation/bloc/cost_event.dart';
 import 'package:mess_pilot/features/cost/presentation/bloc/cost_state.dart';
+import 'package:mess_pilot/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
 import 'package:mess_pilot/features/cost/presentation/widgets/cost_entry_form.dart';
+import 'package:mess_pilot/features/cost/presentation/widgets/cost_filter_bar.dart';
 import 'package:mess_pilot/features/cost/presentation/widgets/cost_formatters.dart';
 import 'package:mess_pilot/features/cost/presentation/widgets/cost_tile.dart';
 
@@ -146,7 +149,7 @@ class _CostViewState extends State<_CostView> {
 // List tab
 // ─────────────────────────────────────────────────────────────────────────
 
-class _ListTab extends StatelessWidget {
+class _ListTab extends StatefulWidget {
   const _ListTab({required this.costs, required this.seasonName, required this.isAdmin, required this.members});
 
   final List<CostEntity> costs;
@@ -154,13 +157,70 @@ class _ListTab extends StatelessWidget {
   final bool isAdmin;
   final List<CostMemberEntity> members;
 
-  List<_Stat> _summary(BuildContext context) {
+  @override
+  State<_ListTab> createState() => _ListTabState();
+}
+
+class _ListTabState extends State<_ListTab> {
+  CostViewMode _mode = CostViewMode.byDate;
+  CostDateFilter _dateFilter = CostDateFilter.allTime;
+  DateTime _selectedDate = DateTime.now();
+  DateTimeRange? _selectedRange;
+  CostMemberEntity? _selectedMember;
+
+  List<CostMemberEntity> _resolvedMembers() {
+    if (widget.members.isNotEmpty) return widget.members;
+    final map = <String, CostMemberEntity>{};
+    for (final c in widget.costs) {
+      if (c.personId.isNotEmpty && !map.containsKey(c.personId)) {
+        map[c.personId] = CostMemberEntity(id: c.personId, name: c.personName);
+      }
+    }
+    return map.values.toList();
+  }
+
+  List<CostEntity> _filteredCosts() {
+    final user = context.read<AuthBloc>().state.maybeWhen(authenticated: (u) => u, orElse: () => null);
+
+    return widget.costs.where((cost) {
+      switch (_mode) {
+        case CostViewMode.byMember:
+          if (_selectedMember != null) {
+            if (cost.personId != _selectedMember!.id && cost.personName.toLowerCase() != _selectedMember!.name.toLowerCase()) {
+              return false;
+            }
+          }
+          return true;
+
+        case CostViewMode.byDate:
+          switch (_dateFilter) {
+            case CostDateFilter.allTime:
+              return true;
+            case CostDateFilter.day:
+              return cost.date.year == _selectedDate.year &&
+                  cost.date.month == _selectedDate.month &&
+                  cost.date.day == _selectedDate.day;
+            case CostDateFilter.range:
+              if (_selectedRange == null) return true;
+              final start = DateTime(_selectedRange!.start.year, _selectedRange!.start.month, _selectedRange!.start.day);
+              final end = DateTime(_selectedRange!.end.year, _selectedRange!.end.month, _selectedRange!.end.day, 23, 59, 59);
+              return !cost.date.isBefore(start) && !cost.date.isAfter(end);
+          }
+
+        case CostViewMode.mine:
+          if (user == null) return true;
+          return cost.personId == user.id || cost.personName.toLowerCase() == user.name.toLowerCase();
+      }
+    }).toList();
+  }
+
+  List<_Stat> _summary(BuildContext context, List<CostEntity> filtered) {
     final c = context.customThemeColors;
-    final avg = costs.isEmpty ? 0.0 : costs.grandTotal / costs.length;
+    final avg = filtered.isEmpty ? 0.0 : filtered.grandTotal / filtered.length;
     return [
-      _Stat(context.local.totalCost, CostFormatters.taka(costs.grandTotal), Icons.shopping_cart_rounded, c.primaryColor),
-      _Stat(context.local.entries, '${costs.length}', Icons.receipt_long_rounded, c.infoColor),
-      _Stat(context.local.products, '${costs.totalItems}', Icons.inventory_2_rounded, c.secondaryColor),
+      _Stat(context.local.totalCost, CostFormatters.taka(filtered.grandTotal), Icons.shopping_cart_rounded, c.primaryColor),
+      _Stat(context.local.entries, '${filtered.length}', Icons.receipt_long_rounded, c.infoColor),
+      _Stat(context.local.products, '${filtered.totalItems}', Icons.inventory_2_rounded, c.secondaryColor),
       _Stat(context.local.avgPerEntry, CostFormatters.taka(avg), Icons.trending_up_rounded, c.successColor),
     ];
   }
@@ -169,7 +229,7 @@ class _ListTab extends StatelessWidget {
     final bloc = context.read<CostBloc>();
     showCostEditSheet(
       context: context,
-      members: members,
+      members: widget.members,
       existing: cost,
       onSubmit: ({required personId, required date, required items}) => bloc.add(CostEvent.update(id: cost.id, personId: personId, date: date, items: items)),
     );
@@ -192,6 +252,9 @@ class _ListTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final filtered = _filteredCosts();
+    final members = _resolvedMembers();
+
     return RefreshIndicator(
       onRefresh: () async {
         context.read<CostBloc>().add(const CostEvent.refresh());
@@ -202,18 +265,38 @@ class _ListTab extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (seasonName.isNotEmpty) SectionTitle(title: context.local.seasonName(seasonName), icon: Icons.event_note_rounded),
-            _SummaryGrid(stats: _summary(context)),
+            if (widget.seasonName.isNotEmpty) SectionTitle(title: context.local.seasonName(widget.seasonName), icon: Icons.event_note_rounded),
+            _SummaryGrid(stats: _summary(context, filtered)),
             const SizedBox(height: Dimensions.paddingSizeLarge),
-            if (costs.isEmpty)
+            CostFilterBar(
+              mode: _mode,
+              members: members,
+              selectedMember: _selectedMember,
+              dateFilter: _dateFilter,
+              selectedDate: _selectedDate,
+              selectedRange: _selectedRange,
+              onModeChanged: (m) => setState(() => _mode = m),
+              onMemberChanged: (m) => setState(() => _selectedMember = m),
+              onDateFilterChanged: (d) => setState(() => _dateFilter = d),
+              onDateChanged: (d) => setState(() {
+                _selectedDate = d;
+                _dateFilter = CostDateFilter.day;
+              }),
+              onRangeChanged: (r) => setState(() {
+                _selectedRange = r;
+                _dateFilter = CostDateFilter.range;
+              }),
+            ),
+            const SizedBox(height: Dimensions.paddingSizeLarge),
+            if (filtered.isEmpty)
               const _EmptyView()
             else
-              for (var i = 0; i < costs.length; i++)
+              for (var i = 0; i < filtered.length; i++)
                 Padding(
                   padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeDefault),
                   child: AnimatedEntrance(
                     delay: Duration(milliseconds: 30 * i),
-                    child: CostTile(cost: costs[i], index: i, maskCost: false, showActions: isAdmin, onEdit: () => _onEdit(context, costs[i]), onDelete: () => _onDelete(context, costs[i])),
+                    child: CostTile(cost: filtered[i], index: i, maskCost: false, showActions: widget.isAdmin, onEdit: () => _onEdit(context, filtered[i]), onDelete: () => _onDelete(context, filtered[i])),
                   ),
                 ),
             SizedBox(height: context.bottomPadding),
