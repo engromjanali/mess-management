@@ -25,6 +25,7 @@ import 'package:mess_pilot/features/meal/domain/entities/meal_entity.dart';
 import 'package:mess_pilot/features/meal/presentation/bloc/meal_bloc.dart';
 import 'package:mess_pilot/features/meal/presentation/bloc/meal_event.dart';
 import 'package:mess_pilot/features/meal/presentation/bloc/meal_state.dart';
+import 'package:mess_pilot/features/meal/presentation/screens/meal_entry_screen.dart';
 import 'package:mess_pilot/features/meal/presentation/widgets/meal_admin_panel.dart';
 import 'package:mess_pilot/features/meal/presentation/widgets/meal_formatters.dart';
 import 'package:mess_pilot/features/meal/presentation/widgets/meal_history_list.dart';
@@ -34,30 +35,62 @@ import 'package:mess_pilot/features/meal/presentation/widgets/meal_week_chart.da
 /// Responsive meal tracker screen (phone / tablet / desktop).
 ///
 /// * **Members** — only their own meals ("Mine").
-/// * **Manager / acting manager** — a `Manage meals / Mine` switch to record meals
-///   for any member and still see their own meals, since they eat too.
-/// * **Tablet / desktop** — centered, capped content with a two-column body
-///   (editor + chart on the left, history on the right) under a summary grid.
+/// * **Manager / acting manager** — a `Manage meals / Add meal / Mine` switch to
+///   record meals for any member and still see their own meals.
+/// * **Tablet / desktop** — centered, capped content.
 class MealScreen extends StatelessWidget {
-  const MealScreen({super.key});
+  const MealScreen({super.key, this.initialTab});
+
+  final String? initialTab;
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<MealBloc>(create: (_) => getIt<MealBloc>()..add(const MealEvent.load()), child: const _MealView());
+    return BlocProvider<MealBloc>(
+      create: (_) => getIt<MealBloc>()..add(const MealEvent.load()),
+      child: _MealView(initialTab: initialTab),
+    );
   }
 }
 
-enum _MealTab { manage, mine }
+enum MealTab { manage, add, mine }
+
+MealTab _mealTabFromParam(String? value) {
+  switch (value) {
+    case 'add':
+      return MealTab.add;
+    case 'mine':
+      return MealTab.mine;
+    case 'manage':
+    default:
+      return MealTab.manage;
+  }
+}
 
 class _MealView extends StatefulWidget {
-  const _MealView();
+  const _MealView({this.initialTab});
+
+  final String? initialTab;
 
   @override
   State<_MealView> createState() => _MealViewState();
 }
 
 class _MealViewState extends State<_MealView> {
-  _MealTab _tab = _MealTab.manage;
+  late MealTab _tab;
+
+  @override
+  void initState() {
+    super.initState();
+    _tab = _mealTabFromParam(widget.initialTab);
+  }
+
+  @override
+  void didUpdateWidget(covariant _MealView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialTab != widget.initialTab) {
+      _tab = _mealTabFromParam(widget.initialTab);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,10 +113,16 @@ class _MealViewState extends State<_MealView> {
     );
   }
 
-  void _selectTab(_MealTab tab) {
+  void _selectTab(MealTab tab) {
     setState(() => _tab = tab);
-    // Meals may have changed in Manage meals, so reload the manager's own.
-    if (tab == _MealTab.mine) context.read<MealBloc>().add(const MealEvent.refresh());
+    final route = switch (tab) {
+      MealTab.manage => AppRoutes.mealsManage,
+      MealTab.add => AppRoutes.mealsAdd,
+      MealTab.mine => AppRoutes.mealsMine,
+    };
+    context.go(route);
+    // Meals may have changed in Manage/Add meals, so reload dependent views.
+    if (tab == MealTab.mine) context.read<MealBloc>().add(const MealEvent.refresh());
   }
 
   /// Tab switch over both tabs; [IndexedStack] keeps each tab's scroll and
@@ -98,13 +137,19 @@ class _MealViewState extends State<_MealView> {
               padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeExtraLarge),
               child: Row(
                 children: [
-                  Expanded(child: SegmentedTabBar<_MealTab>(
-                tabs: [PillTab(value: _MealTab.manage, label: context.local.manageMeals), PillTab(value: _MealTab.mine, label: context.local.mine)],
-                selected: _tab,
-                onChanged: _selectTab,
-                  )),
+                  Expanded(
+                    child: SegmentedTabBar<MealTab>(
+                      tabs: [
+                        PillTab(value: MealTab.manage, label: context.local.manageMeals),
+                        PillTab(value: MealTab.add, label: context.local.addMeal),
+                        PillTab(value: MealTab.mine, label: context.local.mine),
+                      ],
+                      selected: _tab,
+                      onChanged: _selectTab,
+                    ),
+                  ),
                   Visibility(
-                    visible: _tab == _MealTab.manage,
+                    visible: _tab == MealTab.manage,
                     maintainSize: true,
                     maintainAnimation: true,
                     maintainState: true,
@@ -120,7 +165,7 @@ class _MealViewState extends State<_MealView> {
           ),
         ),
         Expanded(
-          child: IndexedStack(index: _tab.index, children: const [_ManageTab(), _MineTab()]),
+          child: IndexedStack(index: _tab.index, children: const [_ManageTab(), _AddMealTab(), _MineTab()]),
         ),
       ],
     );
@@ -144,6 +189,16 @@ class _ManageTab extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+/// Admin tab: add meals for all members for a selected day.
+class _AddMealTab extends StatelessWidget {
+  const _AddMealTab();
+
+  @override
+  Widget build(BuildContext context) {
+    return const MealEntryScreen(embedded: true);
   }
 }
 

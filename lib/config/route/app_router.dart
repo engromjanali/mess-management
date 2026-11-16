@@ -56,7 +56,10 @@ class AppRoutes {
   // Main routes
   static const String home = '/';
   static const String meals = '/meals';
-  static const String addMeal = '/meals/add';
+  static const String mealsManage = '/meals/manage';
+  static const String mealsAdd = '/meals/add';
+  static const String mealsMine = '/meals/mine';
+  static const String addMeal = '/meals/entry';
   static const String mealList = '/meals/list';
   static const String deposits = '/deposits';
   static const String depositBreakdown = '/deposits/breakdown';
@@ -234,7 +237,18 @@ final router = GoRouter(
       builder: (context, state, navigationShell) => MainNavigationShell(navigationShell: navigationShell),
       branches: [
         StatefulShellBranch(routes: [GoRoute(path: AppRoutes.home, name: 'home', builder: (context, state) => const HomeScreen())]),
-        StatefulShellBranch(routes: [GoRoute(path: AppRoutes.meals, name: 'meals', builder: (context, state) => const MealScreen())]),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppRoutes.meals,
+              name: 'meals',
+              redirect: (context, state) => AppRoutes.mealsManage,
+            ),
+            GoRoute(path: AppRoutes.mealsManage, name: 'mealsManage', builder: (context, state) => const MealScreen(initialTab: 'manage')),
+            GoRoute(path: AppRoutes.mealsAdd, name: 'mealsAdd', builder: (context, state) => const MealScreen(initialTab: 'add')),
+            GoRoute(path: AppRoutes.mealsMine, name: 'mealsMine', builder: (context, state) => const MealScreen(initialTab: 'mine')),
+          ],
+        ),
         StatefulShellBranch(
           routes: [
             GoRoute(path: AppRoutes.deposits, name: 'deposits', pageBuilder: (context, state) => const NoTransitionPage(key: ValueKey('deposits-page'), child: DepositScreen())),

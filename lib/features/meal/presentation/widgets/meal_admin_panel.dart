@@ -102,13 +102,6 @@ class _ManageCard extends StatelessWidget {
   /// A refresh or edit/delete is running: show progress and block actions.
   final bool busy;
 
-  /// Opens the day entry screen, then reloads so the new records show here.
-  Future<void> _add(BuildContext context) async {
-    final bloc = context.read<MealAdminBloc>();
-    await context.push(AppRoutes.addMeal);
-    bloc.add(const MealAdminEvent.refresh());
-  }
-
   Future<void> _edit(BuildContext context, MemberMealEntity entry) async {
     final result = await showMemberMealForm(context, members: data.members, existing: entry);
     if (result != null && context.mounted) {
@@ -136,13 +129,11 @@ class _ManageCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
     final entries = data.filtered(memberId: selectedMemberId, date: selectedDate);
-    final compactActions = ResponsiveHelper.isMobile(context) || ResponsiveHelper.isSmallTab(context);
     final recordCount = Text(
       '${entries.length} '
       '${entries.length == 1 ? 'record' : 'records'}',
       style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
     );
-    final addButton = FilledButton.icon(onPressed: busy ? null : () => _add(context), icon: const Icon(Icons.add_rounded, size: 20), label: Text(context.local.addMeal));
 
     return _Card(
       padding: EdgeInsets.zero,
@@ -156,23 +147,7 @@ class _ManageCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (compactActions)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      recordCount,
-                      const SizedBox(height: Dimensions.paddingSizeDefault),
-                      addButton,
-                    ],
-                  )
-                else
-                  Row(
-                    children: [
-                      Expanded(child: recordCount),
-                      const SizedBox(width: Dimensions.paddingSizeSmall),
-                      addButton,
-                    ],
-                  ),
+                recordCount,
                 const SizedBox(height: Dimensions.paddingSizeDefault),
                 _Filters(members: data.members, selectedMemberId: selectedMemberId, selectedDate: selectedDate),
               ],
