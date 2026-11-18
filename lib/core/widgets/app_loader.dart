@@ -57,8 +57,9 @@ class _AppLoaderState extends State<AppLoader> with SingleTickerProviderStateMix
                       child: CustomPaint(size: const Size.square(100), painter: _LoaderRingPainter(primary: colors.primaryColor, accent: colors.secondaryColor)),
                     ),
                     Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(color: colors.surfaceColor, shape: BoxShape.circle, border: Border.all(color: colors.primaryColor.withValues(alpha: 0.15)), boxShadow: [BoxShadow(color: colors.primaryColor.withValues(alpha: 0.12), blurRadius: 12, offset: const Offset(0, 3))]),
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(color: colors.surfaceColor, shape: BoxShape.circle, boxShadow: [BoxShadow(color: colors.primaryColor.withValues(alpha: 0.12), blurRadius: 12, offset: const Offset(0, 3))]),
+                      foregroundDecoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: colors.primaryColor.withValues(alpha: 0.15))),
                       child: const AppLogo(size: 54, shape: BoxShape.circle),
                     ),
                   ],

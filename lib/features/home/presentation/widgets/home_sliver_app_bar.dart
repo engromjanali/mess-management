@@ -183,7 +183,9 @@ class _CollapsedIdentity extends StatelessWidget {
         Container(
           width: 38,
           height: 38,
-          decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.18), shape: BoxShape.circle, border: Border.all(color: Colors.white.withValues(alpha: 0.35))),
+          padding: const EdgeInsets.all(1),
+          decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.18), shape: BoxShape.circle),
+          foregroundDecoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.white.withValues(alpha: 0.35))),
           alignment: Alignment.center,
           child: imageUrl.isEmpty ? fallback : ClipOval(child: Image.network(imageUrl, width: 38, height: 38, fit: BoxFit.cover, cacheWidth: imageSize, cacheHeight: imageSize, errorBuilder: (_, _, _) => Center(child: fallback))),
         ),

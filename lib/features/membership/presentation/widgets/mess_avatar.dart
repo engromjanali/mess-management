@@ -28,10 +28,14 @@ class MessAvatar extends StatelessWidget {
       height: size,
       alignment: Alignment.center,
       clipBehavior: Clip.antiAlias,
+      padding: const EdgeInsets.all(1.5),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: color.withValues(alpha: 0.15),
-        border: Border.all(color: color.withValues(alpha: 0.35)),
+      ),
+      foregroundDecoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: color.withValues(alpha: 0.35), width: 1.5),
       ),
       child: hasImage
           ? Image.network(url, width: size, height: size, fit: BoxFit.cover, cacheWidth: cacheSize, cacheHeight: cacheSize, errorBuilder: (_, _, _) => fallback, loadingBuilder: (context, child, progress) => progress == null ? child : fallback)
