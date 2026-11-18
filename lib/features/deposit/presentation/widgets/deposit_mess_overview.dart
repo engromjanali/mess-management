@@ -68,9 +68,9 @@ class _StatGrid extends StatelessWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           padding: EdgeInsets.zero,
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
             maxCrossAxisExtent: 200,
-            mainAxisExtent: 168,
+            mainAxisExtent: StatCard.gridMainAxisExtent(context),
             crossAxisSpacing: Dimensions.paddingSizeDefault,
             mainAxisSpacing: Dimensions.paddingSizeDefault,
           ),

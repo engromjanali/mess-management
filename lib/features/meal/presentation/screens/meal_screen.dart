@@ -384,9 +384,9 @@ class _SummaryGrid extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       padding: EdgeInsets.zero,
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 220,
-        mainAxisExtent: 150,
+        mainAxisExtent: StatCard.gridMainAxisExtent(context, regular: 150),
         crossAxisSpacing: Dimensions.paddingSizeDefault,
         mainAxisSpacing: Dimensions.paddingSizeDefault,
       ),

@@ -291,9 +291,9 @@ class _StatSliverGrid extends StatelessWidget {
     return SliverPadding(
       padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall),
       sliver: SliverGrid.builder(
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: 200,
-          mainAxisExtent: 150,
+          mainAxisExtent: StatCard.gridMainAxisExtent(context, regular: 150),
           crossAxisSpacing: Dimensions.paddingSizeDefault,
           mainAxisSpacing: Dimensions.paddingSizeDefault,
         ),
@@ -660,7 +660,7 @@ class _StatBoxGrid extends StatelessWidget {
       padding: EdgeInsets.zero,
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: maxCrossAxisExtent,
-        mainAxisExtent: 150,
+        mainAxisExtent: StatCard.gridMainAxisExtent(context, regular: 150),
         crossAxisSpacing: Dimensions.paddingSizeDefault,
         mainAxisSpacing: Dimensions.paddingSizeDefault,
       ),
