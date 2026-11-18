@@ -8,14 +8,10 @@ import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/core/assets/assets.gen.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
-import 'package:mess_pilot/core/extensions/overly_extensions.dart';
 import 'package:mess_pilot/core/widgets/app_logo.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
-import 'package:mess_pilot/features/membership/domain/entities/membership_status_entity.dart';
-import 'package:mess_pilot/features/home/presentation/widgets/membership_summary_card.dart';
-import 'package:mess_pilot/features/membership/presentation/bloc/membership_cubit.dart';
-import 'package:mess_pilot/features/membership/presentation/widgets/mess_avatar.dart';
+import 'package:mess_pilot/features/home/presentation/widgets/membership_menu_button.dart';
 import 'package:mess_pilot/features/settings/domain/entities/theme_mode.dart';
 import 'package:mess_pilot/features/settings/presentation/bloc/localization/localization_bloc.dart';
 import 'package:mess_pilot/features/settings/presentation/bloc/theme/theme_bloc.dart';
@@ -110,7 +106,7 @@ class DashboardTopBar extends StatelessWidget {
                         )),
                       ],
                       if (resolvedNavItems.isEmpty) const Spacer(),
-                      const _MembershipMenu(),
+                      const MembershipMenuButton(),
                       if (showNotifications) NotificationIconButton(color: colors.textSecondaryColor),
                       if (showTheme) _ActionIcon(
                         icon: themeIcon,
@@ -211,137 +207,6 @@ class _NavButton extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
       ),
     );
-  }
-}
-
-class _MembershipMenu extends StatefulWidget {
-  const _MembershipMenu();
-
-  @override
-  State<_MembershipMenu> createState() => _MembershipMenuState();
-}
-
-class _MembershipMenuState extends State<_MembershipMenu> {
-  bool _switching = false;
-
-  @override
-  Widget build(BuildContext context) {
-    if (context.findAncestorWidgetOfExactType<BlocProvider<MembershipCubit>>() == null) return const SizedBox.shrink();
-    final state = context.watch<MembershipCubit>().state;
-    if (state is! MembershipLoaded) return const SizedBox.shrink();
-    final current = state.status.current;
-    if (current == null) return const SizedBox.shrink();
-
-    final memberships = state.status.memberships.where((membership) => membership.messId == current.messId).toList();
-    if (!memberships.any((membership) => membership.seasonId == current.seasonId)) memberships.insert(0, current);
-    memberships.sort((a, b) {
-      if (a.isCurrent != b.isCurrent) return a.isCurrent ? -1 : 1;
-      return (b.seasonStartDate ?? DateTime.fromMillisecondsSinceEpoch(0)).compareTo(a.seasonStartDate ?? DateTime.fromMillisecondsSinceEpoch(0));
-    });
-    final hasSwitch = memberships.any((membership) => membership.canSwitch && !membership.isCurrent);
-
-    return Padding(
-      padding: const EdgeInsets.only(right: Dimensions.paddingSizeSmall),
-      child: PopupMenuButton<MembershipSummaryEntity>(
-        tooltip: context.local.myMemberships,
-        enabled: !_switching,
-        position: PopupMenuPosition.under,
-        offset: const Offset(0, 8),
-        color: context.customThemeColors.surfaceColor,
-        elevation: 8,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge), side: BorderSide(color: context.customThemeColors.borderColor)),
-        onSelected: _switchTo,
-        itemBuilder: (context) => [
-          PopupMenuItem<MembershipSummaryEntity>(
-            enabled: false,
-            height: 58,
-            child: SizedBox(
-              width: 300,
-              child: Row(
-                children: [
-                  MessAvatar(name: current.messName, color: context.customThemeColors.primaryColor, size: 36, imageUrl: current.messImageUrl),
-                  const SizedBox(width: Dimensions.paddingSizeDefault),
-                  Expanded(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(current.messName, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: context.customThemeColors.textPrimaryColor)),
-                        Text(context.local.myMemberships, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: context.customThemeColors.textSecondaryColor)),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const PopupMenuDivider(),
-          for (final membership in memberships)
-            PopupMenuItem<MembershipSummaryEntity>(
-              value: membership,
-              enabled: membership.canSwitch && !membership.isCurrent,
-              height: 58,
-              child: SizedBox(
-                width: 300,
-                child: Row(
-                  children: [
-                    Icon(
-                      membership.isCurrent ? Icons.check_circle_rounded : membership.canSwitch ? Icons.calendar_month_rounded : Icons.lock_outline_rounded,
-                      size: Dimensions.iconSizeDefault,
-                      color: membership.isCurrent ? context.customThemeColors.primaryColor : membership.canSwitch ? context.customThemeColors.textSecondaryColor : context.customThemeColors.textHintColor,
-                    ),
-                    const SizedBox(width: Dimensions.paddingSizeDefault),
-                    Expanded(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(membership.seasonName, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: membership.canSwitch || membership.isCurrent ? context.customThemeColors.textPrimaryColor : context.customThemeColors.textHintColor)),
-                          const SizedBox(height: 2),
-                          Text(_subtitle(context, membership), maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: context.customThemeColors.textSecondaryColor)),
-                        ],
-                      ),
-                    ),
-                    if (membership.isCurrent)
-                      Text(context.local.currentMembership, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: context.customThemeColors.primaryColor))
-                    else if (membership.canSwitch)
-                      Icon(Icons.swap_horiz_rounded, size: Dimensions.iconSizeSmall + 2, color: context.customThemeColors.primaryColor)
-                    else
-                      Icon(Icons.lock_outline_rounded, size: Dimensions.iconSizeSmall, color: context.customThemeColors.textHintColor),
-                  ],
-                ),
-              ),
-            ),
-        ],
-        child: MembershipSummaryCard(messName: current.messName, seasonName: current.seasonName, imageUrl: current.messImageUrl, switching: _switching, hasSwitch: hasSwitch),
-      ),
-    );
-  }
-
-  String _subtitle(BuildContext context, MembershipSummaryEntity membership) {
-    final role = switch (membership.role) {
-      'manager' => context.local.roleManager,
-      'acting_manager' => context.local.roleActingManager,
-      _ => context.local.roleMember,
-    };
-    return membership.status == 'left' ? '$role · ${context.local.membershipLeft}' : role;
-  }
-
-  Future<void> _switchTo(MembershipSummaryEntity membership) async {
-    if (_switching) return;
-    setState(() => _switching = true);
-    try {
-      await context.read<MembershipCubit>().switchMembership(membership);
-      if (!mounted) return;
-      await context.read<AuthBloc>().refreshProfile();
-      if (!mounted) return;
-      context.showSuccessSnackBar(context.local.switchedMembership(membership.messName, membership.seasonName));
-      context.go(AppRoutes.home);
-    } catch (error) {
-      if (mounted) context.showErrorSnackBar(error);
-    } finally {
-      if (mounted) setState(() => _switching = false);
-    }
   }
 }
 
