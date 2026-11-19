@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mess_pilot/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/dashboard_top_bar.dart';
 
 /// Desktop / big-tablet app bar with the main sections, for screens that use
@@ -18,10 +21,12 @@ class MainTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final guest = context.watch<AuthBloc>().state.maybeWhen(authenticated: (_) => false, orElse: () => true);
     return DashboardTopBar(
       active: active,
       hiddenSections: hiddenSections,
       extraNavItems: extraNavItems,
+      guest: guest,
     );
   }
 }
