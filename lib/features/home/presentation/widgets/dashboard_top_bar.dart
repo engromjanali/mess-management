@@ -30,7 +30,7 @@ class DashboardNavItem {
 enum DashboardSection { home, meals, deposits, cost }
 
 class DashboardTopBar extends StatelessWidget {
-  const DashboardTopBar({this.userName, this.onProfileTap, this.navItems, this.active, this.hiddenSections = const {}, this.extraNavItems = const [], this.showNotifications = true, this.showTheme = true, this.showLocale = true, this.showProfile = true, super.key});
+  const DashboardTopBar({this.userName, this.onProfileTap, this.navItems, this.active, this.hiddenSections = const {}, this.extraNavItems = const [], this.showNotifications = true, this.showTheme = true, this.showLocale = true, this.showProfile = true, this.guest = false, super.key});
 
   final String? userName;
   final VoidCallback? onProfileTap;
@@ -43,23 +43,32 @@ class DashboardTopBar extends StatelessWidget {
   final bool showLocale;
   final bool showProfile;
 
+  /// Signed-out visitor: show every navigation option, but send taps to login.
+  final bool guest;
+
   static const double height = 72;
+
+  void _navigate(BuildContext context, String route) {
+    context.go(guest ? AppRoutes.loginRouteFor(route) : route);
+  }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
     final user = context.watch<AuthBloc>().state.maybeWhen(authenticated: (user) => user, orElse: () => null);
-    final resolvedUserName = userName ?? user?.name ?? context.local.roleMember;
-    final roleLabel = switch (user?.role) {
-      'manager' => context.local.roleManager,
-      'acting_manager' => context.local.roleActingManager,
-      _ => context.local.roleMember,
-    };
+    final resolvedUserName = userName ?? (guest ? context.local.login : user?.name ?? context.local.roleMember);
+    final roleLabel = guest
+        ? context.local.login
+        : switch (user?.role) {
+            'manager' => context.local.roleManager,
+            'acting_manager' => context.local.roleActingManager,
+            _ => context.local.roleMember,
+          };
     final resolvedNavItems = navItems ?? [
-      if (!hiddenSections.contains(DashboardSection.home)) DashboardNavItem(label: context.local.home, icon: Icons.home_rounded, active: active == DashboardSection.home, onTap: () => context.go(AppRoutes.home)),
-      if (!hiddenSections.contains(DashboardSection.meals)) DashboardNavItem(label: context.local.meals, icon: Icons.restaurant_rounded, active: active == DashboardSection.meals, onTap: () => context.go(AppRoutes.meals)),
-      if (!hiddenSections.contains(DashboardSection.deposits)) DashboardNavItem(label: context.local.deposits, icon: Icons.account_balance_wallet_rounded, active: active == DashboardSection.deposits, onTap: () => context.go(AppRoutes.deposits)),
-      if (!hiddenSections.contains(DashboardSection.cost)) DashboardNavItem(label: context.local.cost, icon: Icons.shopping_cart_rounded, active: active == DashboardSection.cost, onTap: () => context.go(AppRoutes.costs)),
+      if (!hiddenSections.contains(DashboardSection.home)) DashboardNavItem(label: context.local.home, icon: Icons.home_rounded, active: active == DashboardSection.home, onTap: () => _navigate(context, AppRoutes.home)),
+      if (!hiddenSections.contains(DashboardSection.meals)) DashboardNavItem(label: context.local.meals, icon: Icons.restaurant_rounded, active: active == DashboardSection.meals, onTap: () => _navigate(context, AppRoutes.meals)),
+      if (!hiddenSections.contains(DashboardSection.deposits)) DashboardNavItem(label: context.local.deposits, icon: Icons.account_balance_wallet_rounded, active: active == DashboardSection.deposits, onTap: () => _navigate(context, AppRoutes.deposits)),
+      if (!hiddenSections.contains(DashboardSection.cost)) DashboardNavItem(label: context.local.cost, icon: Icons.shopping_cart_rounded, active: active == DashboardSection.cost, onTap: () => _navigate(context, AppRoutes.costs)),
       ...extraNavItems,
     ];
     final themeMode = context.watch<ThemeBloc>().state.when(dark: (_) => AppThemeMode.dark, light: (_) => AppThemeMode.light, system: (_) => AppThemeMode.system);
@@ -116,7 +125,7 @@ class DashboardTopBar extends StatelessWidget {
                       if (showLocale) const _LocaleMenu(),
                       if (showProfile) ...[
                         const SizedBox(width: Dimensions.paddingSizeDefault),
-                        _ProfileChip(roleLabel: roleLabel, userName: resolvedUserName, profileImageUrl: user?.photoUrl, showText: showProfileText, onTap: onProfileTap ?? () => Scaffold.of(context).openEndDrawer()),
+                        _ProfileChip(roleLabel: roleLabel, userName: resolvedUserName, profileImageUrl: guest ? null : user?.photoUrl, showText: showProfileText, guest: guest, onTap: onProfileTap ?? (guest ? () => context.go(AppRoutes.getLoginRoute()) : () => Scaffold.of(context).openEndDrawer())),
                       ],
                     ],
                   );
@@ -287,11 +296,12 @@ class _ActionIcon extends StatelessWidget {
 }
 
 class _ProfileChip extends StatelessWidget {
-  const _ProfileChip({required this.roleLabel, required this.userName, required this.profileImageUrl, required this.showText, required this.onTap});
+  const _ProfileChip({required this.roleLabel, required this.userName, required this.profileImageUrl, required this.showText, required this.guest, required this.onTap});
   final String roleLabel;
   final String userName;
   final String? profileImageUrl;
   final bool showText;
+  final bool guest;
   final VoidCallback onTap;
 
   String get _initials {
@@ -305,7 +315,7 @@ class _ProfileChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
     final imageUrl = profileImageUrl?.trim() ?? '';
-    final fallback = Center(child: Text(_initials, style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.primaryColor)));
+    final fallback = Center(child: guest ? Icon(Icons.person_rounded, size: Dimensions.iconSizeDefault, color: colors.primaryColor) : Text(_initials, style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.primaryColor)));
 
     final avatar = CircleAvatar(
       radius: 18,
