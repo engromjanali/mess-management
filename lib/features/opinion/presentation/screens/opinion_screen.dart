@@ -1,6 +1,7 @@
 import 'package:mess_pilot/core/widgets/app_page_scroll_view.dart';
 import 'package:mess_pilot/core/widgets/app_state_view.dart';
 import 'package:mess_pilot/core/widgets/app_loader.dart';
+import 'package:mess_pilot/core/widgets/app_switch.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -584,7 +585,7 @@ class _PeriodCard extends StatelessWidget {
               decoration: BoxDecoration(color: colors.surfaceColor, borderRadius: BorderRadius.circular(Dimensions.radiusDefault), border: Border.all(color: colors.borderColor)),
               child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                 if (period.submissionMode == OpinionSubmissionMode.all)
-                  SwitchListTile.adaptive(value: !submitAnonymously, onChanged: busy ? null : (shareName) => onSubmissionTypeChanged(!shareName), contentPadding: EdgeInsets.zero, secondary: Icon(submitAnonymously ? Icons.visibility_off_outlined : Icons.person_outline_rounded), title: Text(submitAnonymously ? context.local.opinionAnonymous : context.local.opinionNamed), subtitle: Text(submitAnonymously ? context.local.opinionAnonymousHint : context.local.opinionNamedHint, maxLines: 2, overflow: TextOverflow.ellipsis))
+                  AppSwitch(value: !submitAnonymously, onChanged: busy ? null : (shareName) => onSubmissionTypeChanged(!shareName), secondary: Icon(submitAnonymously ? Icons.visibility_off_outlined : Icons.person_outline_rounded), title: Text(submitAnonymously ? context.local.opinionAnonymous : context.local.opinionNamed, style: AppTextStyles.sfProRoundedSemiBold.copyWith(color: colors.textPrimaryColor)), subtitle: Text(submitAnonymously ? context.local.opinionAnonymousHint : context.local.opinionNamedHint, maxLines: 2, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor)))
                 else
                   Row(children: [Icon(period.submissionMode == OpinionSubmissionMode.namedOnly ? Icons.person_outline_rounded : Icons.visibility_off_outlined, size: Dimensions.iconSizeSmall), const SizedBox(width: Dimensions.paddingSizeSmall), Expanded(child: Text(period.submissionMode == OpinionSubmissionMode.namedOnly ? context.local.uiYourNameWillBeRevealed : context.local.opinionAnonymousOnly, maxLines: 1, overflow: TextOverflow.ellipsis))]),
                 const SizedBox(height: Dimensions.paddingSizeDefault),

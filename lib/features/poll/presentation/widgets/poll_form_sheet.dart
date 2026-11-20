@@ -6,6 +6,7 @@ import 'package:mess_pilot/core/extensions/context_extensions.dart';
 import 'package:mess_pilot/core/extensions/overly_extensions.dart';
 import 'package:mess_pilot/core/helpers/responsive_helper.dart';
 import 'package:mess_pilot/core/widgets/app_page_scroll_view.dart';
+import 'package:mess_pilot/core/widgets/app_switch.dart';
 import 'package:mess_pilot/features/poll/domain/entities/poll_entity.dart';
 import 'package:mess_pilot/features/poll/presentation/widgets/poll_formatters.dart';
 
@@ -386,13 +387,12 @@ class _PollFormState extends State<PollForm> {
       ],
       const SizedBox(height: Dimensions.paddingSizeDefault),
 
-      SwitchListTile.adaptive(
+      AppSwitch(
         value: _allowMultiple,
         onChanged: _submitting || _lockOptions ? null : (value) => setState(() {
           _allowMultiple = value;
           if (value && _maxChoices < 2) _maxChoices = 2;
         }),
-        contentPadding: EdgeInsets.zero,
         title: Text(context.local.pollAllowMultiple, style: AppTextStyles.sfProRoundedSemiBold.copyWith(color: colors.textPrimaryColor)),
       ),
       if (_allowMultiple && !_lockOptions) ...[
@@ -409,10 +409,9 @@ class _PollFormState extends State<PollForm> {
         const SizedBox(height: Dimensions.paddingSizeSmall),
       ],
 
-      SwitchListTile.adaptive(
+      AppSwitch(
         value: _anonymous,
         onChanged: _submitting ? null : (value) => setState(() => _anonymous = value),
-        contentPadding: EdgeInsets.zero,
         title: Text(context.local.pollAnonymous, style: AppTextStyles.sfProRoundedSemiBold.copyWith(color: colors.textPrimaryColor)),
       ),
 
