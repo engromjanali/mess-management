@@ -167,6 +167,22 @@ class _ListTabState extends State<_ListTab> {
   DateTime _selectedDate = DateTime.now();
   DateTimeRange? _selectedRange;
   CostMemberEntity? _selectedMember;
+  final GlobalKey _measureKey = GlobalKey();
+  double _filterHeight = 84;
+  bool _measureQueued = false;
+
+  void _measureFilterBar() {
+    if (_measureQueued) return;
+    _measureQueued = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _measureQueued = false;
+      if (!mounted) return;
+      final box = _measureKey.currentContext?.findRenderObject() as RenderBox?;
+      if (box == null || !box.hasSize) return;
+      final height = box.size.height + Dimensions.paddingSizeDefault * 2;
+      if ((height - _filterHeight).abs() > 0.5) setState(() => _filterHeight = height);
+    });
+  }
 
   List<CostMemberEntity> _resolvedMembers() {
     if (widget.members.isNotEmpty) return widget.members;
@@ -254,57 +270,223 @@ class _ListTabState extends State<_ListTab> {
   Widget build(BuildContext context) {
     final filtered = _filteredCosts();
     final members = _resolvedMembers();
+    final showFooter = ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context);
+    _measureFilterBar();
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        context.read<CostBloc>().add(const CostEvent.refresh());
-        await Future<void>.delayed(const Duration(milliseconds: 600));
-      },
-      child: _CostTabScroll(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (widget.seasonName.isNotEmpty) SectionTitle(title: context.local.seasonName(widget.seasonName), icon: Icons.event_note_rounded),
-            _SummaryGrid(stats: _summary(context, filtered)),
-            const SizedBox(height: Dimensions.paddingSizeLarge),
-            CostFilterBar(
-              mode: _mode,
-              members: members,
-              selectedMember: _selectedMember,
-              dateFilter: _dateFilter,
-              selectedDate: _selectedDate,
-              selectedRange: _selectedRange,
-              onModeChanged: (m) => setState(() => _mode = m),
-              onMemberChanged: (m) => setState(() => _selectedMember = m),
-              onDateFilterChanged: (d) => setState(() => _dateFilter = d),
-              onDateChanged: (d) => setState(() {
-                _selectedDate = d;
-                _dateFilter = CostDateFilter.day;
-              }),
-              onRangeChanged: (r) => setState(() {
-                _selectedRange = r;
-                _dateFilter = CostDateFilter.range;
-              }),
-            ),
-            const SizedBox(height: Dimensions.paddingSizeLarge),
-            if (filtered.isEmpty)
-              const _EmptyView()
-            else
-              for (var i = 0; i < filtered.length; i++)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeDefault),
-                  child: AnimatedEntrance(
-                    delay: Duration(milliseconds: 30 * i),
-                    child: CostTile(cost: filtered[i], index: i, maskCost: false, showActions: widget.isAdmin, onEdit: () => _onEdit(context, filtered[i]), onDelete: () => _onDelete(context, filtered[i])),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final contentWidth = (constraints.maxWidth < Dimensions.webMaxWidth ? constraints.maxWidth : Dimensions.webMaxWidth) - Dimensions.paddingSizeLarge * 2;
+
+        return RefreshIndicator(
+          onRefresh: () async {
+            context.read<CostBloc>().add(const CostEvent.refresh());
+            await Future<void>.delayed(const Duration(milliseconds: 600));
+          },
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: CustomScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, 0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                if (widget.seasonName.isNotEmpty) SectionTitle(title: context.local.seasonName(widget.seasonName), icon: Icons.event_note_rounded),
+                                _SummaryGrid(stats: _summary(context, filtered)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: _CostFilterHeader(
+                        height: _filterHeight,
+                        mode: _mode,
+                        members: members,
+                        selectedMember: _selectedMember,
+                        dateFilter: _dateFilter,
+                        selectedDate: _selectedDate,
+                        selectedRange: _selectedRange,
+                        onModeChanged: (m) => setState(() => _mode = m),
+                        onMemberChanged: (m) => setState(() => _selectedMember = m),
+                        onDateFilterChanged: (d) => setState(() => _dateFilter = d),
+                        onDateChanged: (d) => setState(() {
+                          _selectedDate = d;
+                          _dateFilter = CostDateFilter.day;
+                        }),
+                        onRangeChanged: (r) => setState(() {
+                          _selectedRange = r;
+                          _dateFilter = CostDateFilter.range;
+                        }),
+                      ),
+                    ),
+                    SliverLayoutBuilder(
+                      builder: (context, sliverConstraints) {
+                        final remaining = sliverConstraints.viewportMainAxisExtent - sliverConstraints.precedingScrollExtent;
+                        final list = Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeDefault),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  if (filtered.isEmpty)
+                                    const _EmptyView()
+                                  else
+                                    for (var i = 0; i < filtered.length; i++)
+                                      Padding(
+                                        padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeDefault),
+                                        child: AnimatedEntrance(
+                                          delay: Duration(milliseconds: 30 * i),
+                                          child: CostTile(cost: filtered[i], index: i, maskCost: false, showActions: widget.isAdmin, onEdit: () => _onEdit(context, filtered[i]), onDelete: () => _onDelete(context, filtered[i])),
+                                        ),
+                                      ),
+                                  SizedBox(height: context.bottomPadding),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                        if (!showFooter) return SliverToBoxAdapter(child: list);
+                        return SliverToBoxAdapter(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(minHeight: remaining > 0 ? remaining : 0.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [list, const AppFooter()],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                left: 0,
+                top: 0,
+                child: Offstage(
+                  child: SizedBox(
+                    width: contentWidth,
+                    child: KeyedSubtree(
+                      key: _measureKey,
+                      child: CostFilterBar(
+                        mode: _mode,
+                        members: members,
+                        selectedMember: _selectedMember,
+                        dateFilter: _dateFilter,
+                        selectedDate: _selectedDate,
+                        selectedRange: _selectedRange,
+                        onModeChanged: (_) {},
+                        onMemberChanged: (_) {},
+                        onDateFilterChanged: (_) {},
+                        onDateChanged: (_) {},
+                        onRangeChanged: (_) {},
+                      ),
+                    ),
                   ),
                 ),
-            SizedBox(height: context.bottomPadding),
-          ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// Pinned filter header: the filter controls stay at the top while the list
+/// scrolls. Its height follows the measured wrap so the chips keep the same
+/// layout they had in the page flow.
+class _CostFilterHeader extends SliverPersistentHeaderDelegate {
+  _CostFilterHeader({
+    required this.height,
+    required this.mode,
+    required this.members,
+    required this.selectedMember,
+    required this.dateFilter,
+    required this.selectedDate,
+    required this.selectedRange,
+    required this.onModeChanged,
+    required this.onMemberChanged,
+    required this.onDateFilterChanged,
+    required this.onDateChanged,
+    required this.onRangeChanged,
+  });
+
+  final double height;
+  final CostViewMode mode;
+  final List<CostMemberEntity> members;
+  final CostMemberEntity? selectedMember;
+  final CostDateFilter dateFilter;
+  final DateTime selectedDate;
+  final DateTimeRange? selectedRange;
+  final ValueChanged<CostViewMode> onModeChanged;
+  final ValueChanged<CostMemberEntity?> onMemberChanged;
+  final ValueChanged<CostDateFilter> onDateFilterChanged;
+  final ValueChanged<DateTime> onDateChanged;
+  final ValueChanged<DateTimeRange> onRangeChanged;
+
+  @override
+  double get minExtent => height;
+
+  @override
+  double get maxExtent => height;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    final pinned = overlapsContent || shrinkOffset > 0;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 150),
+      decoration: BoxDecoration(
+        color: pinned ? context.theme.scaffoldBackgroundColor : context.theme.scaffoldBackgroundColor.withValues(alpha: 0),
+      ),
+      child: ClipRect(
+        child: OverflowBox(
+          alignment: Alignment.topCenter,
+          maxHeight: double.infinity,
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
+              child: SizedBox(
+                width: double.infinity,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault),
+                  child: CostFilterBar(
+                    mode: mode,
+                    members: members,
+                    selectedMember: selectedMember,
+                    dateFilter: dateFilter,
+                    selectedDate: selectedDate,
+                    selectedRange: selectedRange,
+                    onModeChanged: onModeChanged,
+                    onMemberChanged: onMemberChanged,
+                    onDateFilterChanged: onDateFilterChanged,
+                    onDateChanged: onDateChanged,
+                    onRangeChanged: onRangeChanged,
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
   }
+
+  @override
+  bool shouldRebuild(covariant _CostFilterHeader oldDelegate) => true;
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -370,16 +552,14 @@ Future<void> showCostEditSheet({
 // ─────────────────────────────────────────────────────────────────────────
 
 class _CostTabScroll extends StatelessWidget {
-  const _CostTabScroll({required this.child, this.physics});
+  const _CostTabScroll({required this.child});
 
   final Widget child;
-  final ScrollPhysics? physics;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, viewportConstraints) => SingleChildScrollView(
-        physics: physics,
         child: ConstrainedBox(
           constraints: BoxConstraints(minHeight: viewportConstraints.maxHeight),
           child: Column(

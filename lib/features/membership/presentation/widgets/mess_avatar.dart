@@ -31,7 +31,7 @@ class MessAvatar extends StatelessWidget {
       padding: const EdgeInsets.all(1.5),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: color.withValues(alpha: 0.15),
+        color: hasImage ? Colors.white : color.withValues(alpha: 0.15),
       ),
       foregroundDecoration: BoxDecoration(
         shape: BoxShape.circle,

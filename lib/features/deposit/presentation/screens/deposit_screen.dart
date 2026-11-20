@@ -553,14 +553,12 @@ class _DepositFilterHeader extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    final colors = context.customThemeColors;
     final pinned = overlapsContent || shrinkOffset > 0;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 150),
       decoration: BoxDecoration(
         color: pinned ? context.theme.scaffoldBackgroundColor : context.theme.scaffoldBackgroundColor.withValues(alpha: 0),
-        boxShadow: pinned ? [BoxShadow(color: colors.shadowColor, blurRadius: 8, offset: const Offset(0, 4))] : null,
       ),
       child: ClipRect(
         child: OverflowBox(

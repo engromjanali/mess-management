@@ -107,6 +107,8 @@ class AppConstants {
 
   static const String opinionsEndpoint = '/api/v1/user/opinions';
   static const String adminOpinionsEndpoint = '/api/v1/admin/opinions';
+  static const String pollsEndpoint = '/api/v1/user/polls';
+  static const String adminPollsEndpoint = '/api/v1/admin/polls';
   static const String feedbacksEndpoint = '/api/v1/user/feedbacks';
   static const String adminFeedbacksEndpoint = '/api/v1/admin/feedbacks';
 

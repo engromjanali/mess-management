@@ -23,6 +23,7 @@ import 'package:mess_pilot/features/meal/presentation/bloc/meal_admin_state.dart
 import 'package:mess_pilot/features/meal/presentation/widgets/apply_to_all_card.dart';
 import 'package:mess_pilot/features/meal/presentation/widgets/meal_formatters.dart';
 import 'package:mess_pilot/features/meal/presentation/widgets/member_meal_form_sheet.dart';
+import 'package:mess_pilot/features/poll/presentation/widgets/meal_poll_section.dart';
 
 /// Admin page to add meals for a chosen day: one B/L/D for every member at
 /// once, adjusted per member before saving. Add-only — a day that already has
@@ -277,6 +278,8 @@ class _BodyState extends State<_Body> {
                         child: _DateSelectorCard(date: widget.date, onTap: widget.onPickDate),
                       ),
                       if (_dayHasMeals) ...[const SizedBox(height: Dimensions.paddingSizeDefault), _AlreadyAddedNotice(message: context.local.mealsAlreadyAdded(MealFormatters.dayLabel(widget.date)))],
+                      const SizedBox(height: Dimensions.paddingSizeDefault),
+                      AnimatedEntrance(child: MealPollSection(date: widget.date)),
                       const SizedBox(height: Dimensions.paddingSizeSmall),
                       if (wide)
                         Row(

@@ -3,6 +3,7 @@ import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/dashboard_formatters.dart';
+import 'package:mess_pilot/features/home/presentation/widgets/home_poll_button.dart';
 
 /// Gradient summary banner for the tablet & desktop dashboards.
 ///
@@ -40,31 +41,40 @@ class DashboardHeroBanner extends StatelessWidget {
   Widget _balanceBlock(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 3),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Text(
-            context.local.uiWelcomeBack,
-            style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.85), fontSize: Dimensions.fontSizeDefault),
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  context.local.uiWelcomeBack,
+                  style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.85), fontSize: Dimensions.fontSizeDefault),
+                ),
+                Text(
+                  userName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeExtraOverLarge),
+                ),
+                const SizedBox(height: Dimensions.paddingSizeExtraLarge),
+                Text(
+                  context.local.uiTotalBalance,
+                  style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.78), fontSize: Dimensions.fontSizeSmall),
+                ),
+                const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: AlignmentDirectional.centerStart,
+                  child: Text.rich(TextSpan(style: const TextStyle(color: Colors.white, fontSize: 36, fontWeight: FontWeight.w700, height: 1.15), children: [TextSpan(text: '৳'), TextSpan(text: DashboardFormatters.number(totalBalance), style: AppTextStyles.sfProRoundedBold)])),
+                ),
+              ],
+            ),
           ),
-          Text(
-            userName,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeExtraOverLarge),
-          ),
-          const SizedBox(height: Dimensions.paddingSizeExtraLarge),
-          Text(
-            context.local.uiTotalBalance,
-            style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.78), fontSize: Dimensions.fontSizeSmall),
-          ),
-          const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: AlignmentDirectional.centerStart,
-            child: Text.rich(TextSpan(style: const TextStyle(color: Colors.white, fontSize: 36, fontWeight: FontWeight.w700, height: 1.15), children: [TextSpan(text: '৳'), TextSpan(text: DashboardFormatters.number(totalBalance), style: AppTextStyles.sfProRoundedBold)])),
-          ),
+          const SizedBox(width: Dimensions.paddingSizeLarge),
+          const HomePollButton(),
         ],
       ),
     );

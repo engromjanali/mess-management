@@ -5,6 +5,7 @@ import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/dashboard_formatters.dart';
+import 'package:mess_pilot/features/home/presentation/widgets/home_poll_button.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/membership_menu_button.dart';
 import 'package:mess_pilot/features/membership/domain/entities/membership_status_entity.dart';
 
@@ -126,14 +127,30 @@ class _HeaderBackground extends StatelessWidget {
             ),
             const SizedBox(height: Dimensions.paddingSizeSmall),
             const Spacer(),
-            Text(
-              context.local.uiTotalBalance,
-              style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.78), fontSize: Dimensions.fontSizeSmall),
-            ),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: AlignmentDirectional.centerStart,
-              child: Text(DashboardFormatters.taka(totalBalance), style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: 32)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        context.local.uiTotalBalance,
+                        style: AppTextStyles.sfProRoundedMedium.copyWith(color: Colors.white.withValues(alpha: 0.78), fontSize: Dimensions.fontSizeSmall),
+                      ),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: AlignmentDirectional.centerStart,
+                        child: Text(DashboardFormatters.taka(totalBalance), style: AppTextStyles.sfProRoundedBold.copyWith(color: Colors.white, fontSize: 32)),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: Dimensions.paddingSizeSmall),
+                const HomePollButton(),
+              ],
             ),
             if (membership != null || currentSeasonName.isNotEmpty)
               MembershipMenuButton(

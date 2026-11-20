@@ -31,6 +31,7 @@ import 'package:mess_pilot/features/meal/presentation/widgets/meal_formatters.da
 import 'package:mess_pilot/features/meal/presentation/widgets/meal_history_list.dart';
 import 'package:mess_pilot/features/meal/presentation/widgets/meal_today_card.dart';
 import 'package:mess_pilot/features/meal/presentation/widgets/meal_week_chart.dart';
+import 'package:mess_pilot/features/poll/presentation/widgets/meal_poll_section.dart';
 
 /// Responsive meal tracker screen (phone / tablet / desktop).
 ///
@@ -289,6 +290,8 @@ class _MealBody extends StatelessWidget {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                const AnimatedEntrance(child: MealPollSection()),
+                const SizedBox(height: Dimensions.paddingSizeDefault),
                 _SummaryGrid(stats: _summary(context)),
                 const SizedBox(height: Dimensions.paddingSizeSmall),
                 if (wide)
