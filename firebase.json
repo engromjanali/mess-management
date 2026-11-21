@@ -35,7 +35,8 @@
       "firebase.json",
       "**/.!(well-known){,/**}",
       "**/.well-known/!(assetlinks.json|apple-app-site-association){,/**}",
-      "**/node_modules/**"
+      "**/node_modules/**",
+      "**/*.symbols"
     ],
     "headers": [
       {
@@ -46,12 +47,16 @@
         ]
       },
       {
+        "source": "**/*.wasm",
+        "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400, must-revalidate" }]
+      },
+      {
         "source": "/assets/**",
-        "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600, must-revalidate" }]
+        "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400, must-revalidate" }]
       },
       {
         "source": "/canvaskit/**",
-        "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600, must-revalidate" }]
+        "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400, must-revalidate" }]
       },
       {
         "source": "**/*.@(html|js|mjs|json)",
