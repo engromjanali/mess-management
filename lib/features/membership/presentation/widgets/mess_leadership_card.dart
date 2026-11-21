@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
+import 'package:mess_pilot/core/widgets/app_user_avatar.dart';
 import 'package:mess_pilot/features/membership/domain/entities/mess_details_entity.dart';
 import 'package:mess_pilot/features/membership/presentation/widgets/copyable_info_row.dart';
-import 'package:mess_pilot/features/membership/presentation/widgets/mess_avatar.dart';
 import 'package:mess_pilot/features/membership/presentation/widgets/mess_section_card.dart';
 
 /// Manager and acting manager with their contact details (tap to copy).
@@ -84,7 +84,7 @@ class _LeaderTile extends StatelessWidget {
                   child: Icon(Icons.person_off_rounded, color: colors.textHintColor),
                 )
               else
-                MessAvatar(name: person.name, color: accent, size: 44),
+                AppUserAvatar(name: person.name, photoUrl: person.photoUrl, radius: 22),
               const SizedBox(width: Dimensions.paddingSizeDefault),
               Expanded(
                 child: Column(

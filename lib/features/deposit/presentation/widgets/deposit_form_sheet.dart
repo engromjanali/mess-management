@@ -30,7 +30,7 @@ Future<void> showDepositFormSheet({
 /// "Add deposit" tab. When [popOnSave] is false the caller owns navigation
 /// after a save; [onCancel] lets an inline host switch away from the form.
 class DepositForm extends StatefulWidget {
-  const DepositForm({required this.members, required this.onSave, this.existing, this.popOnSave = true, this.onCancel, this.showHeader = true, super.key});
+  const DepositForm({required this.members, required this.onSave, this.existing, this.popOnSave = true, this.onCancel, this.showHeader = true, this.inline = false, this.onMemberChanged, super.key});
 
   final List<DepositMemberEntity> members;
   final DepositEntity? existing;
@@ -38,6 +38,12 @@ class DepositForm extends StatefulWidget {
   final bool popOnSave;
   final VoidCallback? onCancel;
   final bool showHeader;
+
+  /// Full-page presentation: a live preview card above a sectioned form.
+  final bool inline;
+
+  /// Notifies the host when the selected member changes (inline history panel).
+  final ValueChanged<String?>? onMemberChanged;
 
   @override
   State<DepositForm> createState() => _DepositFormState();
@@ -104,119 +110,156 @@ class _DepositFormState extends State<DepositForm> {
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
 
+    // Member — dropdown when adding, read-only when editing.
+    final memberField = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _Label(context.local.roleMember),
+        if (_isEdit)
+          _ReadOnlyField(value: widget.existing!.memberName)
+        else
+          DropdownButtonFormField<String>(
+            initialValue: _memberId,
+            decoration: _fieldDecoration(context),
+            items: [for (final m in widget.members) DropdownMenuItem(value: m.id, child: Text(m.name))],
+            onChanged: (v) {
+              setState(() => _memberId = v);
+              widget.onMemberChanged?.call(v);
+            },
+            validator: (v) => v == null ? context.local.selectMember : null,
+          ),
+        const SizedBox(height: Dimensions.paddingSizeDefault),
+      ],
+    );
+
+    final typeField = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _Label(context.local.type),
+        _TypeToggle(type: _type, onChanged: (t) => setState(() => _type = t)),
+        const SizedBox(height: Dimensions.paddingSizeDefault),
+      ],
+    );
+
+    // Amount (magnitude — the sign comes from the type toggle).
+    final amountField = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _Label(context.local.amountTaka),
+        TextFormField(
+          controller: _amountController,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
+          style: widget.inline ? AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeOverLarge, color: colors.textPrimaryColor) : null,
+          decoration: _fieldDecoration(context, hint: '0.00', prefixText: widget.inline ? '৳ ' : null),
+          onChanged: widget.inline ? (_) => setState(() {}) : null,
+          validator: (v) {
+            final value = double.tryParse((v ?? '').trim());
+            if (value == null || value <= 0) {
+              return context.local.amountMustBePositive;
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: Dimensions.paddingSizeDefault),
+      ],
+    );
+
+    final dateField = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _Label(context.local.date),
+        InkWell(
+          onTap: _pickDate,
+          borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+          child: InputDecorator(
+            decoration: _fieldDecoration(context),
+            child: Row(
+              children: [
+                Icon(Icons.calendar_today_rounded, size: Dimensions.iconSizeSmall, color: colors.textSecondaryColor),
+                const SizedBox(width: Dimensions.paddingSizeSmall),
+                Text(
+                  DepositFormatters.date(_date),
+                  style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: Dimensions.paddingSizeDefault),
+      ],
+    );
+
+    final noteField = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _Label(context.local.noteOptional),
+        TextFormField(
+          controller: _noteController,
+          textInputAction: TextInputAction.done,
+          decoration: _fieldDecoration(context, hint: 'e.g. Monthly deposit'),
+        ),
+        const SizedBox(height: Dimensions.paddingSizeExtraLarge),
+      ],
+    );
+
+    final fields = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (!widget.inline && widget.showHeader) ...[
+          Text(
+            _isEdit ? context.local.uiEditDeposit : context.local.uiAddDeposit,
+            style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
+          ),
+          Text(
+            context.local.uiRecordedForOneMemberAtATime,
+            style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
+          ),
+          const SizedBox(height: Dimensions.paddingSizeLarge),
+        ],
+        memberField,
+        typeField,
+        amountField,
+        dateField,
+        noteField,
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton(
+                onPressed: _cancel,
+                style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeight)),
+                child: Text(context.local.cancel),
+              ),
+            ),
+            const SizedBox(width: Dimensions.paddingSizeDefault),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: _submit,
+                style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeight)),
+                child: Text(_isEdit ? context.local.save : context.local.add),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+
     return Form(
       key: _formKey,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (widget.showHeader) ...[
-            Text(
-              _isEdit ? context.local.uiEditDeposit : context.local.uiAddDeposit,
-              style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
-            ),
-            Text(
-              context.local.uiRecordedForOneMemberAtATime,
-              style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
-            ),
-            const SizedBox(height: Dimensions.paddingSizeLarge),
-          ],
-
-          // Member — dropdown when adding, read-only when editing.
-          _Label(context.local.roleMember),
-          if (_isEdit)
-            _ReadOnlyField(value: widget.existing!.memberName)
-          else
-            DropdownButtonFormField<String>(
-              initialValue: _memberId,
-              decoration: _fieldDecoration(context),
-              items: [for (final m in widget.members) DropdownMenuItem(value: m.id, child: Text(m.name))],
-              onChanged: (v) => setState(() => _memberId = v),
-              validator: (v) => v == null ? context.local.selectMember : null,
-            ),
-          const SizedBox(height: Dimensions.paddingSizeDefault),
-
-          // Credit / debit toggle.
-          _Label(context.local.type),
-          _TypeToggle(type: _type, onChanged: (t) => setState(() => _type = t)),
-          const SizedBox(height: Dimensions.paddingSizeDefault),
-
-          // Amount (magnitude — the sign comes from the type toggle).
-          _Label(context.local.amountTaka),
-          TextFormField(
-            controller: _amountController,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
-            decoration: _fieldDecoration(context, hint: '0.00'),
-            validator: (v) {
-              final value = double.tryParse((v ?? '').trim());
-              if (value == null || value <= 0) {
-                return context.local.amountMustBePositive;
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: Dimensions.paddingSizeDefault),
-
-          // Date.
-          _Label(context.local.date),
-          InkWell(
-            onTap: _pickDate,
-            borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-            child: InputDecorator(
-              decoration: _fieldDecoration(context),
-              child: Row(
-                children: [
-                  Icon(Icons.calendar_today_rounded, size: Dimensions.iconSizeSmall, color: colors.textSecondaryColor),
-                  const SizedBox(width: Dimensions.paddingSizeSmall),
-                  Text(
-                    DepositFormatters.date(_date),
-                    style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: Dimensions.paddingSizeDefault),
-
-          // Note (optional).
-          _Label(context.local.noteOptional),
-          TextFormField(
-            controller: _noteController,
-            textInputAction: TextInputAction.done,
-            decoration: _fieldDecoration(context, hint: 'e.g. Monthly deposit'),
-          ),
-          const SizedBox(height: Dimensions.paddingSizeExtraLarge),
-
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: _cancel,
-                  style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeight)),
-                  child: Text(context.local.cancel),
-                ),
-              ),
-              const SizedBox(width: Dimensions.paddingSizeDefault),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: _submit,
-                  style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeight)),
-                  child: Text(_isEdit ? context.local.save : context.local.add),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+      child: widget.inline
+          ? _FormSectionCard(title: context.local.uiDetails, icon: Icons.edit_note_rounded, child: fields)
+          : Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [fields]),
     );
   }
 
-  InputDecoration _fieldDecoration(BuildContext context, {String? hint}) {
+  InputDecoration _fieldDecoration(BuildContext context, {String? hint, String? prefixText}) {
     final colors = context.customThemeColors;
     return InputDecoration(
       isDense: true,
       hintText: hint,
+      prefixText: prefixText,
+      prefixStyle: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeOverLarge, color: colors.textSecondaryColor),
       contentPadding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeDefault),
       filled: true,
       fillColor: colors.cardBackgroundColor,
@@ -331,6 +374,53 @@ class _Segment extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Rounded, bordered surface holding the inline deposit fields.
+class _FormSectionCard extends StatelessWidget {
+  const _FormSectionCard({required this.title, required this.icon, required this.child});
+
+  final String title;
+  final IconData icon;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+    return Container(
+      padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+      decoration: BoxDecoration(
+        color: colors.cardBackgroundColor,
+        borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge),
+        border: Border.all(color: colors.borderColor.withValues(alpha: 0.4)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+                decoration: BoxDecoration(color: colors.primaryColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
+                child: Icon(icon, size: Dimensions.iconSizeSmall, color: colors.primaryColor),
+              ),
+              const SizedBox(width: Dimensions.paddingSizeSmall),
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: Dimensions.paddingSizeLarge),
+          child,
+        ],
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:mess_pilot/core/widgets/app_page_scroll_view.dart';
 import 'package:mess_pilot/core/widgets/app_state_view.dart';
 import 'package:mess_pilot/core/widgets/app_loader.dart';
+import 'package:mess_pilot/core/widgets/app_switch.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -218,7 +219,7 @@ class _OpinionScreenState extends State<OpinionScreen> {
       onLoadMoreOpinions: _loadMoreOpinions,
       onLoadMorePeriods: _nextPage == null ? null : () { _pages++; _load(); },
     ));
-    final content = isAdmin && !_loading
+    final content = isAdmin && _canCreate && !_loading
         ? Column(children: [
             Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth), child: Padding(padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, 0), child: SegmentedTabBar<_OpinionPageTab>(tabs: [PillTab(value: _OpinionPageTab.opinions, label: context.local.opinionMessages), PillTab(value: _OpinionPageTab.create, label: context.local.create)], selected: _tab, onChanged: (value) => context.go(value == _OpinionPageTab.create ? AppRoutes.createOpinionPeriod : AppRoutes.opinions))))),
             Expanded(child: _tab == _OpinionPageTab.opinions ? opinionContent : OpinionPeriodFormScreen(embedded: true, onSubmitted: _createPeriodResult)),
@@ -232,7 +233,6 @@ class _OpinionScreenState extends State<OpinionScreen> {
       backgroundColor: context.theme.scaffoldBackgroundColor,
       endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
       appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.shareYourOpinions), actions: [IconButton(tooltip: context.local.refresh, onPressed: _busy || _refreshing ? null : () => _load(), icon: const Icon(Icons.refresh_rounded))]),
-      floatingActionButton: isAdmin && _canCreate && _tab == _OpinionPageTab.opinions ? FloatingActionButton.extended(onPressed: _busy || _refreshing ? null : () => context.go(AppRoutes.createOpinionPeriod), icon: const Icon(Icons.add_rounded), label: Text(context.local.uiOpenPeriod)) : null,
       body: showWebAppBar
           ? Builder(
               builder: (context) => Column(
@@ -584,7 +584,7 @@ class _PeriodCard extends StatelessWidget {
               decoration: BoxDecoration(color: colors.surfaceColor, borderRadius: BorderRadius.circular(Dimensions.radiusDefault), border: Border.all(color: colors.borderColor)),
               child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                 if (period.submissionMode == OpinionSubmissionMode.all)
-                  SwitchListTile.adaptive(value: !submitAnonymously, onChanged: busy ? null : (shareName) => onSubmissionTypeChanged(!shareName), contentPadding: EdgeInsets.zero, secondary: Icon(submitAnonymously ? Icons.visibility_off_outlined : Icons.person_outline_rounded), title: Text(submitAnonymously ? context.local.opinionAnonymous : context.local.opinionNamed), subtitle: Text(submitAnonymously ? context.local.opinionAnonymousHint : context.local.opinionNamedHint, maxLines: 2, overflow: TextOverflow.ellipsis))
+                  AppSwitch(value: !submitAnonymously, onChanged: busy ? null : (shareName) => onSubmissionTypeChanged(!shareName), secondary: Icon(submitAnonymously ? Icons.visibility_off_outlined : Icons.person_outline_rounded), title: Text(submitAnonymously ? context.local.opinionAnonymous : context.local.opinionNamed, style: AppTextStyles.sfProRoundedSemiBold.copyWith(color: colors.textPrimaryColor)), subtitle: Text(submitAnonymously ? context.local.opinionAnonymousHint : context.local.opinionNamedHint, maxLines: 2, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor)))
                 else
                   Row(children: [Icon(period.submissionMode == OpinionSubmissionMode.namedOnly ? Icons.person_outline_rounded : Icons.visibility_off_outlined, size: Dimensions.iconSizeSmall), const SizedBox(width: Dimensions.paddingSizeSmall), Expanded(child: Text(period.submissionMode == OpinionSubmissionMode.namedOnly ? context.local.uiYourNameWillBeRevealed : context.local.opinionAnonymousOnly, maxLines: 1, overflow: TextOverflow.ellipsis))]),
                 const SizedBox(height: Dimensions.paddingSizeDefault),

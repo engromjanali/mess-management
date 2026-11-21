@@ -1,8 +1,11 @@
 import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
+import 'package:mess_pilot/core/helpers/responsive_helper.dart';
 import 'package:mess_pilot/core/widgets/app_logo.dart';
+import 'package:mess_pilot/core/widgets/app_page_scroll_view.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/animated_entrance.dart';
+import 'package:mess_pilot/features/home/presentation/widgets/dashboard_top_bar.dart';
 import 'package:flutter/material.dart';
 
 /// Shared, modern auth shell used by the sign-in and sign-up screens.
@@ -31,71 +34,77 @@ class AuthScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
+    final showDesktopBar = ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context);
 
     return Scaffold(
       backgroundColor: colors.backgroundColor,
+      appBar: showDesktopBar
+          ? const PreferredSize(
+              preferredSize: Size.fromHeight(DashboardTopBar.height),
+              child: DashboardTopBar(
+                guest: true,
+                showNotifications: false,
+              ),
+            )
+          : null,
       body: SafeArea(
         child: Stack(
           children: [
-            Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeExtraLarge32),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: _maxCardWidth),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Hero: brand badge + greeting.
-                      AnimatedEntrance(
-                        child: Column(
-                          children: [
-                            Container(
-                              height: 76,
-                              width: 76,
-                              decoration: BoxDecoration(
-                                color: colors.primaryColor.withValues(alpha: 0.12),
-                                shape: BoxShape.circle,
-                                border: Border.all(color: colors.primaryColor.withValues(alpha: 0.25), width: 1.5),
-                                boxShadow: logoShadow ? [BoxShadow(color: const Color(0xFF176F49).withValues(alpha: 0.35), blurRadius: 24, spreadRadius: 2, offset: const Offset(0, 8))] : null,
-                              ),
-                              child: const AppLogo(size: 76, shape: BoxShape.circle),
-                            ),
-                            const SizedBox(height: Dimensions.paddingSizeLarge),
-                            Text(
-                              title,
-                              textAlign: TextAlign.center,
-                              style: AppTextStyles.sfProRoundedBold.copyWith(color: colors.textPrimaryColor, fontSize: Dimensions.fontSizeExtraOverLarge),
-                            ),
-                            const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-                            Text(
-                              subtitle,
-                              textAlign: TextAlign.center,
-                              style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor, fontSize: Dimensions.fontSizeDefault),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: Dimensions.paddingSizeExtraLarge24),
-
-                      // Form sheet.
-                      AnimatedEntrance(
-                        delay: const Duration(milliseconds: 120),
-                        child: Container(
-                          padding: const EdgeInsets.all(Dimensions.paddingSizeExtraLarge24),
+            AppPageScrollView(
+              maxWidth: _maxCardWidth,
+              padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeExtraLarge32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Hero: brand badge + greeting.
+                  AnimatedEntrance(
+                    child: Column(
+                      children: [
+                        Container(
+                          height: 76,
+                          width: 76,
                           decoration: BoxDecoration(
-                            color: colors.cardBackgroundColor,
-                            borderRadius: BorderRadius.circular(Dimensions.radiusExtra2Large),
-                            border: Border.all(color: colors.borderColor),
-                            boxShadow: [BoxShadow(color: colors.shadowColor, blurRadius: 24, offset: const Offset(0, 12))],
+                            color: colors.primaryColor.withValues(alpha: 0.12),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: colors.primaryColor.withValues(alpha: 0.25), width: 1.5),
+                            boxShadow: logoShadow ? [BoxShadow(color: const Color(0xFF176F49).withValues(alpha: 0.35), blurRadius: 24, spreadRadius: 2, offset: const Offset(0, 8))] : null,
                           ),
-                          child: child,
+                          child: const AppLogo(size: 76, shape: BoxShape.circle),
                         ),
-                      ),
-
-                      if (footer != null) ...[const SizedBox(height: Dimensions.paddingSizeLarge), AnimatedEntrance(delay: const Duration(milliseconds: 220), child: footer!)],
-                    ],
+                        const SizedBox(height: Dimensions.paddingSizeLarge),
+                        Text(
+                          title,
+                          textAlign: TextAlign.center,
+                          style: AppTextStyles.sfProRoundedBold.copyWith(color: colors.textPrimaryColor, fontSize: Dimensions.fontSizeExtraOverLarge),
+                        ),
+                        const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                        Text(
+                          subtitle,
+                          textAlign: TextAlign.center,
+                          style: AppTextStyles.sfProRoundedRegular.copyWith(color: colors.textSecondaryColor, fontSize: Dimensions.fontSizeDefault),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                  const SizedBox(height: Dimensions.paddingSizeExtraLarge24),
+
+                  // Form sheet.
+                  AnimatedEntrance(
+                    delay: const Duration(milliseconds: 120),
+                    child: Container(
+                      padding: const EdgeInsets.all(Dimensions.paddingSizeExtraLarge24),
+                      decoration: BoxDecoration(
+                        color: colors.cardBackgroundColor,
+                        borderRadius: BorderRadius.circular(Dimensions.radiusExtra2Large),
+                        border: Border.all(color: colors.borderColor),
+                        boxShadow: [BoxShadow(color: colors.shadowColor, blurRadius: 24, offset: const Offset(0, 12))],
+                      ),
+                      child: child,
+                    ),
+                  ),
+
+                  if (footer != null) ...[const SizedBox(height: Dimensions.paddingSizeLarge), AnimatedEntrance(delay: const Duration(milliseconds: 220), child: footer!)],
+                ],
               ),
             ),
             if (action != null) Positioned(top: Dimensions.paddingSizeSmall, right: Dimensions.paddingSizeSmall, child: action!),

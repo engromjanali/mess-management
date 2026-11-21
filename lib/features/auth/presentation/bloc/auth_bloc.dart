@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mess_pilot/core/usecase/usecase.dart';
+import 'package:mess_pilot/features/auth/data/datasources/local/auth_local_data_source_impl.dart';
+import 'package:mess_pilot/features/auth/data/models/user_model.dart';
 import 'package:mess_pilot/features/auth/domain/usecases/get_current_user_usecase.dart';
 import 'package:mess_pilot/features/auth/domain/usecases/google_login_usecase.dart';
 import 'package:mess_pilot/features/auth/domain/usecases/login_usecase.dart';
@@ -19,6 +21,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final RegisterUseCase _registerUseCase;
   final LogoutUseCase _logoutUseCase;
   final GetCurrentUserUseCase _getCurrentUserUseCase;
+  final AuthLocalDataSourceImpl _localDataSource = AuthLocalDataSourceImpl();
 
   AuthBloc(this._loginUseCase, this._googleLoginUseCase, this._registerUseCase, this._logoutUseCase, this._getCurrentUserUseCase) : super(const AuthState.initial()) {
     on<AuthEvent>(_onAuthEvent);
@@ -32,7 +35,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       registerRequested: (fullName, email, password, phone) => _handleRegister(fullName, email, password, phone, emit),
       logoutRequested: () => _handleLogout(emit),
       checkAuthStatus: () => _handleCheckAuthStatus(emit),
-      userUpdated: (user) async => emit(AuthState.authenticated(user)),
+      userUpdated: (user) async {
+        _localDataSource.saveUser(UserModel.fromEntity(user));
+        emit(AuthState.authenticated(user));
+      },
       refreshProfileRequested: (done) async {
         try {
           await _handleRefreshProfile(emit);
@@ -50,7 +56,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     final result = await _loginUseCase(LoginParams(email: email, password: password));
 
-    result.when(success: (success) => emit(AuthState.authenticated(success.data)), failure: (failure) => emit(AuthState.error(failure.message.toString())));
+    result.when(
+      success: (success) {
+        _localDataSource.saveUser(UserModel.fromEntity(success.data));
+        emit(AuthState.authenticated(success.data));
+      },
+      failure: (failure) => emit(AuthState.error(failure.message.toString())),
+    );
   }
 
   /// Handle Google login request
@@ -59,7 +71,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     final result = await _googleLoginUseCase(GoogleLoginParams(idToken: idToken));
 
-    result.when(success: (success) => emit(AuthState.authenticated(success.data)), failure: (failure) => emit(AuthState.error(failure.message.toString())));
+    result.when(
+      success: (success) {
+        _localDataSource.saveUser(UserModel.fromEntity(success.data));
+        emit(AuthState.authenticated(success.data));
+      },
+      failure: (failure) => emit(AuthState.error(failure.message.toString())),
+    );
   }
 
   /// Handle register request (auto-signs the user in on success)
@@ -68,12 +86,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     final result = await _registerUseCase(RegisterParams(fullName: fullName, email: email, password: password, phone: phone));
 
-    result.when(success: (success) => emit(AuthState.authenticated(success.data)), failure: (failure) => emit(AuthState.error(failure.message.toString())));
+    result.when(
+      success: (success) {
+        _localDataSource.saveUser(UserModel.fromEntity(success.data));
+        emit(AuthState.authenticated(success.data));
+      },
+      failure: (failure) => emit(AuthState.error(failure.message.toString())),
+    );
   }
 
   /// Handle logout request
   Future<void> _handleLogout(Emitter<AuthState> emit) async {
     emit(const AuthState.loading());
+    _localDataSource.clearUser();
 
     final result = await _logoutUseCase(const NoParams());
 
@@ -92,14 +117,29 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final result = await _getCurrentUserUseCase(const NoParams());
     if (emit.isDone || state.maybeWhen(authenticated: (user) => user.id, orElse: () => null) != userId) return;
     result.when(
-      success: (success) => emit(success.data == null ? const AuthState.unauthenticated() : AuthState.authenticated(success.data!)),
+      success: (success) {
+        if (success.data == null) {
+          _localDataSource.clearUser();
+          emit(const AuthState.unauthenticated());
+        } else {
+          _localDataSource.saveUser(UserModel.fromEntity(success.data!));
+          emit(AuthState.authenticated(success.data!));
+        }
+      },
       failure: (failure) => throw failure.error,
     );
   }
 
   /// Check authentication status
   Future<void> _handleCheckAuthStatus(Emitter<AuthState> emit) async {
-    emit(const AuthState.loading());
+    final cached = _localDataSource.getCachedUser();
+    final cachedEntity = cached?.toEntity();
+
+    if (cachedEntity != null) {
+      emit(AuthState.authenticated(cachedEntity));
+    } else {
+      emit(const AuthState.loading());
+    }
 
     final result = await _getCurrentUserUseCase(const NoParams());
 
@@ -107,12 +147,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       success: (success) {
         final user = success.data;
         if (user != null) {
+          _localDataSource.saveUser(UserModel.fromEntity(user));
           emit(AuthState.authenticated(user));
         } else {
+          _localDataSource.clearUser();
           emit(const AuthState.unauthenticated());
         }
       },
-      failure: (_) => emit(const AuthState.unauthenticated()),
+      failure: (_) {
+        if (cachedEntity == null) {
+          emit(const AuthState.unauthenticated());
+        }
+      },
     );
   }
 }

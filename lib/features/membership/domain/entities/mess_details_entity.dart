@@ -83,26 +83,28 @@ class MessPersonEntity extends Equatable {
   final String name;
   final String email;
   final String phone;
+  final String? photoUrl;
 
-  const MessPersonEntity({required this.userId, required this.name, required this.email, required this.phone});
+  const MessPersonEntity({required this.userId, required this.name, required this.email, required this.phone, this.photoUrl});
 
   @override
-  List<Object?> get props => [userId, name, email, phone];
+  List<Object?> get props => [userId, name, email, phone, photoUrl];
 }
 
 class MessMemberEntity extends Equatable {
   final int membershipId;
   final int userId;
   final String name;
+  final String? photoUrl;
 
   /// `manager`, `acting_manager` or `member`.
   final String role;
   final DateTime joinedAt;
 
-  const MessMemberEntity({required this.membershipId, required this.userId, required this.name, required this.role, required this.joinedAt});
+  const MessMemberEntity({required this.membershipId, required this.userId, required this.name, required this.role, required this.joinedAt, this.photoUrl});
 
   @override
-  List<Object?> get props => [membershipId, userId, name, role, joinedAt];
+  List<Object?> get props => [membershipId, userId, name, photoUrl, role, joinedAt];
 }
 
 /// The active season's numbers (the fund balance spans every season).

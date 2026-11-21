@@ -8,14 +8,10 @@ import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/core/assets/assets.gen.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
-import 'package:mess_pilot/core/extensions/overly_extensions.dart';
 import 'package:mess_pilot/core/widgets/app_logo.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
-import 'package:mess_pilot/features/membership/domain/entities/membership_status_entity.dart';
-import 'package:mess_pilot/features/home/presentation/widgets/membership_summary_card.dart';
-import 'package:mess_pilot/features/membership/presentation/bloc/membership_cubit.dart';
-import 'package:mess_pilot/features/membership/presentation/widgets/mess_avatar.dart';
+import 'package:mess_pilot/features/home/presentation/widgets/membership_menu_button.dart';
 import 'package:mess_pilot/features/settings/domain/entities/theme_mode.dart';
 import 'package:mess_pilot/features/settings/presentation/bloc/localization/localization_bloc.dart';
 import 'package:mess_pilot/features/settings/presentation/bloc/theme/theme_bloc.dart';
@@ -34,7 +30,7 @@ class DashboardNavItem {
 enum DashboardSection { home, meals, deposits, cost }
 
 class DashboardTopBar extends StatelessWidget {
-  const DashboardTopBar({this.userName, this.onProfileTap, this.navItems, this.active, this.hiddenSections = const {}, this.extraNavItems = const [], this.showNotifications = true, this.showTheme = true, this.showLocale = true, this.showProfile = true, super.key});
+  const DashboardTopBar({this.userName, this.onProfileTap, this.navItems, this.active, this.hiddenSections = const {}, this.extraNavItems = const [], this.showNotifications = true, this.showTheme = true, this.showLocale = true, this.showProfile = true, this.guest = false, super.key});
 
   final String? userName;
   final VoidCallback? onProfileTap;
@@ -47,23 +43,32 @@ class DashboardTopBar extends StatelessWidget {
   final bool showLocale;
   final bool showProfile;
 
+  /// Signed-out visitor: show every navigation option, but send taps to login.
+  final bool guest;
+
   static const double height = 72;
+
+  void _navigate(BuildContext context, String route) {
+    context.go(guest ? AppRoutes.loginRouteFor(route) : route);
+  }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
     final user = context.watch<AuthBloc>().state.maybeWhen(authenticated: (user) => user, orElse: () => null);
-    final resolvedUserName = userName ?? user?.name ?? context.local.roleMember;
-    final roleLabel = switch (user?.role) {
-      'manager' => context.local.roleManager,
-      'acting_manager' => context.local.roleActingManager,
-      _ => context.local.roleMember,
-    };
+    final resolvedUserName = userName ?? (guest ? context.local.login : user?.name ?? context.local.roleMember);
+    final roleLabel = guest
+        ? context.local.login
+        : switch (user?.role) {
+            'manager' => context.local.roleManager,
+            'acting_manager' => context.local.roleActingManager,
+            _ => context.local.roleMember,
+          };
     final resolvedNavItems = navItems ?? [
-      if (!hiddenSections.contains(DashboardSection.home)) DashboardNavItem(label: context.local.home, icon: Icons.home_rounded, active: active == DashboardSection.home, onTap: () => context.go(AppRoutes.home)),
-      if (!hiddenSections.contains(DashboardSection.meals)) DashboardNavItem(label: context.local.meals, icon: Icons.restaurant_rounded, active: active == DashboardSection.meals, onTap: () => context.go(AppRoutes.meals)),
-      if (!hiddenSections.contains(DashboardSection.deposits)) DashboardNavItem(label: context.local.deposits, icon: Icons.account_balance_wallet_rounded, active: active == DashboardSection.deposits, onTap: () => context.go(AppRoutes.deposits)),
-      if (!hiddenSections.contains(DashboardSection.cost)) DashboardNavItem(label: context.local.cost, icon: Icons.shopping_cart_rounded, active: active == DashboardSection.cost, onTap: () => context.go(AppRoutes.costs)),
+      if (!hiddenSections.contains(DashboardSection.home)) DashboardNavItem(label: context.local.home, icon: Icons.home_rounded, active: active == DashboardSection.home, onTap: () => _navigate(context, AppRoutes.home)),
+      if (!hiddenSections.contains(DashboardSection.meals)) DashboardNavItem(label: context.local.meals, icon: Icons.restaurant_rounded, active: active == DashboardSection.meals, onTap: () => _navigate(context, AppRoutes.meals)),
+      if (!hiddenSections.contains(DashboardSection.deposits)) DashboardNavItem(label: context.local.deposits, icon: Icons.account_balance_wallet_rounded, active: active == DashboardSection.deposits, onTap: () => _navigate(context, AppRoutes.deposits)),
+      if (!hiddenSections.contains(DashboardSection.cost)) DashboardNavItem(label: context.local.cost, icon: Icons.shopping_cart_rounded, active: active == DashboardSection.cost, onTap: () => _navigate(context, AppRoutes.costs)),
       ...extraNavItems,
     ];
     final themeMode = context.watch<ThemeBloc>().state.when(dark: (_) => AppThemeMode.dark, light: (_) => AppThemeMode.light, system: (_) => AppThemeMode.system);
@@ -110,7 +115,7 @@ class DashboardTopBar extends StatelessWidget {
                         )),
                       ],
                       if (resolvedNavItems.isEmpty) const Spacer(),
-                      const _MembershipMenu(),
+                      const MembershipMenuButton(),
                       if (showNotifications) NotificationIconButton(color: colors.textSecondaryColor),
                       if (showTheme) _ActionIcon(
                         icon: themeIcon,
@@ -120,7 +125,7 @@ class DashboardTopBar extends StatelessWidget {
                       if (showLocale) const _LocaleMenu(),
                       if (showProfile) ...[
                         const SizedBox(width: Dimensions.paddingSizeDefault),
-                        _ProfileChip(roleLabel: roleLabel, userName: resolvedUserName, profileImageUrl: user?.photoUrl, showText: showProfileText, onTap: onProfileTap ?? () => Scaffold.of(context).openEndDrawer()),
+                        _ProfileChip(roleLabel: roleLabel, userName: resolvedUserName, profileImageUrl: guest ? null : user?.photoUrl, showText: showProfileText, guest: guest, onTap: onProfileTap ?? (guest ? () => context.go(AppRoutes.getLoginRoute()) : () => Scaffold.of(context).openEndDrawer())),
                       ],
                     ],
                   );
@@ -214,137 +219,6 @@ class _NavButton extends StatelessWidget {
   }
 }
 
-class _MembershipMenu extends StatefulWidget {
-  const _MembershipMenu();
-
-  @override
-  State<_MembershipMenu> createState() => _MembershipMenuState();
-}
-
-class _MembershipMenuState extends State<_MembershipMenu> {
-  bool _switching = false;
-
-  @override
-  Widget build(BuildContext context) {
-    if (context.findAncestorWidgetOfExactType<BlocProvider<MembershipCubit>>() == null) return const SizedBox.shrink();
-    final state = context.watch<MembershipCubit>().state;
-    if (state is! MembershipLoaded) return const SizedBox.shrink();
-    final current = state.status.current;
-    if (current == null) return const SizedBox.shrink();
-
-    final memberships = state.status.memberships.where((membership) => membership.messId == current.messId).toList();
-    if (!memberships.any((membership) => membership.seasonId == current.seasonId)) memberships.insert(0, current);
-    memberships.sort((a, b) {
-      if (a.isCurrent != b.isCurrent) return a.isCurrent ? -1 : 1;
-      return (b.seasonStartDate ?? DateTime.fromMillisecondsSinceEpoch(0)).compareTo(a.seasonStartDate ?? DateTime.fromMillisecondsSinceEpoch(0));
-    });
-    final hasSwitch = memberships.any((membership) => membership.canSwitch && !membership.isCurrent);
-
-    return Padding(
-      padding: const EdgeInsets.only(right: Dimensions.paddingSizeSmall),
-      child: PopupMenuButton<MembershipSummaryEntity>(
-        tooltip: context.local.myMemberships,
-        enabled: !_switching,
-        position: PopupMenuPosition.under,
-        offset: const Offset(0, 8),
-        color: context.customThemeColors.surfaceColor,
-        elevation: 8,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge), side: BorderSide(color: context.customThemeColors.borderColor)),
-        onSelected: _switchTo,
-        itemBuilder: (context) => [
-          PopupMenuItem<MembershipSummaryEntity>(
-            enabled: false,
-            height: 58,
-            child: SizedBox(
-              width: 300,
-              child: Row(
-                children: [
-                  MessAvatar(name: current.messName, color: context.customThemeColors.primaryColor, size: 36, imageUrl: current.messImageUrl),
-                  const SizedBox(width: Dimensions.paddingSizeDefault),
-                  Expanded(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(current.messName, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: context.customThemeColors.textPrimaryColor)),
-                        Text(context.local.myMemberships, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: context.customThemeColors.textSecondaryColor)),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const PopupMenuDivider(),
-          for (final membership in memberships)
-            PopupMenuItem<MembershipSummaryEntity>(
-              value: membership,
-              enabled: membership.canSwitch && !membership.isCurrent,
-              height: 58,
-              child: SizedBox(
-                width: 300,
-                child: Row(
-                  children: [
-                    Icon(
-                      membership.isCurrent ? Icons.check_circle_rounded : membership.canSwitch ? Icons.calendar_month_rounded : Icons.lock_outline_rounded,
-                      size: Dimensions.iconSizeDefault,
-                      color: membership.isCurrent ? context.customThemeColors.primaryColor : membership.canSwitch ? context.customThemeColors.textSecondaryColor : context.customThemeColors.textHintColor,
-                    ),
-                    const SizedBox(width: Dimensions.paddingSizeDefault),
-                    Expanded(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(membership.seasonName, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: membership.canSwitch || membership.isCurrent ? context.customThemeColors.textPrimaryColor : context.customThemeColors.textHintColor)),
-                          const SizedBox(height: 2),
-                          Text(_subtitle(context, membership), maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: context.customThemeColors.textSecondaryColor)),
-                        ],
-                      ),
-                    ),
-                    if (membership.isCurrent)
-                      Text(context.local.currentMembership, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: context.customThemeColors.primaryColor))
-                    else if (membership.canSwitch)
-                      Icon(Icons.swap_horiz_rounded, size: Dimensions.iconSizeSmall + 2, color: context.customThemeColors.primaryColor)
-                    else
-                      Icon(Icons.lock_outline_rounded, size: Dimensions.iconSizeSmall, color: context.customThemeColors.textHintColor),
-                  ],
-                ),
-              ),
-            ),
-        ],
-        child: MembershipSummaryCard(messName: current.messName, seasonName: current.seasonName, imageUrl: current.messImageUrl, switching: _switching, hasSwitch: hasSwitch),
-      ),
-    );
-  }
-
-  String _subtitle(BuildContext context, MembershipSummaryEntity membership) {
-    final role = switch (membership.role) {
-      'manager' => context.local.roleManager,
-      'acting_manager' => context.local.roleActingManager,
-      _ => context.local.roleMember,
-    };
-    return membership.status == 'left' ? '$role · ${context.local.membershipLeft}' : role;
-  }
-
-  Future<void> _switchTo(MembershipSummaryEntity membership) async {
-    if (_switching) return;
-    setState(() => _switching = true);
-    try {
-      await context.read<MembershipCubit>().switchMembership(membership);
-      if (!mounted) return;
-      await context.read<AuthBloc>().refreshProfile();
-      if (!mounted) return;
-      context.showSuccessSnackBar(context.local.switchedMembership(membership.messName, membership.seasonName));
-      context.go(AppRoutes.home);
-    } catch (error) {
-      if (mounted) context.showErrorSnackBar(error);
-    } finally {
-      if (mounted) setState(() => _switching = false);
-    }
-  }
-}
-
 class _LocaleMenu extends StatelessWidget {
   const _LocaleMenu();
 
@@ -422,11 +296,12 @@ class _ActionIcon extends StatelessWidget {
 }
 
 class _ProfileChip extends StatelessWidget {
-  const _ProfileChip({required this.roleLabel, required this.userName, required this.profileImageUrl, required this.showText, required this.onTap});
+  const _ProfileChip({required this.roleLabel, required this.userName, required this.profileImageUrl, required this.showText, required this.guest, required this.onTap});
   final String roleLabel;
   final String userName;
   final String? profileImageUrl;
   final bool showText;
+  final bool guest;
   final VoidCallback onTap;
 
   String get _initials {
@@ -440,7 +315,7 @@ class _ProfileChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
     final imageUrl = profileImageUrl?.trim() ?? '';
-    final fallback = Center(child: Text(_initials, style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.primaryColor)));
+    final fallback = Center(child: guest ? Icon(Icons.person_rounded, size: Dimensions.iconSizeDefault, color: colors.primaryColor) : Text(_initials, style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.primaryColor)));
 
     final avatar = CircleAvatar(
       radius: 18,
@@ -474,13 +349,16 @@ class _ProfileChip extends StatelessWidget {
                 avatar,
                 const SizedBox(width: Dimensions.paddingSizeSmall),
                 Flexible(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(userName, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor)),
-                      Text(roleLabel, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: colors.textSecondaryColor)),
-                    ],
+                  child: MediaQuery.withClampedTextScaling(
+                    maxScaleFactor: 1.5,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(userName, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor)),
+                        Text(roleLabel, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: colors.textSecondaryColor)),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(width: Dimensions.paddingSizeExtraSmall),

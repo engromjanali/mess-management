@@ -99,7 +99,7 @@ void main() {
           await tester.pumpAndSettle();
           expect(find.text('Published feedback'), admin ? findsOneWidget : findsNothing);
           expect(find.text('Private feedback'), admin ? findsOneWidget : findsNothing);
-          expect(find.byType(FloatingActionButton), admin ? findsOneWidget : findsNothing);
+          expect(find.byType(FloatingActionButton), findsNothing);
           final input = tester.widget<TextField>(find.byType(TextField));
           expect(input.minLines, 3);
           expect(input.maxLines, 6);

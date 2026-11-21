@@ -181,7 +181,7 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
                   photoUrl: photoUrl,
                   currentSeasonName: dashboard.currentSeasonName,
                   totalBalance: dashboard.totalBalance,
-                  expandedHeight: 200,
+                  expandedHeight: 210,
                   membership: membership,
                   hasSwitch: canSwitchMembership,
                 ),
@@ -291,9 +291,9 @@ class _StatSliverGrid extends StatelessWidget {
     return SliverPadding(
       padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall),
       sliver: SliverGrid.builder(
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: 200,
-          mainAxisExtent: 150,
+          mainAxisExtent: StatCard.gridMainAxisExtent(context, regular: 150),
           crossAxisSpacing: Dimensions.paddingSizeDefault,
           mainAxisSpacing: Dimensions.paddingSizeDefault,
         ),
@@ -583,6 +583,7 @@ class _MessDetailsCardState extends State<_MessDetailsCard> {
                     label: Text(context.local.showOnMap),
                   ),
                   OutlinedButton.icon(onPressed: () => context.go(AppRoutes.opinions), icon: const Icon(Icons.forum_outlined), label: Text(context.local.shareOpinion)),
+                  OutlinedButton.icon(onPressed: () => context.go(AppRoutes.polls), icon: const Icon(Icons.poll_outlined), label: Text(context.local.pollPolls)),
                 ],
               ),
             ],
@@ -660,7 +661,7 @@ class _StatBoxGrid extends StatelessWidget {
       padding: EdgeInsets.zero,
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: maxCrossAxisExtent,
-        mainAxisExtent: 150,
+        mainAxisExtent: StatCard.gridMainAxisExtent(context, regular: 150),
         crossAxisSpacing: Dimensions.paddingSizeDefault,
         mainAxisSpacing: Dimensions.paddingSizeDefault,
       ),

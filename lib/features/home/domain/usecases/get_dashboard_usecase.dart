@@ -15,4 +15,8 @@ class GetDashboardUseCase implements UseCase<DashboardEntity, NoParams> {
   ResultFuture<DashboardEntity> call(NoParams params) {
     return _repository.getDashboard();
   }
+
+  DashboardEntity? getCachedDashboard() => _repository.getCachedDashboard();
+
+  Future<void> clearCachedDashboard() => _repository.clearCachedDashboard();
 }

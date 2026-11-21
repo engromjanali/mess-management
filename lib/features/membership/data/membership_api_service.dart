@@ -1,19 +1,21 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:mess_pilot/config/util/app_constants.dart';
+import 'package:mess_pilot/core/di/injection.dart';
 import 'package:mess_pilot/core/network/api_client.dart';
 import 'package:mess_pilot/features/membership/domain/entities/mess_details_entity.dart';
 import 'package:mess_pilot/features/membership/domain/entities/membership_status_entity.dart';
 import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MembershipApiService {
   const MembershipApiService(this._apiClient);
 
   final ApiClient _apiClient;
+  static const String _membershipCacheKey = 'cached_membership_status';
 
-  Future<MembershipStatusEntity> getStatus() async {
-    final statusResponse = await _apiClient.get<Map<String, dynamic>>(AppConstants.membershipStatusEndpoint);
-    final status = statusResponse.data!;
+  MembershipStatusEntity parseStatus(Map<String, dynamic> status) {
     return MembershipStatusEntity(
       current: status['current'] == null ? null : _membership(status['current'] as Map<String, dynamic>),
       memberships: (status['memberships'] as List<dynamic>? ?? []).map((item) => _membership(item as Map<String, dynamic>)).toList(),
@@ -36,6 +38,31 @@ class MembershipApiService {
       }).toList(),
       availableMesses: const [],
     );
+  }
+
+  MembershipStatusEntity? getCachedStatus() {
+    try {
+      final jsonStr = getIt<SharedPreferences>().getString(_membershipCacheKey);
+      if (jsonStr == null || jsonStr.isEmpty) return null;
+      return parseStatus(jsonDecode(jsonStr) as Map<String, dynamic>);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> clearCachedStatus() async {
+    try {
+      await getIt<SharedPreferences>().remove(_membershipCacheKey);
+    } catch (_) {}
+  }
+
+  Future<MembershipStatusEntity> getStatus() async {
+    final statusResponse = await _apiClient.get<Map<String, dynamic>>(AppConstants.membershipStatusEndpoint);
+    final status = statusResponse.data!;
+    try {
+      await getIt<SharedPreferences>().setString(_membershipCacheKey, jsonEncode(status));
+    } catch (_) {}
+    return parseStatus(status);
   }
 
   Future<MessPageEntity> getAvailableMesses({required int page, required int limit, String search = ''}) async {
@@ -182,6 +209,7 @@ class MembershipApiService {
           membershipId: member['membership_id'] as int,
           userId: member['user_id'] as int,
           name: member['name'] as String? ?? '',
+          photoUrl: member['photo'] as String? ?? member['photo_url'] as String?,
           role: member['role'] as String? ?? 'member',
           joinedAt: DateTime.parse(member['joined_at'] as String).toLocal(),
         );
@@ -241,7 +269,13 @@ class MembershipApiService {
 
   MessPersonEntity? _person(Object? value) {
     if (value is! Map<String, dynamic>) return null;
-    return MessPersonEntity(userId: value['user_id'] as int, name: value['name'] as String? ?? '', email: value['email'] as String? ?? '', phone: value['phone'] as String? ?? '');
+    return MessPersonEntity(
+      userId: value['user_id'] as int,
+      name: value['name'] as String? ?? '',
+      email: value['email'] as String? ?? '',
+      phone: value['phone'] as String? ?? '',
+      photoUrl: value['photo'] as String? ?? value['photo_url'] as String?,
+    );
   }
 
   double? _double(Object? value) => value is num ? value.toDouble() : double.tryParse(value?.toString() ?? '');

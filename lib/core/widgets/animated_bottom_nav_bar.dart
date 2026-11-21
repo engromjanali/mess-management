@@ -125,7 +125,8 @@ class _ProfileNavImage extends StatelessWidget {
       width: 30,
       height: 30,
       padding: const EdgeInsets.all(1),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(shape: BoxShape.circle),
+      foregroundDecoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(color: colors.primaryColor),
       ),

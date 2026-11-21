@@ -32,6 +32,8 @@ import 'package:mess_pilot/features/notice/presentation/screens/notice_screen.da
 import 'package:mess_pilot/features/notice/presentation/screens/notice_details_screen.dart';
 import 'package:mess_pilot/features/notice/domain/entities/notice_entity.dart';
 import 'package:mess_pilot/features/opinion/presentation/screens/opinion_screen.dart';
+import 'package:mess_pilot/features/poll/presentation/screens/poll_screen.dart';
+import 'package:mess_pilot/features/poll/presentation/screens/poll_details_screen.dart';
 import 'package:mess_pilot/features/feedback/presentation/screens/feedback_screen.dart';
 import 'package:mess_pilot/features/season/presentation/screens/season_management_screen.dart';
 import 'package:mess_pilot/features/settings/presentation/screens/settings_screen.dart';
@@ -56,20 +58,31 @@ class AppRoutes {
   // Main routes
   static const String home = '/';
   static const String meals = '/meals';
-  static const String addMeal = '/meals/add';
+  static const String mealsManage = '/meals/manage';
+  static const String mealsAdd = '/meals/add';
+  static const String mealsMine = '/meals/mine';
+  static const String addMeal = '/meals/entry';
   static const String mealList = '/meals/list';
   static const String deposits = '/deposits';
   static const String depositBreakdown = '/deposits/breakdown';
   static const String addDeposit = '/deposits/add';
   static const String funds = '/funds';
+  static const String addFund = '/funds/add';
   static const String costs = '/costs';
   static const String notifications = '/notifications';
   static const String notices = '/notices';
+  static const String addNotice = '/notices/add';
   static const String noticeDetails = '/notices/:id';
   static String getNoticeDetailsRoute(String id) => '$notices/${Uri.encodeComponent(id)}';
 
   static const String opinions = '/opinions';
   static const String createOpinionPeriod = '/opinions/create';
+  static const String polls = '/polls';
+  static const String pollsOpen = '/polls/open';
+  static const String pollsPast = '/polls/past';
+  static const String createPoll = '/polls/create';
+  static const String pollDetails = '/polls/:id';
+  static String getPollDetailsRoute(String id) => '$polls/${Uri.encodeComponent(id)}';
   static const String feedback = '/feedback';
   static const String profile = '/profile';
   static const String editProfile = '/profile/edit';
@@ -234,7 +247,18 @@ final router = GoRouter(
       builder: (context, state, navigationShell) => MainNavigationShell(navigationShell: navigationShell),
       branches: [
         StatefulShellBranch(routes: [GoRoute(path: AppRoutes.home, name: 'home', builder: (context, state) => const HomeScreen())]),
-        StatefulShellBranch(routes: [GoRoute(path: AppRoutes.meals, name: 'meals', builder: (context, state) => const MealScreen())]),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppRoutes.meals,
+              name: 'meals',
+              redirect: (context, state) => AppRoutes.mealsManage,
+            ),
+            GoRoute(path: AppRoutes.mealsManage, name: 'mealsManage', builder: (context, state) => const MealScreen(initialTab: 'manage')),
+            GoRoute(path: AppRoutes.mealsAdd, name: 'mealsAdd', builder: (context, state) => const MealScreen(initialTab: 'add')),
+            GoRoute(path: AppRoutes.mealsMine, name: 'mealsMine', builder: (context, state) => const MealScreen(initialTab: 'mine')),
+          ],
+        ),
         StatefulShellBranch(
           routes: [
             GoRoute(path: AppRoutes.deposits, name: 'deposits', pageBuilder: (context, state) => const NoTransitionPage(key: ValueKey('deposits-page'), child: DepositScreen())),
@@ -261,13 +285,22 @@ final router = GoRouter(
     GoRoute(path: AppRoutes.mealList, name: 'mealList', builder: (context, state) => const MealListScreen()),
 
     // Fund route (role-aware: managers manage, members view the list)
-    GoRoute(path: AppRoutes.funds, name: 'funds', builder: (context, state) => const FundScreen()),
+    GoRoute(path: AppRoutes.addFund, name: 'addFund', pageBuilder: (context, state) => const NoTransitionPage(key: ValueKey('funds-page'), child: FundScreen(showAddTab: true))),
+    GoRoute(path: AppRoutes.funds, name: 'funds', pageBuilder: (context, state) => const NoTransitionPage(key: ValueKey('funds-page'), child: FundScreen())),
 
     GoRoute(path: AppRoutes.notifications, name: 'notifications', builder: (context, state) => NotificationScreen(noticeId: state.uri.queryParameters['notice_id'])),
 
     // Notice route (role-aware: managers manage, members view the list)
-    GoRoute(path: AppRoutes.notices, name: 'notices', builder: (context, state) => const NoticeScreen(), routes: [
+    GoRoute(path: AppRoutes.addNotice, name: 'addNotice', pageBuilder: (context, state) => const NoTransitionPage(key: ValueKey('notices-page'), child: NoticeScreen(showAddTab: true))),
+    GoRoute(path: AppRoutes.notices, name: 'notices', pageBuilder: (context, state) => const NoTransitionPage(key: ValueKey('notices-page'), child: NoticeScreen()), routes: [
       GoRoute(path: ':id', name: 'noticeDetails', builder: (context, state) => NoticeDetailsScreen(noticeId: state.pathParameters['id'], notice: state.extra is NoticeEntity ? state.extra as NoticeEntity : null)),
+    ]),
+
+    GoRoute(path: AppRoutes.polls, name: 'polls', redirect: (context, state) => state.uri.path == AppRoutes.polls ? AppRoutes.pollsOpen : null, routes: [
+      GoRoute(path: 'open', name: 'pollsOpen', pageBuilder: (context, state) => const NoTransitionPage(key: ValueKey('polls-page'), child: PollScreen())),
+      GoRoute(path: 'past', name: 'pollsPast', pageBuilder: (context, state) => const NoTransitionPage(key: ValueKey('polls-page'), child: PollScreen(tab: PollPageTab.past))),
+      GoRoute(path: 'create', name: 'createPoll', pageBuilder: (context, state) => const NoTransitionPage(key: ValueKey('polls-page'), child: PollScreen(tab: PollPageTab.create))),
+      GoRoute(path: ':id', name: 'pollDetails', builder: (context, state) => PollDetailsScreen(pollId: state.pathParameters['id']!)),
     ]),
 
     GoRoute(path: AppRoutes.opinions, name: 'opinions', pageBuilder: (context, state) => const NoTransitionPage(key: ValueKey('opinions-page'), child: OpinionScreen())),

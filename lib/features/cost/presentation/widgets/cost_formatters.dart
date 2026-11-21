@@ -8,6 +8,7 @@ class CostFormatters {
   static final DateFormat _stamp = DateFormat('hh:mm a dd-MM-yyyy', 'en_US');
   static final DateFormat _time = DateFormat('h:mm a', 'en_US');
   static final DateFormat _date = DateFormat('dd/MM/yyyy', 'en_US');
+  static final DateFormat _shortDay = DateFormat('dd MMM', 'en_US');
 
   /// Bangladeshi Taka, e.g. `৳1,500`.
   static String taka(double value) => '৳${_money.format(value)}';
@@ -29,4 +30,10 @@ class CostFormatters {
 
   /// Date only, e.g. `21/08/2025`.
   static String date(DateTime value) => _date.format(value);
+
+  /// Compact date, e.g. `01 Jun`.
+  static String shortDate(DateTime value) => _shortDay.format(value);
+
+  /// Compact inclusive range, e.g. `01 Jun – 10 Jun`.
+  static String rangeLabel(DateTime start, DateTime end) => '${_shortDay.format(start)} – ${_shortDay.format(end)}';
 }

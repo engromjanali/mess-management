@@ -19,11 +19,22 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Future<void> _load(Emitter<HomeState> emit, {required bool showLoading}) async {
-    // On refresh we keep the current data on screen (no full-page spinner).
-    if (showLoading) emit(const HomeState.loading());
+    final cached = _getDashboardUseCase.getCachedDashboard();
+    if (cached != null && showLoading) {
+      emit(HomeState.loaded(cached));
+    } else if (showLoading) {
+      emit(const HomeState.loading());
+    }
 
     final result = await _getDashboardUseCase(const NoParams());
 
-    result.when(success: (success) => emit(HomeState.loaded(success.data)), failure: (failure) => emit(HomeState.error(failure.error.toString())));
+    result.when(
+      success: (success) => emit(HomeState.loaded(success.data)),
+      failure: (failure) {
+        if (state is! HomeLoaded) {
+          emit(HomeState.error(failure.error.toString()));
+        }
+      },
+    );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/core/widgets/app_state_view.dart';
 import 'package:mess_pilot/core/widgets/app_loader.dart';
+import 'package:mess_pilot/core/widgets/app_user_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -11,7 +12,6 @@ import 'package:mess_pilot/core/di/injection.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
 import 'package:mess_pilot/core/extensions/overly_extensions.dart';
 import 'package:mess_pilot/core/helpers/responsive_helper.dart';
-import 'package:mess_pilot/features/home/presentation/widgets/dashboard_formatters.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/section_title.dart';
 import 'package:mess_pilot/features/meal/domain/entities/meal_member_entity.dart';
 import 'package:mess_pilot/features/meal/presentation/bloc/meal_admin_bloc.dart';
@@ -102,13 +102,6 @@ class _ManageCard extends StatelessWidget {
   /// A refresh or edit/delete is running: show progress and block actions.
   final bool busy;
 
-  /// Opens the day entry screen, then reloads so the new records show here.
-  Future<void> _add(BuildContext context) async {
-    final bloc = context.read<MealAdminBloc>();
-    await context.push(AppRoutes.addMeal);
-    bloc.add(const MealAdminEvent.refresh());
-  }
-
   Future<void> _edit(BuildContext context, MemberMealEntity entry) async {
     final result = await showMemberMealForm(context, members: data.members, existing: entry);
     if (result != null && context.mounted) {
@@ -136,13 +129,11 @@ class _ManageCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
     final entries = data.filtered(memberId: selectedMemberId, date: selectedDate);
-    final compactActions = ResponsiveHelper.isMobile(context) || ResponsiveHelper.isSmallTab(context);
     final recordCount = Text(
       '${entries.length} '
       '${entries.length == 1 ? 'record' : 'records'}',
       style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
     );
-    final addButton = FilledButton.icon(onPressed: busy ? null : () => _add(context), icon: const Icon(Icons.add_rounded, size: 20), label: Text(context.local.addMeal));
 
     return _Card(
       padding: EdgeInsets.zero,
@@ -156,23 +147,7 @@ class _ManageCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (compactActions)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      recordCount,
-                      const SizedBox(height: Dimensions.paddingSizeDefault),
-                      addButton,
-                    ],
-                  )
-                else
-                  Row(
-                    children: [
-                      Expanded(child: recordCount),
-                      const SizedBox(width: Dimensions.paddingSizeSmall),
-                      addButton,
-                    ],
-                  ),
+                recordCount,
                 const SizedBox(height: Dimensions.paddingSizeDefault),
                 _Filters(members: data.members, selectedMemberId: selectedMemberId, selectedDate: selectedDate),
               ],
@@ -187,7 +162,7 @@ class _ManageCard extends StatelessWidget {
               _EntryRow(
                 entry: entries[i],
                 memberName: data.memberName(entries[i].memberId),
-                mealRate: data.mealRate,
+                memberPhoto: data.memberPhoto(entries[i].memberId),
                 showMember: selectedMemberId == null,
                 onEdit: busy ? null : () => _edit(context, entries[i]),
                 onDelete: busy ? null : () => _confirmDelete(context, entries[i]),
@@ -302,11 +277,11 @@ class _Filters extends StatelessWidget {
 }
 
 class _EntryRow extends StatelessWidget {
-  const _EntryRow({required this.entry, required this.memberName, required this.mealRate, required this.showMember, required this.onEdit, required this.onDelete});
+  const _EntryRow({required this.entry, required this.memberName, required this.showMember, required this.onEdit, required this.onDelete, this.memberPhoto});
 
   final MemberMealEntity entry;
   final String memberName;
-  final double mealRate;
+  final String? memberPhoto;
   final bool showMember;
 
   /// Null while another action runs, which disables the buttons.
@@ -316,12 +291,17 @@ class _EntryRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
-    final showActionMenu = ResponsiveHelper.isMobile(context) || ResponsiveHelper.isSmallTab(context);
+    final isCompact = ResponsiveHelper.isMobile(context) || ResponsiveHelper.isSmallTab(context);
+    final mealLabel = isCompact ? '${MealFormatters.count(entry.total)} M' : '${MealFormatters.count(entry.total)} meals';
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault),
+      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeDefault),
       child: Row(
         children: [
+          if (showMember) ...[
+            AppUserAvatar(name: memberName, photoUrl: memberPhoto),
+            const SizedBox(width: Dimensions.paddingSizeSmall),
+          ],
           Expanded(
             flex: 4,
             child: Column(
@@ -357,24 +337,12 @@ class _EntryRow extends StatelessWidget {
               ],
             ),
           ),
-          Expanded(
-            flex: 2,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  '${MealFormatters.count(entry.total)} meals',
-                  style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
-                ),
-                Text(
-                  DashboardFormatters.taka(entry.total * mealRate),
-                  style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
-                ),
-              ],
-            ),
+          Text(
+            mealLabel,
+            style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor),
           ),
           // Edit / delete actions.
-          if (showActionMenu)
+          if (isCompact)
             PopupMenuButton<_MealAction>(
               tooltip: context.local.options,
               enabled: onEdit != null,
@@ -399,6 +367,7 @@ class _EntryRow extends StatelessWidget {
               ],
             )
           else ...[
+            const SizedBox(width: Dimensions.paddingSizeDefault),
             IconButton(
               tooltip: context.local.edit,
               visualDensity: VisualDensity.compact,

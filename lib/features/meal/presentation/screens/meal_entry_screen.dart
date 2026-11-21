@@ -23,22 +23,27 @@ import 'package:mess_pilot/features/meal/presentation/bloc/meal_admin_state.dart
 import 'package:mess_pilot/features/meal/presentation/widgets/apply_to_all_card.dart';
 import 'package:mess_pilot/features/meal/presentation/widgets/meal_formatters.dart';
 import 'package:mess_pilot/features/meal/presentation/widgets/member_meal_form_sheet.dart';
+import 'package:mess_pilot/features/poll/presentation/widgets/meal_poll_section.dart';
 
 /// Admin page to add meals for a chosen day: one B/L/D for every member at
 /// once, adjusted per member before saving. Add-only — a day that already has
 /// meals shows an error and is edited from the Manage meals list instead.
 /// Responsive across phone / tablet / desktop.
 class MealEntryScreen extends StatelessWidget {
-  const MealEntryScreen({super.key});
+  const MealEntryScreen({super.key, this.embedded = false});
+
+  final bool embedded;
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<MealAdminBloc>(create: (_) => getIt<MealAdminBloc>()..add(const MealAdminEvent.load()), child: const _MealEntryView());
+    return BlocProvider<MealAdminBloc>(create: (_) => getIt<MealAdminBloc>()..add(const MealAdminEvent.load()), child: _MealEntryView(embedded: embedded));
   }
 }
 
 class _MealEntryView extends StatefulWidget {
-  const _MealEntryView();
+  const _MealEntryView({this.embedded = false});
+
+  final bool embedded;
 
   @override
   State<_MealEntryView> createState() => _MealEntryViewState();
@@ -61,46 +66,58 @@ class _MealEntryViewState extends State<_MealEntryView> {
     }
   }
 
+  void _resetAfterSave() {
+    if (!mounted) return;
+    setState(() {
+      _date = _today();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final showWebAppBar = MainPageBody.showWebAppBar(context);
+    final body = BlocConsumer<MealAdminBloc, MealAdminState>(
+      listener: (context, state) {
+        state.maybeWhen(
+          loaded: (data, _, _, _) {
+            final mutation = data.mutation;
+            if (mutation != null && !identical(_lastMutation, mutation)) {
+              _lastMutation = mutation;
+              context.showSuccessSnackBar(context.local.mealAddedForMembers(mutation.createdCount));
+              if (widget.embedded) {
+                _resetAfterSave();
+                context.read<MealAdminBloc>().add(const MealAdminEvent.refresh());
+              } else if (context.canPop()) {
+                context.pop();
+              }
+            }
+          },
+          error: (message) => context.showErrorSnackBar(message),
+          orElse: () {},
+        );
+      },
+      builder: (context, state) {
+        return state.maybeWhen(
+          loading: () => const Center(child: AppLoader()),
+          error: (message) => _ErrorView(message: message),
+          loaded: (data, _, _, busy) => Stack(
+            children: [
+              _Body(data: data, date: _date, onPickDate: _pickDate, saving: busy),
+              if (busy) const Positioned(top: 0, left: 0, right: 0, child: LinearProgressIndicator(minHeight: 2)),
+            ],
+          ),
+          orElse: () => const Center(child: AppLoader()),
+        );
+      },
+    );
+
+    if (widget.embedded) return body;
+
     return Scaffold(
       endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
       backgroundColor: context.theme.scaffoldBackgroundColor,
       appBar: showWebAppBar ? null : AppBar(title: Text(context.local.addMeal)),
-      body: MainPageBody(
-        title: context.local.addMeal,
-        child: BlocConsumer<MealAdminBloc, MealAdminState>(
-        listener: (context, state) {
-          state.maybeWhen(
-            loaded: (data, _, _, _) {
-              final mutation = data.mutation;
-              if (mutation != null && !identical(_lastMutation, mutation)) {
-                _lastMutation = mutation;
-                context.showSuccessSnackBar(context.local.mealAddedForMembers(mutation.createdCount));
-                // Back to the Manage meals list, which reloads on return.
-                if (context.canPop()) context.pop();
-              }
-            },
-            error: (message) => context.showErrorSnackBar(message),
-            orElse: () {},
-          );
-        },
-        builder: (context, state) {
-          return state.maybeWhen(
-            loading: () => const Center(child: AppLoader()),
-            error: (message) => _ErrorView(message: message),
-            loaded: (data, _, _, busy) => Stack(
-              children: [
-                _Body(data: data, date: _date, onPickDate: _pickDate, saving: busy),
-                if (busy) const Positioned(top: 0, left: 0, right: 0, child: LinearProgressIndicator(minHeight: 2)),
-              ],
-            ),
-            orElse: () => const Center(child: AppLoader()),
-          );
-        },
-      ),
-      ),
+      body: MainPageBody(title: context.local.addMeal, child: body),
     );
   }
 }
@@ -261,6 +278,8 @@ class _BodyState extends State<_Body> {
                         child: _DateSelectorCard(date: widget.date, onTap: widget.onPickDate),
                       ),
                       if (_dayHasMeals) ...[const SizedBox(height: Dimensions.paddingSizeDefault), _AlreadyAddedNotice(message: context.local.mealsAlreadyAdded(MealFormatters.dayLabel(widget.date)))],
+                      const SizedBox(height: Dimensions.paddingSizeDefault),
+                      AnimatedEntrance(child: MealPollSection(date: widget.date)),
                       const SizedBox(height: Dimensions.paddingSizeSmall),
                       if (wide)
                         Row(

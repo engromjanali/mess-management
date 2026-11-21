@@ -8,6 +8,7 @@
             "name": "mess-management",
             "request": "launch",
             "type": "dart",
+            "flutterMode": "debug",
             "program": "lib/main.dart",
             "debugSdkLibraries": false,
             "debugExternalPackageLibraries": false,

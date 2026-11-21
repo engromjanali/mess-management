@@ -29,16 +29,28 @@ class MembershipCubit extends Cubit<MembershipState> {
   final MembershipApiService _service;
 
   Future<void> load() async {
-    emit(const MembershipLoading());
+    final cached = _service.getCachedStatus();
+    if (cached != null) {
+      emit(MembershipLoaded(cached));
+    } else {
+      emit(const MembershipLoading());
+    }
+
     try {
-      emit(MembershipLoaded(await _service.getStatus()));
+      final status = await _service.getStatus();
+      emit(MembershipLoaded(status));
     } catch (e) {
-      emit(MembershipError(_message(e, 'Could not load your mess membership. Please try again.')));
+      if (state is! MembershipLoaded) {
+        emit(MembershipError(_message(e, 'Could not load your mess membership. Please try again.')));
+      }
     }
   }
 
   /// Drops the previous account's memberships from memory.
-  void reset() => emit(const MembershipLoading());
+  void reset() {
+    _service.clearCachedStatus();
+    emit(const MembershipLoading());
+  }
 
   Future<void> switchMembership(MembershipSummaryEntity membership) async {
     await _service.switchMembership(membership);

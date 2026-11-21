@@ -91,10 +91,20 @@ class AppFooter extends StatelessWidget {
           const Divider(height: 1, thickness: 1, color: _dividerColor),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeDefault),
-            child: Text(
-              context.local.uiCopyright(DateTime.now().year),
-              textAlign: TextAlign.center,
-              style: AppTextStyles.sfProRoundedRegular.copyWith(color: _mutedTextColor, fontSize: Dimensions.fontSizeSmall),
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: Dimensions.paddingSizeDefault,
+              runSpacing: Dimensions.paddingSizeExtraSmall,
+              children: [
+                Text(
+                  context.local.uiCopyright(DateTime.now().year),
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.sfProRoundedRegular.copyWith(color: _mutedTextColor, fontSize: Dimensions.fontSizeSmall),
+                ),
+                _FooterBottomLink(label: context.local.privacyPolicy, route: AppRoutes.privacyPolicy),
+                _FooterBottomLink(label: context.local.termsAndConditions, route: AppRoutes.termsAndConditions),
+              ],
             ),
           ),
         ],
@@ -160,6 +170,27 @@ class _FooterSection extends StatelessWidget {
             child: Text(link.label, maxLines: 1, overflow: TextOverflow.ellipsis),
           ),
       ],
+    );
+  }
+}
+
+class _FooterBottomLink extends StatelessWidget {
+  const _FooterBottomLink({required this.label, required this.route});
+
+  final String label;
+  final String route;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: () => context.go(route),
+      style: TextButton.styleFrom(
+        foregroundColor: AppFooter._mutedTextColor,
+        padding: EdgeInsets.zero,
+        minimumSize: Size.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+      child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
     );
   }
 }

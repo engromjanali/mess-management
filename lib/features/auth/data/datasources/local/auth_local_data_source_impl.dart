@@ -1,88 +1,77 @@
+import 'dart:convert';
+import 'package:mess_pilot/core/di/injection.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mess_pilot/features/auth/data/models/user_model.dart';
 import 'package:mess_pilot/features/auth/data/datasources/interfaces/auth_data_source.dart';
 
 /// Local data source implementation for authentication
 ///
-/// This is a placeholder for future local data source implementation.
-/// When implemented, this could handle:
-/// - Caching user data in local storage (Hive, SharedPreferences, SQLite)
-/// - Offline authentication
-/// - Session persistence
-///
-/// To enable this implementation:
-/// 1. Implement the methods below with actual local storage logic
-/// 2. Add @LazySingleton(as: AuthDataSource) annotation (or use Named registration)
-/// 3. Update the repository to inject the correct data source
-/// 4. Run code generation: dart run build_runner build --delete-conflicting-outputs
-///
-/// Note: Currently, AuthRemoteDataSourceImpl is registered as the default AuthDataSource.
-/// To use both remote and local, consider using Named injection like:
-/// @Named('remote') or @Named('local')
+/// Handles caching user data in local storage (SharedPreferences).
 class AuthLocalDataSourceImpl implements AuthDataSource {
   AuthLocalDataSourceImpl();
 
+  static const String _userCacheKey = 'cached_user_profile';
+
+  UserModel? getCachedUser() {
+    try {
+      final jsonStr = getIt<SharedPreferences>().getString(_userCacheKey);
+      if (jsonStr == null || jsonStr.isEmpty) return null;
+      return UserModel.fromJson(jsonDecode(jsonStr) as Map<String, dynamic>);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> saveUser(UserModel user) async {
+    try {
+      await getIt<SharedPreferences>().setString(_userCacheKey, jsonEncode(user.toJson()));
+    } catch (_) {}
+  }
+
+  Future<void> clearUser() async {
+    try {
+      await getIt<SharedPreferences>().remove(_userCacheKey);
+    } catch (_) {}
+  }
+
   @override
   Future<UserModel> login({required String email, required String password}) async {
-    throw UnimplementedError(
-      'Local authentication is not yet implemented. '
-      'This is a placeholder for future local data source functionality.',
-    );
+    throw UnimplementedError('Local login is not supported.');
   }
 
   @override
   Future<UserModel> googleLogin({required String idToken}) async {
-    throw UnimplementedError(
-      'Local Google login is not yet implemented. '
-      'This is a placeholder for future local data source functionality.',
-    );
+    throw UnimplementedError('Local Google login is not supported.');
   }
 
   @override
   Future<UserModel> register({required String fullName, required String email, required String password, String? phone}) async {
-    throw UnimplementedError(
-      'Local registration is not yet implemented. '
-      'This is a placeholder for future local data source functionality.',
-    );
+    throw UnimplementedError('Local registration is not supported.');
   }
 
   @override
   Future<void> forgotPassword({required String email}) async {
-    throw UnimplementedError(
-      'Local forgotPassword is not yet implemented. '
-      'This is a placeholder for future local data source functionality.',
-    );
+    throw UnimplementedError('Local forgotPassword is not supported.');
   }
 
   @override
   Future<void> resetPassword({required String email, required String otp, required String password}) async {
-    throw UnimplementedError(
-      'Local resetPassword is not yet implemented. '
-      'This is a placeholder for future local data source functionality.',
-    );
+    throw UnimplementedError('Local resetPassword is not supported.');
   }
 
   @override
   Future<void> logout() async {
-    throw UnimplementedError(
-      'Local logout is not yet implemented. '
-      'This is a placeholder for future local data source functionality.',
-    );
+    await clearUser();
   }
 
   @override
   Future<UserModel?> getCurrentUser() async {
-    throw UnimplementedError(
-      'Local getCurrentUser is not yet implemented. '
-      'This is a placeholder for future local data source functionality.',
-    );
+    return getCachedUser();
   }
 
   @override
   Future<UserModel> updateProfile({required String fullName, required String email, required String phone, String? address, List<int>? photoBytes, String? photoName, String? password}) async {
-    throw UnimplementedError(
-      'Local updateProfile is not yet implemented. '
-      'This is a placeholder for future local data source functionality.',
-    );
+    throw UnimplementedError('Local updateProfile is not supported.');
   }
 
   @override

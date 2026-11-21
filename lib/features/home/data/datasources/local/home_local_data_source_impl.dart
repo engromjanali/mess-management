@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:mess_pilot/core/di/injection.dart';
 import 'package:mess_pilot/core/errors/exceptions.dart';
 import 'package:injectable/injectable.dart';
 import 'package:dio/dio.dart';
@@ -5,6 +8,7 @@ import 'package:mess_pilot/config/util/app_constants.dart';
 import 'package:mess_pilot/core/network/api_client.dart';
 import 'package:mess_pilot/features/home/data/models/dashboard_model.dart';
 import 'package:mess_pilot/features/home/data/datasources/interfaces/home_data_source.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Live mess, personal and member totals for the selected season.
 @LazySingleton(as: HomeDataSource)
@@ -12,6 +16,25 @@ class HomeLocalDataSourceImpl implements HomeDataSource {
   HomeLocalDataSourceImpl(this._apiClient);
 
   final ApiClient _apiClient;
+  static const String _cacheKey = 'cached_home_dashboard';
+
+  @override
+  DashboardModel? getCachedDashboard() {
+    try {
+      final jsonStr = getIt<SharedPreferences>().getString(_cacheKey);
+      if (jsonStr == null || jsonStr.isEmpty) return null;
+      return DashboardModel.fromJson(jsonDecode(jsonStr) as Map<String, dynamic>);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Future<void> clearCachedDashboard() async {
+    try {
+      await getIt<SharedPreferences>().remove(_cacheKey);
+    } catch (_) {}
+  }
 
   @override
   Future<DashboardModel> getDashboard() async {
@@ -45,7 +68,7 @@ class HomeLocalDataSourceImpl implements HomeDataSource {
     final mealBalance = totalDeposit - bazerCost;
     final totalBalance = mealBalance + fundBalance;
 
-    return DashboardModel(
+    final model = DashboardModel(
       userName: '',
       isManager: const ['manager', 'acting_manager'].contains(json['my_role']),
       isMember: json['is_member'] as bool? ?? true,
@@ -70,5 +93,11 @@ class HomeLocalDataSourceImpl implements HomeDataSource {
       members: members,
       pinnedNotice: pinnedNoticeJson == null ? null : NoticeModel(noticeId: '${pinnedNoticeJson['id']}', title: pinnedNoticeJson['title'] as String, description: pinnedNoticeJson['description'] as String, createdAt: DateTime.parse(pinnedNoticeJson['created_at'] as String).toLocal()),
     );
+
+    try {
+      await getIt<SharedPreferences>().setString(_cacheKey, jsonEncode(model.toJson()));
+    } catch (_) {}
+
+    return model;
   }
 }
