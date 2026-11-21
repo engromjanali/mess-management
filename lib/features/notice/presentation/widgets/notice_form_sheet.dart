@@ -21,21 +21,23 @@ const int _descriptionMaxLength = 2000;
 /// publishes a new notice; otherwise it edits that notice.
 Future<bool?> showNoticeFormSheet({required BuildContext context, required NoticeSubmit onSubmit, NoticeEntity? existing}) {
   return context.showAdaptiveSheet<bool>(
-    child: _NoticeFormSheet(existing: existing, onSubmit: onSubmit),
+    child: NoticeForm(existing: existing, onSubmit: onSubmit),
   );
 }
 
-class _NoticeFormSheet extends StatefulWidget {
-  const _NoticeFormSheet({required this.existing, required this.onSubmit});
+class NoticeForm extends StatefulWidget {
+  const NoticeForm({required this.onSubmit, this.existing, this.embedded = false, this.onSaved, super.key});
 
   final NoticeEntity? existing;
   final NoticeSubmit onSubmit;
+  final bool embedded;
+  final VoidCallback? onSaved;
 
   @override
-  State<_NoticeFormSheet> createState() => _NoticeFormSheetState();
+  State<NoticeForm> createState() => _NoticeFormState();
 }
 
-class _NoticeFormSheetState extends State<_NoticeFormSheet> {
+class _NoticeFormState extends State<NoticeForm> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _titleController;
   late final TextEditingController _descriptionController;
@@ -72,7 +74,14 @@ class _NoticeFormSheetState extends State<_NoticeFormSheet> {
     if (!mounted) return;
 
     if (failure == null) {
-      Navigator.of(context).pop(true);
+      if (widget.embedded) {
+        _titleController.clear();
+        _descriptionController.clear();
+        setState(() => _submitting = false);
+        widget.onSaved?.call();
+      } else {
+        Navigator.of(context).pop(true);
+      }
       return;
     }
     final fieldErrors = failure is ServerFailure ? failure.fieldErrors : const <String, String>{};
@@ -147,27 +156,36 @@ class _NoticeFormSheetState extends State<_NoticeFormSheet> {
             ],
             const SizedBox(height: Dimensions.paddingSizeExtraLarge),
 
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: _submitting ? null : () => Navigator.of(context).pop(),
-                    style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeight)),
-                    child: Text(context.local.cancel, maxLines: 1, overflow: TextOverflow.ellipsis),
+            if (widget.embedded)
+              ElevatedButton(
+                onPressed: _submitting ? null : _submit,
+                style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeight)),
+                child: _submitting
+                    ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                    : Text(_isEdit ? context.local.save : context.local.publish, maxLines: 1, overflow: TextOverflow.ellipsis),
+              )
+            else
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: _submitting ? null : () => Navigator.of(context).pop(),
+                      style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeight)),
+                      child: Text(context.local.cancel, maxLines: 1, overflow: TextOverflow.ellipsis),
+                    ),
                   ),
-                ),
-                const SizedBox(width: Dimensions.paddingSizeDefault),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _submitting ? null : _submit,
-                    style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeight)),
-                    child: _submitting
-                        ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                        : Text(_isEdit ? context.local.save : context.local.publish, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  const SizedBox(width: Dimensions.paddingSizeDefault),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _submitting ? null : _submit,
+                      style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeight)),
+                      child: _submitting
+                          ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                          : Text(_isEdit ? context.local.save : context.local.publish, maxLines: 1, overflow: TextOverflow.ellipsis),
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
           ],
         ),
       ),

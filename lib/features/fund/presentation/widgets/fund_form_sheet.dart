@@ -14,21 +14,23 @@ import 'package:mess_pilot/features/fund/presentation/widgets/fund_formatters.da
 /// credit, negative for a debit.
 Future<void> showFundFormSheet({required BuildContext context, required void Function({required double amount, required DateTime date, String? note}) onSave, FundEntity? existing}) {
   return context.showAdaptiveSheet<void>(
-    child: _FundFormSheet(existing: existing, onSave: onSave),
+    child: FundForm(existing: existing, onSave: onSave),
   );
 }
 
-class _FundFormSheet extends StatefulWidget {
-  const _FundFormSheet({required this.existing, required this.onSave});
+class FundForm extends StatefulWidget {
+  const FundForm({required this.onSave, this.existing, this.embedded = false, this.onSaved, super.key});
 
   final FundEntity? existing;
   final void Function({required double amount, required DateTime date, String? note}) onSave;
+  final bool embedded;
+  final VoidCallback? onSaved;
 
   @override
-  State<_FundFormSheet> createState() => _FundFormSheetState();
+  State<FundForm> createState() => _FundFormState();
 }
 
-class _FundFormSheetState extends State<_FundFormSheet> {
+class _FundFormState extends State<FundForm> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _amountController;
   late final TextEditingController _noteController;
@@ -66,7 +68,17 @@ class _FundFormSheetState extends State<_FundFormSheet> {
     final signed = _type == FundType.debit ? -magnitude : magnitude;
     final note = _noteController.text.trim();
     widget.onSave(amount: signed, date: _date, note: note.isEmpty ? null : note);
-    Navigator.of(context).pop();
+    if (widget.embedded) {
+      _amountController.clear();
+      _noteController.clear();
+      setState(() {
+        _type = FundType.credit;
+        _date = DateTime.now();
+      });
+      widget.onSaved?.call();
+    } else {
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -142,25 +154,32 @@ class _FundFormSheetState extends State<_FundFormSheet> {
           ),
           const SizedBox(height: Dimensions.paddingSizeExtraLarge),
 
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeight)),
-                  child: Text(context.local.cancel),
+          if (widget.embedded)
+            ElevatedButton(
+              onPressed: _submit,
+              style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeight)),
+              child: Text(_isEdit ? context.local.save : context.local.add),
+            )
+          else
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeight)),
+                    child: Text(context.local.cancel),
+                  ),
                 ),
-              ),
-              const SizedBox(width: Dimensions.paddingSizeDefault),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: _submit,
-                  style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeight)),
-                  child: Text(_isEdit ? context.local.save : context.local.add),
+                const SizedBox(width: Dimensions.paddingSizeDefault),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _submit,
+                    style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeight)),
+                    child: Text(_isEdit ? context.local.save : context.local.add),
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
         ],
       ),
     );

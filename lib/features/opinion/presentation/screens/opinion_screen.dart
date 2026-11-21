@@ -219,7 +219,7 @@ class _OpinionScreenState extends State<OpinionScreen> {
       onLoadMoreOpinions: _loadMoreOpinions,
       onLoadMorePeriods: _nextPage == null ? null : () { _pages++; _load(); },
     ));
-    final content = isAdmin && !_loading
+    final content = isAdmin && _canCreate && !_loading
         ? Column(children: [
             Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth), child: Padding(padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, 0), child: SegmentedTabBar<_OpinionPageTab>(tabs: [PillTab(value: _OpinionPageTab.opinions, label: context.local.opinionMessages), PillTab(value: _OpinionPageTab.create, label: context.local.create)], selected: _tab, onChanged: (value) => context.go(value == _OpinionPageTab.create ? AppRoutes.createOpinionPeriod : AppRoutes.opinions))))),
             Expanded(child: _tab == _OpinionPageTab.opinions ? opinionContent : OpinionPeriodFormScreen(embedded: true, onSubmitted: _createPeriodResult)),
@@ -233,7 +233,6 @@ class _OpinionScreenState extends State<OpinionScreen> {
       backgroundColor: context.theme.scaffoldBackgroundColor,
       endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
       appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.shareYourOpinions), actions: [IconButton(tooltip: context.local.refresh, onPressed: _busy || _refreshing ? null : () => _load(), icon: const Icon(Icons.refresh_rounded))]),
-      floatingActionButton: isAdmin && _canCreate && _tab == _OpinionPageTab.opinions ? FloatingActionButton.extended(onPressed: _busy || _refreshing ? null : () => context.go(AppRoutes.createOpinionPeriod), icon: const Icon(Icons.add_rounded), label: Text(context.local.uiOpenPeriod)) : null,
       body: showWebAppBar
           ? Builder(
               builder: (context) => Column(

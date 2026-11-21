@@ -2,6 +2,8 @@ import 'package:mess_pilot/core/widgets/app_state_view.dart';
 import 'package:mess_pilot/core/widgets/app_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mess_pilot/config/route/app_router.dart';
 import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/core/di/injection.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
@@ -11,7 +13,10 @@ import 'package:mess_pilot/core/helpers/responsive_helper.dart';
 import 'package:mess_pilot/core/role/role_cubit.dart';
 import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/core/widgets/app_footer.dart';
+import 'package:mess_pilot/core/widgets/app_page_scroll_view.dart';
 import 'package:mess_pilot/core/widgets/home_back_button.dart';
+import 'package:mess_pilot/core/widgets/pill_tab_bar.dart';
+import 'package:mess_pilot/core/widgets/segmented_tab_bar.dart';
 import 'package:mess_pilot/core/widgets/web_page_title_bar.dart';
 
 import 'package:mess_pilot/features/home/presentation/widgets/animated_entrance.dart';
@@ -36,20 +41,45 @@ import 'package:mess_pilot/features/fund/presentation/widgets/fund_tile.dart';
 ///
 /// Both can browse by date (a single day, a custom range, or all time).
 class FundScreen extends StatelessWidget {
-  const FundScreen({super.key});
+  const FundScreen({this.showAddTab = false, super.key});
+
+  final bool showAddTab;
 
   @override
   Widget build(BuildContext context) {
     final canManage = context.read<RoleCubit>().state.canManage;
     return BlocProvider<FundBloc>(
       create: (_) => getIt<FundBloc>()..add(FundEvent.started(isAdmin: canManage)),
-      child: const _FundView(),
+      child: _FundView(showAddTab: showAddTab),
     );
   }
 }
 
-class _FundView extends StatelessWidget {
-  const _FundView();
+enum _FundTab { funds, add }
+
+class _FundView extends StatefulWidget {
+  const _FundView({required this.showAddTab});
+
+  final bool showAddTab;
+
+  @override
+  State<_FundView> createState() => _FundViewState();
+}
+
+class _FundViewState extends State<_FundView> {
+  late _FundTab _tab;
+
+  @override
+  void initState() {
+    super.initState();
+    _tab = widget.showAddTab ? _FundTab.add : _FundTab.funds;
+  }
+
+  @override
+  void didUpdateWidget(covariant _FundView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.showAddTab != widget.showAddTab) _tab = widget.showAddTab ? _FundTab.add : _FundTab.funds;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,8 +93,33 @@ class _FundView extends StatelessWidget {
         return state.maybeWhen(
           loading: () => const Center(child: AppLoader()),
           error: (message) => _ErrorView(message: message),
-          loaded: (funds, dateFilter, selectedDate, isAdmin, selectedRange, saving) =>
-              _FundBody(funds: funds, dateFilter: dateFilter, selectedDate: selectedDate, isAdmin: isAdmin, selectedRange: selectedRange, saving: saving),
+          loaded: (funds, dateFilter, selectedDate, isAdmin, selectedRange, saving) => isAdmin
+              ? Column(
+                  children: [
+                    Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, 0),
+                          child: SegmentedTabBar<_FundTab>(
+                            tabs: [
+                              PillTab(value: _FundTab.funds, label: context.local.fund),
+                              PillTab(value: _FundTab.add, label: context.local.add),
+                            ],
+                            selected: _tab,
+                            onChanged: (value) => context.go(value == _FundTab.add ? AppRoutes.addFund : AppRoutes.funds),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: _tab == _FundTab.funds
+                          ? _FundBody(funds: funds, dateFilter: dateFilter, selectedDate: selectedDate, isAdmin: isAdmin, selectedRange: selectedRange, saving: saving)
+                          : _AddFundTab(onSaved: _onSaved),
+                    ),
+                  ],
+                )
+              : _FundBody(funds: funds, dateFilter: dateFilter, selectedDate: selectedDate, isAdmin: isAdmin, selectedRange: selectedRange, saving: saving),
           orElse: () => const Center(child: AppLoader()),
         );
       },
@@ -78,23 +133,33 @@ class _FundView extends StatelessWidget {
         backgroundColor: context.theme.scaffoldBackgroundColor,
         endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
         appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.fund)),
-        floatingActionButton: BlocBuilder<FundBloc, FundState>(
-          builder: (context, state) {
-            final canAdd = state.maybeWhen(loaded: (_, _, _, isAdmin, _, _) => isAdmin, orElse: () => false);
-            if (!canAdd) return const SizedBox.shrink();
-            return FloatingActionButton.extended(onPressed: () => _openAdd(context), icon: const Icon(Icons.add_rounded), label: Text(context.local.addFund));
-          },
-        ),
         body: showWebAppBar ? Column(children: [const DashboardTopBar(), WebPageTitleBar(title: context.local.fund), Expanded(child: content)]) : content,
       ),
     );
   }
 
-  void _openAdd(BuildContext context) {
+  void _onSaved() {
+    if (!mounted) return;
+    context.go(AppRoutes.funds);
+  }
+}
+
+class _AddFundTab extends StatelessWidget {
+  const _AddFundTab({required this.onSaved});
+
+  final VoidCallback onSaved;
+
+  @override
+  Widget build(BuildContext context) {
     final bloc = context.read<FundBloc>();
-    showFundFormSheet(
-      context: context,
-      onSave: ({required amount, required date, note}) => bloc.add(FundEvent.add(amount: amount, date: date, note: note)),
+    return AppPageScrollView(
+      padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+      maxWidth: 680,
+      child: FundForm(
+        embedded: true,
+        onSave: ({required amount, required date, note}) => bloc.add(FundEvent.add(amount: amount, date: date, note: note)),
+        onSaved: onSaved,
+      ),
     );
   }
 }

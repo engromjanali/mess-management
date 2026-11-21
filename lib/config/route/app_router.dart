@@ -67,9 +67,11 @@ class AppRoutes {
   static const String depositBreakdown = '/deposits/breakdown';
   static const String addDeposit = '/deposits/add';
   static const String funds = '/funds';
+  static const String addFund = '/funds/add';
   static const String costs = '/costs';
   static const String notifications = '/notifications';
   static const String notices = '/notices';
+  static const String addNotice = '/notices/add';
   static const String noticeDetails = '/notices/:id';
   static String getNoticeDetailsRoute(String id) => '$notices/${Uri.encodeComponent(id)}';
 
@@ -283,12 +285,14 @@ final router = GoRouter(
     GoRoute(path: AppRoutes.mealList, name: 'mealList', builder: (context, state) => const MealListScreen()),
 
     // Fund route (role-aware: managers manage, members view the list)
-    GoRoute(path: AppRoutes.funds, name: 'funds', builder: (context, state) => const FundScreen()),
+    GoRoute(path: AppRoutes.addFund, name: 'addFund', pageBuilder: (context, state) => const NoTransitionPage(key: ValueKey('funds-page'), child: FundScreen(showAddTab: true))),
+    GoRoute(path: AppRoutes.funds, name: 'funds', pageBuilder: (context, state) => const NoTransitionPage(key: ValueKey('funds-page'), child: FundScreen())),
 
     GoRoute(path: AppRoutes.notifications, name: 'notifications', builder: (context, state) => NotificationScreen(noticeId: state.uri.queryParameters['notice_id'])),
 
     // Notice route (role-aware: managers manage, members view the list)
-    GoRoute(path: AppRoutes.notices, name: 'notices', builder: (context, state) => const NoticeScreen(), routes: [
+    GoRoute(path: AppRoutes.addNotice, name: 'addNotice', pageBuilder: (context, state) => const NoTransitionPage(key: ValueKey('notices-page'), child: NoticeScreen(showAddTab: true))),
+    GoRoute(path: AppRoutes.notices, name: 'notices', pageBuilder: (context, state) => const NoTransitionPage(key: ValueKey('notices-page'), child: NoticeScreen()), routes: [
       GoRoute(path: ':id', name: 'noticeDetails', builder: (context, state) => NoticeDetailsScreen(noticeId: state.pathParameters['id'], notice: state.extra is NoticeEntity ? state.extra as NoticeEntity : null)),
     ]),
 

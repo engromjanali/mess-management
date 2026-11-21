@@ -15,7 +15,10 @@ import 'package:mess_pilot/core/helpers/responsive_helper.dart';
 import 'package:mess_pilot/core/role/role_cubit.dart';
 import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/core/widgets/app_footer.dart';
+import 'package:mess_pilot/core/widgets/app_page_scroll_view.dart';
 import 'package:mess_pilot/core/widgets/home_back_button.dart';
+import 'package:mess_pilot/core/widgets/pill_tab_bar.dart';
+import 'package:mess_pilot/core/widgets/segmented_tab_bar.dart';
 import 'package:mess_pilot/core/widgets/web_page_title_bar.dart';
 
 import 'package:mess_pilot/features/home/presentation/widgets/animated_entrance.dart';
@@ -38,20 +41,45 @@ import 'package:mess_pilot/features/notice/presentation/widgets/notice_form_shee
 /// Every action shows progress (the list stays visible and actions are
 /// disabled meanwhile) and ends with a success or a specific error message.
 class NoticeScreen extends StatelessWidget {
-  const NoticeScreen({super.key});
+  const NoticeScreen({this.showAddTab = false, super.key});
+
+  final bool showAddTab;
 
   @override
   Widget build(BuildContext context) {
     final canManage = context.read<RoleCubit>().state.canManage;
     return BlocProvider<NoticeBloc>(
       create: (_) => getIt<NoticeBloc>()..add(NoticeEvent.started(isAdmin: canManage)),
-      child: const _NoticeView(),
+      child: _NoticeView(showAddTab: showAddTab),
     );
   }
 }
 
-class _NoticeView extends StatelessWidget {
-  const _NoticeView();
+enum _NoticeTab { notices, add }
+
+class _NoticeView extends StatefulWidget {
+  const _NoticeView({required this.showAddTab});
+
+  final bool showAddTab;
+
+  @override
+  State<_NoticeView> createState() => _NoticeViewState();
+}
+
+class _NoticeViewState extends State<_NoticeView> {
+  late _NoticeTab _tab;
+
+  @override
+  void initState() {
+    super.initState();
+    _tab = widget.showAddTab ? _NoticeTab.add : _NoticeTab.notices;
+  }
+
+  @override
+  void didUpdateWidget(covariant _NoticeView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.showAddTab != widget.showAddTab) _tab = widget.showAddTab ? _NoticeTab.add : _NoticeTab.notices;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +89,29 @@ class _NoticeView extends StatelessWidget {
       builder: (context, state) {
         return state.maybeWhen(
           error: (message) => _ErrorView(message: message),
-          loaded: (notices, isAdmin, busy) => _NoticeBody(notices: notices, isAdmin: isAdmin, busy: busy),
+          loaded: (notices, isAdmin, busy) => isAdmin
+              ? Column(
+                  children: [
+                    Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, 0),
+                          child: SegmentedTabBar<_NoticeTab>(
+                            tabs: [
+                              PillTab(value: _NoticeTab.notices, label: context.local.notices),
+                              PillTab(value: _NoticeTab.add, label: context.local.add),
+                            ],
+                            selected: _tab,
+                            onChanged: (value) => context.go(value == _NoticeTab.add ? AppRoutes.addNotice : AppRoutes.notices),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(child: _tab == _NoticeTab.notices ? _NoticeBody(notices: notices, isAdmin: isAdmin, busy: busy) : _AddNoticeTab(onSaved: _onSaved)),
+                  ],
+                )
+              : _NoticeBody(notices: notices, isAdmin: isAdmin, busy: busy),
           orElse: () => const Center(child: AppLoader()),
         );
       },
@@ -75,18 +125,6 @@ class _NoticeView extends StatelessWidget {
         backgroundColor: context.theme.scaffoldBackgroundColor,
         endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
         appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.notices)),
-        floatingActionButton: BlocBuilder<NoticeBloc, NoticeState>(
-          builder: (context, state) {
-            final (canAdd, busy) = state.maybeWhen(loaded: (_, isAdmin, busy) => (isAdmin, busy), orElse: () => (false, false));
-            if (!canAdd) return const SizedBox.shrink();
-            return FloatingActionButton.extended(
-              onPressed: busy ? null : () => _openAdd(context),
-              backgroundColor: busy ? context.theme.disabledColor : null,
-              icon: const Icon(Icons.add_rounded),
-              label: Text(context.local.newNotice),
-            );
-          },
-        ),
         body: showWebAppBar
             ? Column(
                 children: [
@@ -100,17 +138,34 @@ class _NoticeView extends StatelessWidget {
     );
   }
 
-  Future<void> _openAdd(BuildContext context) async {
+  void _onSaved() {
+    if (!mounted) return;
+    context.showSuccessSnackBar(context.local.noticePublished);
+    context.go(AppRoutes.notices);
+  }
+}
+
+class _AddNoticeTab extends StatelessWidget {
+  const _AddNoticeTab({required this.onSaved});
+
+  final VoidCallback onSaved;
+
+  @override
+  Widget build(BuildContext context) {
     final bloc = context.read<NoticeBloc>();
-    final saved = await showNoticeFormSheet(
-      context: context,
-      onSubmit: ({required title, required description}) {
-        final done = Completer<Failure?>();
-        bloc.add(NoticeEvent.add(title: title, description: description, done: done));
-        return done.future;
-      },
+    return AppPageScrollView(
+      padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+      maxWidth: 680,
+      child: NoticeForm(
+        embedded: true,
+        onSubmit: ({required title, required description}) {
+          final done = Completer<Failure?>();
+          bloc.add(NoticeEvent.add(title: title, description: description, done: done));
+          return done.future;
+        },
+        onSaved: onSaved,
+      ),
     );
-    if ((saved ?? false) && context.mounted) context.showSuccessSnackBar(context.local.noticePublished);
   }
 }
 
