@@ -5,7 +5,6 @@ import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/dashboard_formatters.dart';
-import 'package:mess_pilot/features/home/presentation/widgets/home_poll_button.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/membership_menu_button.dart';
 import 'package:mess_pilot/features/membership/domain/entities/membership_status_entity.dart';
 
@@ -148,8 +147,6 @@ class _HeaderBackground extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(width: Dimensions.paddingSizeSmall),
-                const HomePollButton(),
               ],
             ),
             if (membership != null || currentSeasonName.isNotEmpty)

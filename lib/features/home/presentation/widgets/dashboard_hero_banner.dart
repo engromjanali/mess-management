@@ -3,7 +3,6 @@ import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/dashboard_formatters.dart';
-import 'package:mess_pilot/features/home/presentation/widgets/home_poll_button.dart';
 
 /// Gradient summary banner for the tablet & desktop dashboards.
 ///
@@ -73,8 +72,6 @@ class DashboardHeroBanner extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: Dimensions.paddingSizeLarge),
-          const HomePollButton(),
         ],
       ),
     );
