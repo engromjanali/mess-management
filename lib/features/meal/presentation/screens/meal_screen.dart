@@ -29,6 +29,7 @@ import 'package:mess_pilot/features/meal/presentation/screens/meal_entry_screen.
 import 'package:mess_pilot/features/meal/presentation/widgets/meal_admin_panel.dart';
 import 'package:mess_pilot/features/meal/presentation/widgets/meal_formatters.dart';
 import 'package:mess_pilot/features/meal/presentation/widgets/meal_history_list.dart';
+import 'package:mess_pilot/features/meal/presentation/widgets/meal_request_tab.dart';
 import 'package:mess_pilot/features/meal/presentation/widgets/meal_today_card.dart';
 import 'package:mess_pilot/features/meal/presentation/widgets/meal_week_chart.dart';
 import 'package:mess_pilot/features/poll/presentation/widgets/meal_poll_section.dart';
@@ -53,7 +54,7 @@ class MealScreen extends StatelessWidget {
   }
 }
 
-enum MealTab { manage, add, mine }
+enum MealTab { manage, add, mine, request }
 
 MealTab _mealTabFromParam(String? value) {
   switch (value) {
@@ -61,6 +62,8 @@ MealTab _mealTabFromParam(String? value) {
       return MealTab.add;
     case 'mine':
       return MealTab.mine;
+    case 'request':
+      return MealTab.request;
     case 'manage':
     default:
       return MealTab.manage;
@@ -97,7 +100,7 @@ class _MealViewState extends State<_MealView> {
   Widget build(BuildContext context) {
     final showWebAppBar = ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context);
     final canManage = context.watch<RoleCubit>().state.canManage;
-    final content = canManage ? _managerContent() : const _MineTab();
+    final content = canManage ? _managerContent() : _memberContent();
 
     return Scaffold(
       backgroundColor: context.theme.scaffoldBackgroundColor,
@@ -120,6 +123,7 @@ class _MealViewState extends State<_MealView> {
       MealTab.manage => AppRoutes.mealsManage,
       MealTab.add => AppRoutes.mealsAdd,
       MealTab.mine => AppRoutes.mealsMine,
+      MealTab.request => AppRoutes.mealsRequest,
     };
     context.go(route);
     // Meals may have changed in Manage/Add meals, so reload dependent views.
@@ -144,6 +148,7 @@ class _MealViewState extends State<_MealView> {
                         PillTab(value: MealTab.manage, label: context.local.manageMeals),
                         PillTab(value: MealTab.add, label: context.local.addMeal),
                         PillTab(value: MealTab.mine, label: context.local.mine),
+                        PillTab(value: MealTab.request, label: context.local.mealRequestTab),
                       ],
                       selected: _tab,
                       onChanged: _selectTab,
@@ -166,8 +171,33 @@ class _MealViewState extends State<_MealView> {
           ),
         ),
         Expanded(
-          child: IndexedStack(index: _tab.index, children: const [_ManageTab(), _AddMealTab(), _MineTab()]),
+          child: IndexedStack(index: _tab.index, children: const [_ManageTab(), _AddMealTab(), _MineTab(), MealRequestTab()]),
         ),
+      ],
+    );
+  }
+
+  Widget _memberContent() {
+    final selected = _tab == MealTab.request ? MealTab.request : MealTab.mine;
+    return Column(
+      children: [
+        Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeExtraLarge),
+              child: SegmentedTabBar<MealTab>(
+                tabs: [
+                  PillTab(value: MealTab.mine, label: context.local.mine),
+                  PillTab(value: MealTab.request, label: context.local.mealRequestTab),
+                ],
+                selected: selected,
+                onChanged: _selectTab,
+              ),
+            ),
+          ),
+        ),
+        Expanded(child: IndexedStack(index: selected == MealTab.request ? 1 : 0, children: const [_MineTab(), MealRequestTab()])),
       ],
     );
   }

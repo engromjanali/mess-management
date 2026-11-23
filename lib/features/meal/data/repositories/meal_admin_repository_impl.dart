@@ -20,6 +20,10 @@ class MealAdminRepositoryImpl implements MealAdminRepository {
   ResultFuture<MealAdminEntity> addMealsForDay({required DateTime date, required List<MemberMealEntity> meals}) => _guard(() => _dataSource.addMealsForDay(date: date, meals: meals));
 
   @override
+  ResultFuture<MealAdminEntity> applyMealRequests({required DateTime date, required List<String> requestIds, required List<MemberMealEntity> meals}) =>
+      _guard(() => _dataSource.applyMealRequests(date: date, requestIds: requestIds, meals: meals));
+
+  @override
   ResultFuture<MealAdminEntity> updateMemberMeal({required String memberId, required DateTime date, required double breakfast, required double lunch, required double dinner}) =>
       _guard(() => _dataSource.updateMemberMeal(memberId: memberId, date: date, breakfast: breakfast, lunch: lunch, dinner: dinner));
 

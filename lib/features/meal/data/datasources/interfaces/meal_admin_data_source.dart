@@ -8,6 +8,9 @@ abstract class MealAdminDataSource {
   /// Adds [meals] on [date] in one action; fails if that day already has meals.
   Future<MealAdminModel> addMealsForDay({required DateTime date, required List<MemberMealEntity> meals});
 
+  /// Applies reviewed requests in one action, updating existing day records.
+  Future<MealAdminModel> applyMealRequests({required DateTime date, required List<String> requestIds, required List<MemberMealEntity> meals});
+
   Future<MealAdminModel> updateMemberMeal({required String memberId, required DateTime date, required double breakfast, required double lunch, required double dinner});
 
   Future<MealAdminModel> deleteMemberMeal({required String memberId, required DateTime date});

@@ -21,6 +21,9 @@ class MealAdminEvent with _$MealAdminEvent {
   /// Add [meals] (one per member) for a day with no meals yet, all or none.
   const factory MealAdminEvent.addForDay({required DateTime date, required List<MemberMealEntity> meals}) = MealAdminAddForDay;
 
+  /// Apply reviewed meal requests, updating existing records where necessary.
+  const factory MealAdminEvent.applyRequests({required DateTime date, required List<String> requestIds, required List<MemberMealEntity> meals}) = MealAdminApplyRequests;
+
   /// Update an existing member's meal for a date.
   const factory MealAdminEvent.update({required String memberId, required DateTime date, required double breakfast, required double lunch, required double dinner}) = MealAdminUpdate;
 

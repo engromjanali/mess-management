@@ -69,6 +69,28 @@ class MealAdminLocalDataSourceImpl implements MealAdminDataSource {
   }
 
   @override
+  Future<MealAdminModel> applyMealRequests({required DateTime date, required List<String> requestIds, required List<MemberMealEntity> meals}) async {
+    var created = 0;
+    var updated = 0;
+    for (final meal in meals) {
+      final index = _indexOf(meal.memberId, date);
+      if (meal.total == 0) {
+        if (index != -1) _entries.removeAt(index);
+        continue;
+      }
+      final model = MemberMealModel(memberId: meal.memberId, date: DateTime(date.year, date.month, date.day), breakfast: meal.breakfast, lunch: meal.lunch, dinner: meal.dinner);
+      if (index == -1) {
+        _entries.add(model);
+        created++;
+      } else {
+        _entries[index] = model;
+        updated++;
+      }
+    }
+    return _payload(mutation: MealMutationModel(action: 'apply_requests', createdCount: created, updatedCount: updated));
+  }
+
+  @override
   Future<MealAdminModel> updateMemberMeal({required String memberId, required DateTime date, required double breakfast, required double lunch, required double dinner}) async {
     final key = DateTime(date.year, date.month, date.day);
     final index = _indexOf(memberId, key);

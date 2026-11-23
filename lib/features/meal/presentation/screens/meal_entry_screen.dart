@@ -17,45 +17,56 @@ import 'package:mess_pilot/core/helpers/responsive_helper.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/animated_entrance.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/section_title.dart';
 import 'package:mess_pilot/features/meal/domain/entities/meal_member_entity.dart';
+import 'package:mess_pilot/features/meal/domain/entities/meal_request_entity.dart';
 import 'package:mess_pilot/features/meal/presentation/bloc/meal_admin_bloc.dart';
 import 'package:mess_pilot/features/meal/presentation/bloc/meal_admin_event.dart';
 import 'package:mess_pilot/features/meal/presentation/bloc/meal_admin_state.dart';
 import 'package:mess_pilot/features/meal/presentation/widgets/apply_to_all_card.dart';
 import 'package:mess_pilot/features/meal/presentation/widgets/meal_formatters.dart';
 import 'package:mess_pilot/features/meal/presentation/widgets/member_meal_form_sheet.dart';
-import 'package:mess_pilot/features/poll/presentation/widgets/meal_poll_section.dart';
 
 /// Admin page to add meals for a chosen day: one B/L/D for every member at
-/// once, adjusted per member before saving. Add-only — a day that already has
-/// meals shows an error and is edited from the Manage meals list instead.
+/// once, adjusted per member before saving. Regular add mode is add-only;
+/// request-review mode preloads member requests and updates that day's entries.
 /// Responsive across phone / tablet / desktop.
 class MealEntryScreen extends StatelessWidget {
-  const MealEntryScreen({super.key, this.embedded = false});
+  const MealEntryScreen({super.key, this.embedded = false, this.initialDate, this.requestPrefill});
 
   final bool embedded;
+  final DateTime? initialDate;
+  final MealRequestApplyDraft? requestPrefill;
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<MealAdminBloc>(create: (_) => getIt<MealAdminBloc>()..add(const MealAdminEvent.load()), child: _MealEntryView(embedded: embedded));
+    return BlocProvider<MealAdminBloc>(create: (_) => getIt<MealAdminBloc>()..add(const MealAdminEvent.load()), child: _MealEntryView(embedded: embedded, initialDate: initialDate, requestPrefill: requestPrefill));
   }
 }
 
 class _MealEntryView extends StatefulWidget {
-  const _MealEntryView({this.embedded = false});
+  const _MealEntryView({this.embedded = false, this.initialDate, this.requestPrefill});
 
   final bool embedded;
+  final DateTime? initialDate;
+  final MealRequestApplyDraft? requestPrefill;
 
   @override
   State<_MealEntryView> createState() => _MealEntryViewState();
 }
 
 class _MealEntryViewState extends State<_MealEntryView> {
-  DateTime _date = _today();
+  late DateTime _date;
   MealMutationEntity? _lastMutation;
 
   static DateTime _today() {
     final n = DateTime.now();
     return DateTime(n.year, n.month, n.day);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final initialDate = widget.requestPrefill?.date ?? widget.initialDate ?? _today();
+    _date = DateTime(initialDate.year, initialDate.month, initialDate.day);
   }
 
   Future<void> _pickDate() async {
@@ -83,12 +94,12 @@ class _MealEntryViewState extends State<_MealEntryView> {
             final mutation = data.mutation;
             if (mutation != null && !identical(_lastMutation, mutation)) {
               _lastMutation = mutation;
-              context.showSuccessSnackBar(context.local.mealAddedForMembers(mutation.createdCount));
+              context.showSuccessSnackBar(mutation.action == 'apply_requests' ? context.local.mealRequestApplied : context.local.mealAddedForMembers(mutation.createdCount));
               if (widget.embedded) {
                 _resetAfterSave();
                 context.read<MealAdminBloc>().add(const MealAdminEvent.refresh());
               } else if (context.canPop()) {
-                context.pop();
+                context.pop(mutation.action == 'apply_requests');
               }
             }
           },
@@ -102,7 +113,7 @@ class _MealEntryViewState extends State<_MealEntryView> {
           error: (message) => _ErrorView(message: message),
           loaded: (data, _, _, busy) => Stack(
             children: [
-              _Body(data: data, date: _date, onPickDate: _pickDate, saving: busy),
+              _Body(data: data, date: _date, onPickDate: _pickDate, saving: busy, requestPrefill: widget.requestPrefill),
               if (busy) const Positioned(top: 0, left: 0, right: 0, child: LinearProgressIndicator(minHeight: 2)),
             ],
           ),
@@ -133,10 +144,11 @@ class _ErrorView extends StatelessWidget {
 }
 
 class _Body extends StatefulWidget {
-  const _Body({required this.data, required this.date, required this.onPickDate, required this.saving});
+  const _Body({required this.data, required this.date, required this.onPickDate, required this.saving, this.requestPrefill});
   final MealAdminEntity data;
   final DateTime date;
   final VoidCallback onPickDate;
+  final MealRequestApplyDraft? requestPrefill;
 
   /// The day's meals are being saved: the form is locked until it finishes.
   final bool saving;
@@ -150,6 +162,14 @@ class _BodyState extends State<_Body> {
   double _lunch = 1;
   double _dinner = 1;
   final Map<String, MemberMealEntity> _drafts = {};
+
+  @override
+  void initState() {
+    super.initState();
+    for (final meal in widget.requestPrefill?.meals ?? const <MemberMealEntity>[]) {
+      _drafts[meal.memberId] = meal;
+    }
+  }
 
   @override
   void didUpdateWidget(covariant _Body oldWidget) {
@@ -175,6 +195,8 @@ class _BodyState extends State<_Body> {
   /// Save is enabled once at least one member has a non-zero draft.
   bool get _hasMealsToSave => _drafts.values.any((meal) => meal.total > 0);
 
+  bool get _canSave => widget.requestPrefill == null ? _hasMealsToSave : _drafts.isNotEmpty;
+
   void _applyToAll(BuildContext context) {
     setState(() {
       for (final member in widget.data.activeMembers) {
@@ -185,6 +207,12 @@ class _BodyState extends State<_Body> {
   }
 
   void _saveAll(BuildContext context) {
+    final requestPrefill = widget.requestPrefill;
+    if (requestPrefill != null) {
+      context.read<MealAdminBloc>().add(MealAdminEvent.applyRequests(date: widget.date, requestIds: requestPrefill.requestIds, meals: _drafts.values.toList()));
+      return;
+    }
+
     if (_dayHasMeals) {
       context.showErrorSnackBar(context.local.mealsAlreadyAdded(MealFormatters.dayLabel(widget.date)));
       return;
@@ -275,11 +303,9 @@ class _BodyState extends State<_Body> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       AnimatedEntrance(
-                        child: _DateSelectorCard(date: widget.date, onTap: widget.onPickDate),
+                        child: _DateSelectorCard(date: widget.date, onTap: widget.requestPrefill == null ? widget.onPickDate : null),
                       ),
-                      if (_dayHasMeals) ...[const SizedBox(height: Dimensions.paddingSizeDefault), _AlreadyAddedNotice(message: context.local.mealsAlreadyAdded(MealFormatters.dayLabel(widget.date)))],
-                      const SizedBox(height: Dimensions.paddingSizeDefault),
-                      AnimatedEntrance(child: MealPollSection(date: widget.date)),
+                      if (_dayHasMeals && widget.requestPrefill == null) ...[const SizedBox(height: Dimensions.paddingSizeDefault), _AlreadyAddedNotice(message: context.local.mealsAlreadyAdded(MealFormatters.dayLabel(widget.date)))],
                       const SizedBox(height: Dimensions.paddingSizeSmall),
                       if (wide)
                         Row(
@@ -306,7 +332,7 @@ class _BodyState extends State<_Body> {
                         membersColumn,
                       ],
                       const SizedBox(height: Dimensions.paddingSizeSmall),
-                      _BottomSaveButton(saving: widget.saving, onSave: _hasMealsToSave ? () => _saveAll(context) : null),
+                      _BottomSaveButton(saving: widget.saving, onSave: _canSave ? () => _saveAll(context) : null, label: widget.requestPrefill == null ? null : context.local.mealRequestApply),
                       SizedBox(height: context.bottomPadding),
                     ],
                   );
@@ -323,9 +349,10 @@ class _BodyState extends State<_Body> {
 }
 
 class _BottomSaveButton extends StatelessWidget {
-  const _BottomSaveButton({required this.saving, required this.onSave});
+  const _BottomSaveButton({required this.saving, required this.onSave, this.label});
   final bool saving;
   final VoidCallback? onSave;
+  final String? label;
 
   @override
   Widget build(BuildContext context) {
@@ -340,7 +367,7 @@ class _BottomSaveButton extends StatelessWidget {
           onPressed: saving ? null : onSave,
           style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge))),
           icon: saving ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.save_rounded),
-          label: Text(context.local.save, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
+           label: Text(label ?? context.local.save, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
         ),
       ),
     );
@@ -382,7 +409,7 @@ class _AlreadyAddedNotice extends StatelessWidget {
 class _DateSelectorCard extends StatelessWidget {
   const _DateSelectorCard({required this.date, required this.onTap});
   final DateTime date;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -428,7 +455,7 @@ class _DateSelectorCard extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: Dimensions.paddingSizeDefault),
-                        FilledButton.icon(onPressed: onTap, icon: const Icon(Icons.edit_calendar_rounded, size: 18), label: Text(context.local.changeDate)),
+                        if (onTap != null) FilledButton.icon(onPressed: onTap, icon: const Icon(Icons.edit_calendar_rounded, size: 18), label: Text(context.local.changeDate)),
                       ],
                     )
                   : Row(
@@ -439,7 +466,7 @@ class _DateSelectorCard extends StatelessWidget {
                           child: _DateText(isToday: isToday, date: date),
                         ),
                         const SizedBox(width: Dimensions.paddingSizeSmall),
-                        FilledButton.icon(onPressed: onTap, icon: const Icon(Icons.edit_calendar_rounded, size: 18), label: Text(context.local.uiChange)),
+                        if (onTap != null) FilledButton.icon(onPressed: onTap, icon: const Icon(Icons.edit_calendar_rounded, size: 18), label: Text(context.local.uiChange)),
                       ],
                     ),
             ),
