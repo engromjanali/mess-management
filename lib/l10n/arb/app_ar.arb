@@ -764,6 +764,7 @@
   "mealRequestClosed": "مغلق",
   "mealRequestEnds": "ينتهي {time}",
   "mealRequestResponded": "{responded} من {total} ردّوا",
+  "mealRequestRespondedCompact": "{responded} من {total}",
   "mealRequestNoneSelected": "لم يتم اختيار شيء بعد",
   "mealRequestSelectMeal": "اختر الوجبة",
   "mealRequestEditSelection": "تعديل",
@@ -783,5 +784,16 @@
   "mealRequestDeleteMessage": "سيؤدي هذا إلى إزالة الطلب وجميع اختيارات الأعضاء. لا يمكن التراجع عن هذا.",
   "mealRequestDeletedMessage": "تم حذف طلب الوجبة.",
   "dateTimePickerTitle": "اختر التاريخ والوقت",
-  "dateTimePickerSubtitle": "اختر التاريخ والوقت المناسبين لك"
+  "dateTimePickerSubtitle": "اختر التاريخ والوقت المناسبين لك",
+  "mealRequestView": "عرض",
+  "mealRequestAddToMeal": "إضافة إلى الوجبة",
+  "mealRequestClose": "إغلاق",
+  "mealRequestCloseTitle": "إغلاق الطلب؟",
+  "mealRequestCloseMessage": "لن يتمكن الأعضاء من إضافة أو تغيير اختياراتهم بعد إغلاق هذا الطلب.",
+  "mealRequestClosedMessage": "تم إغلاق طلب الوجبة.",
+  "mealRequestSelectionsHeading": "اختيارات الوجبات",
+  "mealRequestNoSelections": "لا توجد اختيارات بعد.",
+  "mealRequestTimedOut": "انتهى الوقت",
+  "mealRequestReopen": "إعادة فتح",
+  "mealRequestReopenedMessage": "تم إعادة فتح طلب الوجبة."
 }

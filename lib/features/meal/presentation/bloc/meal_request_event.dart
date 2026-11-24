@@ -46,6 +46,26 @@ final class MealRequestDelete extends MealRequestEvent {
   List<Object?> get props => [id, done];
 }
 
+final class MealRequestClose extends MealRequestEvent {
+  const MealRequestClose({required this.id, this.done});
+
+  final String id;
+  final Completer<Failure?>? done;
+
+  @override
+  List<Object?> get props => [id, done];
+}
+
+final class MealRequestReopen extends MealRequestEvent {
+  const MealRequestReopen({required this.id, this.done});
+
+  final String id;
+  final Completer<Failure?>? done;
+
+  @override
+  List<Object?> get props => [id, done];
+}
+
 final class MealRequestSelect extends MealRequestEvent {
   const MealRequestSelect({required this.id, required this.breakfast, required this.lunch, required this.dinner, this.done});
 

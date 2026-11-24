@@ -1276,6 +1276,8 @@
   "@mealRequestEnds": {"placeholders": {"time": {"type": "String"}}},
   "mealRequestResponded": "{responded} of {total} responded",
   "@mealRequestResponded": {"placeholders": {"responded": {"type": "int"}, "total": {"type": "int"}}},
+  "mealRequestRespondedCompact": "{responded} of {total}",
+  "@mealRequestRespondedCompact": {"placeholders": {"responded": {"type": "int"}, "total": {"type": "int"}}},
   "mealRequestNoneSelected": "No selection yet",
   "mealRequestSelectMeal": "Select meal",
   "mealRequestEditSelection": "Edit",
@@ -1295,5 +1297,16 @@
   "mealRequestDeleteMessage": "This will remove the request and all member selections. This cannot be undone.",
   "mealRequestDeletedMessage": "Meal request deleted.",
   "dateTimePickerTitle": "Select Date & Time",
-  "dateTimePickerSubtitle": "Choose your preferable date & time"
+  "dateTimePickerSubtitle": "Choose your preferable date & time",
+  "mealRequestView": "View",
+  "mealRequestAddToMeal": "Add to meal",
+  "mealRequestClose": "Close",
+  "mealRequestCloseTitle": "Close request?",
+  "mealRequestCloseMessage": "Members can't add or change their selection after you close this request.",
+  "mealRequestClosedMessage": "Meal request closed.",
+  "mealRequestSelectionsHeading": "Meal selections",
+  "mealRequestNoSelections": "No selections yet.",
+  "mealRequestTimedOut": "Timeout",
+  "mealRequestReopen": "Reopen",
+  "mealRequestReopenedMessage": "Meal request reopened."
 }

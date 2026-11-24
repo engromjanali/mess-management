@@ -25,6 +25,12 @@ class MealRequestRepositoryImpl implements MealRequestRepository {
   ResultVoid deleteRequest(String id) => _guard(() => _dataSource.deleteRequest(id));
 
   @override
+  ResultVoid closeRequest(String id) => _guard(() => _dataSource.closeRequest(id));
+
+  @override
+  ResultVoid reopenRequest(String id) => _guard(() => _dataSource.reopenRequest(id));
+
+  @override
   ResultVoid saveSelection({required String id, required double breakfast, required double lunch, required double dinner}) =>
       _guard(() => _dataSource.saveSelection(id: id, breakfast: breakfast, lunch: lunch, dinner: dinner));
 

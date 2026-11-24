@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mess_pilot/config/route/app_router.dart';
 import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/core/di/injection.dart';
@@ -9,17 +11,27 @@ import 'package:mess_pilot/core/errors/failures.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
 import 'package:mess_pilot/core/extensions/overly_extensions.dart';
 import 'package:mess_pilot/core/extensions/screen_matres_extensions.dart';
+import 'package:mess_pilot/core/helpers/responsive_helper.dart';
 import 'package:mess_pilot/core/widgets/app_date_time_picker_sheet.dart';
 import 'package:mess_pilot/core/widgets/app_dialog.dart';
 import 'package:mess_pilot/core/widgets/app_loader.dart';
 import 'package:mess_pilot/core/widgets/app_page_scroll_view.dart';
 import 'package:mess_pilot/core/widgets/app_state_view.dart';
+import 'package:mess_pilot/core/widgets/app_user_avatar.dart';
+import 'package:mess_pilot/features/meal/domain/entities/meal_member_entity.dart';
 import 'package:mess_pilot/features/meal/domain/entities/meal_request_entity.dart';
 import 'package:mess_pilot/features/meal/presentation/bloc/meal_request_bloc.dart';
 import 'package:mess_pilot/features/meal/presentation/bloc/meal_request_event.dart';
 import 'package:mess_pilot/features/meal/presentation/bloc/meal_request_state.dart';
 import 'package:mess_pilot/features/meal/presentation/widgets/meal_formatters.dart';
 import 'package:mess_pilot/features/meal/presentation/widgets/meal_stepper.dart';
+
+/// The display title for a meal request: the meal date formatted into the
+/// default "Please choose your meal for …" template. Not stored — derived.
+String _mealRequestTitle(BuildContext context, DateTime date) {
+  final text = MaterialLocalizations.of(context).formatMediumDate(date);
+  return context.local.mealRequestDefaultTitle(text);
+}
 
 /// Meal requests: managers open a request for a date and members pick the meals
 /// they will have before the deadline.
@@ -110,6 +122,57 @@ class _MealRequestView extends StatelessWidget {
     context.showSuccessSnackBar(total == 0 ? context.local.mealRequestSelectionWithdrawn : context.local.mealRequestSelectionSaved);
   }
 
+  Future<void> _view(BuildContext context, MealRequestEntity request) async {
+    await context.showAdaptiveSheet<void>(child: _MealSelectionsSheet(request: request));
+  }
+
+  Future<void> _addToMeal(BuildContext context, MealRequestEntity request) async {
+    final draft = MealRequestApplyDraft(
+      date: request.date,
+      requestIds: [request.id],
+      meals: [
+        for (final s in request.selections)
+          MemberMealEntity(memberId: s.memberId, date: request.date, breakfast: s.breakfast, lunch: s.lunch, dinner: s.dinner),
+      ],
+    );
+    await context.push(AppRoutes.addMeal, extra: draft);
+  }
+
+  Future<void> _close(BuildContext context, MealRequestEntity request) async {
+    final bloc = context.read<MealRequestBloc>();
+    final confirmed = await showAppConfirmDialog(
+      context,
+      title: context.local.mealRequestCloseTitle,
+      message: context.local.mealRequestCloseMessage,
+      confirmLabel: context.local.mealRequestClose,
+      icon: Icons.lock_outline_rounded,
+    );
+    if (!confirmed || !context.mounted) return;
+
+    final done = Completer<Failure?>();
+    bloc.add(MealRequestClose(id: request.id, done: done));
+    final failure = await done.future;
+    if (!context.mounted) return;
+    if (failure != null) {
+      context.showErrorSnackBar(failure);
+      return;
+    }
+    context.showSuccessSnackBar(context.local.mealRequestClosedMessage);
+  }
+
+  Future<void> _reopen(BuildContext context, MealRequestEntity request) async {
+    final bloc = context.read<MealRequestBloc>();
+    final done = Completer<Failure?>();
+    bloc.add(MealRequestReopen(id: request.id, done: done));
+    final failure = await done.future;
+    if (!context.mounted) return;
+    if (failure != null) {
+      context.showErrorSnackBar(failure);
+      return;
+    }
+    context.showSuccessSnackBar(context.local.mealRequestReopenedMessage);
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<MealRequestBloc, MealRequestState>(
@@ -147,7 +210,11 @@ class _MealRequestView extends StatelessWidget {
                     _RequestCard(
                       request: overview.requests[index],
                       onSelect: overview.requests[index].canRespond ? () => _select(context, overview.requests[index]) : null,
+                      onView: overview.requests[index].canManage ? () => _view(context, overview.requests[index]) : null,
                       onEdit: overview.requests[index].canManage ? () => _edit(context, overview.requests[index]) : null,
+                      onAddToMeal: overview.requests[index].canManage ? () => _addToMeal(context, overview.requests[index]) : null,
+                      onClose: overview.requests[index].canManage ? () => _close(context, overview.requests[index]) : null,
+                      onReopen: overview.requests[index].canManage ? () => _reopen(context, overview.requests[index]) : null,
                       onDelete: overview.requests[index].canManage ? () => _delete(context, overview.requests[index]) : null,
                     ),
                   ],
@@ -238,17 +305,21 @@ class _Header extends StatelessWidget {
 }
 
 class _RequestCard extends StatelessWidget {
-  const _RequestCard({required this.request, required this.onSelect, this.onEdit, this.onDelete});
+  const _RequestCard({required this.request, required this.onSelect, this.onView, this.onEdit, this.onAddToMeal, this.onClose, this.onReopen, this.onDelete});
 
   final MealRequestEntity request;
   final VoidCallback? onSelect;
+  final VoidCallback? onView;
   final VoidCallback? onEdit;
+  final VoidCallback? onAddToMeal;
+  final VoidCallback? onClose;
+  final VoidCallback? onReopen;
   final VoidCallback? onDelete;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
-    final accent = request.isOpen ? colors.successColor : colors.textHintColor;
+    final status = _statusOf(context);
 
     return Container(
       padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
@@ -265,14 +336,14 @@ class _RequestCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  request.title,
+                  _mealRequestTitle(context, request.date),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
                 ),
               ),
               const SizedBox(width: Dimensions.paddingSizeSmall),
-              _StatusChip(open: request.isOpen, accent: accent),
+              _StatusChip(label: status.$1, color: status.$2),
               if (request.canManage)
                 PopupMenuButton<_RequestAction>(
                   tooltip: context.local.mealRequestManage,
@@ -280,10 +351,23 @@ class _RequestCard extends StatelessWidget {
                   iconSize: Dimensions.iconSizeDefault,
                   icon: Icon(Icons.more_vert_rounded, color: colors.textSecondaryColor),
                   onSelected: (action) => switch (action) {
+                    _RequestAction.view => onView?.call(),
                     _RequestAction.edit => onEdit?.call(),
+                    _RequestAction.addToMeal => onAddToMeal?.call(),
+                    _RequestAction.close => onClose?.call(),
+                    _RequestAction.reopen => onReopen?.call(),
                     _RequestAction.delete => onDelete?.call(),
                   },
                   itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: _RequestAction.view,
+                      child: ListTile(
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                        leading: const Icon(Icons.visibility_outlined),
+                        title: Text(context.local.mealRequestView),
+                      ),
+                    ),
                     PopupMenuItem(
                       value: _RequestAction.edit,
                       child: ListTile(
@@ -293,6 +377,36 @@ class _RequestCard extends StatelessWidget {
                         title: Text(context.local.edit),
                       ),
                     ),
+                    if (request.responseCount > 0)
+                      PopupMenuItem(
+                        value: _RequestAction.addToMeal,
+                        child: ListTile(
+                          dense: true,
+                          contentPadding: EdgeInsets.zero,
+                          leading: const Icon(Icons.restaurant_rounded),
+                          title: Text(context.local.mealRequestAddToMeal),
+                        ),
+                      ),
+                    if (request.isOpen)
+                      PopupMenuItem(
+                        value: _RequestAction.close,
+                        child: ListTile(
+                          dense: true,
+                          contentPadding: EdgeInsets.zero,
+                          leading: const Icon(Icons.lock_outline_rounded),
+                          title: Text(context.local.mealRequestClose),
+                        ),
+                      )
+                    else
+                      PopupMenuItem(
+                        value: _RequestAction.reopen,
+                        child: ListTile(
+                          dense: true,
+                          contentPadding: EdgeInsets.zero,
+                          leading: const Icon(Icons.lock_open_rounded),
+                          title: Text(context.local.mealRequestReopen),
+                        ),
+                      ),
                     PopupMenuItem(
                       value: _RequestAction.delete,
                       child: ListTile(
@@ -324,9 +438,9 @@ class _RequestCard extends StatelessWidget {
               style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor, height: 1.4),
             ),
           ],
-          if (request.canManage) ...[
+          if (request.hasSelection) ...[
             const SizedBox(height: Dimensions.paddingSizeSmall),
-            _Totals(counts: request),
+            _MySelectionChips(selection: request.mySelection!),
           ],
           const SizedBox(height: Dimensions.paddingSizeSmall),
           Divider(height: Dimensions.paddingSizeLarge, color: colors.dividerColor.withValues(alpha: 0.3)),
@@ -336,7 +450,7 @@ class _RequestCard extends StatelessWidget {
               const SizedBox(width: Dimensions.paddingSizeExtraSmall),
               Expanded(
                 child: Text(
-                  '${context.local.mealRequestResponded(request.responseCount, request.eligibleMemberCount)} · ${_selectionLabel(context)}',
+                  _footerSummary(context, compact: ResponsiveHelper.isSmallMobile(context)),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
@@ -345,6 +459,7 @@ class _RequestCard extends StatelessWidget {
               const SizedBox(width: Dimensions.paddingSizeSmall),
               if (onSelect != null)
                 FilledButton.tonalIcon(
+                  style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault)),
                   onPressed: onSelect,
                   icon: Icon(request.hasSelection ? Icons.edit_rounded : Icons.check_circle_outline_rounded, size: Dimensions.iconSizeSmall),
                   label: Text(request.hasSelection ? context.local.mealRequestEditSelection : context.local.mealRequestSelectMeal),
@@ -358,21 +473,29 @@ class _RequestCard extends StatelessWidget {
     );
   }
 
-  String _selectionLabel(BuildContext context) {
-    final selection = request.mySelection;
-    if (selection == null || selection.isEmpty) return context.local.mealRequestNoneSelected;
+  String _footerSummary(BuildContext context, {required bool compact}) {
+    final responded = compact
+        ? context.local.mealRequestRespondedCompact(request.responseCount, request.eligibleMemberCount)
+        : context.local.mealRequestResponded(request.responseCount, request.eligibleMemberCount);
     final local = context.local;
-    final b = MealFormatters.count(selection.breakfast);
-    final l = MealFormatters.count(selection.lunch);
-    final d = MealFormatters.count(selection.dinner);
-    return '${local.uiB} $b · ${local.uiL} $l · ${local.uiD} $d';
+    final b = MealFormatters.count(request.breakfastTotal);
+    final l = MealFormatters.count(request.lunchTotal);
+    final d = MealFormatters.count(request.dinnerTotal);
+    return '$responded | ${local.uiB} $b · ${local.uiL} $l · ${local.uiD} $d';
+  }
+
+  (String, Color) _statusOf(BuildContext context) {
+    final colors = context.customThemeColors;
+    if (request.closedAt != null) return (context.local.mealRequestClosed, colors.textHintColor);
+    if (!request.isOpen) return (context.local.mealRequestTimedOut, colors.warningColor);
+    return (context.local.mealRequestOpen, colors.successColor);
   }
 }
 
-class _Totals extends StatelessWidget {
-  const _Totals({required this.counts});
+class _MySelectionChips extends StatelessWidget {
+  const _MySelectionChips({required this.selection});
 
-  final MealRequestEntity counts;
+  final MealSelectionEntity selection;
 
   @override
   Widget build(BuildContext context) {
@@ -382,29 +505,27 @@ class _Totals extends StatelessWidget {
       spacing: Dimensions.paddingSizeSmall,
       runSpacing: Dimensions.paddingSizeExtraSmall,
       children: [
-        _MetaChip(icon: Icons.free_breakfast_rounded, label: '${local.uiB} ${MealFormatters.count(counts.breakfastTotal)}', color: colors.warningColor),
-        _MetaChip(icon: Icons.lunch_dining_rounded, label: '${local.uiL} ${MealFormatters.count(counts.lunchTotal)}', color: colors.primaryColor),
-        _MetaChip(icon: Icons.dinner_dining_rounded, label: '${local.uiD} ${MealFormatters.count(counts.dinnerTotal)}', color: colors.infoColor),
+        _MetaChip(icon: Icons.free_breakfast_rounded, label: '${local.uiB} ${MealFormatters.count(selection.breakfast)}', color: colors.warningColor),
+        _MetaChip(icon: Icons.lunch_dining_rounded, label: '${local.uiL} ${MealFormatters.count(selection.lunch)}', color: colors.primaryColor),
+        _MetaChip(icon: Icons.dinner_dining_rounded, label: '${local.uiD} ${MealFormatters.count(selection.dinner)}', color: colors.infoColor),
       ],
     );
   }
 }
 
 class _StatusChip extends StatelessWidget {
-  const _StatusChip({required this.open, required this.accent});
+  const _StatusChip({required this.label, required this.color});
 
-  final bool open;
-  final Color accent;
+  final String label;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.customThemeColors;
-    final color = open ? accent : colors.textHintColor;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: 4),
       decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(Dimensions.radiusLarge)),
       child: Text(
-        open ? context.local.mealRequestOpen : context.local.mealRequestClosed,
+        label,
         style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: color),
       ),
     );
@@ -451,12 +572,10 @@ class _MealRequestForm extends StatefulWidget {
 
 class _MealRequestFormState extends State<_MealRequestForm> {
   final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
 
   late DateTime _date;
   TimeOfDay _endTime = const TimeOfDay(hour: 6, minute: 0);
-  String _autoTitle = '';
   String? _error;
   bool _initialized = false;
 
@@ -469,27 +588,18 @@ class _MealRequestFormState extends State<_MealRequestForm> {
     if (initial != null) {
       _date = DateTime(initial.date.year, initial.date.month, initial.date.day);
       _endTime = TimeOfDay.fromDateTime(initial.endAt);
-      _titleController.text = initial.title;
       _descriptionController.text = initial.description;
       return;
     }
     final now = DateTime.now();
     final tomorrow = now.add(const Duration(days: 1));
     _date = DateTime(tomorrow.year, tomorrow.month, tomorrow.day);
-    _autoTitle = _defaultTitle(context, _date);
-    _titleController.text = _autoTitle;
   }
 
   @override
   void dispose() {
-    _titleController.dispose();
     _descriptionController.dispose();
     super.dispose();
-  }
-
-  String _defaultTitle(BuildContext context, DateTime date) {
-    final text = MaterialLocalizations.of(context).formatMediumDate(date);
-    return context.local.mealRequestDefaultTitle(text);
   }
 
   DateTime get _endAt => DateTime(_date.year, _date.month, _date.day, _endTime.hour, _endTime.minute);
@@ -507,11 +617,6 @@ class _MealRequestFormState extends State<_MealRequestForm> {
     if (picked == null) return;
     setState(() {
       _date = DateTime(picked.year, picked.month, picked.day);
-      final next = _defaultTitle(context, _date);
-      if (_titleController.text.trim().isEmpty || _titleController.text == _autoTitle) {
-        _titleController.text = next;
-      }
-      _autoTitle = next;
     });
   }
 
@@ -529,11 +634,6 @@ class _MealRequestFormState extends State<_MealRequestForm> {
     setState(() {
       _date = DateTime(picked.year, picked.month, picked.day);
       _endTime = TimeOfDay(hour: picked.hour, minute: picked.minute);
-      final next = _defaultTitle(context, _date);
-      if (_titleController.text.trim().isEmpty || _titleController.text == _autoTitle) {
-        _titleController.text = next;
-      }
-      _autoTitle = next;
     });
   }
 
@@ -548,7 +648,6 @@ class _MealRequestFormState extends State<_MealRequestForm> {
     Navigator.of(context).pop(
       MealRequestDraft(
         date: _date,
-        title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
         endAt: endAt,
       ),
@@ -574,15 +673,6 @@ class _MealRequestFormState extends State<_MealRequestForm> {
           _Label(context.local.mealRequestFormDate),
           _PickerField(icon: Icons.event_rounded, label: MealFormatters.dayLabel(_date), onTap: _pickDate),
           const SizedBox(height: Dimensions.paddingSizeLarge),
-          _Label(context.local.mealRequestFormTitle),
-          TextFormField(
-            controller: _titleController,
-            maxLength: 150,
-            textCapitalization: TextCapitalization.sentences,
-            decoration: _decoration(context),
-            validator: (value) => (value ?? '').trim().isEmpty ? context.local.mealRequestFormTitleRequired : null,
-          ),
-          const SizedBox(height: Dimensions.paddingSizeSmall),
           _Label(context.local.mealRequestFormEndTime),
           _PickerField(icon: Icons.schedule_rounded, label: endLabel, onTap: _pickEndAt),
           const SizedBox(height: Dimensions.paddingSizeLarge),
@@ -666,11 +756,26 @@ class _MealSelectionSheetState extends State<_MealSelectionSheet> {
         Text(context.local.mealRequestSelectionHeading, style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor)),
         const SizedBox(height: 4),
         Text(
-          '${widget.request.title} · ${MealFormatters.dayLabel(widget.request.date)}',
+          _mealRequestTitle(context, widget.request.date),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
           style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
         ),
+        if (widget.request.description.trim().isNotEmpty) ...[
+          const SizedBox(height: Dimensions.paddingSizeDefault),
+          Container(
+            padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+            decoration: BoxDecoration(
+              color: colors.surfaceColor,
+              borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+              border: Border.all(color: colors.borderColor.withValues(alpha: 0.6)),
+            ),
+            child: Text(
+              widget.request.description,
+              style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor, height: 1.4),
+            ),
+          ),
+        ],
         const SizedBox(height: Dimensions.paddingSizeLarge),
         _SelectionRow(icon: Icons.free_breakfast_rounded, label: context.local.uiBreakfast, accent: colors.warningColor, value: _breakfast, onChanged: (value) => setState(() => _breakfast = value)),
         const Divider(height: Dimensions.paddingSizeLarge),
@@ -782,7 +887,97 @@ class _PickerField extends StatelessWidget {
   }
 }
 
-enum _RequestAction { edit, delete }
+enum _RequestAction { view, edit, addToMeal, close, reopen, delete }
+
+class _MealSelectionsSheet extends StatelessWidget {
+  const _MealSelectionsSheet({required this.request});
+
+  final MealRequestEntity request;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+    final local = context.local;
+    final selections = request.selections;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(local.mealRequestSelectionsHeading, style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor)),
+        const SizedBox(height: 4),
+        Text(
+          '${_mealRequestTitle(context, request.date)} · ${local.mealRequestResponded(request.responseCount, request.eligibleMemberCount)}',
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textSecondaryColor),
+        ),
+        const SizedBox(height: Dimensions.paddingSizeLarge),
+        if (selections.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeLarge),
+            child: Text(local.mealRequestNoSelections, textAlign: TextAlign.center, style: AppTextStyles.sfProRoundedRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textHintColor)),
+          )
+        else
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 320),
+            child: ListView.separated(
+              shrinkWrap: true,
+              itemCount: selections.length,
+              separatorBuilder: (_, _) => Divider(height: 1, color: colors.dividerColor.withValues(alpha: 0.3)),
+              itemBuilder: (context, index) => _SelectionItemRow(item: selections[index]),
+            ),
+          ),
+        const SizedBox(height: Dimensions.paddingSizeLarge),
+        OutlinedButton(
+          onPressed: () => Navigator.of(context).pop(),
+          style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(Dimensions.buttonHeight)),
+          child: Text(local.done),
+        ),
+      ],
+    );
+  }
+}
+
+class _SelectionItemRow extends StatelessWidget {
+  const _SelectionItemRow({required this.item});
+
+  final MealRequestSelectionItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.customThemeColors;
+    final local = context.local;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
+      child: Row(
+        children: [
+          AppUserAvatar(name: item.memberName, photoUrl: item.memberPhoto),
+          const SizedBox(width: Dimensions.paddingSizeSmall),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(item.memberName, maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTextStyles.sfProRoundedSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: colors.textPrimaryColor)),
+                const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                Wrap(
+                  spacing: Dimensions.paddingSizeExtraSmall,
+                  runSpacing: Dimensions.paddingSizeExtraSmall,
+                  children: [
+                    _MetaChip(icon: Icons.free_breakfast_rounded, label: '${local.uiB} ${MealFormatters.count(item.breakfast)}', color: colors.warningColor),
+                    _MetaChip(icon: Icons.lunch_dining_rounded, label: '${local.uiL} ${MealFormatters.count(item.lunch)}', color: colors.primaryColor),
+                    _MetaChip(icon: Icons.dinner_dining_rounded, label: '${local.uiD} ${MealFormatters.count(item.dinner)}', color: colors.infoColor),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class _Label extends StatelessWidget {
   const _Label(this.text);

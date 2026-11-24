@@ -10,5 +10,9 @@ abstract class MealRequestDataSource {
 
   Future<void> deleteRequest(String id);
 
+  Future<void> closeRequest(String id);
+
+  Future<void> reopenRequest(String id);
+
   Future<void> saveSelection({required String id, required double breakfast, required double lunch, required double dinner});
 }

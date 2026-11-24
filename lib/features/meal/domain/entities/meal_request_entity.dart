@@ -17,12 +17,35 @@ class MealSelectionEntity extends Equatable {
   List<Object?> get props => [breakfast, lunch, dinner];
 }
 
+/// One member's selection on a meal request, as seen by the manager.
+class MealRequestSelectionItem extends Equatable {
+  const MealRequestSelectionItem({
+    required this.memberId,
+    required this.memberName,
+    required this.breakfast,
+    required this.lunch,
+    required this.dinner,
+    this.memberPhoto,
+  });
+
+  final String memberId;
+  final String memberName;
+  final String? memberPhoto;
+  final double breakfast;
+  final double lunch;
+  final double dinner;
+
+  double get total => breakfast + lunch + dinner;
+
+  @override
+  List<Object?> get props => [memberId, memberName, memberPhoto, breakfast, lunch, dinner];
+}
+
 /// A meal request the manager opened for a date; members respond before [endAt].
 class MealRequestEntity extends Equatable {
   const MealRequestEntity({
     required this.id,
     required this.date,
-    required this.title,
     required this.description,
     required this.endAt,
     required this.isOpen,
@@ -33,14 +56,16 @@ class MealRequestEntity extends Equatable {
     required this.breakfastTotal,
     required this.lunchTotal,
     required this.dinnerTotal,
+    this.closedAt,
     this.mySelection,
+    this.selections = const [],
   });
 
   final String id;
   final DateTime date;
-  final String title;
   final String description;
   final DateTime endAt;
+  final DateTime? closedAt;
   final bool isOpen;
   final bool canRespond;
   final bool canManage;
@@ -50,6 +75,7 @@ class MealRequestEntity extends Equatable {
   final double lunchTotal;
   final double dinnerTotal;
   final MealSelectionEntity? mySelection;
+  final List<MealRequestSelectionItem> selections;
 
   bool get hasSelection => mySelection != null && !mySelection!.isEmpty;
 
@@ -57,9 +83,9 @@ class MealRequestEntity extends Equatable {
   List<Object?> get props => [
         id,
         date,
-        title,
         description,
         endAt,
+        closedAt,
         isOpen,
         canRespond,
         canManage,
@@ -69,6 +95,7 @@ class MealRequestEntity extends Equatable {
         lunchTotal,
         dinnerTotal,
         mySelection,
+        selections,
       ];
 }
 
@@ -84,15 +111,14 @@ class MealRequestOverviewEntity extends Equatable {
 
 /// Values needed to create a meal request.
 class MealRequestDraft extends Equatable {
-  const MealRequestDraft({required this.date, required this.title, required this.description, required this.endAt});
+  const MealRequestDraft({required this.date, required this.description, required this.endAt});
 
   final DateTime date;
-  final String title;
   final String description;
   final DateTime endAt;
 
   @override
-  List<Object?> get props => [date, title, description, endAt];
+  List<Object?> get props => [date, description, endAt];
 }
 
 /// Legacy payload used when reviewing meal requests as meal entries.

@@ -764,6 +764,7 @@
   "mealRequestClosed": "বন্ধ",
   "mealRequestEnds": "শেষ {time}",
   "mealRequestResponded": "{total} জনের মধ্যে {responded} জন উত্তর দিয়েছেন",
+  "mealRequestRespondedCompact": "{total} জনের মধ্যে {responded} জন",
   "mealRequestNoneSelected": "এখনো কিছু নির্বাচন করা হয়নি",
   "mealRequestSelectMeal": "খাবার নির্বাচন করুন",
   "mealRequestEditSelection": "সম্পাদনা",
@@ -783,5 +784,16 @@
   "mealRequestDeleteMessage": "এটি অনুরোধটি এবং সকল সদস্যের নির্বাচন মুছে ফেলবে। এটি আর ফেরানো যাবে না।",
   "mealRequestDeletedMessage": "মিলের অনুরোধ মুছে ফেলা হয়েছে।",
   "dateTimePickerTitle": "তারিখ ও সময় নির্বাচন করুন",
-  "dateTimePickerSubtitle": "আপনার পছন্দের তারিখ ও সময় বেছে নিন"
+  "dateTimePickerSubtitle": "আপনার পছন্দের তারিখ ও সময় বেছে নিন",
+  "mealRequestView": "দেখুন",
+  "mealRequestAddToMeal": "মিলে যোগ করুন",
+  "mealRequestClose": "বন্ধ করুন",
+  "mealRequestCloseTitle": "অনুরোধ বন্ধ করবেন?",
+  "mealRequestCloseMessage": "অনুরোধ বন্ধ করলে সদস্যরা আর নির্বাচন যোগ বা পরিবর্তন করতে পারবেন না।",
+  "mealRequestClosedMessage": "মিলের অনুরোধ বন্ধ করা হয়েছে।",
+  "mealRequestSelectionsHeading": "মিল নির্বাচনসমূহ",
+  "mealRequestNoSelections": "এখনো কোনো নির্বাচন নেই।",
+  "mealRequestTimedOut": "সময় শেষ",
+  "mealRequestReopen": "পুনরায় খুলুন",
+  "mealRequestReopenedMessage": "মিলের অনুরোধ পুনরায় খোলা হয়েছে।"
 }

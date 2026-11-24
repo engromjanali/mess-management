@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mess_pilot/config/theme/custom_theme_colors.dart';
 import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
@@ -206,11 +207,28 @@ class _Header extends StatelessWidget {
 }
 
 class _CalendarCard extends StatelessWidget {
-  const _CalendarCard({required this.month, required this.selectedDate, required this.isDisabled, required this.onPrevMonth, required this.onNextMonth, required this.onDateSelected});
+  const _CalendarCard({
+    required this.month,
+    required this.selectedDate,
+    required this.isDisabled,
+    required this.yearPickerOpen,
+    required this.firstYear,
+    required this.lastYear,
+    required this.onToggleYearPicker,
+    required this.onYearSelected,
+    required this.onPrevMonth,
+    required this.onNextMonth,
+    required this.onDateSelected,
+  });
 
   final DateTime month;
   final DateTime selectedDate;
   final bool Function(DateTime) isDisabled;
+  final bool yearPickerOpen;
+  final int firstYear;
+  final int lastYear;
+  final VoidCallback onToggleYearPicker;
+  final void Function(int) onYearSelected;
   final VoidCallback onPrevMonth;
   final VoidCallback onNextMonth;
   final void Function(DateTime) onDateSelected;
@@ -218,10 +236,6 @@ class _CalendarCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
-    final localizations = MaterialLocalizations.of(context);
-    final days = _calendarDays(month);
-    // narrowWeekdays starts with Sunday; the grid starts with Monday.
-    final headers = List.generate(7, (i) => localizations.narrowWeekdays[(i + 1) % 7]);
 
     return Container(
       padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
@@ -229,20 +243,92 @@ class _CalendarCard extends StatelessWidget {
         border: Border.all(color: colors.borderColor.withValues(alpha: 0.6)),
         borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
       ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
+      child: yearPickerOpen ? _buildYearPicker(colors) : _buildCalendar(context, colors),
+    );
+  }
+
+  Widget _buildYearPicker(CustomThemeColors colors) {
+    final selectedYear = selectedDate.year;
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            GestureDetector(
+              onTap: onToggleYearPicker,
+              behavior: HitTestBehavior.opaque,
+              child: Padding(
+                padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
+                child: Icon(Icons.arrow_back_ios_rounded, size: 14, color: colors.textHintColor),
+              ),
+            ),
+            Expanded(
+              child: Text(
+                '$firstYear - $lastYear',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textPrimaryColor),
+              ),
+            ),
+            const SizedBox(width: 22),
+          ],
+        ),
+        const SizedBox(height: Dimensions.paddingSizeDefault),
+        Wrap(
+          spacing: Dimensions.paddingSizeSmall,
+          runSpacing: Dimensions.paddingSizeSmall,
+          children: [
+            for (var year = lastYear; year >= firstYear; year--)
               GestureDetector(
-                onTap: onPrevMonth,
-                behavior: HitTestBehavior.opaque,
-                child: Padding(
-                  padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
-                  child: Icon(Icons.arrow_back_ios_rounded, size: 14, color: colors.textHintColor),
+                onTap: () => onYearSelected(year),
+                child: Container(
+                  width: 56,
+                  height: 34,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: year == selectedYear ? colors.primaryColor : null,
+                    borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                  ),
+                  child: Text(
+                    '$year',
+                    style: AppTextStyles.sfProRoundedRegular.copyWith(
+                      fontSize: Dimensions.fontSizeSmall,
+                      fontWeight: year == selectedYear ? FontWeight.w600 : FontWeight.w400,
+                      color: year == selectedYear ? Colors.white : colors.textPrimaryColor,
+                    ),
+                  ),
                 ),
               ),
-              Expanded(
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCalendar(BuildContext context, CustomThemeColors colors) {
+    final localizations = MaterialLocalizations.of(context);
+    final days = _calendarDays(month);
+    // narrowWeekdays starts with Sunday; the grid starts with Monday.
+    final headers = List.generate(7, (i) => localizations.narrowWeekdays[(i + 1) % 7]);
+
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            GestureDetector(
+              onTap: onPrevMonth,
+              behavior: HitTestBehavior.opaque,
+              child: Padding(
+                padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
+                child: Icon(Icons.arrow_back_ios_rounded, size: 14, color: colors.textHintColor),
+              ),
+            ),
+            Expanded(
+              child: GestureDetector(
+                onTap: onToggleYearPicker,
+                behavior: HitTestBehavior.opaque,
                 child: Text(
                   localizations.formatMonthYear(month),
                   maxLines: 1,
@@ -251,72 +337,72 @@ class _CalendarCard extends StatelessWidget {
                   style: AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textPrimaryColor),
                 ),
               ),
-              GestureDetector(
-                onTap: onNextMonth,
-                behavior: HitTestBehavior.opaque,
-                child: Padding(
-                  padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
-                  child: Icon(Icons.arrow_forward_ios_rounded, size: 14, color: colors.textHintColor),
+            ),
+            GestureDetector(
+              onTap: onNextMonth,
+              behavior: HitTestBehavior.opaque,
+              child: Padding(
+                padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
+                child: Icon(Icons.arrow_forward_ios_rounded, size: 14, color: colors.textHintColor),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: Dimensions.paddingSizeDefault),
+        Row(
+          children: [
+            for (final day in headers)
+              Expanded(
+                child: Center(
+                  child: Text(day, style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textHintColor)),
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: Dimensions.paddingSizeDefault),
-          Row(
-            children: [
-              for (final day in headers)
-                Expanded(
-                  child: Center(
-                    child: Text(day, style: AppTextStyles.sfProRoundedMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: colors.textHintColor)),
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: Dimensions.paddingSizeSmall),
-          for (int row = 0; row < days.length ~/ 7; row++)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 2),
-              child: Row(
-                children: List.generate(7, (col) {
-                  final date = days[row * 7 + col];
-                  final disabled = isDisabled(date);
-                  final selected = DateUtils.isSameDay(date, selectedDate);
+          ],
+        ),
+        const SizedBox(height: Dimensions.paddingSizeSmall),
+        for (int row = 0; row < days.length ~/ 7; row++)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            child: Row(
+              children: List.generate(7, (col) {
+                final date = days[row * 7 + col];
+                final disabled = isDisabled(date);
+                final selected = DateUtils.isSameDay(date, selectedDate);
 
-                  BoxDecoration? decoration;
-                  if (selected) {
-                    decoration = BoxDecoration(color: colors.primaryColor, borderRadius: BorderRadius.circular(Dimensions.radiusDefault));
-                  } else if (disabled) {
-                    decoration = BoxDecoration(color: colors.textHintColor.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(Dimensions.radiusDefault));
-                  }
+                BoxDecoration? decoration;
+                if (selected) {
+                  decoration = BoxDecoration(color: colors.primaryColor, borderRadius: BorderRadius.circular(Dimensions.radiusDefault));
+                } else if (disabled) {
+                  decoration = BoxDecoration(color: colors.textHintColor.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(Dimensions.radiusDefault));
+                }
 
-                  return Expanded(
-                    child: GestureDetector(
-                      // An undecorated cell only hit-tests its digits, so taps around the number were lost.
-                      behavior: HitTestBehavior.opaque,
-                      onTap: disabled ? null : () => onDateSelected(date),
-                      child: Center(
-                        child: Container(
-                          width: 34,
-                          height: 34,
-                          alignment: Alignment.center,
-                          decoration: decoration,
-                          child: Text(
-                            '${date.day}',
-                            style: AppTextStyles.sfProRoundedRegular.copyWith(
-                              fontSize: Dimensions.fontSizeSmall,
-                              fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-                              color: selected ? Colors.white : disabled ? colors.textHintColor : colors.textPrimaryColor,
-                            ),
+                return Expanded(
+                  child: GestureDetector(
+                    // An undecorated cell only hit-tests its digits, so taps around the number were lost.
+                    behavior: HitTestBehavior.opaque,
+                    onTap: disabled ? null : () => onDateSelected(date),
+                    child: Center(
+                      child: Container(
+                        width: 34,
+                        height: 34,
+                        alignment: Alignment.center,
+                        decoration: decoration,
+                        child: Text(
+                          '${date.day}',
+                          style: AppTextStyles.sfProRoundedRegular.copyWith(
+                            fontSize: Dimensions.fontSizeSmall,
+                            fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                            color: selected ? Colors.white : disabled ? colors.textHintColor : colors.textPrimaryColor,
                           ),
                         ),
                       ),
                     ),
-                  );
-                }),
-              ),
+                  ),
+                );
+              }),
             ),
-        ],
-      ),
+          ),
+      ],
     );
   }
 }

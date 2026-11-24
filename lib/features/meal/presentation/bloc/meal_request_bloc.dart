@@ -16,6 +16,8 @@ class MealRequestBloc extends Bloc<MealRequestEvent, MealRequestState> {
     on<MealRequestCreate>(_create);
     on<MealRequestUpdate>(_update);
     on<MealRequestDelete>(_delete);
+    on<MealRequestClose>(_close);
+    on<MealRequestReopen>(_reopen);
     on<MealRequestSelect>(_select);
   }
 
@@ -45,6 +47,14 @@ class MealRequestBloc extends Bloc<MealRequestEvent, MealRequestState> {
 
   Future<void> _delete(MealRequestDelete event, Emitter<MealRequestState> emit) async {
     await _run(emit, event.done, () => _repository.deleteRequest(event.id));
+  }
+
+  Future<void> _close(MealRequestClose event, Emitter<MealRequestState> emit) async {
+    await _run(emit, event.done, () => _repository.closeRequest(event.id));
+  }
+
+  Future<void> _reopen(MealRequestReopen event, Emitter<MealRequestState> emit) async {
+    await _run(emit, event.done, () => _repository.reopenRequest(event.id));
   }
 
   Future<void> _select(MealRequestSelect event, Emitter<MealRequestState> emit) async {

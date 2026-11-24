@@ -10,5 +10,9 @@ abstract class MealRequestRepository {
 
   ResultVoid deleteRequest(String id);
 
+  ResultVoid closeRequest(String id);
+
+  ResultVoid reopenRequest(String id);
+
   ResultVoid saveSelection({required String id, required double breakfast, required double lunch, required double dinner});
 }

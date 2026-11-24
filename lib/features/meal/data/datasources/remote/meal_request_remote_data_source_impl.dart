@@ -26,7 +26,6 @@ class MealRequestRemoteDataSourceImpl implements MealRequestDataSource {
       AppConstants.adminMealRequestsEndpoint,
       data: {
         'date': _date(draft.date),
-        'title': draft.title,
         'description': draft.description,
         'end_at': draft.endAt.toIso8601String(),
       },
@@ -40,7 +39,6 @@ class MealRequestRemoteDataSourceImpl implements MealRequestDataSource {
       '${AppConstants.adminMealRequestsEndpoint}/$id',
       data: {
         'date': _date(draft.date),
-        'title': draft.title,
         'description': draft.description,
         'end_at': draft.endAt.toIso8601String(),
       },
@@ -51,6 +49,16 @@ class MealRequestRemoteDataSourceImpl implements MealRequestDataSource {
   @override
   Future<void> deleteRequest(String id) async {
     await _apiClient.delete<Map<String, dynamic>>('${AppConstants.adminMealRequestsEndpoint}/$id', options: _private);
+  }
+
+  @override
+  Future<void> closeRequest(String id) async {
+    await _apiClient.post<Map<String, dynamic>>('${AppConstants.adminMealRequestsEndpoint}/$id/close', options: _private);
+  }
+
+  @override
+  Future<void> reopenRequest(String id) async {
+    await _apiClient.post<Map<String, dynamic>>('${AppConstants.adminMealRequestsEndpoint}/$id/reopen', options: _private);
   }
 
   @override
