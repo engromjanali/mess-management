@@ -1,5 +1,6 @@
 import 'package:mess_pilot/core/widgets/app_state_view.dart';
 import 'package:mess_pilot/core/widgets/app_loader.dart';
+import 'package:mess_pilot/core/widgets/auth_ready_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -53,10 +54,13 @@ class DepositScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final canManage = context.read<RoleCubit>().state.canManage;
-    return BlocProvider<DepositBloc>(
-      create: (_) => getIt<DepositBloc>()..add(DepositEvent.started(isAdmin: canManage)),
-      child: _DepositView(initialTab: tab),
+    // Wait for the auth role to resolve so the screen loads once with the
+    // real role instead of loading as member and reloading on role arrival.
+    return AuthReadyBuilder(
+      builder: (context) => BlocProvider<DepositBloc>(
+        create: (_) => getIt<DepositBloc>()..add(DepositEvent.started(isAdmin: context.read<RoleCubit>().state.canManage)),
+        child: _DepositView(initialTab: tab),
+      ),
     );
   }
 }
@@ -245,7 +249,7 @@ class _LoadedContent extends StatelessWidget {
         Column(
           children: [
             if (isAdmin)
-              Center(
+              Align(alignment: Alignment.topCenter,
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                   child: Padding(
@@ -292,15 +296,15 @@ class _DepositOverviewTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final summary = messSummary;
+    final showWebAppBar = ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context);
     return LayoutBuilder(
       builder: (context, viewportConstraints) => SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: viewportConstraints.maxHeight),
-          child: Column(
-            mainAxisAlignment: (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)) ? MainAxisAlignment.spaceBetween : MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ConstrainedBox(
+              constraints: BoxConstraints(minHeight: showWebAppBar ? viewportConstraints.maxHeight : viewportConstraints.maxHeight),
+              child: Align(alignment: summary == null ? Alignment.center : Alignment.topCenter,
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                   child: Padding(
@@ -318,9 +322,9 @@ class _DepositOverviewTab extends StatelessWidget {
                   ),
                 ),
               ),
-              if (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)) const AppFooter(),
-            ],
-          ),
+            ),
+            if (showWebAppBar) const AppFooter(),
+          ],
         ),
       ),
     );
@@ -397,6 +401,8 @@ class _DepositBreakdownTabState extends State<_DepositBreakdownTab> {
   }
 
   String _listTitle(BuildContext context) {
+    // Members only see their own deposits — the list heading is the breakdown.
+    if (!widget.isAdmin) return context.local.uiDepositBreakdown;
     switch (widget.mode) {
       case DepositViewMode.byMember:
         return widget.selectedMember == null ? context.local.uiAllMembers : context.local.uiMemberDeposits(widget.selectedMember!.name);
@@ -447,7 +453,7 @@ class _DepositBreakdownTabState extends State<_DepositBreakdownTab> {
               child: CustomScrollView(
                 slivers: [
                   SliverToBoxAdapter(
-                    child: Center(
+                    child: Align(alignment: Alignment.topCenter,
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                         child: Padding(
@@ -455,7 +461,7 @@ class _DepositBreakdownTabState extends State<_DepositBreakdownTab> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              if (widget.isAdmin) SectionTitle(title: context.local.filteredSummary, icon: Icons.filter_alt_outlined, trailing: StatRowScrollArrows(controller: widget.summaryRowController, strideBuilder: (viewport) => StatCardSlider.strideFor(context, viewport, maxCardWidth: 200))),
+                              SectionTitle(title: widget.isAdmin ? context.local.filteredSummary : context.local.myDeposits, icon: Icons.filter_alt_outlined, trailing: StatRowScrollArrows(controller: widget.summaryRowController, strideBuilder: (viewport) => StatCardSlider.strideFor(context, viewport, maxCardWidth: 200))),
                               _SummaryGrid(stats: stats, controller: widget.summaryRowController),
                             ],
                           ),
@@ -479,7 +485,7 @@ class _DepositBreakdownTabState extends State<_DepositBreakdownTab> {
                   SliverLayoutBuilder(
                     builder: (context, sliverConstraints) {
                       final remaining = sliverConstraints.viewportMainAxisExtent - sliverConstraints.precedingScrollExtent;
-                      final list = Center(
+                      final list = Align(alignment: Alignment.topCenter,
                         child: ConstrainedBox(
                           constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                           child: Padding(
@@ -506,13 +512,15 @@ class _DepositBreakdownTabState extends State<_DepositBreakdownTab> {
                       );
                       if (!showFooter) return SliverToBoxAdapter(child: list);
                       return SliverToBoxAdapter(
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(minHeight: remaining > 0 ? remaining : 0.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [list, const AppFooter()],
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            ConstrainedBox(
+                              constraints: BoxConstraints(minHeight: remaining),
+                              child: list,
+                            ),
+                            const AppFooter(),
+                          ],
                         ),
                       );
                     },
@@ -581,7 +589,7 @@ class _DepositFilterHeader extends SliverPersistentHeaderDelegate {
         child: OverflowBox(
           alignment: Alignment.topCenter,
           maxHeight: double.infinity,
-          child: Center(
+          child: Align(alignment: Alignment.topCenter,
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
               child: SizedBox(
@@ -686,14 +694,15 @@ class _AddDepositTabState extends State<_AddDepositTab> {
     final breakdown = _MemberBreakdownCard(deposits: recent.take(6).toList());
 
     return LayoutBuilder(
-      builder: (context, viewportConstraints) => SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: viewportConstraints.maxHeight),
-          child: Column(
-            mainAxisAlignment: (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)) ? MainAxisAlignment.spaceBetween : MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(
+      builder: (context, viewportConstraints) {
+        final showWebAppBar = (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context));
+        return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ConstrainedBox(
+              constraints: BoxConstraints(minHeight: showWebAppBar ? viewportConstraints.maxHeight : viewportConstraints.maxHeight),
+              child: Align(alignment: Alignment.topCenter,
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                   child: Padding(
@@ -742,11 +751,12 @@ class _AddDepositTabState extends State<_AddDepositTab> {
                   ),
                 ),
               ),
-              if (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)) const AppFooter(),
-            ],
-          ),
+            ),
+            if (showWebAppBar) const AppFooter(),
+          ],
         ),
-      ),
+      );
+      },
     );
   }
 }

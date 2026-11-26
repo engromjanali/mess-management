@@ -12,7 +12,7 @@ class _SplashBloc extends Bloc<SplashEvent, SplashState> implements SplashBloc {
 }
 
 void main() {
-  testWidgets('Page footer fills the width and reaches the bottom for short and long content', (tester) async {
+  testWidgets('Page footer fills the width and is revealed by scrolling for short and long content', (tester) async {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
@@ -44,7 +44,9 @@ void main() {
             expect(footer, findsOneWidget);
             expect(tester.getSize(footer).width, size.width);
             final position = Scrollable.of(tester.element(footer)).position;
-            if (size.height == 1600 && contentHeight == 100) expect(position.maxScrollExtent, 0);
+            // The body is at least 105% of the screen, so the footer always
+            // sits below the fold and requires scrolling.
+            expect(position.maxScrollExtent, greaterThan(0));
             position.jumpTo(position.maxScrollExtent);
             await tester.pumpAndSettle();
             expect(tester.getRect(footer).bottom, closeTo(size.height, 1));

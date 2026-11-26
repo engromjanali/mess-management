@@ -65,8 +65,8 @@ class _MealAdminView extends StatelessWidget {
           listener: (context, state) => state.whenOrNull(error: (message) => context.showErrorSnackBar(message)),
           builder: (context, state) {
             return state.when(
-              initial: _loading,
-              loading: _loading,
+              initial: () => _loading(context),
+              loading: () => _loading(context),
               error: (message) => _ErrorCard(message: message),
               loaded: (data, memberId, date, busy) => _ManageCard(data: data, selectedMemberId: memberId, selectedDate: date, busy: busy),
             );
@@ -76,10 +76,15 @@ class _MealAdminView extends StatelessWidget {
     );
   }
 
-  Widget _loading() => const Padding(
-    padding: EdgeInsets.all(Dimensions.paddingSizeExtraLarge24),
-    child: Center(child: AppLoader()),
-  );
+  Widget _loading(BuildContext context) {
+    // Inside the tab's scroll body the constraints are unbounded, so give the
+    // loader a viewport-based height to center it in the visible page area.
+    return SizedBox(
+      height: MediaQuery.sizeOf(context).height * 0.8,
+      width: double.infinity,
+      child: const Center(child: AppLoader()),
+    );
+  }
 }
 
 class _ErrorCard extends StatelessWidget {

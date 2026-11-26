@@ -92,7 +92,7 @@ class _NoticeViewState extends State<_NoticeView> {
           loaded: (notices, isAdmin, busy) => isAdmin
               ? Column(
                   children: [
-                    Center(
+                    Align(alignment: Alignment.topCenter,
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                         child: Padding(
@@ -267,14 +267,12 @@ class _NoticeBody extends StatelessWidget {
           child: LayoutBuilder(
             builder: (context, viewport) => SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              child: ConstrainedBox(
-                // Fills the screen so the footer sits at the bottom on desktop.
-                constraints: BoxConstraints(minHeight: viewport.maxHeight),
-                child: Column(
-                  mainAxisAlignment: isDesktop ? MainAxisAlignment.spaceBetween : MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: isDesktop ? viewport.maxHeight : viewport.maxHeight),
+                    child: Align(alignment: notices.isEmpty ? Alignment.center : Alignment.topCenter,
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                         child: Padding(
@@ -291,13 +289,13 @@ class _NoticeBody extends StatelessWidget {
                         ),
                       ),
                     ),
-                    if (isDesktop) const AppFooter(),
-                  ],
-                ),
-              ),
+                  ),
+                if (isDesktop) const AppFooter(),
+              ],
             ),
           ),
         ),
+      ),
         if (busy) const Positioned(top: 0, left: 0, right: 0, child: LinearProgressIndicator(minHeight: 2)),
       ],
     );

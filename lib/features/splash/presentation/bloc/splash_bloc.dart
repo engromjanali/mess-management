@@ -55,12 +55,6 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
     } catch (_) {}
   }
 
-  Future<void> _clearCachedConfig() async {
-    try {
-      await getIt<SharedPreferences>().remove(_configCacheKey);
-    } catch (_) {}
-  }
-
   Future<void> _onGetConfig(SplashEvent event, Emitter<SplashState> emit) async {
     final cached = _getCachedConfig();
     final cachedEntity = cached?.toEntity();
@@ -76,13 +70,22 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
     await result.when(
       success: (config) async {
         final newEntity = config.data;
+        await _saveCachedConfig(newEntity);
         if (cachedEntity == null) {
-          await _saveCachedConfig(newEntity);
           emit(SplashState.loaded(newEntity));
-        } else if (cachedEntity != newEntity) {
-          await _clearCachedConfig();
-          await _saveCachedConfig(newEntity);
-          emit(SplashState.loaded(newEntity));
+          return;
+        }
+        // A config tweak must not bounce the running app through the splash
+        // again (that tears down and reloads the user's screen). Only a
+        // changed gate — maintenance or update requirement — re-runs startup.
+        final gateChanged =
+            cachedEntity.maintenanceMode != newEntity.maintenanceMode ||
+            cachedEntity.maintenanceUntil != newEntity.maintenanceUntil ||
+            cachedEntity.maintenanceMessage != newEntity.maintenanceMessage ||
+            cachedEntity.minimumVersion != newEntity.minimumVersion ||
+            cachedEntity.latestVersion != newEntity.latestVersion;
+        emit(SplashState.loaded(newEntity));
+        if (gateChanged) {
           appStartupComplete = false;
           router.go(AppRoutes.getSplashRoute());
         }

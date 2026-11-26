@@ -124,7 +124,10 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
           Positioned.fill(
             child: NotificationListener<ScrollNotification>(
               onNotification: _onScrollNotification,
-              child: navigationShell,
+              child: ScrollConfiguration(
+                behavior: ScrollConfiguration.of(context).copyWith(physics: const ClampingScrollPhysics()),
+                child: navigationShell,
+              ),
             ),
           ),
           if (MediaQuery.viewInsetsOf(context).bottom == 0)

@@ -468,13 +468,12 @@ class _OpinionBody extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, viewportConstraints) => SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: viewportConstraints.maxHeight),
-          child: Column(
-            mainAxisAlignment: (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)) ? MainAxisAlignment.spaceBetween : MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ConstrainedBox(
+              constraints: BoxConstraints(minHeight: (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)) ? viewportConstraints.maxHeight : viewportConstraints.maxHeight),
+              child: Align(alignment: periods.isEmpty ? Alignment.center : Alignment.topCenter,
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                   child: Padding(
@@ -525,9 +524,9 @@ class _OpinionBody extends StatelessWidget {
                   ),
                 ),
               ),
+            ),
               if (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)) const AppFooter(),
-            ],
-          ),
+          ],
         ),
       ),
     );

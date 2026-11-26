@@ -1,5 +1,6 @@
 import 'package:mess_pilot/core/widgets/app_state_view.dart';
 import 'package:mess_pilot/core/widgets/app_loader.dart';
+import 'package:mess_pilot/core/widgets/auth_ready_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -48,10 +49,13 @@ class FundScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final canManage = context.read<RoleCubit>().state.canManage;
-    return BlocProvider<FundBloc>(
-      create: (_) => getIt<FundBloc>()..add(FundEvent.started(isAdmin: canManage)),
-      child: _FundView(showAddTab: showAddTab),
+    // Wait for the auth role to resolve so the screen loads once with the
+    // real role instead of loading as member and reloading on role arrival.
+    return AuthReadyBuilder(
+      builder: (context) => BlocProvider<FundBloc>(
+        create: (_) => getIt<FundBloc>()..add(FundEvent.started(isAdmin: context.read<RoleCubit>().state.canManage)),
+        child: _FundView(showAddTab: showAddTab),
+      ),
     );
   }
 }
@@ -104,7 +108,7 @@ class _FundViewState extends State<_FundView> {
           loaded: (funds, dateFilter, selectedDate, isAdmin, selectedRange, saving) => isAdmin
               ? Column(
                   children: [
-                    Center(
+                    Align(alignment: Alignment.topCenter,
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                         child: Padding(
@@ -252,17 +256,19 @@ class _FundBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final showWebAppBar = ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context);
     return Stack(
       children: [
         LayoutBuilder(
           builder: (context, viewportConstraints) => SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: viewportConstraints.maxHeight),
-              child: Column(
-                mainAxisAlignment: (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)) ? MainAxisAlignment.spaceBetween : MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Body is at least 105% of the viewport when the footer shows,
+                // so the footer never peeks into the first screen.
+                ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: showWebAppBar ? viewportConstraints.maxHeight : viewportConstraints.maxHeight),
+                  child: Align(alignment: Alignment.topCenter,
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                       child: Padding(
@@ -287,9 +293,9 @@ class _FundBody extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)) const AppFooter(),
-                ],
-              ),
+                ),
+                if (showWebAppBar) const AppFooter(),
+              ],
             ),
           ),
         ),

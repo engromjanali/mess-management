@@ -70,6 +70,7 @@ class _FaqList extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppPageScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
+      centerContent: faqs.isEmpty,
       padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
       children: [
         Center(

@@ -192,6 +192,7 @@ class _PollFormState extends State<PollForm> {
             children: [
               Expanded(
                 child: AppPageScrollView(
+                  showFooter: false,
                   padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
                   maxWidth: 680,
                   children: [
