@@ -104,7 +104,7 @@ class _FundViewState extends State<_FundView> {
           loaded: (funds, dateFilter, selectedDate, isAdmin, selectedRange, saving) => isAdmin
               ? Column(
                   children: [
-                    Center(
+                    Align(alignment: Alignment.topCenter,
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                         child: Padding(
@@ -252,17 +252,19 @@ class _FundBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final showWebAppBar = ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context);
     return Stack(
       children: [
         LayoutBuilder(
           builder: (context, viewportConstraints) => SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: viewportConstraints.maxHeight),
-              child: Column(
-                mainAxisAlignment: (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)) ? MainAxisAlignment.spaceBetween : MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Body is at least 105% of the viewport when the footer shows,
+                // so the footer never peeks into the first screen.
+                ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: showWebAppBar ? viewportConstraints.maxHeight : viewportConstraints.maxHeight),
+                  child: Align(alignment: Alignment.topCenter,
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                       child: Padding(
@@ -287,9 +289,9 @@ class _FundBody extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)) const AppFooter(),
-                ],
-              ),
+                ),
+                if (showWebAppBar) const AppFooter(),
+              ],
             ),
           ),
         ),

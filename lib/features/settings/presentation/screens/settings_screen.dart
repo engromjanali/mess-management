@@ -28,14 +28,13 @@ class SettingsScreen extends StatelessWidget {
         title: context.local.settings,
         child: LayoutBuilder(
           builder: (context, viewport) => SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: viewport.maxHeight),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
+            child: Column(
+              children: [
+                ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: showWebAppBar ? viewport.maxHeight : viewport.maxHeight),
+                  child: Padding(
                     padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
-                    child: Center(
+                    child: Align(alignment: Alignment.topCenter,
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                         child: Column(
@@ -99,14 +98,14 @@ class SettingsScreen extends StatelessWidget {
                   },
                 ),
               ),
-                          ],
+                        ],
                         ),
                       ),
                     ),
                   ),
-                  if (showWebAppBar) const AppFooter(),
-                ],
-              ),
+                ),
+                if (showWebAppBar) const AppFooter(),
+              ],
             ),
           ),
         ),

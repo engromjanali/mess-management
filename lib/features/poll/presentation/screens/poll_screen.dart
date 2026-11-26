@@ -164,9 +164,11 @@ class _PollCreateDenied extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
-      child: AppEmptyState(title: context.local.actionNotAllowed, message: context.local.pollSubtitle, icon: Icons.lock_outline_rounded),
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+        child: AppEmptyState(title: context.local.actionNotAllowed, message: context.local.pollSubtitle, icon: Icons.lock_outline_rounded),
+      ),
     );
   }
 }
@@ -251,19 +253,17 @@ class _PollBodyState extends State<_PollBody> {
           onRefresh: _refresh,
           child: AppPageScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
+            centerContent: _visible.isEmpty,
             padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
             maxWidth: Dimensions.webMaxWidth,
             children: [
               if (_visible.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: Dimensions.paddingSizeExtraLarge32),
-                  child: AppEmptyState(
-                    title: widget.tab == PollPageTab.open ? context.local.pollNoOpen : context.local.pollNoPast,
-                    message: widget.tab == PollPageTab.open ? context.local.pollNoPollsSubtitle : context.local.pollNoPolls,
-                    icon: Icons.poll_outlined,
-                  ),
+                AppEmptyState(
+                  title: widget.tab == PollPageTab.open ? context.local.pollNoOpen : context.local.pollNoPast,
+                  message: widget.tab == PollPageTab.open ? context.local.pollNoPollsSubtitle : context.local.pollNoPolls,
+                  icon: Icons.poll_outlined,
                 )
-              else
+              else ...[
                 _PollGrid(
                   polls: _visible,
                   canManage: widget.canManage,
@@ -273,7 +273,8 @@ class _PollBodyState extends State<_PollBody> {
                   onToggleClosed: _toggleClosed,
                   onDelete: _delete,
                 ),
-              SizedBox(height: context.bottomPadding + 72),
+                SizedBox(height: context.bottomPadding + 72),
+              ],
             ],
           ),
         ),

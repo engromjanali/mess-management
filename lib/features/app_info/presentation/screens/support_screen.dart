@@ -36,6 +36,7 @@ class SupportScreen extends StatelessWidget {
               },
               child: AppPageScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
+                centerContent: config.availableSupportChannels.isEmpty,
                 padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
                 children: [
                   Center(

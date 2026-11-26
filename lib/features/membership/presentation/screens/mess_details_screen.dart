@@ -1,4 +1,5 @@
 import 'package:mess_pilot/core/widgets/app_dialog.dart';
+import 'package:mess_pilot/core/widgets/app_footer.dart';
 import 'package:mess_pilot/core/widgets/app_state_view.dart';
 import 'package:mess_pilot/core/widgets/app_loader.dart';
 import 'package:mess_pilot/config/route/app_router.dart';
@@ -10,7 +11,6 @@ import 'package:mess_pilot/core/extensions/overly_extensions.dart';
 import 'package:mess_pilot/core/extensions/screen_matres_extensions.dart';
 import 'package:mess_pilot/core/helpers/responsive_helper.dart';
 import 'package:mess_pilot/core/network/api_client.dart';
-import 'package:mess_pilot/core/widgets/app_footer.dart';
 import 'package:mess_pilot/core/widgets/home_back_button.dart';
 import 'package:mess_pilot/core/widgets/stat_card.dart';
 import 'package:mess_pilot/core/widgets/stat_card_slider.dart';
@@ -131,14 +131,12 @@ class _MessBodyState extends State<_MessBody> {
           child: LayoutBuilder(
             builder: (context, viewport) => SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              child: ConstrainedBox(
-                // Fills the screen so the footer sits at the bottom on desktop.
-                constraints: BoxConstraints(minHeight: viewport.maxHeight),
-                child: Column(
-                  mainAxisAlignment: isDesktop ? MainAxisAlignment.spaceBetween : MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: isDesktop ? viewport.maxHeight : viewport.maxHeight),
+                    child: Align(alignment: Alignment.topCenter,
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                         child: Padding(
@@ -205,13 +203,13 @@ class _MessBodyState extends State<_MessBody> {
                         ),
                       ),
                     ),
-                    if (isDesktop) const AppFooter(),
-                  ],
-                ),
-              ),
+                  ),
+                if (isDesktop) const AppFooter(),
+              ],
             ),
           ),
         ),
+      ),
         if (state.busy) const Positioned(top: 0, left: 0, right: 0, child: LinearProgressIndicator(minHeight: 2)),
       ],
     );

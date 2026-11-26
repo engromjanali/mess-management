@@ -146,7 +146,7 @@ class _MealViewState extends State<_MealView> {
   Widget _managerContent() {
     return Column(
       children: [
-        Center(
+        Align(alignment: Alignment.topCenter,
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
             child: Padding(
@@ -176,7 +176,7 @@ class _MealViewState extends State<_MealView> {
     final selected = _tab == MealTab.request ? MealTab.request : MealTab.mine;
     return Column(
       children: [
-        Center(
+        Align(alignment: Alignment.topCenter,
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
             child: Padding(
@@ -406,21 +406,20 @@ class _MealTabScroll extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, viewportConstraints) => SingleChildScrollView(
         physics: physics,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: viewportConstraints.maxHeight),
-          child: Column(
-            mainAxisAlignment: isDesktop ? MainAxisAlignment.spaceBetween : MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ConstrainedBox(
+              constraints: BoxConstraints(minHeight: isDesktop ? viewportConstraints.maxHeight : viewportConstraints.maxHeight),
+              child: Align(alignment: Alignment.topCenter,
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                   child: Padding(padding: EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, context.watch<RoleCubit>().state.canManage ? 0 : Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge), child: child),
                 ),
               ),
-              if (isDesktop) const AppFooter(),
-            ],
-          ),
+            ),
+            if (isDesktop) const AppFooter(),
+          ],
         ),
       ),
     );

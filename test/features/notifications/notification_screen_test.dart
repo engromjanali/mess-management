@@ -122,7 +122,9 @@ void main() {
         }
         if (width > 850) {
           final position = Scrollable.of(tester.element(find.byType(AppFooter))).position;
-          if (width == 1440 && count < 4) expect(position.maxScrollExtent, 0);
+          // The body is at least 105% of the screen, so the footer sits below
+          // the fold and is revealed by scrolling.
+          expect(position.maxScrollExtent, greaterThan(0));
           position.jumpTo(position.maxScrollExtent);
           await tester.pumpAndSettle();
           final footer = tester.getRect(find.byType(AppFooter));

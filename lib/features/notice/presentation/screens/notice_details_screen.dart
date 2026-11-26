@@ -77,17 +77,17 @@ class _NoticeDetailsScreenState extends State<NoticeDetailsScreen> {
                 ? AppEmptyState(title: context.local.noticeUnavailable, icon: Icons.campaign_outlined)
                 : LayoutBuilder(
                     builder: (context, viewport) => SingleChildScrollView(
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(minHeight: viewport.maxHeight),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Padding(
-                          padding: EdgeInsets.all(web ? Dimensions.paddingSizeExtraLarge32 : Dimensions.paddingSizeLarge),
-                          child: Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
-                        child: SelectionArea(
+                        ConstrainedBox(
+                          constraints: BoxConstraints(minHeight: viewport.maxHeight),
+                          child: Padding(
+                            padding: EdgeInsets.all(web ? Dimensions.paddingSizeExtraLarge32 : Dimensions.paddingSizeLarge),
+                            child: Align(alignment: Alignment.topCenter,
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
+                          child: SelectionArea(
                       child: Container(
                         width: double.infinity,
                         padding: EdgeInsets.all(web ? Dimensions.paddingSizeExtraLarge32 : Dimensions.paddingSizeLarge),
@@ -116,12 +116,12 @@ class _NoticeDetailsScreenState extends State<NoticeDetailsScreen> {
                         ),
                       ),
                     ),
-                        ),
-                        if (web) const AppFooter(),
+                  ),
+                ),
+                if (web) const AppFooter(),
                       ],
-                        ),
-                      ),
-                    ),
+                  ),
+                  ),
                   );
     return Scaffold(
       appBar: web ? null : AppBar(

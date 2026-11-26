@@ -51,6 +51,7 @@ class AuthScaffold extends StatelessWidget {
         child: Stack(
           children: [
             AppPageScrollView(
+              centerContent: true,
               maxWidth: _maxCardWidth,
               padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeExtraLarge32),
               child: Column(

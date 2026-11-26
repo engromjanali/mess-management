@@ -127,7 +127,7 @@ class _CostViewState extends State<_CostView> {
                 Column(
                   children: [
                     if (isAdmin)
-                      Center(
+                      Align(alignment: Alignment.topCenter,
                         child: ConstrainedBox(
                           constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                           child: Padding(
@@ -305,7 +305,7 @@ class _ListTabState extends State<_ListTab> {
                   physics: const AlwaysScrollableScrollPhysics(),
                   slivers: [
                     SliverToBoxAdapter(
-                      child: Center(
+                      child: Align(alignment: Alignment.topCenter,
                         child: ConstrainedBox(
                           constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                           child: Padding(
@@ -347,7 +347,7 @@ class _ListTabState extends State<_ListTab> {
                     SliverLayoutBuilder(
                       builder: (context, sliverConstraints) {
                         final remaining = sliverConstraints.viewportMainAxisExtent - sliverConstraints.precedingScrollExtent;
-                        final list = Center(
+                        final list = Align(alignment: Alignment.topCenter,
                           child: ConstrainedBox(
                             constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
                             child: Padding(
@@ -374,13 +374,15 @@ class _ListTabState extends State<_ListTab> {
                         );
                         if (!showFooter) return SliverToBoxAdapter(child: list);
                         return SliverToBoxAdapter(
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(minHeight: remaining > 0 ? remaining : 0.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [list, const AppFooter()],
-                            ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              ConstrainedBox(
+                                constraints: BoxConstraints(minHeight: remaining),
+                                child: list,
+                              ),
+                              const AppFooter(),
+                            ],
                           ),
                         );
                       },
@@ -472,7 +474,7 @@ class _CostFilterHeader extends SliverPersistentHeaderDelegate {
         child: OverflowBox(
           alignment: Alignment.topCenter,
           maxHeight: double.infinity,
-          child: Center(
+          child: Align(alignment: Alignment.topCenter,
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
               child: SizedBox(
@@ -575,24 +577,26 @@ class _CostTabScroll extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, viewportConstraints) => SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: viewportConstraints.maxHeight),
+      builder: (context, viewportConstraints) {
+        final showFooter = (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context));
+        return SingleChildScrollView(
           child: Column(
-            mainAxisAlignment: (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)) ? MainAxisAlignment.spaceBetween : MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
-                  child: Padding(padding: const EdgeInsets.all(Dimensions.paddingSizeLarge), child: child),
+              ConstrainedBox(
+                constraints: BoxConstraints(minHeight: showFooter ? viewportConstraints.maxHeight : viewportConstraints.maxHeight),
+                child: Align(alignment: Alignment.topCenter,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
+                    child: Padding(padding: const EdgeInsets.all(Dimensions.paddingSizeLarge), child: child),
+                  ),
                 ),
               ),
-              if (ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context)) const AppFooter(),
+              if (showFooter) const AppFooter(),
             ],
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

@@ -60,7 +60,9 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(AppFooter), findsOneWidget);
       final position = Scrollable.of(tester.element(find.byType(AppFooter))).position;
-      if (height == 1600) expect(position.maxScrollExtent, 0);
+      // The body is at least 105% of the screen, so the footer sits below the
+      // fold and is revealed by scrolling.
+      expect(position.maxScrollExtent, greaterThan(0));
       position.jumpTo(position.maxScrollExtent);
       await tester.pumpAndSettle();
       expect(tester.getRect(find.byType(AppFooter)).bottom, closeTo(height, 1), reason: '$language $height');
