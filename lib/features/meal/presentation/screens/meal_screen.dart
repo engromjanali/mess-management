@@ -15,7 +15,7 @@ import 'package:mess_pilot/core/widgets/home_back_button.dart';
 import 'package:mess_pilot/core/widgets/pill_tab_bar.dart';
 import 'package:mess_pilot/core/widgets/segmented_tab_bar.dart';
 import 'package:mess_pilot/core/widgets/stat_card.dart';
-import 'package:mess_pilot/core/widgets/stat_card_grid.dart';
+import 'package:mess_pilot/core/widgets/stat_card_slider.dart';
 
 import 'package:mess_pilot/features/home/presentation/widgets/animated_entrance.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/dashboard_formatters.dart';
@@ -84,6 +84,7 @@ class _MealView extends StatefulWidget {
 
 class _MealViewState extends State<_MealView> {
   late MealTab _tab;
+  final _summaryRowController = ScrollController();
 
   @override
   void initState() {
@@ -97,6 +98,12 @@ class _MealViewState extends State<_MealView> {
     if (oldWidget.initialTab != widget.initialTab) {
       _tab = _mealTabFromParam(widget.initialTab);
     }
+  }
+
+  @override
+  void dispose() {
+    _summaryRowController.dispose();
+    super.dispose();
   }
 
   @override
@@ -159,7 +166,7 @@ class _MealViewState extends State<_MealView> {
           ),
         ),
         Expanded(
-          child: IndexedStack(index: _tab.index, children: const [_ManageTab(), _AddMealTab(), _MineTab(), MealRequestTab(), _MealListTab()]),
+          child: IndexedStack(index: _tab.index, children: [_ManageTab(), _AddMealTab(), _MineTab(controller: _summaryRowController), MealRequestTab(), _MealListTab()]),
         ),
       ],
     );
@@ -185,7 +192,7 @@ class _MealViewState extends State<_MealView> {
             ),
           ),
         ),
-        Expanded(child: IndexedStack(index: selected == MealTab.request ? 1 : 0, children: const [_MineTab(), MealRequestTab()])),
+        Expanded(child: IndexedStack(index: selected == MealTab.request ? 1 : 0, children: [_MineTab(controller: _summaryRowController), MealRequestTab()])),
       ],
     );
   }
@@ -242,7 +249,9 @@ class _AddMealTab extends StatelessWidget {
 /// The signed-in user's own meals — the only view for members, and the
 /// "Mine" tab for admins.
 class _MineTab extends StatelessWidget {
-  const _MineTab();
+  const _MineTab({required this.controller});
+
+  final ScrollController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -254,7 +263,7 @@ class _MineTab extends StatelessWidget {
           error: (message) => _ErrorView(message: message),
           loaded: (overview, refreshing) => Stack(
             children: [
-              _MealBody(overview: overview),
+              _MealBody(overview: overview, summaryRowController: controller),
               // Background reload (tab switch / pull-to-refresh) keeps the data shown.
               if (refreshing) const Positioned(top: 0, left: 0, right: 0, child: LinearProgressIndicator(minHeight: 2)),
             ],
@@ -278,8 +287,9 @@ class _ErrorView extends StatelessWidget {
 }
 
 class _MealBody extends StatelessWidget {
-  const _MealBody({required this.overview});
+  const _MealBody({required this.overview, required this.summaryRowController});
   final MealOverviewEntity overview;
+  final ScrollController summaryRowController;
 
   List<_Stat> _summary(BuildContext context) {
     final c = context.customThemeColors;
@@ -328,7 +338,12 @@ class _MealBody extends StatelessWidget {
               children: [
                 const AnimatedEntrance(child: MealPollSection()),
                 const SizedBox(height: Dimensions.paddingSizeDefault),
-                _SummaryGrid(stats: _summary(context)),
+                SectionTitle(
+                  title: context.local.mealSummary,
+                  icon: Icons.insights_rounded,
+                  trailing: StatRowScrollArrows(controller: summaryRowController, strideBuilder: (viewport) => StatCardSlider.strideFor(context, viewport, maxCardWidth: 220)),
+                ),
+                _SummaryGrid(stats: _summary(context), controller: summaryRowController),
                 const SizedBox(height: Dimensions.paddingSizeSmall),
                 if (wide)
                   Row(
@@ -414,14 +429,17 @@ class _MealTabScroll extends StatelessWidget {
 
 /// Width-adaptive summary metric grid (reuses the dashboard's [StatCard]).
 class _SummaryGrid extends StatelessWidget {
-  const _SummaryGrid({required this.stats});
+  const _SummaryGrid({required this.stats, required this.controller});
   final List<_Stat> stats;
+  final ScrollController controller;
 
   @override
   Widget build(BuildContext context) {
-    return StatCardGrid(
-      maxCardExtent: 220,
+    return StatCardSlider(
+      maxCardWidth: 220,
       regularExtent: 150,
+      controller: controller,
+      overlayArrows: false,
       itemCount: stats.length,
       itemBuilder: (context, index) {
         final stat = stats[index];

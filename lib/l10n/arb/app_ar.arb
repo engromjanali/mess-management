@@ -795,5 +795,7 @@
   "mealRequestNoSelections": "لا توجد اختيارات بعد.",
   "mealRequestTimedOut": "انتهى الوقت",
   "mealRequestReopen": "إعادة فتح",
-  "mealRequestReopenedMessage": "تم إعادة فتح طلب الوجبة."
+  "mealRequestReopenedMessage": "تم إعادة فتح طلب الوجبة.",
+  "mealSummary": "ملخص الوجبات",
+  "fundSummary": "ملخص الصندوق"
 }

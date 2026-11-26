@@ -1308,5 +1308,7 @@
   "mealRequestNoSelections": "No selections yet.",
   "mealRequestTimedOut": "Timeout",
   "mealRequestReopen": "Reopen",
-  "mealRequestReopenedMessage": "Meal request reopened."
+  "mealRequestReopenedMessage": "Meal request reopened.",
+  "mealSummary": "Meal summary",
+  "fundSummary": "Fund summary"
 }

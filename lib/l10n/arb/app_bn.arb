@@ -795,5 +795,7 @@
   "mealRequestNoSelections": "এখনো কোনো নির্বাচন নেই।",
   "mealRequestTimedOut": "সময় শেষ",
   "mealRequestReopen": "পুনরায় খুলুন",
-  "mealRequestReopenedMessage": "মিলের অনুরোধ পুনরায় খোলা হয়েছে।"
+  "mealRequestReopenedMessage": "মিলের অনুরোধ পুনরায় খোলা হয়েছে।",
+  "mealSummary": "মিল সারসংক্ষেপ",
+  "fundSummary": "ফান্ড সারসংক্ষেপ"
 }

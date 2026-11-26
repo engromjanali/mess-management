@@ -23,7 +23,7 @@ import 'package:mess_pilot/features/home/presentation/widgets/animated_entrance.
 import 'package:mess_pilot/features/home/presentation/widgets/dashboard_top_bar.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/section_title.dart';
 import 'package:mess_pilot/core/widgets/stat_card.dart';
-import 'package:mess_pilot/core/widgets/stat_card_grid.dart';
+import 'package:mess_pilot/core/widgets/stat_card_slider.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/web_profile_drawer.dart';
 import 'package:mess_pilot/features/fund/domain/entities/fund_entity.dart';
 import 'package:mess_pilot/features/fund/presentation/bloc/fund_bloc.dart';
@@ -69,6 +69,7 @@ class _FundView extends StatefulWidget {
 
 class _FundViewState extends State<_FundView> {
   late _FundTab _tab;
+  final _summaryRowController = ScrollController();
 
   @override
   void initState() {
@@ -80,6 +81,12 @@ class _FundViewState extends State<_FundView> {
   void didUpdateWidget(covariant _FundView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.showAddTab != widget.showAddTab) _tab = widget.showAddTab ? _FundTab.add : _FundTab.funds;
+  }
+
+  @override
+  void dispose() {
+    _summaryRowController.dispose();
+    super.dispose();
   }
 
   @override
@@ -115,12 +122,12 @@ class _FundViewState extends State<_FundView> {
                     ),
                     Expanded(
                       child: _tab == _FundTab.funds
-                          ? _FundBody(funds: funds, dateFilter: dateFilter, selectedDate: selectedDate, isAdmin: isAdmin, selectedRange: selectedRange, saving: saving)
+                          ? _FundBody(funds: funds, dateFilter: dateFilter, selectedDate: selectedDate, isAdmin: isAdmin, selectedRange: selectedRange, saving: saving, summaryRowController: _summaryRowController)
                           : _AddFundTab(onSaved: _onSaved),
                     ),
                   ],
                 )
-              : _FundBody(funds: funds, dateFilter: dateFilter, selectedDate: selectedDate, isAdmin: isAdmin, selectedRange: selectedRange, saving: saving),
+              : _FundBody(funds: funds, dateFilter: dateFilter, selectedDate: selectedDate, isAdmin: isAdmin, selectedRange: selectedRange, saving: saving, summaryRowController: _summaryRowController),
           orElse: () => const Center(child: AppLoader()),
         );
       },
@@ -194,13 +201,14 @@ class _ErrorView extends StatelessWidget {
 }
 
 class _FundBody extends StatelessWidget {
-  const _FundBody({required this.funds, required this.dateFilter, required this.selectedDate, required this.isAdmin, required this.selectedRange, required this.saving});
+  const _FundBody({required this.funds, required this.dateFilter, required this.selectedDate, required this.isAdmin, required this.selectedRange, required this.saving, required this.summaryRowController});
 
   final List<FundEntity> funds;
   final FundDateFilter dateFilter;
   final DateTime selectedDate;
   final bool isAdmin;
   final DateTimeRange? selectedRange;
+  final ScrollController summaryRowController;
   final bool saving;
 
   List<_Stat> _summary(BuildContext context) {
@@ -262,7 +270,12 @@ class _FundBody extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            _SummaryGrid(stats: _summary(context)),
+                            SectionTitle(
+                              title: context.local.fundSummary,
+                              icon: Icons.insights_rounded,
+                              trailing: StatRowScrollArrows(controller: summaryRowController, strideBuilder: (viewport) => StatCardSlider.strideFor(context, viewport, maxCardWidth: 200)),
+                            ),
+                            _SummaryGrid(stats: _summary(context), controller: summaryRowController),
                             const SizedBox(height: Dimensions.paddingSizeLarge),
                             FundFilterBar(dateFilter: dateFilter, selectedDate: selectedDate, selectedRange: selectedRange),
                             const SizedBox(height: Dimensions.paddingSizeDefault),
@@ -367,12 +380,17 @@ class _EmptyView extends StatelessWidget {
 
 /// Width-adaptive summary metric grid (reuses the dashboard's [StatCard]).
 class _SummaryGrid extends StatelessWidget {
-  const _SummaryGrid({required this.stats});
+  const _SummaryGrid({required this.stats, required this.controller});
   final List<_Stat> stats;
+  final ScrollController controller;
 
   @override
   Widget build(BuildContext context) {
-    return StatCardGrid(
+    return StatCardSlider(
+      maxCardWidth: 200,
+      regularExtent: 168,
+      controller: controller,
+      overlayArrows: false,
       itemCount: stats.length,
       itemBuilder: (context, index) {
         final stat = stats[index];
