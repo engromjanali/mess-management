@@ -1,5 +1,6 @@
 import 'package:mess_pilot/core/widgets/app_state_view.dart';
 import 'package:mess_pilot/core/widgets/app_loader.dart';
+import 'package:mess_pilot/core/widgets/auth_ready_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -48,9 +49,13 @@ class MealScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<MealBloc>(
-      create: (_) => getIt<MealBloc>()..add(const MealEvent.load()),
-      child: _MealView(initialTab: initialTab),
+    // Wait for the auth role to resolve so the manager tab content
+    // (MealAdminBloc) loads once with the real role.
+    return AuthReadyBuilder(
+      builder: (context) => BlocProvider<MealBloc>(
+        create: (_) => getIt<MealBloc>()..add(const MealEvent.load()),
+        child: _MealView(initialTab: initialTab),
+      ),
     );
   }
 }

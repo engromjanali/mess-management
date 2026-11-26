@@ -201,7 +201,7 @@ class _MealRequestView extends StatelessWidget {
                 _Header(canManage: overview?.canManage ?? false, onCreate: () => _create(context)),
                 const SizedBox(height: Dimensions.paddingSizeLarge),
                 if (loading)
-                  const Padding(padding: EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraLarge24), child: Center(child: AppLoader()))
+                  SizedBox(height: MediaQuery.sizeOf(context).height * 0.6, child: const Center(child: AppLoader()))
                 else if (overview.requests.isEmpty)
                   AppEmptyState(title: context.local.mealRequestEmpty, message: context.local.mealRequestEmptyHint, icon: Icons.event_note_rounded)
                 else

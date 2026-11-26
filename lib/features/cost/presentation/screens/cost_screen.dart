@@ -1,5 +1,6 @@
 import 'package:mess_pilot/core/widgets/app_state_view.dart';
 import 'package:mess_pilot/core/widgets/app_loader.dart';
+import 'package:mess_pilot/core/widgets/auth_ready_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -44,10 +45,13 @@ class CostScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final canManage = context.read<RoleCubit>().state.canManage;
-    return BlocProvider<CostBloc>(
-      create: (_) => getIt<CostBloc>()..add(CostEvent.started(isAdmin: canManage)),
-      child: const _CostView(),
+    // Wait for the auth role to resolve so the screen loads once with the
+    // real role instead of loading as member and reloading on role arrival.
+    return AuthReadyBuilder(
+      builder: (context) => BlocProvider<CostBloc>(
+        create: (_) => getIt<CostBloc>()..add(CostEvent.started(isAdmin: context.read<RoleCubit>().state.canManage)),
+        child: const _CostView(),
+      ),
     );
   }
 }
