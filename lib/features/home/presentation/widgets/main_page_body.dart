@@ -20,11 +20,22 @@ class MainPageBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!showWebAppBar(context)) return child;
+    // The bars occupy a single slot of fixed type so crossing the responsive
+    // breakpoint never changes [child]'s position in the tree — that would
+    // remount the whole subtree and reset its blocs/form/scroll state. The
+    // bars are simply not built on phones (no eager provider dependencies).
+    final webAppBar = showWebAppBar(context);
     return Column(
       children: [
-        const MainTopBar(),
-        WebPageTitleBar(title: title),
+        webAppBar
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const MainTopBar(),
+                  WebPageTitleBar(title: title),
+                ],
+              )
+            : const SizedBox.shrink(),
         Expanded(child: child),
       ],
     );

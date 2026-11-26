@@ -134,6 +134,7 @@ extension OverlayExtensions on BuildContext {
 
     return showModalBottomSheet<T>(
       context: this,
+      useRootNavigator: true,
       isScrollControlled: true,
       isDismissible: isDismissible,
       backgroundColor: background,

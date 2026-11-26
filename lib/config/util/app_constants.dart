@@ -82,10 +82,13 @@ class AppConstants {
 
   // Meals — user
   static const String myMealsEndpoint = '/api/v1/user/meals';
+  static const String mealRequestsEndpoint = '/api/v1/user/meal-requests';
 
   // Meals — manager / acting manager
   static const String adminMealsEndpoint = '/api/v1/admin/meals';
   static const String adminMealsBulkEndpoint = '/api/v1/admin/meals/bulk';
+  static const String adminMealRequestsEndpoint = '/api/v1/admin/meal-requests';
+  static const String adminMealRequestsApplyEndpoint = '/api/v1/admin/meal-requests/apply';
 
   // Deposits — user
   static const String myDepositsEndpoint = '/api/v1/user/deposits';

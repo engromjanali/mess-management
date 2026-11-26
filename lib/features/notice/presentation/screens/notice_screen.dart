@@ -125,15 +125,22 @@ class _NoticeViewState extends State<_NoticeView> {
         backgroundColor: context.theme.scaffoldBackgroundColor,
         endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
         appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.notices)),
-        body: showWebAppBar
-            ? Column(
-                children: [
-                  const DashboardTopBar(),
-                  WebPageTitleBar(title: context.local.notices),
-                  Expanded(child: content),
-                ],
-              )
-            : content,
+        body: Column(
+          children: [
+            // Single fixed-type slot so crossing the responsive breakpoint
+            // never remounts the content subtree (form/scroll state).
+            showWebAppBar
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const DashboardTopBar(),
+                      WebPageTitleBar(title: context.local.notices),
+                    ],
+                  )
+                : const SizedBox.shrink(),
+            Expanded(child: content),
+          ],
+        ),
       ),
     );
   }

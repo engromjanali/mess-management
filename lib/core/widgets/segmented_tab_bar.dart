@@ -43,19 +43,24 @@ class _SegmentedTabBarState<T> extends State<SegmentedTabBar<T>> {
       painter.dispose();
     }
 
+    final contentWidth = (labelWidth + Dimensions.paddingSizeSmall * 2).ceilToDouble() * widget.tabs.length + outerPadding * 2 + tabSpacing * (widget.tabs.length - 1);
+
     return Align(
       alignment: AlignmentDirectional.centerStart,
-      child: Container(
-      width: (labelWidth + Dimensions.paddingSizeSmall * 2).ceilToDouble() * widget.tabs.length + outerPadding * 2 + tabSpacing * (widget.tabs.length - 1),
-      height: height,
-      decoration: BoxDecoration(
-        color: context.theme.cardColor,
-        borderRadius: borderRadius,
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 16, offset: const Offset(0, 6))],
-      ),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final segmentWidth = math.max(0.0, constraints.maxWidth - outerPadding * 2 - tabSpacing * (widget.tabs.length - 1)) / widget.tabs.length;
+          final needsScroll = contentWidth > constraints.maxWidth;
+          final content = Container(
+            width: contentWidth,
+            height: height,
+            decoration: BoxDecoration(
+              color: context.theme.cardColor,
+              borderRadius: borderRadius,
+              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 16, offset: const Offset(0, 6))],
+            ),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final segmentWidth = math.max(0.0, constraints.maxWidth - outerPadding * 2 - tabSpacing * (widget.tabs.length - 1)) / widget.tabs.length;
           return Stack(
             children: [
               if (selectedIndex >= 0)
@@ -118,6 +123,12 @@ class _SegmentedTabBarState<T> extends State<SegmentedTabBar<T>> {
           );
         },
       ),
+      );
+          if (needsScroll) {
+            return SingleChildScrollView(scrollDirection: Axis.horizontal, child: content);
+          }
+          return content;
+        },
       ),
     );
   }

@@ -25,6 +25,7 @@ import 'package:mess_pilot/features/home/presentation/widgets/animated_entrance.
 import 'package:mess_pilot/features/home/presentation/widgets/dashboard_top_bar.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/section_title.dart';
 import 'package:mess_pilot/core/widgets/stat_card.dart';
+import 'package:mess_pilot/core/widgets/stat_card_slider.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/web_profile_drawer.dart';
 import 'package:mess_pilot/features/deposit/domain/entities/deposit_entity.dart';
 import 'package:mess_pilot/features/deposit/presentation/bloc/deposit_bloc.dart';
@@ -73,6 +74,7 @@ class _DepositView extends StatefulWidget {
 
 class _DepositViewState extends State<_DepositView> {
   late DepositTab _tab;
+  final _summaryRowController = ScrollController();
 
   @override
   void initState() {
@@ -84,6 +86,12 @@ class _DepositViewState extends State<_DepositView> {
   void didUpdateWidget(covariant _DepositView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.initialTab != widget.initialTab) _tab = widget.initialTab;
+  }
+
+  @override
+  void dispose() {
+    _summaryRowController.dispose();
+    super.dispose();
   }
 
   void _onTabChanged(DepositTab tab) {
@@ -114,7 +122,9 @@ class _DepositViewState extends State<_DepositView> {
         appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.deposits)),
         body: Column(
           children: [
-            if (showWebAppBar) const DashboardTopBar(active: DashboardSection.deposits),
+            // Single fixed-type slot so crossing the responsive breakpoint
+            // never shifts/remounts the tab content below.
+            showWebAppBar ? const DashboardTopBar(active: DashboardSection.deposits) : const SizedBox.shrink(),
             Expanded(
               // Only this content area swaps while loading; the app bar / top
               // bar stay mounted.
@@ -140,6 +150,7 @@ class _DepositViewState extends State<_DepositView> {
                         isLoading: isLoading,
                         messSummary: messSummary,
                         tab: isAdmin ? _tab : DepositTab.breakdown,
+                        summaryRowController: _summaryRowController,
                         onTabChanged: _onTabChanged,
                         onSaved: () => context.go(AppRoutes.depositBreakdown),
                       );
@@ -171,6 +182,7 @@ class _LoadedContent extends StatelessWidget {
     required this.tab,
     required this.onTabChanged,
     required this.onSaved,
+    required this.summaryRowController,
     this.messSummary,
   });
 
@@ -188,6 +200,7 @@ class _LoadedContent extends StatelessWidget {
   final DepositTab tab;
   final ValueChanged<DepositTab> onTabChanged;
   final VoidCallback onSaved;
+  final ScrollController summaryRowController;
 
   /// Managers browse the overview, the filtered breakdown, or the add form.
   /// Members only ever see their read-only breakdown list.
@@ -202,6 +215,7 @@ class _LoadedContent extends StatelessWidget {
         isAdmin: isAdmin,
         selectedMember: selectedMember,
         selectedRange: selectedRange,
+        summaryRowController: summaryRowController,
       );
     }
     switch (tab) {
@@ -217,6 +231,7 @@ class _LoadedContent extends StatelessWidget {
           isAdmin: isAdmin,
           selectedMember: selectedMember,
           selectedRange: selectedRange,
+          summaryRowController: summaryRowController,
         );
       case DepositTab.add:
         return _AddDepositTab(members: members, deposits: deposits, onSaved: onSaved);
@@ -323,6 +338,7 @@ class _DepositBreakdownTab extends StatefulWidget {
     required this.isAdmin,
     required this.selectedMember,
     required this.selectedRange,
+    required this.summaryRowController,
   });
 
   final DepositViewMode mode;
@@ -333,6 +349,7 @@ class _DepositBreakdownTab extends StatefulWidget {
   final bool isAdmin;
   final DepositMemberEntity? selectedMember;
   final DateTimeRange? selectedRange;
+  final ScrollController summaryRowController;
 
   @override
   State<_DepositBreakdownTab> createState() => _DepositBreakdownTabState();
@@ -438,8 +455,8 @@ class _DepositBreakdownTabState extends State<_DepositBreakdownTab> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              if (widget.isAdmin) SectionTitle(title: context.local.filteredSummary, icon: Icons.filter_alt_outlined),
-                              _SummaryGrid(stats: stats),
+                              if (widget.isAdmin) SectionTitle(title: context.local.filteredSummary, icon: Icons.filter_alt_outlined, trailing: StatRowScrollArrows(controller: widget.summaryRowController, strideBuilder: (viewport) => StatCardSlider.strideFor(context, viewport, maxCardWidth: 200))),
+                              _SummaryGrid(stats: stats, controller: widget.summaryRowController),
                             ],
                           ),
                         ),
@@ -1157,21 +1174,16 @@ class _EmptyView extends StatelessWidget {
 
 /// Width-adaptive summary metric grid (reuses the dashboard's [StatCard]).
 class _SummaryGrid extends StatelessWidget {
-  const _SummaryGrid({required this.stats});
+  const _SummaryGrid({required this.stats, required this.controller});
   final List<_Stat> stats;
+  final ScrollController controller;
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.zero,
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 200,
-        mainAxisExtent: StatCard.gridMainAxisExtent(context),
-        crossAxisSpacing: Dimensions.paddingSizeDefault,
-        mainAxisSpacing: Dimensions.paddingSizeDefault,
-      ),
+    return StatCardSlider(
+      maxCardWidth: 200,
+      regularExtent: 168,
+      controller: controller,
       itemCount: stats.length,
       itemBuilder: (context, index) {
         final stat = stats[index];

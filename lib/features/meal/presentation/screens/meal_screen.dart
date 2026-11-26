@@ -15,6 +15,7 @@ import 'package:mess_pilot/core/widgets/home_back_button.dart';
 import 'package:mess_pilot/core/widgets/pill_tab_bar.dart';
 import 'package:mess_pilot/core/widgets/segmented_tab_bar.dart';
 import 'package:mess_pilot/core/widgets/stat_card.dart';
+import 'package:mess_pilot/core/widgets/stat_card_slider.dart';
 
 import 'package:mess_pilot/features/home/presentation/widgets/animated_entrance.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/dashboard_formatters.dart';
@@ -29,6 +30,7 @@ import 'package:mess_pilot/features/meal/presentation/screens/meal_entry_screen.
 import 'package:mess_pilot/features/meal/presentation/widgets/meal_admin_panel.dart';
 import 'package:mess_pilot/features/meal/presentation/widgets/meal_formatters.dart';
 import 'package:mess_pilot/features/meal/presentation/widgets/meal_history_list.dart';
+import 'package:mess_pilot/features/meal/presentation/widgets/meal_request_tab.dart';
 import 'package:mess_pilot/features/meal/presentation/widgets/meal_today_card.dart';
 import 'package:mess_pilot/features/meal/presentation/widgets/meal_week_chart.dart';
 import 'package:mess_pilot/features/poll/presentation/widgets/meal_poll_section.dart';
@@ -53,7 +55,7 @@ class MealScreen extends StatelessWidget {
   }
 }
 
-enum MealTab { manage, add, mine }
+enum MealTab { manage, add, mine, request, list }
 
 MealTab _mealTabFromParam(String? value) {
   switch (value) {
@@ -61,6 +63,10 @@ MealTab _mealTabFromParam(String? value) {
       return MealTab.add;
     case 'mine':
       return MealTab.mine;
+    case 'request':
+      return MealTab.request;
+    case 'list':
+      return MealTab.list;
     case 'manage':
     default:
       return MealTab.manage;
@@ -78,6 +84,7 @@ class _MealView extends StatefulWidget {
 
 class _MealViewState extends State<_MealView> {
   late MealTab _tab;
+  final _summaryRowController = ScrollController();
 
   @override
   void initState() {
@@ -94,23 +101,29 @@ class _MealViewState extends State<_MealView> {
   }
 
   @override
+  void dispose() {
+    _summaryRowController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final showWebAppBar = ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context);
     final canManage = context.watch<RoleCubit>().state.canManage;
-    final content = canManage ? _managerContent() : const _MineTab();
+    final content = canManage ? _managerContent() : _memberContent();
 
     return Scaffold(
       backgroundColor: context.theme.scaffoldBackgroundColor,
       endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
       appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.meals)),
-      body: showWebAppBar
-          ? Column(
-              children: [
-                const DashboardTopBar(active: DashboardSection.meals),
-                Expanded(child: content),
-              ],
-            )
-          : content,
+      body: Column(
+        children: [
+          // Single fixed-type slot so crossing the responsive breakpoint never
+          // remounts the content subtree (which would re-run its blocs).
+          showWebAppBar ? const DashboardTopBar(active: DashboardSection.meals) : const SizedBox.shrink(),
+          Expanded(child: content),
+        ],
+      ),
     );
   }
 
@@ -120,6 +133,8 @@ class _MealViewState extends State<_MealView> {
       MealTab.manage => AppRoutes.mealsManage,
       MealTab.add => AppRoutes.mealsAdd,
       MealTab.mine => AppRoutes.mealsMine,
+      MealTab.request => AppRoutes.mealsRequest,
+      MealTab.list => AppRoutes.mealsListTab,
     };
     context.go(route);
     // Meals may have changed in Manage/Add meals, so reload dependent views.
@@ -136,38 +151,48 @@ class _MealViewState extends State<_MealView> {
             constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeExtraLarge),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: SegmentedTabBar<MealTab>(
-                      tabs: [
-                        PillTab(value: MealTab.manage, label: context.local.manageMeals),
-                        PillTab(value: MealTab.add, label: context.local.addMeal),
-                        PillTab(value: MealTab.mine, label: context.local.mine),
-                      ],
-                      selected: _tab,
-                      onChanged: _selectTab,
-                    ),
-                  ),
-                  Visibility(
-                    visible: _tab == MealTab.manage,
-                    maintainSize: true,
-                    maintainAnimation: true,
-                    maintainState: true,
-                    child: IconButton(
-                      tooltip: context.local.viewAll,
-                      onPressed: () => context.push(AppRoutes.mealList),
-                      icon: const Icon(Icons.arrow_circle_right_outlined),
-                    ),
-                  ),
+              child: SegmentedTabBar<MealTab>(
+                tabs: [
+                  PillTab(value: MealTab.manage, label: context.local.manageMeals),
+                  PillTab(value: MealTab.add, label: context.local.addMeal),
+                  PillTab(value: MealTab.mine, label: context.local.mine),
+                  PillTab(value: MealTab.request, label: context.local.mealRequestTab),
+                  PillTab(value: MealTab.list, label: context.local.uiMealList),
                 ],
+                selected: _tab,
+                onChanged: _selectTab,
               ),
             ),
           ),
         ),
         Expanded(
-          child: IndexedStack(index: _tab.index, children: const [_ManageTab(), _AddMealTab(), _MineTab()]),
+          child: IndexedStack(index: _tab.index, children: [_ManageTab(), _AddMealTab(), _MineTab(controller: _summaryRowController), MealRequestTab(), _MealListTab()]),
         ),
+      ],
+    );
+  }
+
+  Widget _memberContent() {
+    final selected = _tab == MealTab.request ? MealTab.request : MealTab.mine;
+    return Column(
+      children: [
+        Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeExtraLarge),
+              child: SegmentedTabBar<MealTab>(
+                tabs: [
+                  PillTab(value: MealTab.mine, label: context.local.mine),
+                  PillTab(value: MealTab.request, label: context.local.mealRequestTab),
+                ],
+                selected: selected,
+                onChanged: _selectTab,
+              ),
+            ),
+          ),
+        ),
+        Expanded(child: IndexedStack(index: selected == MealTab.request ? 1 : 0, children: [_MineTab(controller: _summaryRowController), MealRequestTab()])),
       ],
     );
   }
@@ -193,6 +218,24 @@ class _ManageTab extends StatelessWidget {
   }
 }
 
+/// Admin tab: full meal list (replaces the old "view all" arrow button).
+class _MealListTab extends StatelessWidget {
+  const _MealListTab();
+
+  @override
+  Widget build(BuildContext context) {
+    return _MealTabScroll(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const AnimatedEntrance(child: MealAdminPanel(showViewAll: false)),
+          SizedBox(height: context.bottomPadding),
+        ],
+      ),
+    );
+  }
+}
+
 /// Admin tab: add meals for all members for a selected day.
 class _AddMealTab extends StatelessWidget {
   const _AddMealTab();
@@ -206,7 +249,9 @@ class _AddMealTab extends StatelessWidget {
 /// The signed-in user's own meals — the only view for members, and the
 /// "Mine" tab for admins.
 class _MineTab extends StatelessWidget {
-  const _MineTab();
+  const _MineTab({required this.controller});
+
+  final ScrollController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -218,7 +263,7 @@ class _MineTab extends StatelessWidget {
           error: (message) => _ErrorView(message: message),
           loaded: (overview, refreshing) => Stack(
             children: [
-              _MealBody(overview: overview),
+              _MealBody(overview: overview, summaryRowController: controller),
               // Background reload (tab switch / pull-to-refresh) keeps the data shown.
               if (refreshing) const Positioned(top: 0, left: 0, right: 0, child: LinearProgressIndicator(minHeight: 2)),
             ],
@@ -242,8 +287,9 @@ class _ErrorView extends StatelessWidget {
 }
 
 class _MealBody extends StatelessWidget {
-  const _MealBody({required this.overview});
+  const _MealBody({required this.overview, required this.summaryRowController});
   final MealOverviewEntity overview;
+  final ScrollController summaryRowController;
 
   List<_Stat> _summary(BuildContext context) {
     final c = context.customThemeColors;
@@ -292,7 +338,12 @@ class _MealBody extends StatelessWidget {
               children: [
                 const AnimatedEntrance(child: MealPollSection()),
                 const SizedBox(height: Dimensions.paddingSizeDefault),
-                _SummaryGrid(stats: _summary(context)),
+                SectionTitle(
+                  title: context.local.mealSummary,
+                  icon: Icons.insights_rounded,
+                  trailing: StatRowScrollArrows(controller: summaryRowController, strideBuilder: (viewport) => StatCardSlider.strideFor(context, viewport, maxCardWidth: 220)),
+                ),
+                _SummaryGrid(stats: _summary(context), controller: summaryRowController),
                 const SizedBox(height: Dimensions.paddingSizeSmall),
                 if (wide)
                   Row(
@@ -378,21 +429,17 @@ class _MealTabScroll extends StatelessWidget {
 
 /// Width-adaptive summary metric grid (reuses the dashboard's [StatCard]).
 class _SummaryGrid extends StatelessWidget {
-  const _SummaryGrid({required this.stats});
+  const _SummaryGrid({required this.stats, required this.controller});
   final List<_Stat> stats;
+  final ScrollController controller;
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.zero,
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 220,
-        mainAxisExtent: StatCard.gridMainAxisExtent(context, regular: 150),
-        crossAxisSpacing: Dimensions.paddingSizeDefault,
-        mainAxisSpacing: Dimensions.paddingSizeDefault,
-      ),
+    return StatCardSlider(
+      maxCardWidth: 220,
+      regularExtent: 150,
+      controller: controller,
+      overlayArrows: false,
       itemCount: stats.length,
       itemBuilder: (context, index) {
         final stat = stats[index];

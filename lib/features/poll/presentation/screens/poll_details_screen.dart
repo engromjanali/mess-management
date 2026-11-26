@@ -68,15 +68,22 @@ class _PollDetailsView extends StatelessWidget {
       backgroundColor: context.theme.scaffoldBackgroundColor,
       endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
       appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.pollDetails)),
-      body: showWebAppBar
-          ? Column(
-              children: [
-                const DashboardTopBar(),
-                WebPageTitleBar(title: context.local.pollDetails),
-                Expanded(child: content),
-              ],
-            )
-          : content,
+      body: Column(
+        children: [
+          // Single fixed-type slot so crossing the responsive breakpoint never
+          // remounts the content subtree (unsaved vote selections).
+          showWebAppBar
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const DashboardTopBar(),
+                    WebPageTitleBar(title: context.local.pollDetails),
+                  ],
+                )
+              : const SizedBox.shrink(),
+          Expanded(child: content),
+        ],
+      ),
     );
   }
 }

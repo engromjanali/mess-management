@@ -4,6 +4,7 @@ import 'package:mess_pilot/config/util/result.dart';
 import 'package:mess_pilot/core/usecase/usecase.dart';
 import 'package:mess_pilot/features/meal/domain/entities/meal_member_entity.dart';
 import 'package:mess_pilot/features/meal/domain/usecases/add_meals_for_day_usecase.dart';
+import 'package:mess_pilot/features/meal/domain/usecases/apply_meal_requests_usecase.dart';
 import 'package:mess_pilot/features/meal/domain/usecases/delete_member_meal_usecase.dart';
 import 'package:mess_pilot/features/meal/domain/usecases/get_meal_admin_data_usecase.dart';
 import 'package:mess_pilot/features/meal/domain/usecases/update_member_meal_usecase.dart';
@@ -20,6 +21,7 @@ import 'package:mess_pilot/features/meal/presentation/bloc/meal_admin_state.dart
 class MealAdminBloc extends Bloc<MealAdminEvent, MealAdminState> {
   final GetMealAdminDataUseCase _getAdminData;
   final AddMealsForDayUseCase _addMealsForDay;
+  final ApplyMealRequestsUseCase _applyMealRequests;
   final UpdateMemberMealUseCase _updateMemberMeal;
   final DeleteMemberMealUseCase _deleteMemberMeal;
 
@@ -28,7 +30,7 @@ class MealAdminBloc extends Bloc<MealAdminEvent, MealAdminState> {
   DateTime? _selectedDate;
   bool _busy = false;
 
-  MealAdminBloc(this._getAdminData, this._addMealsForDay, this._updateMemberMeal, this._deleteMemberMeal) : super(const MealAdminState.initial()) {
+  MealAdminBloc(this._getAdminData, this._addMealsForDay, this._applyMealRequests, this._updateMemberMeal, this._deleteMemberMeal) : super(const MealAdminState.initial()) {
     on<MealAdminEvent>(_onEvent);
   }
 
@@ -49,6 +51,11 @@ class MealAdminBloc extends Bloc<MealAdminEvent, MealAdminState> {
       addForDay: (date, meals) => _run(
         emit,
         () => _addMealsForDay(AddMealsForDayParams(date: date, meals: meals)),
+        focusDate: date,
+      ),
+      applyRequests: (date, requestIds, meals) => _run(
+        emit,
+        () => _applyMealRequests(ApplyMealRequestsParams(date: date, requestIds: requestIds, meals: meals)),
         focusDate: date,
       ),
       update: (memberId, date, breakfast, lunch, dinner) =>

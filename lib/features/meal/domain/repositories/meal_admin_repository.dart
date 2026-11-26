@@ -12,6 +12,9 @@ abstract class MealAdminRepository {
   /// or none — returning the refreshed admin data.
   ResultFuture<MealAdminEntity> addMealsForDay({required DateTime date, required List<MemberMealEntity> meals});
 
+  /// Applies reviewed meal requests, upserting the selected members' records.
+  ResultFuture<MealAdminEntity> applyMealRequests({required DateTime date, required List<String> requestIds, required List<MemberMealEntity> meals});
+
   /// Updates the existing meal counts for [memberId] on [date], returning
   /// the refreshed admin data.
   ResultFuture<MealAdminEntity> updateMemberMeal({required String memberId, required DateTime date, required double breakfast, required double lunch, required double dinner});

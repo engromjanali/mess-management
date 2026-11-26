@@ -23,6 +23,7 @@ import 'package:mess_pilot/features/home/presentation/screens/home_screen.dart';
 import 'package:mess_pilot/features/meal/presentation/screens/meal_entry_screen.dart';
 import 'package:mess_pilot/features/meal/presentation/screens/meal_list_screen.dart';
 import 'package:mess_pilot/features/meal/presentation/screens/meal_screen.dart';
+import 'package:mess_pilot/features/meal/domain/entities/meal_request_entity.dart';
 import 'package:mess_pilot/features/membership/presentation/screens/manage_membership_screen.dart';
 import 'package:mess_pilot/features/membership/presentation/screens/join_mess_screen.dart';
 import 'package:mess_pilot/features/membership/presentation/screens/mess_details_screen.dart';
@@ -61,6 +62,8 @@ class AppRoutes {
   static const String mealsManage = '/meals/manage';
   static const String mealsAdd = '/meals/add';
   static const String mealsMine = '/meals/mine';
+  static const String mealsRequest = '/meals/request';
+  static const String mealsListTab = '/meals/all';
   static const String addMeal = '/meals/entry';
   static const String mealList = '/meals/list';
   static const String deposits = '/deposits';
@@ -257,6 +260,8 @@ final router = GoRouter(
             GoRoute(path: AppRoutes.mealsManage, name: 'mealsManage', builder: (context, state) => const MealScreen(initialTab: 'manage')),
             GoRoute(path: AppRoutes.mealsAdd, name: 'mealsAdd', builder: (context, state) => const MealScreen(initialTab: 'add')),
             GoRoute(path: AppRoutes.mealsMine, name: 'mealsMine', builder: (context, state) => const MealScreen(initialTab: 'mine')),
+            GoRoute(path: AppRoutes.mealsRequest, name: 'mealsRequest', builder: (context, state) => const MealScreen(initialTab: 'request')),
+            GoRoute(path: AppRoutes.mealsListTab, name: 'mealsListTab', builder: (context, state) => const MealScreen(initialTab: 'list')),
           ],
         ),
         StatefulShellBranch(
@@ -280,7 +285,14 @@ final router = GoRouter(
     ),
 
     // Manager / acting manager: add meal for all members
-    GoRoute(path: AppRoutes.addMeal, name: 'addMeal', builder: (context, state) => const MealEntryScreen()),
+    GoRoute(
+      path: AppRoutes.addMeal,
+      name: 'addMeal',
+      builder: (context, state) {
+        final prefill = state.extra is MealRequestApplyDraft ? state.extra as MealRequestApplyDraft : null;
+        return MealEntryScreen(initialDate: prefill?.date, requestPrefill: prefill);
+      },
+    ),
 
     GoRoute(path: AppRoutes.mealList, name: 'mealList', builder: (context, state) => const MealListScreen()),
 

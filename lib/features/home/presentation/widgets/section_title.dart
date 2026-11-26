@@ -38,6 +38,7 @@ class SectionTitle extends StatelessWidget {
               style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: colors.textPrimaryColor),
             ),
           ),
+          ?trailing,
           if(showViewAll) Row(
             children: [
               if(ResponsiveHelper.isDesktop(context)) Text(context.local.viewAll, style:AppTextStyles.sfProRoundedMedium.copyWith(color: colors.textSecondaryColor),),

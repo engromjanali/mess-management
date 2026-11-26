@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
@@ -20,7 +22,7 @@ class StatCard extends StatelessWidget {
       ResponsiveHelper.isMobile(context) || ResponsiveHelper.isSmallTab(context);
 
   /// Grid row height that matches [StatCard]'s compact / regular density.
-  static double gridMainAxisExtent(BuildContext context, {double regular = 168}) => isCompact(context) ? 132 : regular;
+  static double gridMainAxisExtent(BuildContext context, {double? cardWidth, double regular = 168}) => isCompact(context) ? (cardWidth == null ? 132 : math.max(124.0, math.min(132.0, cardWidth * 1.18))) : regular;
 
   @override
   Widget build(BuildContext context) {

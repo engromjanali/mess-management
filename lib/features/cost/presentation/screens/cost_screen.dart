@@ -21,6 +21,7 @@ import 'package:mess_pilot/features/home/presentation/widgets/animated_entrance.
 import 'package:mess_pilot/features/home/presentation/widgets/dashboard_top_bar.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/section_title.dart';
 import 'package:mess_pilot/core/widgets/stat_card.dart';
+import 'package:mess_pilot/core/widgets/stat_card_slider.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/web_profile_drawer.dart';
 import 'package:mess_pilot/features/cost/domain/entities/cost_entity.dart';
 import 'package:mess_pilot/features/cost/presentation/bloc/cost_bloc.dart';
@@ -62,6 +63,13 @@ class _CostView extends StatefulWidget {
 
 class _CostViewState extends State<_CostView> {
   _CostTab _tab = _CostTab.list;
+  final _summaryRowController = ScrollController();
+
+  @override
+  void dispose() {
+    _summaryRowController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +89,14 @@ class _CostViewState extends State<_CostView> {
           title: Text(context.local.cost),
           actions: [IconButton(tooltip: context.local.refresh, icon: const Icon(Icons.refresh_rounded), onPressed: () => context.read<CostBloc>().add(const CostEvent.refresh()))],
         ),
-        body: showWebAppBar ? Column(children: [const DashboardTopBar(active: DashboardSection.cost), Expanded(child: _content())]) : _content(),
+        body: Column(
+          children: [
+            // Single fixed-type slot so crossing the responsive breakpoint
+            // never remounts the content subtree (tab/filter/form state).
+            showWebAppBar ? const DashboardTopBar(active: DashboardSection.cost) : const SizedBox.shrink(),
+            Expanded(child: _content()),
+          ],
+        ),
       ),
     );
   }
@@ -127,7 +142,7 @@ class _CostViewState extends State<_CostView> {
                       ),
                     Expanded(
                       child: tab == _CostTab.list
-                          ? _ListTab(costs: costs, seasonName: seasonName, isAdmin: isAdmin, members: members)
+                          ? _ListTab(costs: costs, seasonName: seasonName, isAdmin: isAdmin, members: members, summaryRowController: _summaryRowController)
                           : _EntryTab(members: members),
                     ),
                   ],
@@ -150,12 +165,13 @@ class _CostViewState extends State<_CostView> {
 // ─────────────────────────────────────────────────────────────────────────
 
 class _ListTab extends StatefulWidget {
-  const _ListTab({required this.costs, required this.seasonName, required this.isAdmin, required this.members});
+  const _ListTab({required this.costs, required this.seasonName, required this.isAdmin, required this.members, required this.summaryRowController});
 
   final List<CostEntity> costs;
   final String seasonName;
   final bool isAdmin;
   final List<CostMemberEntity> members;
+  final ScrollController summaryRowController;
 
   @override
   State<_ListTab> createState() => _ListTabState();
@@ -297,8 +313,8 @@ class _ListTabState extends State<_ListTab> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                if (widget.seasonName.isNotEmpty) SectionTitle(title: context.local.seasonName(widget.seasonName), icon: Icons.event_note_rounded),
-                                _SummaryGrid(stats: _summary(context, filtered)),
+                                if (widget.seasonName.isNotEmpty) SectionTitle(title: context.local.seasonName(widget.seasonName), icon: Icons.event_note_rounded, trailing: StatRowScrollArrows(controller: widget.summaryRowController, strideBuilder: (viewport) => StatCardSlider.strideFor(context, viewport, maxCardWidth: 200))),
+                                _SummaryGrid(stats: _summary(context, filtered), controller: widget.summaryRowController),
                               ],
                             ),
                           ),
@@ -603,21 +619,16 @@ class _EmptyView extends StatelessWidget {
 
 /// Width-adaptive summary metric grid (reuses the dashboard's [StatCard]).
 class _SummaryGrid extends StatelessWidget {
-  const _SummaryGrid({required this.stats});
+  const _SummaryGrid({required this.stats, required this.controller});
   final List<_Stat> stats;
+  final ScrollController controller;
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.zero,
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 200,
-        mainAxisExtent: StatCard.gridMainAxisExtent(context),
-        crossAxisSpacing: Dimensions.paddingSizeDefault,
-        mainAxisSpacing: Dimensions.paddingSizeDefault,
-      ),
+    return StatCardSlider(
+      maxCardWidth: 200,
+      regularExtent: 168,
+      controller: controller,
       itemCount: stats.length,
       itemBuilder: (context, index) {
         final stat = stats[index];

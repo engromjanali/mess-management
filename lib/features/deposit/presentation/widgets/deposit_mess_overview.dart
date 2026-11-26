@@ -5,6 +5,7 @@ import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
 import 'package:mess_pilot/core/widgets/stat_card.dart';
+import 'package:mess_pilot/core/widgets/stat_card_slider.dart';
 import 'package:mess_pilot/features/deposit/domain/entities/deposit_mess_summary_entity.dart';
 import 'package:mess_pilot/features/deposit/presentation/widgets/deposit_formatters.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/animated_entrance.dart';
@@ -12,14 +13,30 @@ import 'package:mess_pilot/features/home/presentation/widgets/section_title.dart
 
 /// Admin-only deposit overview: the manager's own totals (a manager is also a member),
 /// mess-wide totals, and a per-member balance breakdown.
-class DepositMessOverview extends StatelessWidget {
+class DepositMessOverview extends StatefulWidget {
   const DepositMessOverview({required this.summary, super.key});
   final DepositMessSummaryEntity summary;
 
   @override
+  State<DepositMessOverview> createState() => _DepositMessOverviewState();
+}
+
+class _DepositMessOverviewState extends State<DepositMessOverview> {
+  final _myRowController = ScrollController();
+  final _messRowController = ScrollController();
+
+  @override
+  void dispose() {
+    _myRowController.dispose();
+    _messRowController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final c = context.customThemeColors;
-    final net = summary.netBalance;
+    final net = widget.summary.netBalance;
+    final summary = widget.summary;
     final stats = <(String, String, IconData, Color)>[
       (context.local.totalCredit, DepositFormatters.taka(summary.totalCredit), Icons.south_west_rounded, c.successColor),
       (context.local.totalDebit, DepositFormatters.taka(summary.totalDebit), Icons.north_east_rounded, c.errorColor),
@@ -43,12 +60,20 @@ class DepositMessOverview extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (myStats.isNotEmpty) ...[
-          SectionTitle(title: context.local.myDeposits, icon: Icons.account_circle_outlined),
-          _StatGrid(stats: myStats),
+          SectionTitle(
+            title: context.local.myDeposits,
+            icon: Icons.account_circle_outlined,
+            trailing: StatRowScrollArrows(controller: _myRowController, strideBuilder: (viewport) => StatCardSlider.strideFor(context, viewport, maxCardWidth: 200)),
+          ),
+          _StatGrid(stats: myStats, controller: _myRowController),
           const SizedBox(height: Dimensions.paddingSizeLarge),
         ],
-        SectionTitle(title: context.local.messOverview, icon: Icons.insights_rounded),
-        _StatGrid(stats: stats),
+        SectionTitle(
+          title: context.local.messOverview,
+          icon: Icons.insights_rounded,
+          trailing: StatRowScrollArrows(controller: _messRowController, strideBuilder: (viewport) => StatCardSlider.strideFor(context, viewport, maxCardWidth: 200)),
+        ),
+        _StatGrid(stats: stats, controller: _messRowController),
         const SizedBox(height: Dimensions.paddingSizeLarge),
         SectionTitle(title: context.local.memberBalances, icon: Icons.people_alt_rounded),
         _MemberBalanceList(balances: summary.memberBalances),
@@ -59,27 +84,23 @@ class DepositMessOverview extends StatelessWidget {
 
 /// Width-adaptive grid of [StatCard]s.
 class _StatGrid extends StatelessWidget {
-  const _StatGrid({required this.stats});
+  const _StatGrid({required this.stats, required this.controller});
   final List<(String, String, IconData, Color)> stats;
+  final ScrollController controller;
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          padding: EdgeInsets.zero,
-          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 200,
-            mainAxisExtent: StatCard.gridMainAxisExtent(context),
-            crossAxisSpacing: Dimensions.paddingSizeDefault,
-            mainAxisSpacing: Dimensions.paddingSizeDefault,
-          ),
-          itemCount: stats.length,
-          itemBuilder: (context, index) {
-            final (label, value, icon, accent) = stats[index];
-            return AnimatedEntrance(delay: Duration(milliseconds: 50 * index), child: StatCard(label: label, value: value, icon: icon, accent: accent));
-          },
-        );
+    return StatCardSlider(
+      maxCardWidth: 200,
+      regularExtent: 168,
+      controller: controller,
+      overlayArrows: false,
+      itemCount: stats.length,
+      itemBuilder: (context, index) {
+        final (label, value, icon, accent) = stats[index];
+        return AnimatedEntrance(delay: Duration(milliseconds: 50 * index), child: StatCard(label: label, value: value, icon: icon, accent: accent));
+      },
+    );
   }
 }
 

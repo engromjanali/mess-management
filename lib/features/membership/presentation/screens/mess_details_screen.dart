@@ -13,6 +13,7 @@ import 'package:mess_pilot/core/network/api_client.dart';
 import 'package:mess_pilot/core/widgets/app_footer.dart';
 import 'package:mess_pilot/core/widgets/home_back_button.dart';
 import 'package:mess_pilot/core/widgets/stat_card.dart';
+import 'package:mess_pilot/core/widgets/stat_card_slider.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/animated_entrance.dart';
@@ -97,13 +98,27 @@ class _ErrorView extends StatelessWidget {
   }
 }
 
-class _MessBody extends StatelessWidget {
+class _MessBody extends StatefulWidget {
   const _MessBody({required this.state});
 
   final MessDetailsLoaded state;
 
   @override
+  State<_MessBody> createState() => _MessBodyState();
+}
+
+class _MessBodyState extends State<_MessBody> {
+  final _statsRowController = ScrollController();
+
+  @override
+  void dispose() {
+    _statsRowController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final state = widget.state;
     final mess = state.mess;
     final isDesktop = ResponsiveHelper.isDesktop(context) || ResponsiveHelper.isBigTab(context);
     final user = context.watch<AuthBloc>().state.maybeWhen(authenticated: (user) => user, orElse: () => null);
@@ -154,10 +169,14 @@ class _MessBody extends StatelessWidget {
                                 children: [
                                   AnimatedEntrance(child: MessHeroCard(mess: mess)),
                                   const SizedBox(height: Dimensions.paddingSizeSmall),
-                                  SectionTitle(title: context.local.seasonSnapshot, icon: Icons.insights_rounded),
+                                  SectionTitle(
+                                    title: context.local.seasonSnapshot,
+                                    icon: Icons.insights_rounded,
+                                    trailing: StatRowScrollArrows(controller: _statsRowController, strideBuilder: (viewport) => StatCardSlider.strideFor(context, viewport, maxCardWidth: 220)),
+                                  ),
                                   AnimatedEntrance(
                                     delay: const Duration(milliseconds: 80),
-                                    child: _StatsGrid(stats: mess.stats),
+                                    child: _StatsGrid(stats: mess.stats, controller: _statsRowController),
                                   ),
                                   gap,
                                   if (wide)
@@ -201,9 +220,10 @@ class _MessBody extends StatelessWidget {
 
 /// The active season's numbers (fund balance spans every season).
 class _StatsGrid extends StatelessWidget {
-  const _StatsGrid({required this.stats});
+  const _StatsGrid({required this.stats, required this.controller});
 
   final MessStatsEntity stats;
+  final ScrollController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -217,16 +237,11 @@ class _StatsGrid extends StatelessWidget {
       (context.local.fundBalance, DashboardFormatters.taka(stats.fundBalance), Icons.savings_rounded, c.successColor),
     ];
 
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.zero,
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 220,
-        mainAxisExtent: StatCard.gridMainAxisExtent(context, regular: 150),
-        crossAxisSpacing: Dimensions.paddingSizeDefault,
-        mainAxisSpacing: Dimensions.paddingSizeDefault,
-      ),
+    return StatCardSlider(
+      maxCardWidth: 220,
+      regularExtent: 150,
+      controller: controller,
+      overlayArrows: false,
       itemCount: tiles.length,
       itemBuilder: (context, index) {
         final (label, value, icon, accent) = tiles[index];

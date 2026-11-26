@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:mess_pilot/core/widgets/app_state_view.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/home_dashboard_shimmer.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +16,8 @@ import 'package:mess_pilot/core/network/api_client.dart';
 import 'package:mess_pilot/core/role/role_cubit.dart';
 import 'package:mess_pilot/core/widgets/app_page_scroll_view.dart';
 import 'package:mess_pilot/core/widgets/stat_card.dart';
+import 'package:mess_pilot/core/widgets/stat_card_grid.dart';
+import 'package:mess_pilot/core/widgets/stat_card_slider.dart';
 import 'package:mess_pilot/core/widgets/mess_google_map_sheet.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
@@ -44,6 +48,8 @@ class _Stat {
   final IconData icon;
   final Color accent;
 }
+
+const double _messBoxCardWidth = 230.0;
 
 /// Builds the shared mess/personal metric lists from a [DashboardEntity].
 List<_Stat> _messStats(BuildContext context, DashboardEntity d) {
@@ -146,6 +152,11 @@ class _PhoneDashboard extends StatefulWidget {
 
 class _PhoneDashboardState extends State<_PhoneDashboard> {
   final _scrollController = ScrollController();
+  final _messRowController = ScrollController();
+
+  /// Created once so repeated dashboard rebuilds reuse the same widget
+  /// instance and the pinned header skips redundant rebuilds.
+  late final _messArrows = StatRowScrollArrows(controller: _messRowController, strideBuilder: (viewport) => StatCardSlider.strideFor(context, viewport));
 
   // Zero-height anchors used to scroll to a section from the bottom nav.
   final _statsAnchor = GlobalKey();
@@ -154,6 +165,7 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _messRowController.dispose();
     super.dispose();
   }
 
@@ -213,14 +225,30 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
   }
 
   List<Widget> _buildMessSection(BuildContext context, DashboardEntity dashboard) {
+    final stats = _messStats(context, dashboard);
     return [
       SliverMainAxisGroup(
         slivers: [
           SliverPersistentHeader(
             pinned: true,
-            delegate: PinnedSectionHeader(title: context.local.uiMessSection, icon: Icons.groups_rounded),
+            delegate: PinnedSectionHeader(title: context.local.uiMessSection, icon: Icons.groups_rounded, trailing: _messArrows),
           ),
-          _StatSliverGrid(stats: _messStats(context, dashboard)),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
+            sliver: SliverToBoxAdapter(
+              child: StatCardSlider(
+                itemCount: stats.length,
+                itemBuilder: (context, index) => AnimatedEntrance(
+                  delay: Duration(milliseconds: 50 * index),
+                  child: _statCard(stats[index]),
+                ),
+                controller: _messRowController,
+                clipBehavior: Clip.none,
+                overlayArrows: false,
+                padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge),
+              ),
+            ),
+          ),
         ],
       ),
     ];
@@ -288,20 +316,28 @@ class _StatSliverGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const spacing = Dimensions.paddingSizeDefault;
     return SliverPadding(
       padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall),
-      sliver: SliverGrid.builder(
-        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 200,
-          mainAxisExtent: StatCard.gridMainAxisExtent(context, regular: 150),
-          crossAxisSpacing: Dimensions.paddingSizeDefault,
-          mainAxisSpacing: Dimensions.paddingSizeDefault,
-        ),
-        itemCount: stats.length,
-        itemBuilder: (context, index) => AnimatedEntrance(
-          delay: Duration(milliseconds: 50 * index),
-          child: _statCard(stats[index]),
-        ),
+      sliver: SliverLayoutBuilder(
+        builder: (context, constraints) {
+          final crossAxisExtent = constraints.crossAxisExtent - Dimensions.paddingSizeLarge * 2;
+          final columnCount = math.max(1, (crossAxisExtent / (130 + spacing)).ceil());
+          final cardWidth = (crossAxisExtent - spacing * (columnCount - 1)) / columnCount;
+          return SliverGrid.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: columnCount,
+              mainAxisExtent: StatCard.gridMainAxisExtent(context, cardWidth: cardWidth, regular: 150),
+              crossAxisSpacing: spacing,
+              mainAxisSpacing: spacing,
+            ),
+            itemCount: stats.length,
+            itemBuilder: (context, index) => AnimatedEntrance(
+              delay: Duration(milliseconds: 50 * index),
+              child: _statCard(stats[index]),
+            ),
+          );
+        },
       ),
     );
   }
@@ -321,11 +357,32 @@ class _DesktopDashboard extends StatefulWidget {
 
 class _DesktopDashboardState extends State<_DesktopDashboard> {
   final _scrollController = ScrollController();
+  final _messRowController = ScrollController();
+
+  /// Created once so repeated dashboard rebuilds reuse the same widget
+  /// instance and `SectionTitle` skips redundant rebuilds.
+  late final _messArrows = StatRowScrollArrows(controller: _messRowController, strideBuilder: (viewport) => StatCardSlider.strideFor(context, viewport, maxCardWidth: _messBoxCardWidth));
 
   @override
   void dispose() {
     _scrollController.dispose();
+    _messRowController.dispose();
     super.dispose();
+  }
+
+  /// The mess stats as a single slidable row (desktop mess section).
+  Widget _messSlider(BuildContext context, DashboardEntity dashboard) {
+    final stats = _messStats(context, dashboard);
+    return StatCardSlider(
+      itemCount: stats.length,
+      itemBuilder: (context, index) => AnimatedEntrance(
+        delay: Duration(milliseconds: 50 * index),
+        child: _statCard(stats[index]),
+      ),
+      controller: _messRowController,
+      maxCardWidth: _messBoxCardWidth,
+      overlayArrows: false,
+    );
   }
 
   @override
@@ -356,8 +413,8 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
 
                         if (dashboard.isManager) ...[
                           // 1. Mess section
-                          SectionTitle(title: context.local.uiMessSection, icon: Icons.groups_rounded),
-                          _StatBoxGrid(stats: _messStats(context, dashboard), maxCrossAxisExtent: 230),
+                          SectionTitle(title: context.local.uiMessSection, icon: Icons.groups_rounded, trailing: _messArrows),
+                          _messSlider(context, dashboard),
                           const SizedBox(height: Dimensions.paddingSizeDefault),
 
                           // 2. Card
@@ -441,8 +498,8 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
                           const SizedBox(height: Dimensions.paddingSizeLarge),
 
                           // 3. Mess section
-                          SectionTitle(title: context.local.uiMessSection, icon: Icons.groups_rounded),
-                          _StatBoxGrid(stats: _messStats(context, dashboard), maxCrossAxisExtent: 230),
+                          SectionTitle(title: context.local.uiMessSection, icon: Icons.groups_rounded, trailing: _messArrows),
+                          _messSlider(context, dashboard),
 
                           // 4. Member
                           if (dashboard.members.isNotEmpty) ...[
@@ -655,16 +712,9 @@ class _StatBoxGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.zero,
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: maxCrossAxisExtent,
-        mainAxisExtent: StatCard.gridMainAxisExtent(context, regular: 150),
-        crossAxisSpacing: Dimensions.paddingSizeDefault,
-        mainAxisSpacing: Dimensions.paddingSizeDefault,
-      ),
+    return StatCardGrid(
+      maxCardExtent: maxCrossAxisExtent,
+      regularExtent: 150,
       itemCount: stats.length,
       itemBuilder: (context, index) => AnimatedEntrance(
         delay: Duration(milliseconds: 50 * index),

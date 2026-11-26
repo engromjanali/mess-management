@@ -5,30 +5,33 @@ import 'package:mess_pilot/core/extensions/context_extensions.dart';
 
 /// A compact, accessible +/- stepper for a single meal count.
 ///
-/// Steps in 0.5 increments between [min] and [max]; the buttons disable at the
-/// bounds. The [accent] colours the value chip so it reads against the row.
+/// Steps in 0.5 increments from [min]; the decrement button disables at the
+/// lower bound. Pass [max] to cap the value, otherwise it is unlimited.
+/// The [accent] colours the value chip so it reads against the row.
 class MealStepper extends StatelessWidget {
-  const MealStepper({required this.value, required this.onChanged, required this.accent, this.step = 0.5, this.min = 0, this.max = 3, super.key});
+  const MealStepper({required this.value, required this.onChanged, required this.accent, this.step = 0.5, this.min = 0, this.max, super.key});
 
   final double value;
   final ValueChanged<double> onChanged;
   final Color accent;
   final double step;
   final double min;
-  final double max;
+  final double? max;
 
   String get _label => value == value.roundToDouble() ? value.toStringAsFixed(0) : value.toString();
+
+  double _bounded(double next) => next.clamp(min, max ?? double.infinity).toDouble();
 
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
     final canDecrement = value > min;
-    final canIncrement = value < max;
+    final canIncrement = max == null || value < max!;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        _RoundButton(icon: Icons.remove_rounded, enabled: canDecrement, accent: accent, onTap: () => onChanged((value - step).clamp(min, max))),
+        _RoundButton(icon: Icons.remove_rounded, enabled: canDecrement, accent: accent, onTap: () => onChanged(_bounded(value - step))),
         Container(
           constraints: const BoxConstraints(minWidth: 44),
           alignment: Alignment.center,
@@ -38,7 +41,7 @@ class MealStepper extends StatelessWidget {
             style: AppTextStyles.sfProRoundedBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: colors.textPrimaryColor),
           ),
         ),
-        _RoundButton(icon: Icons.add_rounded, enabled: canIncrement, accent: accent, onTap: () => onChanged((value + step).clamp(min, max))),
+        _RoundButton(icon: Icons.add_rounded, enabled: canIncrement, accent: accent, onTap: () => onChanged(_bounded(value + step))),
       ],
     );
   }

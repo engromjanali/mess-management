@@ -34,6 +34,22 @@ class MealAdminRemoteDataSourceImpl implements MealAdminDataSource {
   }
 
   @override
+  Future<MealAdminModel> applyMealRequests({required DateTime date, required List<String> requestIds, required List<MemberMealEntity> meals}) async {
+    final response = await _apiClient.post<Map<String, dynamic>>(
+      AppConstants.adminMealRequestsApplyEndpoint,
+      data: {
+        'date': _date(date),
+        'request_ids': requestIds.map(int.parse).toList(),
+        'meals': [
+          for (final meal in meals)
+            {'member_id': int.parse(meal.memberId), 'breakfast': meal.breakfast, 'lunch': meal.lunch, 'dinner': meal.dinner},
+        ],
+      },
+    );
+    return MealAdminModel.fromJson(response.data!);
+  }
+
+  @override
   Future<MealAdminModel> updateMemberMeal({required String memberId, required DateTime date, required double breakfast, required double lunch, required double dinner}) async {
     final response = await _apiClient.patch<Map<String, dynamic>>(
       AppConstants.adminMealsEndpoint,

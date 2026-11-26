@@ -39,7 +39,7 @@ class AnimatedBottomNavBar extends StatelessWidget {
           child: SafeArea(
             top: false,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeExtraLarge, 0, Dimensions.paddingSizeExtraLarge, Dimensions.paddingSizeDefault),
+              padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, 0, Dimensions.paddingSizeLarge, Dimensions.paddingSizeDefault),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: ResponsiveHelper.smallMobile, maxHeight: 70),
                 child: Container(
@@ -51,8 +51,8 @@ class AnimatedBottomNavBar extends StatelessWidget {
                     boxShadow: [BoxShadow(color: colors.shadowColor, blurRadius: 20, offset: const Offset(0, 8))],
                   ),
                   child: Row(
-                    spacing: Dimensions.paddingSizeSmall,
-                    children: [for (var i = 0; i < items.length; i++) _NavCell(item: items[i], active: i == currentIndex)],
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [for (var i = 0; i < items.length; i++) _NavCell(item: items[i], active: i == currentIndex, isDeposit: i == 2,)],
                   ),
                 ),
               ),
@@ -65,45 +65,39 @@ class AnimatedBottomNavBar extends StatelessWidget {
 }
 
 class _NavCell extends StatelessWidget {
-  const _NavCell({required this.item, required this.active});
+  const _NavCell({required this.isDeposit, required this.item, required this.active});
   final BottomNavItem item;
   final bool active;
+  final bool isDeposit;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.customThemeColors;
     final color = active ? colors.primaryColor : colors.textSecondaryColor;
 
-    return Expanded(
-      flex: active ? 2 : 1,
-      child: SizedBox(
-        height: 48,
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: item.onTap,
-            borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 320),
-              curve: Curves.easeOutCubic,
-              decoration: BoxDecoration(color: active ? colors.primaryColor.withValues(alpha: 0.12) : Colors.transparent, borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  item.profileImageUrl == null
-                      ? Icon(active ? item.activeIcon : item.icon, color: color, size: Dimensions.iconSizeDefault)
-                      : _ProfileNavImage(imageUrl: item.profileImageUrl!, fallbackIcon: active ? item.activeIcon : item.icon),
-                  if (active) ...[
-                    const SizedBox(width: Dimensions.paddingSizeSmall),
-                    Flexible(
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(item.label, maxLines: 1, style: AppTextStyles.sfProRoundedSemiBold.copyWith(color: color, fontSize: Dimensions.fontSizeDefault)),
-                      ),
-                    ),
-                  ],
+    return SizedBox(
+      height: 48,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: item.onTap,
+          borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 320),
+            curve: Curves.easeOutCubic,
+            padding:  EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault - (isDeposit ? 1.35 : 0)),
+            decoration: BoxDecoration(color: active ? colors.primaryColor.withValues(alpha: 0.12) : Colors.transparent, borderRadius: BorderRadius.circular(Dimensions.radiusExtraLarge)),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                item.profileImageUrl == null
+                    ? Icon(active ? item.activeIcon : item.icon, color: color, size: Dimensions.iconSizeDefault)
+                    : _ProfileNavImage(imageUrl: item.profileImageUrl!, fallbackIcon: active ? item.activeIcon : item.icon),
+                if (active) ...[
+                  const SizedBox(width: Dimensions.paddingSizeSmall),
+                  Text(item.label, maxLines: 1, style: AppTextStyles.sfProRoundedSemiBold.copyWith(color: color, fontSize: Dimensions.fontSizeDefault)),
                 ],
-              ),
+              ],
             ),
           ),
         ),
