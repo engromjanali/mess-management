@@ -1,6 +1,9 @@
+import 'dart:math' as math;
+
 import 'package:mess_pilot/core/widgets/app_state_view.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/home_dashboard_shimmer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mess_pilot/config/route/app_router.dart';
@@ -14,6 +17,7 @@ import 'package:mess_pilot/core/network/api_client.dart';
 import 'package:mess_pilot/core/role/role_cubit.dart';
 import 'package:mess_pilot/core/widgets/app_page_scroll_view.dart';
 import 'package:mess_pilot/core/widgets/stat_card.dart';
+import 'package:mess_pilot/core/widgets/stat_card_grid.dart';
 import 'package:mess_pilot/core/widgets/mess_google_map_sheet.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
@@ -43,6 +47,27 @@ class _Stat {
   final String value;
   final IconData icon;
   final Color accent;
+}
+
+const double _messRowCardWidth = 148.0;
+const double _messRowCardMaxWidth = 210.0;
+const double _messBoxCardWidth = 230.0;
+
+/// Per-card stride for the phone row: fixed width on phones, scaled up on
+/// small tablets so the row uses the wider band.
+double _phoneCardStride(double viewport) {
+  const spacing = Dimensions.paddingSizeDefault;
+  final cardWidth = (viewport / 4.5).clamp(_messRowCardWidth, _messRowCardMaxWidth).toDouble();
+  return cardWidth + spacing;
+}
+
+/// Per-card stride for the desktop row: packs columns exactly like the
+/// width-adaptive grid it replaced.
+double _desktopCardStride(double viewport) {
+  const spacing = Dimensions.paddingSizeDefault;
+  if (!viewport.isFinite || viewport <= 0) return _messBoxCardWidth + spacing;
+  final columns = math.max(1, (viewport / (_messBoxCardWidth + spacing)).ceil());
+  return ((viewport - spacing * (columns - 1)) / columns) + spacing;
 }
 
 /// Builds the shared mess/personal metric lists from a [DashboardEntity].
@@ -146,6 +171,11 @@ class _PhoneDashboard extends StatefulWidget {
 
 class _PhoneDashboardState extends State<_PhoneDashboard> {
   final _scrollController = ScrollController();
+  final _messRowController = ScrollController();
+
+  /// Created once so repeated dashboard rebuilds reuse the same widget
+  /// instance and the pinned header skips redundant rebuilds.
+  late final _messArrows = _StatRowScrollArrows(controller: _messRowController, strideBuilder: _phoneCardStride);
 
   // Zero-height anchors used to scroll to a section from the bottom nav.
   final _statsAnchor = GlobalKey();
@@ -154,6 +184,7 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _messRowController.dispose();
     super.dispose();
   }
 
@@ -218,9 +249,9 @@ class _PhoneDashboardState extends State<_PhoneDashboard> {
         slivers: [
           SliverPersistentHeader(
             pinned: true,
-            delegate: PinnedSectionHeader(title: context.local.uiMessSection, icon: Icons.groups_rounded),
+            delegate: PinnedSectionHeader(title: context.local.uiMessSection, icon: Icons.groups_rounded, trailing: _messArrows),
           ),
-          _StatSliverGrid(stats: _messStats(context, dashboard)),
+          _StatSliverRow(stats: _messStats(context, dashboard), controller: _messRowController),
         ],
       ),
     ];
@@ -288,19 +319,177 @@ class _StatSliverGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const spacing = Dimensions.paddingSizeDefault;
     return SliverPadding(
       padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall, Dimensions.paddingSizeLarge, Dimensions.paddingSizeSmall),
-      sliver: SliverGrid.builder(
-        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 200,
-          mainAxisExtent: StatCard.gridMainAxisExtent(context, regular: 150),
-          crossAxisSpacing: Dimensions.paddingSizeDefault,
-          mainAxisSpacing: Dimensions.paddingSizeDefault,
+      sliver: SliverLayoutBuilder(
+        builder: (context, constraints) {
+          final crossAxisExtent = constraints.crossAxisExtent - Dimensions.paddingSizeLarge * 2;
+          final columnCount = math.max(1, (crossAxisExtent / (130 + spacing)).ceil());
+          final cardWidth = (crossAxisExtent - spacing * (columnCount - 1)) / columnCount;
+          return SliverGrid.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: columnCount,
+              mainAxisExtent: StatCard.gridMainAxisExtent(context, cardWidth: cardWidth, regular: 150),
+              crossAxisSpacing: spacing,
+              mainAxisSpacing: spacing,
+            ),
+            itemCount: stats.length,
+            itemBuilder: (context, index) => AnimatedEntrance(
+              delay: Duration(milliseconds: 50 * index),
+              child: _statCard(stats[index]),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// Prev/next arrow buttons that slide a stat row two cards per tap.
+class _StatRowScrollArrows extends StatefulWidget {
+  const _StatRowScrollArrows({required this.controller, required this.strideBuilder});
+  final ScrollController controller;
+
+  /// Per-card stride (card width + spacing) for the current viewport width.
+  final double Function(double viewportWidth) strideBuilder;
+
+  @override
+  State<_StatRowScrollArrows> createState() => _StatRowScrollArrowsState();
+}
+
+class _StatRowScrollArrowsState extends State<_StatRowScrollArrows> {
+  bool _lastBack = false;
+  bool _lastForward = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_onScroll);
+  }
+
+  @override
+  void didUpdateWidget(covariant _StatRowScrollArrows oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller.removeListener(_onScroll);
+      widget.controller.addListener(_onScroll);
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_onScroll);
+    super.dispose();
+  }
+
+  void _onScroll() {
+    void refresh() {
+      if (!mounted) return;
+      final back = _canScrollBack;
+      final forward = _canScrollForward;
+      if (back == _lastBack && forward == _lastForward) return;
+      setState(() {
+        _lastBack = back;
+        _lastForward = forward;
+      });
+    }
+
+    // ScrollController fires during layout (position attach / first frame);
+    // defer so we never call setState while the tree is building.
+    if (SchedulerBinding.instance.schedulerPhase == SchedulerPhase.persistentCallbacks) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => refresh());
+    } else {
+      refresh();
+    }
+  }
+
+  bool get _canScrollBack {
+    if (!widget.controller.hasClients) return false;
+    return widget.controller.position.pixels > 0;
+  }
+
+  bool get _canScrollForward {
+    if (!widget.controller.hasClients) return false;
+    final position = widget.controller.position;
+    // maxScrollExtent is null until content dimensions are applied.
+    return position.hasContentDimensions && position.pixels < position.maxScrollExtent;
+  }
+
+  void _scroll(int direction) {
+    final controller = widget.controller;
+    if (!controller.hasClients || !controller.position.hasContentDimensions) return;
+    final stride = widget.strideBuilder(controller.position.viewportDimension);
+    final target = (controller.offset + direction * stride * 2).clamp(0.0, controller.position.maxScrollExtent);
+    controller.animateTo(target, duration: const Duration(milliseconds: 250), curve: Curves.easeOutCubic);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _arrowButton(context, icon: Icons.chevron_left_rounded, enabled: _canScrollBack, direction: -1),
+        const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+        _arrowButton(context, icon: Icons.chevron_right_rounded, enabled: _canScrollForward, direction: 1),
+      ],
+    );
+  }
+
+  Widget _arrowButton(BuildContext context, {required IconData icon, required bool enabled, required int direction}) {
+    final colors = context.customThemeColors;
+    return Material(
+      color: enabled ? colors.primaryColor.withValues(alpha: 0.10) : colors.textHintColor.withValues(alpha: 0.08),
+      shape: const CircleBorder(),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: enabled ? () => _scroll(direction) : null,
+        child: SizedBox(
+          width: 30,
+          height: 30,
+          child: Icon(icon, size: Dimensions.iconSizeSmall + 2, color: enabled ? colors.primaryColor : colors.textHintColor),
         ),
-        itemCount: stats.length,
-        itemBuilder: (context, index) => AnimatedEntrance(
-          delay: Duration(milliseconds: 50 * index),
-          child: _statCard(stats[index]),
+      ),
+    );
+  }
+}
+
+/// Horizontally slidable single-row metrics (phone mess section).
+class _StatSliverRow extends StatelessWidget {
+  const _StatSliverRow({required this.stats, required this.controller});
+  final List<_Stat> stats;
+  final ScrollController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    const spacing = Dimensions.paddingSizeDefault;
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
+      sliver: SliverToBoxAdapter(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final cardWidth = (constraints.maxWidth / 4.5).clamp(_messRowCardWidth, _messRowCardMaxWidth).toDouble();
+            return SizedBox(
+              height: StatCard.gridMainAxisExtent(context, cardWidth: cardWidth, regular: 150),
+              child: ListView.builder(
+                controller: controller,
+                scrollDirection: Axis.horizontal,
+                clipBehavior: Clip.none,
+                padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge),
+                itemCount: stats.length,
+                itemBuilder: (context, index) => Padding(
+                  padding: EdgeInsets.only(right: index == stats.length - 1 ? 0 : spacing),
+                  child: SizedBox(
+                    width: cardWidth,
+                    child: AnimatedEntrance(
+                      delay: Duration(milliseconds: 50 * index),
+                      child: _statCard(stats[index]),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -321,10 +510,16 @@ class _DesktopDashboard extends StatefulWidget {
 
 class _DesktopDashboardState extends State<_DesktopDashboard> {
   final _scrollController = ScrollController();
+  final _messRowController = ScrollController();
+
+  /// Created once so repeated dashboard rebuilds reuse the same widget
+  /// instance and `SectionTitle` skips redundant rebuilds.
+  late final _messArrows = _StatRowScrollArrows(controller: _messRowController, strideBuilder: _desktopCardStride);
 
   @override
   void dispose() {
     _scrollController.dispose();
+    _messRowController.dispose();
     super.dispose();
   }
 
@@ -356,8 +551,8 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
 
                         if (dashboard.isManager) ...[
                           // 1. Mess section
-                          SectionTitle(title: context.local.uiMessSection, icon: Icons.groups_rounded),
-                          _StatBoxGrid(stats: _messStats(context, dashboard), maxCrossAxisExtent: 230),
+                          SectionTitle(title: context.local.uiMessSection, icon: Icons.groups_rounded, trailing: _messArrows),
+                          _StatBoxRow(stats: _messStats(context, dashboard), controller: _messRowController),
                           const SizedBox(height: Dimensions.paddingSizeDefault),
 
                           // 2. Card
@@ -441,8 +636,8 @@ class _DesktopDashboardState extends State<_DesktopDashboard> {
                           const SizedBox(height: Dimensions.paddingSizeLarge),
 
                           // 3. Mess section
-                          SectionTitle(title: context.local.uiMessSection, icon: Icons.groups_rounded),
-                          _StatBoxGrid(stats: _messStats(context, dashboard), maxCrossAxisExtent: 230),
+                          SectionTitle(title: context.local.uiMessSection, icon: Icons.groups_rounded, trailing: _messArrows),
+                          _StatBoxRow(stats: _messStats(context, dashboard), controller: _messRowController),
 
                           // 4. Member
                           if (dashboard.members.isNotEmpty) ...[
@@ -647,6 +842,48 @@ class _MessContactLine extends StatelessWidget {
   }
 }
 
+/// Horizontally slidable single-row metrics (desktop mess section).
+class _StatBoxRow extends StatelessWidget {
+  const _StatBoxRow({required this.stats, required this.controller});
+  final List<_Stat> stats;
+  final ScrollController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    const spacing = Dimensions.paddingSizeDefault;
+    return Scrollbar(
+      controller: controller,
+      thumbVisibility: false,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final width = constraints.maxWidth;
+          final columns = width.isFinite && width > 0 ? math.max(1, (width / (_messBoxCardWidth + spacing)).ceil()) : 1;
+          final cardWidth = (width - spacing * (columns - 1)) / columns;
+          return SizedBox(
+            height: StatCard.gridMainAxisExtent(context, cardWidth: cardWidth, regular: 150),
+            child: ListView.builder(
+              controller: controller,
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.zero,
+              itemCount: stats.length,
+              itemBuilder: (context, index) => Padding(
+                padding: EdgeInsets.only(right: index == stats.length - 1 ? 0 : spacing),
+                child: SizedBox(
+                  width: cardWidth,
+                  child: AnimatedEntrance(
+                    delay: Duration(milliseconds: 50 * index),
+                    child: _statCard(stats[index]),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
 /// Non-sliver, self-sizing metric grid for the tablet & desktop bodies.
 class _StatBoxGrid extends StatelessWidget {
   const _StatBoxGrid({required this.stats, required this.maxCrossAxisExtent});
@@ -655,16 +892,9 @@ class _StatBoxGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.zero,
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: maxCrossAxisExtent,
-        mainAxisExtent: StatCard.gridMainAxisExtent(context, regular: 150),
-        crossAxisSpacing: Dimensions.paddingSizeDefault,
-        mainAxisSpacing: Dimensions.paddingSizeDefault,
-      ),
+    return StatCardGrid(
+      maxCardExtent: maxCrossAxisExtent,
+      regularExtent: 150,
       itemCount: stats.length,
       itemBuilder: (context, index) => AnimatedEntrance(
         delay: Duration(milliseconds: 50 * index),

@@ -5,6 +5,7 @@ import 'package:mess_pilot/config/util/dimensions.dart';
 import 'package:mess_pilot/config/util/styles.dart';
 import 'package:mess_pilot/core/extensions/context_extensions.dart';
 import 'package:mess_pilot/core/widgets/stat_card.dart';
+import 'package:mess_pilot/core/widgets/stat_card_grid.dart';
 import 'package:mess_pilot/features/deposit/domain/entities/deposit_mess_summary_entity.dart';
 import 'package:mess_pilot/features/deposit/presentation/widgets/deposit_formatters.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/animated_entrance.dart';
@@ -64,22 +65,13 @@ class _StatGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          padding: EdgeInsets.zero,
-          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 200,
-            mainAxisExtent: StatCard.gridMainAxisExtent(context),
-            crossAxisSpacing: Dimensions.paddingSizeDefault,
-            mainAxisSpacing: Dimensions.paddingSizeDefault,
-          ),
-          itemCount: stats.length,
-          itemBuilder: (context, index) {
-            final (label, value, icon, accent) = stats[index];
-            return AnimatedEntrance(delay: Duration(milliseconds: 50 * index), child: StatCard(label: label, value: value, icon: icon, accent: accent));
-          },
-        );
+    return StatCardGrid(
+      itemCount: stats.length,
+      itemBuilder: (context, index) {
+        final (label, value, icon, accent) = stats[index];
+        return AnimatedEntrance(delay: Duration(milliseconds: 50 * index), child: StatCard(label: label, value: value, icon: icon, accent: accent));
+      },
+    );
   }
 }
 

@@ -13,6 +13,7 @@ import 'package:mess_pilot/core/network/api_client.dart';
 import 'package:mess_pilot/core/widgets/app_footer.dart';
 import 'package:mess_pilot/core/widgets/home_back_button.dart';
 import 'package:mess_pilot/core/widgets/stat_card.dart';
+import 'package:mess_pilot/core/widgets/stat_card_grid.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:mess_pilot/features/auth/presentation/bloc/auth_state.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/animated_entrance.dart';
@@ -217,16 +218,9 @@ class _StatsGrid extends StatelessWidget {
       (context.local.fundBalance, DashboardFormatters.taka(stats.fundBalance), Icons.savings_rounded, c.successColor),
     ];
 
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.zero,
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 220,
-        mainAxisExtent: StatCard.gridMainAxisExtent(context, regular: 150),
-        crossAxisSpacing: Dimensions.paddingSizeDefault,
-        mainAxisSpacing: Dimensions.paddingSizeDefault,
-      ),
+    return StatCardGrid(
+      maxCardExtent: 220,
+      regularExtent: 150,
       itemCount: tiles.length,
       itemBuilder: (context, index) {
         final (label, value, icon, accent) = tiles[index];

@@ -15,6 +15,7 @@ import 'package:mess_pilot/core/widgets/home_back_button.dart';
 import 'package:mess_pilot/core/widgets/pill_tab_bar.dart';
 import 'package:mess_pilot/core/widgets/segmented_tab_bar.dart';
 import 'package:mess_pilot/core/widgets/stat_card.dart';
+import 'package:mess_pilot/core/widgets/stat_card_grid.dart';
 
 import 'package:mess_pilot/features/home/presentation/widgets/animated_entrance.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/dashboard_formatters.dart';
@@ -413,16 +414,9 @@ class _SummaryGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.zero,
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 220,
-        mainAxisExtent: StatCard.gridMainAxisExtent(context, regular: 150),
-        crossAxisSpacing: Dimensions.paddingSizeDefault,
-        mainAxisSpacing: Dimensions.paddingSizeDefault,
-      ),
+    return StatCardGrid(
+      maxCardExtent: 220,
+      regularExtent: 150,
       itemCount: stats.length,
       itemBuilder: (context, index) {
         final stat = stats[index];

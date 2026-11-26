@@ -71,6 +71,7 @@ class _MembershipMenuButtonState extends State<MembershipMenuButton> {
         position: PopupMenuPosition.under,
         offset: const Offset(0, 8),
         color: context.customThemeColors.surfaceColor,
+        borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
         elevation: 8,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge), side: BorderSide(color: context.customThemeColors.borderColor)),
         onSelected: _switchTo,

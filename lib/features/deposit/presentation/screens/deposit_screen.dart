@@ -25,6 +25,7 @@ import 'package:mess_pilot/features/home/presentation/widgets/animated_entrance.
 import 'package:mess_pilot/features/home/presentation/widgets/dashboard_top_bar.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/section_title.dart';
 import 'package:mess_pilot/core/widgets/stat_card.dart';
+import 'package:mess_pilot/core/widgets/stat_card_grid.dart';
 import 'package:mess_pilot/features/home/presentation/widgets/web_profile_drawer.dart';
 import 'package:mess_pilot/features/deposit/domain/entities/deposit_entity.dart';
 import 'package:mess_pilot/features/deposit/presentation/bloc/deposit_bloc.dart';
@@ -1162,16 +1163,7 @@ class _SummaryGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.zero,
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 200,
-        mainAxisExtent: StatCard.gridMainAxisExtent(context),
-        crossAxisSpacing: Dimensions.paddingSizeDefault,
-        mainAxisSpacing: Dimensions.paddingSizeDefault,
-      ),
+    return StatCardGrid(
       itemCount: stats.length,
       itemBuilder: (context, index) {
         final stat = stats[index];
