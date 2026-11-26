@@ -55,7 +55,7 @@ class MealScreen extends StatelessWidget {
   }
 }
 
-enum MealTab { manage, add, mine, request }
+enum MealTab { manage, add, mine, request, list }
 
 MealTab _mealTabFromParam(String? value) {
   switch (value) {
@@ -65,6 +65,8 @@ MealTab _mealTabFromParam(String? value) {
       return MealTab.mine;
     case 'request':
       return MealTab.request;
+    case 'list':
+      return MealTab.list;
     case 'manage':
     default:
       return MealTab.manage;
@@ -125,6 +127,7 @@ class _MealViewState extends State<_MealView> {
       MealTab.add => AppRoutes.mealsAdd,
       MealTab.mine => AppRoutes.mealsMine,
       MealTab.request => AppRoutes.mealsRequest,
+      MealTab.list => AppRoutes.mealsListTab,
     };
     context.go(route);
     // Meals may have changed in Manage/Add meals, so reload dependent views.
@@ -141,38 +144,22 @@ class _MealViewState extends State<_MealView> {
             constraints: const BoxConstraints(maxWidth: Dimensions.webMaxWidth),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeLarge, Dimensions.paddingSizeExtraLarge),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: SegmentedTabBar<MealTab>(
-                      tabs: [
-                        PillTab(value: MealTab.manage, label: context.local.manageMeals),
-                        PillTab(value: MealTab.add, label: context.local.addMeal),
-                        PillTab(value: MealTab.mine, label: context.local.mine),
-                        PillTab(value: MealTab.request, label: context.local.mealRequestTab),
-                      ],
-                      selected: _tab,
-                      onChanged: _selectTab,
-                    ),
-                  ),
-                  Visibility(
-                    visible: _tab == MealTab.manage,
-                    maintainSize: true,
-                    maintainAnimation: true,
-                    maintainState: true,
-                    child: IconButton(
-                      tooltip: context.local.viewAll,
-                      onPressed: () => context.push(AppRoutes.mealList),
-                      icon: const Icon(Icons.arrow_circle_right_outlined),
-                    ),
-                  ),
+              child: SegmentedTabBar<MealTab>(
+                tabs: [
+                  PillTab(value: MealTab.manage, label: context.local.manageMeals),
+                  PillTab(value: MealTab.add, label: context.local.addMeal),
+                  PillTab(value: MealTab.mine, label: context.local.mine),
+                  PillTab(value: MealTab.request, label: context.local.mealRequestTab),
+                  PillTab(value: MealTab.list, label: context.local.uiMealList),
                 ],
+                selected: _tab,
+                onChanged: _selectTab,
               ),
             ),
           ),
         ),
         Expanded(
-          child: IndexedStack(index: _tab.index, children: const [_ManageTab(), _AddMealTab(), _MineTab(), MealRequestTab()]),
+          child: IndexedStack(index: _tab.index, children: const [_ManageTab(), _AddMealTab(), _MineTab(), MealRequestTab(), _MealListTab()]),
         ),
       ],
     );
@@ -217,6 +204,24 @@ class _ManageTab extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const AnimatedEntrance(child: MealAdminPanel(showHeading: false)),
+          SizedBox(height: context.bottomPadding),
+        ],
+      ),
+    );
+  }
+}
+
+/// Admin tab: full meal list (replaces the old "view all" arrow button).
+class _MealListTab extends StatelessWidget {
+  const _MealListTab();
+
+  @override
+  Widget build(BuildContext context) {
+    return _MealTabScroll(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const AnimatedEntrance(child: MealAdminPanel(showViewAll: false)),
           SizedBox(height: context.bottomPadding),
         ],
       ),

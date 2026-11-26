@@ -842,7 +842,7 @@ class _SelectionRow extends StatelessWidget {
         Icon(icon, color: accent, size: Dimensions.iconSizeDefault),
         const SizedBox(width: Dimensions.paddingSizeSmall),
         Expanded(child: Text(label, style: AppTextStyles.sfProRoundedSemiBold.copyWith(color: colors.textPrimaryColor))),
-        MealStepper(value: value, accent: accent, onChanged: onChanged, min: 0, max: 3),
+        MealStepper(value: value, accent: accent, onChanged: onChanged, min: 0),
       ],
     );
   }

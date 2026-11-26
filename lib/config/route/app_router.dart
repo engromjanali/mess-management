@@ -63,6 +63,7 @@ class AppRoutes {
   static const String mealsAdd = '/meals/add';
   static const String mealsMine = '/meals/mine';
   static const String mealsRequest = '/meals/request';
+  static const String mealsListTab = '/meals/all';
   static const String addMeal = '/meals/entry';
   static const String mealList = '/meals/list';
   static const String deposits = '/deposits';
@@ -260,6 +261,7 @@ final router = GoRouter(
             GoRoute(path: AppRoutes.mealsAdd, name: 'mealsAdd', builder: (context, state) => const MealScreen(initialTab: 'add')),
             GoRoute(path: AppRoutes.mealsMine, name: 'mealsMine', builder: (context, state) => const MealScreen(initialTab: 'mine')),
             GoRoute(path: AppRoutes.mealsRequest, name: 'mealsRequest', builder: (context, state) => const MealScreen(initialTab: 'request')),
+            GoRoute(path: AppRoutes.mealsListTab, name: 'mealsListTab', builder: (context, state) => const MealScreen(initialTab: 'list')),
           ],
         ),
         StatefulShellBranch(

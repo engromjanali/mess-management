@@ -328,13 +328,16 @@ class _EntryRow extends StatelessWidget {
           ),
           Expanded(
             flex: 3,
-            child: Wrap(
-              alignment: WrapAlignment.center,
-              children: [
-                _Mini(label: context.local.uiB, value: entry.breakfast, accent: colors.warningColor),
-                _Mini(label: context.local.uiL, value: entry.lunch, accent: colors.primaryColor),
-                _Mini(label: context.local.uiD, value: entry.dinner, accent: colors.infoColor),
-              ],
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _Mini(label: context.local.uiB, value: entry.breakfast, accent: colors.warningColor),
+                  _Mini(label: context.local.uiL, value: entry.lunch, accent: colors.primaryColor),
+                  _Mini(label: context.local.uiD, value: entry.dinner, accent: colors.infoColor),
+                ],
+              ),
             ),
           ),
           Text(
