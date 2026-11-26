@@ -109,14 +109,14 @@ class _MealViewState extends State<_MealView> {
       backgroundColor: context.theme.scaffoldBackgroundColor,
       endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
       appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.meals)),
-      body: showWebAppBar
-          ? Column(
-              children: [
-                const DashboardTopBar(active: DashboardSection.meals),
-                Expanded(child: content),
-              ],
-            )
-          : content,
+      body: Column(
+        children: [
+          // Single fixed-type slot so crossing the responsive breakpoint never
+          // remounts the content subtree (which would re-run its blocs).
+          showWebAppBar ? const DashboardTopBar(active: DashboardSection.meals) : const SizedBox.shrink(),
+          Expanded(child: content),
+        ],
+      ),
     );
   }
 

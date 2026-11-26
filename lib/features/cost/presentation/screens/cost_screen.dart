@@ -82,7 +82,14 @@ class _CostViewState extends State<_CostView> {
           title: Text(context.local.cost),
           actions: [IconButton(tooltip: context.local.refresh, icon: const Icon(Icons.refresh_rounded), onPressed: () => context.read<CostBloc>().add(const CostEvent.refresh()))],
         ),
-        body: showWebAppBar ? Column(children: [const DashboardTopBar(active: DashboardSection.cost), Expanded(child: _content())]) : _content(),
+        body: Column(
+          children: [
+            // Single fixed-type slot so crossing the responsive breakpoint
+            // never remounts the content subtree (tab/filter/form state).
+            showWebAppBar ? const DashboardTopBar(active: DashboardSection.cost) : const SizedBox.shrink(),
+            Expanded(child: _content()),
+          ],
+        ),
       ),
     );
   }

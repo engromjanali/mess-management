@@ -233,17 +233,24 @@ class _OpinionScreenState extends State<OpinionScreen> {
       backgroundColor: context.theme.scaffoldBackgroundColor,
       endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
       appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.shareYourOpinions), actions: [IconButton(tooltip: context.local.refresh, onPressed: _busy || _refreshing ? null : () => _load(), icon: const Icon(Icons.refresh_rounded))]),
-      body: showWebAppBar
-          ? Builder(
-              builder: (context) => Column(
-                children: [
-                  const DashboardTopBar(),
-                  Stack(children: [WebPageTitleBar(title: context.local.shareYourOpinions), Positioned(top: 4, right: Dimensions.paddingSizeSmall, child: IconButton(tooltip: context.local.refresh, onPressed: _busy || _refreshing ? null : () => _load(), icon: const Icon(Icons.refresh_rounded)))]),
-                  Expanded(child: content),
-                ],
-              ),
-            )
-          : content,
+      body: Builder(
+        builder: (context) => Column(
+          children: [
+            // Single fixed-type slot so crossing the responsive breakpoint
+            // never remounts the content subtree (form/scroll state).
+            showWebAppBar
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const DashboardTopBar(),
+                      Stack(children: [WebPageTitleBar(title: context.local.shareYourOpinions), Positioned(top: 4, right: Dimensions.paddingSizeSmall, child: IconButton(tooltip: context.local.refresh, onPressed: _busy || _refreshing ? null : () => _load(), icon: const Icon(Icons.refresh_rounded)))]),
+                    ],
+                  )
+                : const SizedBox.shrink(),
+            Expanded(child: content),
+          ],
+        ),
+      ),
     ),
     );
   }
@@ -373,13 +380,24 @@ class _OpinionPeriodFormScreenState extends State<OpinionPeriodFormScreen> {
     return Scaffold(
       endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
       appBar: showWebAppBar ? null : AppBar(leading: const BackButton(), title: Text(context.local.uiOpenOpinionPeriod)),
-      body: showWebAppBar
-          ? Builder(builder: (context) => Column(children: [
-              const MainTopBar(),
-              WebPageTitleBar(title: context.local.uiOpenOpinionPeriod),
-              Expanded(child: AppPageScrollView(padding: const EdgeInsets.all(Dimensions.paddingSizeLarge), child: form)),
-            ]))
-          : SafeArea(child: SingleChildScrollView(padding: const EdgeInsets.all(Dimensions.paddingSizeLarge), child: form)),
+      // One stable tree shape on every breakpoint so the form subtree is never
+      // remounted (keeps focus/scroll alive while resizing).
+      body: Builder(
+        builder: (context) => Column(
+          children: [
+            showWebAppBar
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const MainTopBar(),
+                      WebPageTitleBar(title: context.local.uiOpenOpinionPeriod),
+                    ],
+                  )
+                : const SizedBox.shrink(),
+            Expanded(child: SafeArea(child: AppPageScrollView(padding: const EdgeInsets.all(Dimensions.paddingSizeLarge), child: form))),
+          ],
+        ),
+      ),
     );
   }
 

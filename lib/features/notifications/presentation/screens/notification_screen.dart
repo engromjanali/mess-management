@@ -181,13 +181,22 @@ class _NotificationScreenState extends State<NotificationScreen> {
     return Scaffold(
       appBar: showWebAppBar ? null : AppBar(title: Text(context.local.uiNotifications)),
       endDrawer: showWebAppBar ? const WebProfileDrawer() : null,
-      body: showWebAppBar
-          ? Column(children: [
-              const DashboardTopBar(),
-              WebPageTitleBar(title: context.local.uiNotifications),
-              Expanded(child: content),
-            ])
-          : content,
+      body: Column(
+        children: [
+          // Single fixed-type slot so crossing the responsive breakpoint never
+          // remounts the content subtree (scroll state).
+          showWebAppBar
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const DashboardTopBar(),
+                    WebPageTitleBar(title: context.local.uiNotifications),
+                  ],
+                )
+              : const SizedBox.shrink(),
+          Expanded(child: content),
+        ],
+      ),
     );
   }
 }

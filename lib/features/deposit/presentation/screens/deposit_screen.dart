@@ -115,7 +115,9 @@ class _DepositViewState extends State<_DepositView> {
         appBar: showWebAppBar ? null : AppBar(leading: const HomeBackButton(), title: Text(context.local.deposits)),
         body: Column(
           children: [
-            if (showWebAppBar) const DashboardTopBar(active: DashboardSection.deposits),
+            // Single fixed-type slot so crossing the responsive breakpoint
+            // never shifts/remounts the tab content below.
+            showWebAppBar ? const DashboardTopBar(active: DashboardSection.deposits) : const SizedBox.shrink(),
             Expanded(
               // Only this content area swaps while loading; the app bar / top
               // bar stay mounted.
